@@ -1,0 +1,9 @@
+Django>=4.2
+django-cors-headers
+python-decouple
+psycopg2-binary
+supabase
+whitenoise
+gunicorn
+requests
+django-storages[boto3]  # If using AWS S3 for media files

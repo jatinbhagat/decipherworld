@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Welcome to Decipherworld!</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .cta { background: #8b5cf6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to Decipherworld! 🚀</h1>
+        </div>
+        <div class="content">
+            <p>Hi {{ demo_request.full_name }},</p>
+            
+            <p>Welcome to the Decipherworld family! We're thrilled that <strong>{{ demo_request.school_name }}</strong> has joined thousands of forward-thinking institutions transforming education through AI and game-based learning.</p>
+            
+            <h3>What Happens Next:</h3>
+            <ul>
+                <li>✅ <strong>Demo Preparation</strong> - We'll send you a prep guide within 2 hours</li>
+                <li>📅 <strong>Scheduled Demo</strong> - Your personalized walkthrough will be confirmed soon</li>
+                <li>🎯 <strong>Custom Setup</strong> - We'll configure the platform specifically for your school's needs</li>
+            </ul>
+            
+            <p>Ready to see your students' eyes light up with learning excitement? We can't wait to show you what's possible.</p>
+            
+            <p>Cheers,<br>
+            The Decipherworld Team<br>
+            <a href="mailto:hello@decipherworld.com">hello@decipherworld.com</a></p>
+        </div>
+    </div>
+</body>
+</html>

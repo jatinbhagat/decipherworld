@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Transform Learning Into Adventure | Decipherworld{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-gradient-to-r from-purple-600 to-blue-600 text-white py-20">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-6xl font-bold mb-6">
+            Transform Learning Into Adventure
+        </h1>
+        <p class="text-xl md:text-2xl mb-8 max-w-4xl mx-auto">
+            Where students level up through games and teamwork, while teachers unlock AI superpowers to personalize every lesson. Join thousands of schools making education engaging, effective, and effortless.
+        </p>
+        
+        <div class="mb-8">
+            <span class="text-lg opacity-90">Trusted by 500+ schools across India and beyond</span>
+        </div>
+        
+        <p class="text-lg mb-10 max-w-3xl mx-auto opacity-90">
+            Students collaborate, compete, and create while mastering AI, entrepreneurship, financial literacy, and climate solutions. Teachers get AI-powered tools that adapt to every learner and simplify daily tasks.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'contact' %}" class="bg-white text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors">
+                Book Free Demo
+            </a>
+            <a href="{% url 'signup' %}" class="border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-purple-600 transition-colors">
+                Sign Up Your School
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Product Highlights -->
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <div class="grid md:grid-cols-2 gap-12">
+            <div class="text-center md:text-left">
+                <div class="text-4xl mb-4">🎮</div>
+                <h3 class="text-2xl font-bold mb-4">Game-Based Student Platform</h3>
+                <h4 class="text-xl font-semibold mb-4 text-purple-600">Learn Through Play, Excel Through Teamwork</h4>
+                <p class="text-gray-600 leading-relaxed">
+                    Students dive into immersive learning adventures where every challenge builds real skills. Our game-based platform transforms complex concepts into engaging quests, fostering deep understanding through collaboration, healthy competition, and hands-on problem-solving. Watch engagement soar as students eagerly tackle everything from AI fundamentals to climate solutions.
+                </p>
+            </div>
+            
+            <div class="text-center md:text-left">
+                <div class="text-4xl mb-4">🤖</div>
+                <h3 class="text-2xl font-bold mb-4">AI-Powered Teacher Tools</h3>
+                <h4 class="text-xl font-semibold mb-4 text-purple-600">Your Personal Teaching Assistant, Powered by Intelligence</h4>
+                <p class="text-gray-600 leading-relaxed">
+                    From lesson planning to progress tracking, our AI adapts to your teaching style and student needs. Get instant curriculum suggestions, automated assessments, and personalized learning pathways—all designed for educators who want maximum impact with minimal complexity. No tech expertise required, just better teaching outcomes.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Course Offerings Grid -->
+<section class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12">Our Game-Based Learning Courses</h2>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="text-3xl mb-4">🤖</div>
+                <h3 class="text-xl font-bold mb-3">Artificial Intelligence</h3>
+                <p class="text-gray-600 italic">"Code your virtual companion and solve real-world puzzles using machine learning magic"</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="text-3xl mb-4">💼</div>
+                <h3 class="text-xl font-bold mb-3">Entrepreneurship</h3>
+                <p class="text-gray-600 italic">"Build and scale your startup empire through market challenges and investor pitch battles"</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="text-3xl mb-4">💰</div>
+                <h3 class="text-xl font-bold mb-3">Financial Literacy</h3>
+                <p class="text-gray-600 italic">"Master money through trading simulations, budgeting quests, and investment strategy games"</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="text-3xl mb-4">🌍</div>
+                <h3 class="text-xl font-bold mb-3">Climate Change</h3>
+                <p class="text-gray-600 italic">"Become an eco-hero by designing sustainable cities and leading climate action missions"</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
