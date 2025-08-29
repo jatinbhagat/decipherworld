@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.views.generic import TemplateView, ListView, FormView
 from django.urls import reverse_lazy
 from .models import DemoRequest, Course
+from .forms import DemoRequestForm
 
 class HomeView(TemplateView):
     """Homepage with hero section and product highlights"""
@@ -20,9 +21,20 @@ class CoursesView(ListView):
     template_name = 'home/courses.html'
     context_object_name = 'courses'
 
-class ContactView(TemplateView):
+class ContactView(FormView):
     """Contact & Demo form"""
     template_name = 'home/contact.html'
+    form_class = DemoRequestForm
+    success_url = reverse_lazy('core:contact')
+    
+    def form_valid(self, form):
+        demo_request = form.save()
+        messages.success(self.request, 
+            '🎉 Demo Scheduled Successfully! Thank you for choosing Decipherworld! '
+            'We\'ve received your request and will contact you within 24 hours to '
+            'confirm your personalized demo. Check your email for next steps.'
+        )
+        return super().form_valid(form)
 
 def about(request):
     """Mission statement and company info"""

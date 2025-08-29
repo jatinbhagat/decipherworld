@@ -6,7 +6,10 @@
       "Bash(python manage.py makemigrations:*)",
       "Bash(python manage.py migrate:*)",
       "Bash(python manage.py collectstatic:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "WebFetch(domain:decipherworld.onrender.com)",
+      "Bash(curl:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

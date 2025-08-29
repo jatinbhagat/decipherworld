@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Game-Based Learning Courses | Decipherworld{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6">
+            Game-Based Learning Courses
+        </h1>
+        <p class="text-xl mb-8 max-w-3xl mx-auto">
+            Transform complex subjects into engaging adventures. Our courses use game mechanics, 
+            collaboration, and real-world challenges to make learning irresistible.
+        </p>
+    </div>
+</section>
+
+<!-- Courses Grid -->
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <div class="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
+            
+            <!-- AI Course -->
+            <div class="bg-white border rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                <div class="bg-gradient-to-r from-purple-500 to-blue-500 text-white p-6">
+                    <div class="text-4xl mb-4">🤖</div>
+                    <h3 class="text-2xl font-bold mb-2">Artificial Intelligence</h3>
+                    <p class="text-purple-100">Ages 12-18 | 12 weeks</p>
+                </div>
+                <div class="p-6">
+                    <h4 class="text-lg font-semibold mb-3 text-purple-600">
+                        "Code your virtual companion and solve real-world puzzles using machine learning magic"
+                    </h4>
+                    <p class="text-gray-600 mb-4">
+                        Students build AI chatbots, train image recognition models, and create recommendation systems 
+                        through hands-on coding challenges and collaborative team missions.
+                    </p>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Python programming fundamentals</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Machine learning concepts</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">AI ethics and responsible technology</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Real-world project portfolio</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entrepreneurship Course -->
+            <div class="bg-white border rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-6">
+                    <div class="text-4xl mb-4">💼</div>
+                    <h3 class="text-2xl font-bold mb-2">Entrepreneurship</h3>
+                    <p class="text-green-100">Ages 14-18 | 10 weeks</p>
+                </div>
+                <div class="p-6">
+                    <h4 class="text-lg font-semibold mb-3 text-green-600">
+                        "Build and scale your startup empire through market challenges and investor pitch battles"
+                    </h4>
+                    <p class="text-gray-600 mb-4">
+                        Teams compete to build the next big startup through market research quests, 
+                        product development challenges, and high-stakes investor pitch competitions.
+                    </p>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Business model development</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Market research and validation</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Financial planning and budgeting</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Presentation and pitching skills</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Literacy Course -->
+            <div class="bg-white border rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                <div class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-6">
+                    <div class="text-4xl mb-4">💰</div>
+                    <h3 class="text-2xl font-bold mb-2">Financial Literacy</h3>
+                    <p class="text-yellow-100">Ages 13-18 | 8 weeks</p>
+                </div>
+                <div class="p-6">
+                    <h4 class="text-lg font-semibold mb-3 text-yellow-600">
+                        "Master money through trading simulations, budgeting quests, and investment strategy games"
+                    </h4>
+                    <p class="text-gray-600 mb-4">
+                        Students navigate financial adventures from managing virtual businesses to competing 
+                        in stock market simulations, learning money management through interactive challenges.
+                    </p>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Personal budgeting and saving</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Investment basics and portfolio building</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Cryptocurrency and digital assets</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Risk management and financial planning</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Climate Change Course -->
+            <div class="bg-white border rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                <div class="bg-gradient-to-r from-green-600 to-blue-600 text-white p-6">
+                    <div class="text-4xl mb-4">🌍</div>
+                    <h3 class="text-2xl font-bold mb-2">Climate Change</h3>
+                    <p class="text-green-100">Ages 12-18 | 10 weeks</p>
+                </div>
+                <div class="p-6">
+                    <h4 class="text-lg font-semibold mb-3 text-green-600">
+                        "Become an eco-hero by designing sustainable cities and leading climate action missions"
+                    </h4>
+                    <p class="text-gray-600 mb-4">
+                        Teams tackle global climate challenges through city planning simulations, renewable energy 
+                        projects, and collaborative missions to create sustainable solutions.
+                    </p>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Climate science fundamentals</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Renewable energy systems</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Sustainable development projects</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="text-sm">Environmental impact assessment</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-6">Ready to Transform Your Classroom?</h2>
+        <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Join thousands of schools already using game-based learning to boost student engagement and academic outcomes.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'core:contact' %}" class="bg-purple-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-purple-700 transition-colors">
+                Book Free Demo
+            </a>
+            <a href="mailto:hello@decipherworld.com" class="border-2 border-purple-600 text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-purple-600 hover:text-white transition-colors">
+                Contact Us
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

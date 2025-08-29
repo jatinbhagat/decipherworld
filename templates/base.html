@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Decipherworld - Transform Learning Into Adventure{% endblock %}</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="Transform learning into adventure with Decipherworld's game-based education platform. AI-powered tools for teachers, engaging learning for students.">
+    <meta name="keywords" content="education, game-based learning, AI teaching tools, student engagement, EdTech">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+</head>
+<body class="bg-white">
+    
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="{% url 'core:home' %}" class="text-2xl font-bold text-purple-600">
+                        <® Decipherworld
+                    </a>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="{% url 'core:home' %}" class="text-gray-700 hover:text-purple-600 font-medium transition-colors">Home</a>
+                    <a href="{% url 'core:courses' %}" class="text-gray-700 hover:text-purple-600 font-medium transition-colors">Courses</a>
+                    <a href="#about" class="text-gray-700 hover:text-purple-600 font-medium transition-colors">About</a>
+                    <a href="{% url 'core:contact' %}" class="text-gray-700 hover:text-purple-600 font-medium transition-colors">Contact</a>
+                </div>
+                
+                <!-- CTA Button -->
+                <div class="hidden md:block">
+                    <a href="{% url 'core:contact' %}" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors">
+                        Book Demo
+                    </a>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-purple-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="md:hidden hidden py-4 border-t">
+                <a href="{% url 'core:home' %}" class="block py-2 text-gray-700 hover:text-purple-600">Home</a>
+                <a href="{% url 'core:courses' %}" class="block py-2 text-gray-700 hover:text-purple-600">Courses</a>
+                <a href="#about" class="block py-2 text-gray-700 hover:text-purple-600">About</a>
+                <a href="{% url 'core:contact' %}" class="block py-2 text-gray-700 hover:text-purple-600">Contact</a>
+                <a href="{% url 'core:contact' %}" class="block py-2 mt-2 bg-purple-600 text-white px-4 py-2 rounded-lg text-center">
+                    Book Demo
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="pt-16">
+        {% if messages %}
+            <div class="container mx-auto px-4 py-4">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <span class="text-2xl font-bold"><® Decipherworld</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        Transforming education through game-based learning and AI-powered teaching tools. 
+                        Making learning engaging, effective, and effortless for students and teachers.
+                    </p>
+                    <div class="text-sm text-gray-400">
+                        <p>Trusted by 500+ schools across India and beyond</p>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'core:home' %}" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="{% url 'core:courses' %}" class="text-gray-400 hover:text-white transition-colors">Courses</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white transition-colors">About</a></li>
+                        <li><a href="{% url 'core:contact' %}" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Get Started</h4>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'core:contact' %}" class="text-gray-400 hover:text-white transition-colors">Book Free Demo</a></li>
+                        <li><a href="mailto:hello@decipherworld.com" class="text-gray-400 hover:text-white transition-colors">hello@decipherworld.com</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 Decipherworld. All rights reserved. | Making education engaging and effective.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Mobile Menu Script -->
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+    
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>

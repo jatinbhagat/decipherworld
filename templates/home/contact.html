@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Your Free Demo | Decipherworld{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-20">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6">
+            Book Your Free Demo
+        </h1>
+        <p class="text-xl mb-8 max-w-3xl mx-auto">
+            See how Decipherworld transforms your classroom into an engaging learning adventure. 
+            Get a personalized demo tailored to your school's needs.
+        </p>
+    </div>
+</section>
+
+<!-- Demo Form Section -->
+<section class="py-20">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12">
+                
+                <!-- Form -->
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800">Request Your Demo</h2>
+                    
+                    <form method="post" class="space-y-6">
+                        {% csrf_token %}
+                        
+                        <div>
+                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Your Name *
+                            </label>
+                            {{ form.name }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Email Address *
+                            </label>
+                            {{ form.email }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.school.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                School/Institution Name *
+                            </label>
+                            {{ form.school }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.message.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Tell us about your goals and what you'd like to see in the demo
+                            </label>
+                            {{ form.message }}
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-medium text-lg hover:bg-purple-700 transition-colors">
+                            🚀 Book My Free Demo
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Demo Benefits -->
+                <div>
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800">What You'll Experience</h2>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="text-3xl mr-4">🎮</div>
+                            <div>
+                                <h3 class="text-lg font-semibold mb-2">Interactive Student Platform</h3>
+                                <p class="text-gray-600">See how students engage with game-based learning modules and collaborate on real projects.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="text-3xl mr-4">🤖</div>
+                            <div>
+                                <h3 class="text-lg font-semibold mb-2">AI-Powered Teacher Tools</h3>
+                                <p class="text-gray-600">Explore automated lesson planning, student progress tracking, and personalized learning pathways.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="text-3xl mr-4">📊</div>
+                            <div>
+                                <h3 class="text-lg font-semibold mb-2">Analytics Dashboard</h3>
+                                <p class="text-gray-600">Review detailed insights on student engagement, learning outcomes, and curriculum effectiveness.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="text-3xl mr-4">🎯</div>
+                            <div>
+                                <h3 class="text-lg font-semibold mb-2">Customized Implementation</h3>
+                                <p class="text-gray-600">Discuss how Decipherworld can be tailored to your specific curriculum and school needs.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Info -->
+                    <div class="mt-12 p-6 bg-gray-50 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-4">Prefer to Talk First?</h3>
+                        <div class="space-y-2">
+                            <p class="flex items-center">
+                                <span class="text-purple-600 mr-2">📧</span>
+                                <a href="mailto:hello@decipherworld.com" class="text-purple-600 hover:underline">
+                                    hello@decipherworld.com
+                                </a>
+                            </p>
+                            <p class="text-gray-600 text-sm">
+                                We typically respond within 2 hours during business days.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Social Proof -->
+<section class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-8">Trusted by 500+ Schools</h2>
+        <div class="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-4xl mb-4">🏫</div>
+                <h3 class="text-lg font-semibold mb-2">Delhi Public School</h3>
+                <p class="text-gray-600 text-sm">"Our students are more engaged than ever. The AI course has transformed our computer science curriculum."</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-4xl mb-4">🎓</div>
+                <h3 class="text-lg font-semibold mb-2">Ryan International</h3>
+                <p class="text-gray-600 text-sm">"The entrepreneurship program helped our students start actual businesses. Amazing results!"</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-4xl mb-4">📚</div>
+                <h3 class="text-lg font-semibold mb-2">Kendriya Vidyalaya</h3>
+                <p class="text-gray-600 text-sm">"Teachers save 3+ hours per week with the AI planning tools. Students love the game-based approach."</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
