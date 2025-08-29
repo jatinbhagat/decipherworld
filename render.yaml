@@ -11,4 +11,6 @@ services:
         value: decipherworld.settings.production
       - key: SECURE_SSL_REDIRECT
         value: "False"  # Set to False during initial deployment
+      - key: DJANGO_LOG_LEVEL
+        value: DEBUG
     region: oregon

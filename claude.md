@@ -107,28 +107,35 @@ decipherworld/
 
 **Step 2: Set Environment Variables in Render**
 
-✅ **METHOD 1 - Individual Parameters:**
+✅ **METHOD 1 - Connection Pooling (Recommended):**
 ```
-DB_HOST = aws-0-us-east-1.pooler.supabase.com
+DATABASE_URL = postgresql://postgres.tpgymvjnrmugrjfjwtbb:[YOUR-PASSWORD]@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true
+```
+
+✅ **METHOD 2 - Direct Connection (For migrations):**
+```
+DIRECT_URL = postgresql://postgres.tpgymvjnrmugrjfjwtbb:[YOUR-PASSWORD]@aws-1-ap-south-1.pooler.supabase.com:5432/postgres
+```
+
+✅ **METHOD 3 - Individual Parameters (Fallback):**
+```
+DB_HOST = aws-1-ap-south-1.pooler.supabase.com
 DB_NAME = postgres
 DB_USER = postgres.tpgymvjnrmugrjfjwtbb  
 DB_PASSWORD = your_actual_password
-DB_PORT = 5432
+DB_PORT = 6543
 ```
 
-✅ **METHOD 2 - Connection String (Alternative):**
-```
-DATABASE_URL = postgresql://postgres.tpgymvjnrmugrjfjwtbb:password@aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require
-```
+**IMPORTANT NOTES:**
+- **Connection Pooling (Port 6543)**: Better for production, handles many connections
+- **Direct Connection (Port 5432)**: Sometimes needed for migrations
+- **Your region may be different**: Check your actual Supabase connection strings
+- **Replace [YOUR-PASSWORD]**: Use your actual database password
 
-❌ **COMMON MISTAKES:**
-- Using `db.xxx.supabase.co` (wrong host format)
-- Including `https://` in host
-- Wrong user format (missing project ID)
-
-**Your actual values will be different!** The host format is usually:
-- `aws-0-[region].pooler.supabase.com` 
-- `[region]-[pool].pooler.supabase.com`
+**For your specific project**, use the exact connection strings from Supabase:
+- Region: `ap-south-1` (Asia Pacific - Mumbai)  
+- Host: `aws-1-ap-south-1.pooler.supabase.com`
+- User: `postgres.tpgymvjnrmugrjfjwtbb`
 
 decipherworld/
 ├── templates/
