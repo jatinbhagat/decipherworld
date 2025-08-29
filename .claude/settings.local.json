@@ -9,7 +9,9 @@
       "Bash(chmod:*)",
       "WebFetch(domain:decipherworld.onrender.com)",
       "Bash(curl:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
