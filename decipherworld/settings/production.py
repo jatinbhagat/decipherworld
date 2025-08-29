@@ -143,4 +143,12 @@ LOGGING = {
 if not DEBUG:
     import logging
     logger = logging.getLogger(__name__)
-    logger.info(f"Database config - HOST: {get_db_host()}, NAME: {config('DB_NAME')}, USER: {config('DB_USER')}, PORT: {config('DB_PORT', default='5432')}")
+    if DATABASE_URL:
+        logger.info(f"Using DATABASE_URL for database connection")
+    elif DIRECT_URL:
+        logger.info(f"Using DIRECT_URL for database connection")
+    else:
+        try:
+            logger.info(f"Database config - HOST: {get_db_host()}, NAME: {config('DB_NAME', default='postgres')}, USER: {config('DB_USER', default='N/A')}, PORT: {config('DB_PORT', default='5432')}")
+        except:
+            logger.info("Using fallback database configuration")
