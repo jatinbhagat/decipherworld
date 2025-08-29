@@ -28,13 +28,21 @@ class ContactView(FormView):
     success_url = reverse_lazy('core:contact')
     
     def form_valid(self, form):
-        demo_request = form.save()
-        messages.success(self.request, 
-            '🎉 Demo Scheduled Successfully! Thank you for choosing Decipherworld! '
-            'We\'ve received your request and will contact you within 24 hours to '
-            'confirm your personalized demo. Check your email for next steps.'
-        )
-        return super().form_valid(form)
+        try:
+            demo_request = form.save()
+            messages.success(self.request, 
+                '🎉 Demo Scheduled Successfully! Thank you for choosing Decipherworld! '
+                'We\'ve received your request and will contact you within 24 hours to '
+                'confirm your personalized demo. Check your email for next steps.'
+            )
+            return super().form_valid(form)
+        except Exception as e:
+            messages.error(self.request, f'Error saving your request: {str(e)}')
+            return self.form_invalid(form)
+    
+    def form_invalid(self, form):
+        messages.error(self.request, 'Please check your form for errors.')
+        return super().form_invalid(form)
 
 def about(request):
     """Mission statement and company info"""
