@@ -40,22 +40,78 @@ DATABASE_URL = config('DATABASE_URL', default=None)
 DIRECT_URL = config('DIRECT_URL', default=None)
 
 if DATABASE_URL:
-    # Use connection pooling for main database operations (port 6543)
-    DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
-    }
-    
-    # Override port if using pooling (should be 6543 for connection pooling)
-    if 'pgbouncer=true' in DATABASE_URL:
-        DATABASES['default']['PORT'] = 6543
-        print("Using Supabase connection pooling (port 6543)")
-    
+    try:
+        # Use connection pooling for main database operations (port 6543)
+        parsed_db = dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
+        
+        # Ensure NAME is set properly
+        if not parsed_db.get('NAME'):
+            parsed_db['NAME'] = 'postgres'
+        
+        DATABASES = {
+            'default': parsed_db
+        }
+        
+        # Override port if using pooling (should be 6543 for connection pooling)
+        if 'pgbouncer=true' in DATABASE_URL:
+            DATABASES['default']['PORT'] = 6543
+            print("Using Supabase connection pooling (port 6543)")
+        
+        print(f"Successfully configured database: {DATABASES['default']['NAME']} on {DATABASES['default']['HOST']}")
+        
+    except Exception as e:
+        print(f"Error parsing DATABASE_URL: {e}")
+        # Fallback to manual parsing
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'postgres',
+                'USER': config('DATABASE_USER', default='postgres.tpgymvjnrmugrjfjwtbb'),
+                'PASSWORD': config('DATABASE_PASSWORD'),
+                'HOST': 'aws-1-ap-south-1.pooler.supabase.com',
+                'PORT': 6543,
+                'OPTIONS': {
+                    'sslmode': 'require',
+                    'connect_timeout': 60,
+                    'application_name': 'django_decipherworld',
+                },
+                'CONN_MAX_AGE': 600,
+            }
+        }
+        print("Using fallback database configuration")
+        
 elif DIRECT_URL:
-    # Use direct connection (port 5432)
-    DATABASES = {
-        'default': dj_database_url.parse(DIRECT_URL, conn_max_age=600, ssl_require=True)
-    }
-    print("Using Supabase direct connection (port 5432)")
+    try:
+        # Use direct connection (port 5432)
+        parsed_db = dj_database_url.parse(DIRECT_URL, conn_max_age=600, ssl_require=True)
+        if not parsed_db.get('NAME'):
+            parsed_db['NAME'] = 'postgres'
+            
+        DATABASES = {
+            'default': parsed_db
+        }
+        print("Using Supabase direct connection (port 5432)")
+        
+    except Exception as e:
+        print(f"Error parsing DIRECT_URL: {e}")
+        # Fallback configuration
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'postgres',
+                'USER': config('DATABASE_USER', default='postgres.tpgymvjnrmugrjfjwtbb'),
+                'PASSWORD': config('DATABASE_PASSWORD'),
+                'HOST': 'aws-1-ap-south-1.pooler.supabase.com',
+                'PORT': 5432,
+                'OPTIONS': {
+                    'sslmode': 'require',
+                    'connect_timeout': 60,
+                    'application_name': 'django_decipherworld',
+                },
+                'CONN_MAX_AGE': 600,
+            }
+        }
+        print("Using fallback direct database configuration")
     
 else:
     # Fallback to individual environment variables
@@ -64,7 +120,7 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': config('DB_NAME', default='postgres'),
-            'USER': config('DB_USER'),
+            'USER': config('DB_USER', default='postgres.tpgymvjnrmugrjfjwtbb'),
             'PASSWORD': config('DB_PASSWORD'),
             'HOST': get_db_host(),
             'PORT': db_port,
@@ -77,9 +133,6 @@ else:
         }
     }
     print(f"Using fallback connection to {get_db_host()}:{db_port}")
-
-# For migrations, we might need direct connection (port 5432)
-# This will be used if DIRECT_URL is provided and we're running migrations
 
 # Supabase Configuration
 SUPABASE_URL = config('SUPABASE_URL')
