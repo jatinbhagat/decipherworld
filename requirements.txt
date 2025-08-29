@@ -6,4 +6,5 @@ supabase
 whitenoise
 gunicorn
 requests
-django-storages[boto3]  # If using AWS S3 for media files
+django-storages[boto3]
+dj-database-url

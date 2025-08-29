@@ -14,19 +14,42 @@ ALLOWED_HOSTS = [
 ]
 
 # Database Configuration (Supabase PostgreSQL)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT', default='5432'),
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+def get_db_host():
+    """Extract hostname from DB_HOST, removing protocol if present"""
+    host = config('DB_HOST')
+    # Remove https:// or http:// if present
+    if host.startswith('https://'):
+        host = host.replace('https://', '')
+    elif host.startswith('http://'):
+        host = host.replace('http://', '')
+    # Remove trailing slash if present
+    host = host.rstrip('/')
+    return host
+
+# Try to use DATABASE_URL if provided (common for Supabase)
+import dj_database_url
+DATABASE_URL = config('DATABASE_URL', default=None)
+
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': get_db_host(),
+            'PORT': config('DB_PORT', default='5432'),
+            'OPTIONS': {
+                'sslmode': 'require',
+                'connect_timeout': 60,
+            },
+            'CONN_MAX_AGE': 600,
+        }
+    }
 
 # Supabase Configuration
 SUPABASE_URL = config('SUPABASE_URL')
@@ -61,12 +84,33 @@ CORS_ALLOWED_ORIGINS = [
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
         },
     },
     'root': {
         'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
     },
 }
+
+# Debug database connection (only in production for troubleshooting)
+if not DEBUG:
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"Database config - HOST: {get_db_host()}, NAME: {config('DB_NAME')}, USER: {config('DB_USER')}, PORT: {config('DB_PORT', default='5432')}")

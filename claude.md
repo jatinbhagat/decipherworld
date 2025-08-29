@@ -93,8 +93,42 @@ decipherworld/
 1. Missing `manage.py` - prevents Django commands
 2. Incorrect `DJANGO_SETTINGS_MODULE` path
 3. Missing `BASE_DIR` in settings
-4. Database connection issues
+4. **Database connection issues** - Most common error
 5. Static files configuration errors
+
+### Supabase Database Configuration:
+
+**CRITICAL**: Get the correct connection details from Supabase Dashboard:
+
+**Step 1: Find Connection Details in Supabase**
+1. Go to Supabase Dashboard → Settings → Database
+2. Look for "Connection parameters" section
+3. Copy the exact values shown
+
+**Step 2: Set Environment Variables in Render**
+
+✅ **METHOD 1 - Individual Parameters:**
+```
+DB_HOST = aws-0-us-east-1.pooler.supabase.com
+DB_NAME = postgres
+DB_USER = postgres.tpgymvjnrmugrjfjwtbb  
+DB_PASSWORD = your_actual_password
+DB_PORT = 5432
+```
+
+✅ **METHOD 2 - Connection String (Alternative):**
+```
+DATABASE_URL = postgresql://postgres.tpgymvjnrmugrjfjwtbb:password@aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require
+```
+
+❌ **COMMON MISTAKES:**
+- Using `db.xxx.supabase.co` (wrong host format)
+- Including `https://` in host
+- Wrong user format (missing project ID)
+
+**Your actual values will be different!** The host format is usually:
+- `aws-0-[region].pooler.supabase.com` 
+- `[region]-[pool].pooler.supabase.com`
 
 decipherworld/
 ├── templates/
