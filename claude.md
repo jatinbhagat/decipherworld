@@ -51,3 +51,64 @@ Generate a production-ready `render.yaml` (or Render.com config), suitable for D
 Prompt:  
 Show how to map the content (site copy, emails, etc) you generated earlier into Django templates, context, and, optionally, translation/lookups for maintainability.
 
+---
+
+## 9. Deployment Troubleshooting
+Common Render.com deployment issues and fixes:
+
+### Required Django Project Structure:
+```
+decipherworld/
+├── manage.py                   # Django management script
+├── decipherworld/             # Main project package  
+│   ├── __init__.py
+│   ├── settings/
+│   │   ├── __init__.py
+│   │   ├── base.py           # Base settings
+│   │   └── production.py     # Production overrides
+│   ├── urls.py
+│   └── wsgi.py
+├── core/                      # Main app
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── views.py
+│   └── urls.py
+├── templates/
+├── static/
+├── requirements.txt
+└── render.yaml
+```
+
+### Essential Files:
+- `manage.py`: Django management commands
+- `decipherworld/settings/base.py`: Common settings
+- `decipherworld/settings/production.py`: Production overrides
+- Proper `INSTALLED_APPS` and middleware configuration
+- Environment variables in Render dashboard
+
+### Common Deployment Errors:
+1. Missing `manage.py` - prevents Django commands
+2. Incorrect `DJANGO_SETTINGS_MODULE` path
+3. Missing `BASE_DIR` in settings
+4. Database connection issues
+5. Static files configuration errors
+
+decipherworld/
+├── templates/
+│   ├── base.html
+│   ├── home/
+│   │   ├── index.html          # Hero section + homepage content
+│   │   ├── about.html          # Mission statement
+│   │   ├── courses.html        # Course offerings grid
+│   │   ├── teachers.html       # For Teachers & Administrators
+│   │   ├── contact.html        # Contact & Demo form
+│   │   └── coming-soon.html    # Future feature teaser
+│   ├── includes/
+│   │   ├── header.html
+│   │   ├── footer.html
+│   │   └── nav.html
+│   └── emails/
+│       └── onboarding.html     # Welcome email template

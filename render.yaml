@@ -2,8 +2,13 @@ services:
   - type: web
     name: decipherworld
     env: python
-    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate"
-    startCommand: "gunicorn decipherworld.wsgi:application --bind 0.0.0.0:$PORT"
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput --settings=decipherworld.settings.production && python manage.py migrate --settings=decipherworld.settings.production"
+    startCommand: "gunicorn decipherworld.wsgi:application --bind 0.0.0.0:$PORT --workers 3"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+      - key: DJANGO_SETTINGS_MODULE
+        value: decipherworld.settings.production
+      - key: SECURE_SSL_REDIRECT
+        value: "False"  # Set to False during initial deployment
+    region: oregon
