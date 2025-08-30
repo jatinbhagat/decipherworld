@@ -4,70 +4,73 @@
 {% block title %}Transform Learning Into Adventure | Decipherworld{% endblock %}
 
 {% block content %}
-<!-- Professional Hero Section -->
+<!-- Mobile-First Hero Section -->
 <section class="hero min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 relative overflow-hidden">
-    <div class="hero-content text-center max-w-6xl mx-auto px-4 py-20">
-        <div class="max-w-4xl">
-            <!-- Professional Title -->
-            <div class="mb-8">
-                <div class="flex items-center justify-center gap-4 mb-6">
-                    <div class="text-5xl">🤖</div>
-                    <div class="text-5xl">📚</div>
-                    <div class="text-5xl">⚡</div>
+    <div class="hero-content text-center w-full px-4 py-8 sm:py-16 lg:py-20">
+        <div class="w-full max-w-4xl mx-auto">
+            <!-- Mobile-Optimized Title -->
+            <div class="mb-6 sm:mb-8">
+                <div class="flex items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+                    <div class="text-3xl sm:text-4xl lg:text-5xl">🤖</div>
+                    <div class="text-3xl sm:text-4xl lg:text-5xl">📚</div>
+                    <div class="text-3xl sm:text-4xl lg:text-5xl">⚡</div>
                 </div>
-                <h1 class="text-5xl md:text-7xl font-bold mb-6 text-slate-800">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 text-slate-800 leading-tight">
                     Transform Learning Into Adventure
                 </h1>
-                <div class="flex justify-center gap-2 mb-6">
-                    <div class="badge badge-primary badge-lg">World's First</div>
-                    <div class="badge badge-secondary badge-lg">Game & AI Based</div>
-                    <div class="badge badge-accent badge-lg">EdTech Platform</div>
+                <!-- Mobile-Friendly Badges -->
+                <div class="flex flex-wrap justify-center gap-2 mb-4 sm:mb-6 px-2">
+                    <div class="badge badge-primary badge-sm sm:badge-md lg:badge-lg">World's First</div>
+                    <div class="badge badge-secondary badge-sm sm:badge-md lg:badge-lg">Game & AI</div>
+                    <div class="badge badge-accent badge-sm sm:badge-md lg:badge-lg">EdTech Platform</div>
                 </div>
             </div>
             
-            <p class="text-xl md:text-2xl mb-8 text-slate-600 leading-relaxed">
+            <p class="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-slate-600 leading-relaxed px-2 sm:px-4">
                 Where students learn through <span class="text-primary font-semibold">interactive gaming</span> 
                 while teachers unlock <span class="text-secondary font-semibold">AI productivity tools</span> for 5X efficiency. 
-                Join 500+ schools making education engaging and effective.
+                <span class="block sm:inline">Join 500+ schools making education engaging and effective.</span>
             </p>
             
-            <!-- Stats Cards -->
-            <div class="stats stats-vertical lg:stats-horizontal shadow-lg bg-white border border-slate-200 mb-8">
-                <div class="stat">
-                    <div class="stat-figure text-primary">
-                        <i class="fas fa-school text-3xl"></i>
+            <!-- Mobile-Optimized Stats Cards -->
+            <div class="w-full mb-6 sm:mb-8">
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 max-w-lg mx-auto lg:max-w-4xl lg:flex lg:justify-center">
+                    <div class="bg-white rounded-lg shadow-md border border-slate-200 p-3 sm:p-4 text-center flex-1">
+                        <div class="text-primary mb-1 sm:mb-2">
+                            <i class="fas fa-school text-lg sm:text-xl lg:text-2xl"></i>
+                        </div>
+                        <div class="text-xs sm:text-sm text-slate-600 mb-1">Schools</div>
+                        <div class="text-lg sm:text-xl lg:text-2xl font-bold text-primary">500+</div>
+                        <div class="text-xs text-slate-500 hidden sm:block">India & Beyond</div>
                     </div>
-                    <div class="stat-title text-slate-600">Schools</div>
-                    <div class="stat-value text-primary">500+</div>
-                    <div class="stat-desc text-slate-500">Across India & Beyond</div>
-                </div>
-                
-                <div class="stat">
-                    <div class="stat-figure text-secondary">
-                        <i class="fas fa-chart-line text-3xl"></i>
+                    
+                    <div class="bg-white rounded-lg shadow-md border border-slate-200 p-3 sm:p-4 text-center flex-1">
+                        <div class="text-secondary mb-1 sm:mb-2">
+                            <i class="fas fa-chart-line text-lg sm:text-xl lg:text-2xl"></i>
+                        </div>
+                        <div class="text-xs sm:text-sm text-slate-600 mb-1">Productivity</div>
+                        <div class="text-lg sm:text-xl lg:text-2xl font-bold text-secondary">5X</div>
+                        <div class="text-xs text-slate-500 hidden sm:block">Efficiency</div>
                     </div>
-                    <div class="stat-title text-slate-600">Productivity</div>
-                    <div class="stat-value text-secondary">5X</div>
-                    <div class="stat-desc text-slate-500">Teacher Efficiency</div>
-                </div>
-                
-                <div class="stat">
-                    <div class="stat-figure text-accent">
-                        <i class="fas fa-graduation-cap text-3xl"></i>
+                    
+                    <div class="bg-white rounded-lg shadow-md border border-slate-200 p-3 sm:p-4 text-center flex-1">
+                        <div class="text-accent mb-1 sm:mb-2">
+                            <i class="fas fa-graduation-cap text-lg sm:text-xl lg:text-2xl"></i>
+                        </div>
+                        <div class="text-xs sm:text-sm text-slate-600 mb-1">Engagement</div>
+                        <div class="text-lg sm:text-xl lg:text-2xl font-bold text-accent">95%</div>
+                        <div class="text-xs text-slate-500 hidden sm:block">Success</div>
                     </div>
-                    <div class="stat-title text-slate-600">Engagement</div>
-                    <div class="stat-value text-accent">95%</div>
-                    <div class="stat-desc text-slate-500">Student Success</div>
                 </div>
             </div>
             
-            <!-- CTA Buttons -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'core:contact' %}" class="btn btn-primary btn-lg shadow-lg hover:shadow-xl transition-all duration-300">
+            <!-- Mobile-First CTA Buttons -->
+            <div class="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center px-4">
+                <a href="{% url 'core:contact' %}" class="btn btn-primary btn-md sm:btn-lg shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base">
                     <i class="fas fa-rocket mr-2"></i>
                     Book Free Demo
                 </a>
-                <a href="{% url 'core:teachers' %}" class="btn btn-outline btn-secondary btn-lg hover:btn-secondary shadow-lg hover:shadow-xl transition-all duration-300">
+                <a href="{% url 'core:teachers' %}" class="btn btn-outline btn-secondary btn-md sm:btn-lg hover:btn-secondary shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base">
                     <i class="fas fa-robot mr-2"></i>
                     AI for Teachers
                 </a>
@@ -76,47 +79,46 @@
     </div>
 </section>
 
-<!-- Dual Product Features -->
-<section class="py-20 bg-slate-50">
+<!-- Mobile-Optimized Product Features -->
+<section class="py-10 sm:py-16 lg:py-20 bg-slate-50">
     <div class="container mx-auto px-4">
-        <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold mb-4 text-slate-800">The Complete EdTech Solution</h2>
-            <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+        <div class="text-center mb-8 sm:mb-12 lg:mb-16">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-slate-800">The Complete EdTech Solution</h2>
+            <p class="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto px-2">
                 Two powerful platforms working together to revolutionize education through gaming and AI
             </p>
         </div>
         
-        <div class="grid lg:grid-cols-2 gap-8">
-            <!-- Student Platform Card -->
-            <div class="card bg-gradient-to-br from-primary to-secondary text-primary-content shadow-2xl">
-                <div class="card-body">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="text-5xl">🎮</div>
+        <div class="grid gap-6 sm:gap-8 lg:grid-cols-2">
+            <!-- Mobile-Optimized Student Platform Card -->
+            <div class="card bg-gradient-to-br from-primary to-secondary text-primary-content shadow-xl">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                        <div class="text-3xl sm:text-4xl lg:text-5xl">🎮</div>
                         <div>
-                            <h3 class="card-title text-2xl">For Students</h3>
-                            <div class="badge badge-accent">Game-Based Learning</div>
+                            <h3 class="card-title text-lg sm:text-xl lg:text-2xl">For Students</h3>
+                            <div class="badge badge-accent badge-xs sm:badge-sm">Game-Based Learning</div>
                         </div>
                     </div>
                     
-                    <h4 class="text-xl font-semibold mb-4 text-accent-content">
+                    <h4 class="text-base sm:text-lg lg:text-xl font-semibold mb-3 sm:mb-4 text-accent-content">
                         Learn Through Play, Excel Through Teamwork
                     </h4>
                     
-                    <p class="text-primary-content/90 mb-6 leading-relaxed">
+                    <p class="text-sm sm:text-base text-primary-content/90 mb-4 sm:mb-6 leading-relaxed">
                         Students dive into immersive learning adventures where every challenge builds real skills. 
-                        Our game-based platform transforms complex concepts into engaging quests, fostering deep 
-                        understanding through collaboration, healthy competition, and hands-on problem-solving.
+                        Our game-based platform transforms complex concepts into engaging quests.
                     </p>
                     
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <div class="badge badge-outline badge-sm">AI Courses</div>
-                        <div class="badge badge-outline badge-sm">Financial Literacy</div>
-                        <div class="badge badge-outline badge-sm">Entrepreneurship</div>
-                        <div class="badge badge-outline badge-sm">Climate Change</div>
+                    <div class="flex flex-wrap gap-1 sm:gap-2 mb-4 sm:mb-6">
+                        <div class="badge badge-outline badge-xs sm:badge-sm">AI Courses</div>
+                        <div class="badge badge-outline badge-xs sm:badge-sm">Financial Literacy</div>
+                        <div class="badge badge-outline badge-xs sm:badge-sm">Entrepreneurship</div>
+                        <div class="badge badge-outline badge-xs sm:badge-sm">Climate Change</div>
                     </div>
                     
                     <div class="card-actions">
-                        <a href="{% url 'core:courses' %}" class="btn btn-accent">
+                        <a href="{% url 'core:courses' %}" class="btn btn-accent btn-sm sm:btn-md w-full sm:w-auto">
                             <i class="fas fa-gamepad mr-2"></i>
                             Explore Courses
                         </a>
@@ -124,36 +126,35 @@
                 </div>
             </div>
 
-            <!-- Teacher Platform Card -->
-            <div class="card bg-gradient-to-br from-secondary to-accent text-secondary-content shadow-2xl">
-                <div class="card-body">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="text-5xl">🤖</div>
+            <!-- Mobile-Optimized Teacher Platform Card -->
+            <div class="card bg-gradient-to-br from-secondary to-accent text-secondary-content shadow-xl">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                        <div class="text-3xl sm:text-4xl lg:text-5xl">🤖</div>
                         <div>
-                            <h3 class="card-title text-2xl">For Teachers</h3>
-                            <div class="badge badge-primary">AI Training & Tools</div>
+                            <h3 class="card-title text-lg sm:text-xl lg:text-2xl">For Teachers</h3>
+                            <div class="badge badge-primary badge-xs sm:badge-sm">AI Training & Tools</div>
                         </div>
                     </div>
                     
-                    <h4 class="text-xl font-semibold mb-4 text-primary-content">
+                    <h4 class="text-base sm:text-lg lg:text-xl font-semibold mb-3 sm:mb-4 text-primary-content">
                         AI Superpowers for 5X Teaching Productivity
                     </h4>
                     
-                    <p class="text-secondary-content/90 mb-6 leading-relaxed">
+                    <p class="text-sm sm:text-base text-secondary-content/90 mb-4 sm:mb-6 leading-relaxed">
                         Master 40+ AI tools including MagicSchool.ai, Eduaide.ai, and Khanmigo. From automated lesson 
-                        planning to instant assessments, get everything you need to transform your classroom with AI. 
-                        No tech expertise required—just better teaching outcomes.
+                        planning to instant assessments, transform your classroom with AI.
                     </p>
                     
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <div class="badge badge-outline badge-sm">40+ AI Tools</div>
-                        <div class="badge badge-outline badge-sm">Lesson Planning</div>
-                        <div class="badge badge-outline badge-sm">Automated Grading</div>
-                        <div class="badge badge-outline badge-sm">Parent Communication</div>
+                    <div class="flex flex-wrap gap-1 sm:gap-2 mb-4 sm:mb-6">
+                        <div class="badge badge-outline badge-xs sm:badge-sm">40+ AI Tools</div>
+                        <div class="badge badge-outline badge-xs sm:badge-sm">Lesson Planning</div>
+                        <div class="badge badge-outline badge-xs sm:badge-sm">Auto Grading</div>
+                        <div class="badge badge-outline badge-xs sm:badge-sm">Parent Comms</div>
                     </div>
                     
                     <div class="card-actions">
-                        <a href="/teachers/" class="btn btn-primary">
+                        <a href="{% url 'core:teachers' %}" class="btn btn-primary btn-sm sm:btn-md w-full sm:w-auto">
                             <i class="fas fa-robot mr-2"></i>
                             AI Training Program
                         </a>
@@ -164,16 +165,16 @@
     </div>
 </section>
 
-<!-- Game-Based Courses Showcase -->
-<section class="py-20 bg-base-100">
+<!-- Mobile-Optimized Courses Showcase -->
+<section class="py-10 sm:py-16 lg:py-20 bg-white">
     <div class="container mx-auto px-4">
-        <div class="text-center mb-16">
-            <div class="flex items-center justify-center gap-2 mb-4">
-                <div class="text-3xl">🎯</div>
-                <h2 class="text-4xl font-bold">Level Up With Our Courses</h2>
-                <div class="text-3xl">🏆</div>
+        <div class="text-center mb-8 sm:mb-12 lg:mb-16">
+            <div class="flex items-center justify-center gap-2 mb-3 sm:mb-4">
+                <div class="text-2xl sm:text-3xl">🎯</div>
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800">Level Up With Our Courses</h2>
+                <div class="text-2xl sm:text-3xl">🏆</div>
             </div>
-            <p class="text-xl text-base-content/70 max-w-3xl mx-auto">
+            <p class="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto px-2">
                 Transform complex subjects into engaging adventures through team-based gaming
             </p>
         </div>
@@ -264,8 +265,8 @@
             </div>
         </div>
         
-        <div class="text-center mt-12">
-            <a href="{% url 'core:courses' %}" class="btn btn-primary btn-lg">
+        <div class="text-center mt-8 sm:mt-12">
+            <a href="{% url 'core:courses' %}" class="btn btn-primary btn-md sm:btn-lg w-full sm:w-auto max-w-xs">
                 <i class="fas fa-gamepad mr-2"></i>
                 View All Courses
             </a>
@@ -273,38 +274,38 @@
     </div>
 </section>
 
-<!-- Social Proof & CTA -->
-<section class="py-20 bg-gradient-to-r from-base-300 to-base-200">
+<!-- Mobile-Optimized Final CTA -->
+<section class="py-10 sm:py-16 lg:py-20 bg-gradient-to-r from-slate-100 to-blue-100">
     <div class="container mx-auto px-4 text-center">
         <div class="max-w-4xl mx-auto">
-            <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Classroom?</h2>
-            <p class="text-xl text-base-content/70 mb-8">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-slate-800">Ready to Transform Your Classroom?</h2>
+            <p class="text-base sm:text-lg lg:text-xl text-slate-600 mb-6 sm:mb-8 px-2">
                 Join 500+ schools already using our game-based learning platform to boost student engagement 
                 and teacher productivity with AI.
             </p>
             
-            <!-- Trust Indicators -->
-            <div class="flex flex-wrap justify-center gap-4 mb-8">
-                <div class="stat bg-base-100 rounded-box shadow-lg">
-                    <div class="stat-title">Schools Using Platform</div>
-                    <div class="stat-value text-primary">500+</div>
+            <!-- Mobile-Optimized Trust Indicators -->
+            <div class="grid grid-cols-3 gap-2 sm:gap-4 max-w-lg mx-auto mb-6 sm:mb-8">
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 text-center">
+                    <div class="text-xs sm:text-sm text-slate-600 mb-1">Schools</div>
+                    <div class="text-lg sm:text-xl lg:text-2xl font-bold text-primary">500+</div>
                 </div>
-                <div class="stat bg-base-100 rounded-box shadow-lg">
-                    <div class="stat-title">Student Engagement</div>
-                    <div class="stat-value text-secondary">95%</div>
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 text-center">
+                    <div class="text-xs sm:text-sm text-slate-600 mb-1">Engagement</div>
+                    <div class="text-lg sm:text-xl lg:text-2xl font-bold text-secondary">95%</div>
                 </div>
-                <div class="stat bg-base-100 rounded-box shadow-lg">
-                    <div class="stat-title">Teacher Productivity</div>
-                    <div class="stat-value text-accent">5X</div>
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 text-center">
+                    <div class="text-xs sm:text-sm text-slate-600 mb-1">Productivity</div>
+                    <div class="text-lg sm:text-xl lg:text-2xl font-bold text-accent">5X</div>
                 </div>
             </div>
             
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'core:contact' %}" class="btn btn-accent btn-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+            <div class="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center px-4">
+                <a href="{% url 'core:contact' %}" class="btn btn-primary btn-md sm:btn-lg shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto">
                     <i class="fas fa-rocket mr-2"></i>
                     Book Free Demo
                 </a>
-                <a href="mailto:hello@decipherworld.com" class="btn btn-outline btn-primary btn-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                <a href="mailto:hello@decipherworld.com" class="btn btn-outline btn-secondary btn-md sm:btn-lg shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto">
                     <i class="fas fa-envelope mr-2"></i>
                     Contact Us
                 </a>

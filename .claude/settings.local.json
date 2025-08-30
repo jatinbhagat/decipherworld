@@ -14,7 +14,8 @@
       "Bash(git push:*)",
       "Bash(python test:*)",
       "WebFetch(domain:deciworld.notion.site)",
-      "WebFetch(domain:www.perplexity.ai)"
+      "WebFetch(domain:www.perplexity.ai)",
+      "Read(/Users/jatinbhagat/Downloads/**)"
     ],
     "deny": [],
     "ask": []
