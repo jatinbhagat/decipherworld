@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}School Implementation - Book Demo | Decipherworld{% endblock %}
+
+{% block content %}
+<!-- Schools Hero Section -->
+<section class="hero min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 relative overflow-hidden">
+    <div class="hero-content text-center w-full px-4 py-8 sm:py-16 lg:py-20">
+        <div class="w-full max-w-4xl mx-auto">
+            <div class="mb-6 sm:mb-8">
+                <div class="flex items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+                    <div class="text-3xl sm:text-4xl lg:text-5xl">🏫</div>
+                    <div class="text-3xl sm:text-4xl lg:text-5xl">🚀</div>
+                    <div class="text-3xl sm:text-4xl lg:text-5xl">⚡</div>
+                </div>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 text-slate-800 leading-tight">
+                    Transform Your School with AI EdTech
+                </h1>
+                <div class="flex flex-wrap justify-center gap-2 mb-4 sm:mb-6 px-2">
+                    <div class="badge badge-primary badge-sm sm:badge-md lg:badge-lg">500+ Schools</div>
+                    <div class="badge badge-secondary badge-sm sm:badge-md lg:badge-lg">Complete Solution</div>
+                    <div class="badge badge-accent badge-sm sm:badge-md lg:badge-lg">Custom Implementation</div>
+                </div>
+            </div>
+            
+            <p class="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-slate-600 leading-relaxed px-2 sm:px-4">
+                Join leading educational institutions using our comprehensive platform for 
+                <span class="text-primary font-semibold">game-based student learning</span> and 
+                <span class="text-secondary font-semibold">AI-powered teacher training</span>.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- School Demo Form Section -->
+<section class="py-10 sm:py-16 lg:py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-8 sm:mb-12">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-800">Book Your School Demo</h2>
+                <p class="text-base sm:text-lg text-slate-600 mb-6">
+                    Get a personalized demonstration of our complete EdTech solution for your institution
+                </p>
+            </div>
+
+            <!-- Demo Request Form -->
+            <div class="card bg-base-100 shadow-xl border border-slate-200">
+                <div class="card-body p-6 sm:p-8">
+                    <form method="post" class="space-y-6">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">School Name *</span>
+                                </label>
+                                {{ form.school_name }}
+                                {% if form.school_name.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.school_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">Contact Person *</span>
+                                </label>
+                                {{ form.contact_person }}
+                                {% if form.contact_person.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.contact_person.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">Email Address *</span>
+                                </label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">Phone Number</span>
+                                </label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">City *</span>
+                                </label>
+                                {{ form.city }}
+                                {% if form.city.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.city.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-semibold">Number of Students *</span>
+                                </label>
+                                {{ form.student_count }}
+                                {% if form.student_count.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.student_count.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Product Selection -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold">Products of Interest * (Select all that apply)</span>
+                            </label>
+                            <div class="bg-slate-50 p-4 rounded-lg space-y-3">
+                                {% for choice in form.interested_products %}
+                                    <div class="flex items-start gap-3">
+                                        {{ choice.tag }}
+                                        <div class="flex-1">
+                                            <label for="{{ choice.id_for_label }}" class="cursor-pointer">
+                                                <span class="font-medium">{{ choice.choice_label }}</span>
+                                                {% if choice.choice_value == 'entrepreneurship' %}
+                                                    <p class="text-sm text-slate-600 mt-1">Build startup empires through market challenges and investor pitch battles</p>
+                                                {% elif choice.choice_value == 'ai_course' %}
+                                                    <p class="text-sm text-slate-600 mt-1">Hands-on AI/ML through interactive games - Computer Vision, NLP, Reinforcement Learning</p>
+                                                {% elif choice.choice_value == 'financial_literacy' %}
+                                                    <p class="text-sm text-slate-600 mt-1">Master money through simulations, budgeting, and portfolio management</p>
+                                                {% elif choice.choice_value == 'climate_change' %}
+                                                    <p class="text-sm text-slate-600 mt-1">Eco-hero missions designing sustainable cities and climate solutions</p>
+                                                {% elif choice.choice_value == 'teacher_training' %}
+                                                    <p class="text-sm text-slate-600 mt-1">40+ AI tools training for 5X teaching productivity - MagicSchool.ai, Eduaide.ai, Khanmigo</p>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.interested_products.errors %}
+                                <div class="text-error text-sm mt-1">{{ form.interested_products.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Additional Information -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold">Additional Requirements</span>
+                            </label>
+                            {{ form.additional_requirements }}
+                            {% if form.additional_requirements.errors %}
+                                <div class="text-error text-sm mt-1">{{ form.additional_requirements.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-semibold">Preferred Demo Time</span>
+                            </label>
+                            {{ form.preferred_demo_time }}
+                            {% if form.preferred_demo_time.errors %}
+                                <div class="text-error text-sm mt-1">{{ form.preferred_demo_time.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-control mt-8">
+                            <button type="submit" class="btn btn-primary btn-lg w-full">
+                                <i class="fas fa-rocket mr-2"></i>
+                                Book School Demo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us for Schools -->
+<section class="py-10 sm:py-16 lg:py-20 bg-slate-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-8 sm:mb-12">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-800">Why Leading Schools Choose Decipherworld</h2>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-6 sm:gap-8">
+            <div class="card bg-white shadow-lg">
+                <div class="card-body p-4 sm:p-6 text-center">
+                    <div class="text-4xl mb-4">📈</div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-800">Proven Results</h3>
+                    <p class="text-slate-600">500+ schools report 95% student engagement and 5X teacher productivity improvement</p>
+                </div>
+            </div>
+
+            <div class="card bg-white shadow-lg">
+                <div class="card-body p-4 sm:p-6 text-center">
+                    <div class="text-4xl mb-4">🔧</div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-800">Custom Implementation</h3>
+                    <p class="text-slate-600">Tailored to your school's needs with dedicated support and training for teachers</p>
+                </div>
+            </div>
+
+            <div class="card bg-white shadow-lg">
+                <div class="card-body p-4 sm:p-6 text-center">
+                    <div class="text-4xl mb-4">🌟</div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-800">Complete Solution</h3>
+                    <p class="text-slate-600">Student courses + teacher AI training + ongoing support all in one platform</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Success Stories & Gallery | Decipherworld{% endblock %}
+
+{% block content %}
+<!-- Gallery Hero Section -->
+<section class="hero min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 relative overflow-hidden">
+    <div class="hero-content text-center w-full px-4 py-8 sm:py-16 lg:py-20">
+        <div class="w-full max-w-4xl mx-auto">
+            <div class="mb-6 sm:mb-8">
+                <div class="flex items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+                    <div class="text-3xl sm:text-4xl lg:text-5xl">📸</div>
+                    <div class="text-3xl sm:text-4xl lg:text-5xl">🏆</div>
+                    <div class="text-3xl sm:text-4xl lg:text-5xl">🌟</div>
+                </div>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 text-slate-800 leading-tight">
+                    Success Stories & Gallery
+                </h1>
+                <div class="flex flex-wrap justify-center gap-2 mb-4 sm:mb-6 px-2">
+                    <div class="badge badge-primary badge-sm sm:badge-md lg:badge-lg">Real Results</div>
+                    <div class="badge badge-secondary badge-sm sm:badge-md lg:badge-lg">Happy Students</div>
+                    <div class="badge badge-accent badge-sm sm:badge-md lg:badge-lg">Empowered Teachers</div>
+                </div>
+            </div>
+            
+            <p class="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-slate-600 leading-relaxed px-2 sm:px-4">
+                See how schools across India are transforming education with our 
+                <span class="text-primary font-semibold">game-based learning platform</span> and 
+                <span class="text-secondary font-semibold">AI teacher training programs</span>.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Student Courses Gallery -->
+<section class="py-10 sm:py-16 lg:py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-8 sm:mb-12 lg:mb-16">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-800">AI-Based Student Courses in Action</h2>
+            <p class="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto">
+                Students learning through interactive gaming and real-world AI applications
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <!-- AI Course Gallery -->
+            <div class="card bg-gradient-to-br from-purple-500 to-blue-600 text-white shadow-xl">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="text-4xl mb-4 text-center">🤖</div>
+                    <h3 class="text-xl font-bold mb-3 text-center">AI Summer Camp</h3>
+                    <div class="bg-white/20 rounded-lg p-4 mb-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">150+</div>
+                            <div class="text-sm opacity-90">Students Trained</div>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm">
+                        <li>✨ Computer Vision projects with real cameras</li>
+                        <li>✨ Chatbot creation using NLP</li>
+                        <li>✨ Gaming AI with reinforcement learning</li>
+                        <li>✨ Final project presentations to parents</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Financial Literacy Gallery -->
+            <div class="card bg-gradient-to-br from-yellow-500 to-orange-600 text-white shadow-xl">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="text-4xl mb-4 text-center">💰</div>
+                    <h3 class="text-xl font-bold mb-3 text-center">Financial Literacy Camp</h3>
+                    <div class="bg-white/20 rounded-lg p-4 mb-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">200+</div>
+                            <div class="text-sm opacity-90">Young Investors</div>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm">
+                        <li>💎 Portfolio presentations to judges</li>
+                        <li>💎 Stock market simulation games</li>
+                        <li>💎 Budgeting challenges and competitions</li>
+                        <li>💎 Real investment strategy discussions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Entrepreneurship Gallery -->
+            <div class="card bg-gradient-to-br from-green-500 to-teal-600 text-white shadow-xl">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="text-4xl mb-4 text-center">💼</div>
+                    <h3 class="text-xl font-bold mb-3 text-center">Young Entrepreneurs</h3>
+                    <div class="bg-white/20 rounded-lg p-4 mb-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">100+</div>
+                            <div class="text-sm opacity-90">Startup Ideas</div>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm">
+                        <li>🚀 Investor pitch battle competitions</li>
+                        <li>🚀 Market research quest challenges</li>
+                        <li>🚀 Business model development games</li>
+                        <li>🚀 Demo day presentations</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Climate Change Gallery -->
+            <div class="card bg-gradient-to-br from-green-600 to-blue-600 text-white shadow-xl">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="text-4xl mb-4 text-center">🌍</div>
+                    <h3 class="text-xl font-bold mb-3 text-center">Eco Heroes Program</h3>
+                    <div class="bg-white/20 rounded-lg p-4 mb-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">75+</div>
+                            <div class="text-sm opacity-90">City Designs</div>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm">
+                        <li>🌱 Sustainable city design challenges</li>
+                        <li>🌱 Renewable energy project builds</li>
+                        <li>🌱 Climate action mission teams</li>
+                        <li>🌱 Environmental impact assessments</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Course Stats -->
+            <div class="card bg-slate-800 text-white shadow-xl">
+                <div class="card-body p-4 sm:p-6 text-center">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="text-xl font-bold mb-4">Course Impact</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="text-2xl font-bold text-primary">95%</div>
+                            <div class="text-sm opacity-90">Student Engagement</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-secondary">88%</div>
+                            <div class="text-sm opacity-90">Project Completion</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-accent">92%</div>
+                            <div class="text-sm opacity-90">Parent Satisfaction</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial -->
+            <div class="card bg-white border-2 border-slate-200 shadow-xl">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="text-4xl mb-4 text-center">💬</div>
+                    <blockquote class="text-slate-600 italic mb-4">
+                        "My daughter learned to code an AI chatbot in just 6 sessions! She's now explaining machine learning to us at dinner."
+                    </blockquote>
+                    <div class="text-center">
+                        <div class="font-semibold text-slate-800">Priya Sharma</div>
+                        <div class="text-sm text-slate-500">Parent, Mumbai</div>
+                        <div class="rating rating-sm mt-2">
+                            <span class="text-yellow-500">⭐⭐⭐⭐⭐</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Teacher Training Gallery -->
+<section class="py-10 sm:py-16 lg:py-20 bg-slate-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-8 sm:mb-12 lg:mb-16">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-800">Teacher AI Training Success</h2>
+            <p class="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto">
+                Empowering educators with AI tools for 5X productivity and better student outcomes
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <!-- Training Program Results -->
+            <div class="card bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-xl">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="text-4xl mb-4 text-center">👩‍🏫</div>
+                    <h3 class="text-xl font-bold mb-3 text-center">AI Training Program</h3>
+                    <div class="bg-white/20 rounded-lg p-4 mb-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">300+</div>
+                            <div class="text-sm opacity-90">Teachers Certified</div>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm">
+                        <li>🚀 40+ AI tools mastery</li>
+                        <li>🚀 Automated lesson planning</li>
+                        <li>🚀 Instant grading systems</li>
+                        <li>🚀 Parent communication automation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Productivity Stats -->
+            <div class="card bg-gradient-to-br from-green-500 to-blue-500 text-white shadow-xl">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="text-4xl mb-4 text-center">⚡</div>
+                    <h3 class="text-xl font-bold mb-3 text-center">Productivity Boost</h3>
+                    <div class="bg-white/20 rounded-lg p-4 mb-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">5X</div>
+                            <div class="text-sm opacity-90">Efficiency Increase</div>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm">
+                        <li>⚡ 20+ hours saved weekly</li>
+                        <li>⚡ 90% faster lesson planning</li>
+                        <li>⚡ Instant assessment generation</li>
+                        <li>⚡ Automated progress reports</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- AI Tools Showcase -->
+            <div class="card bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-xl">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="text-4xl mb-4 text-center">🤖</div>
+                    <h3 class="text-xl font-bold mb-3 text-center">AI Tools Mastery</h3>
+                    <div class="bg-white/20 rounded-lg p-4 mb-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">40+</div>
+                            <div class="text-sm opacity-90">Tools Covered</div>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm">
+                        <li>🛠️ MagicSchool.ai</li>
+                        <li>🛠️ Eduaide.ai</li>
+                        <li>🛠️ Khanmigo</li>
+                        <li>🛠️ Curipod & more</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Teacher Testimonials -->
+            <div class="card bg-white border-2 border-slate-200 shadow-xl">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="text-4xl mb-4 text-center">💬</div>
+                    <blockquote class="text-slate-600 italic mb-4">
+                        "This training transformed how I teach. I now create personalized lessons in minutes instead of hours!"
+                    </blockquote>
+                    <div class="text-center">
+                        <div class="font-semibold text-slate-800">Rajesh Kumar</div>
+                        <div class="text-sm text-slate-500">Math Teacher, Delhi</div>
+                        <div class="rating rating-sm mt-2">
+                            <span class="text-yellow-500">⭐⭐⭐⭐⭐</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Metrics -->
+            <div class="card bg-slate-800 text-white shadow-xl">
+                <div class="card-body p-4 sm:p-6 text-center">
+                    <div class="text-4xl mb-4">📈</div>
+                    <h3 class="text-xl font-bold mb-4">Training Impact</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="text-2xl font-bold text-primary">98%</div>
+                            <div class="text-sm opacity-90">Completion Rate</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-secondary">85%</div>
+                            <div class="text-sm opacity-90">Report Better Outcomes</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-accent">92%</div>
+                            <div class="text-sm opacity-90">Recommend to Peers</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Implementation Story -->
+            <div class="card bg-white border-2 border-slate-200 shadow-xl">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="text-4xl mb-4 text-center">🎯</div>
+                    <blockquote class="text-slate-600 italic mb-4">
+                        "Our entire faculty is now AI-certified. Student engagement increased 40% in just one semester."
+                    </blockquote>
+                    <div class="text-center">
+                        <div class="font-semibold text-slate-800">Sarah Joseph</div>
+                        <div class="text-sm text-slate-500">Principal, Bangalore</div>
+                        <div class="rating rating-sm mt-2">
+                            <span class="text-yellow-500">⭐⭐⭐⭐⭐</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-10 sm:py-16 lg:py-20 bg-gradient-to-r from-slate-100 to-blue-100">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-slate-800">Ready to Create Your Success Story?</h2>
+            <p class="text-base sm:text-lg lg:text-xl text-slate-600 mb-6 sm:mb-8 px-2">
+                Join the schools and teachers already transforming education with our platform
+            </p>
+            
+            <div class="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center px-4">
+                <a href="{% url 'core:schools' %}" class="btn btn-primary btn-md sm:btn-lg shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto">
+                    <i class="fas fa-school mr-2"></i>
+                    Book School Demo
+                </a>
+                <a href="{% url 'core:teachers' %}" class="btn btn-outline btn-secondary btn-md sm:btn-lg shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto">
+                    <i class="fas fa-robot mr-2"></i>
+                    Teacher AI Training
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

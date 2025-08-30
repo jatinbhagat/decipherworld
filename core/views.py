@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.generic import TemplateView, ListView, FormView
 from django.urls import reverse_lazy
-from .models import DemoRequest, Course
-from .forms import DemoRequestForm
+from .models import DemoRequest, Course, SchoolDemoRequest
+from .forms import DemoRequestForm, SchoolDemoRequestForm
 
 class HomeView(TemplateView):
     """Homepage with hero section and product highlights"""
@@ -29,6 +29,46 @@ class TeachersView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'AI Training for Teachers - Boost Productivity 5X'
         return context
+
+class SchoolsView(FormView):
+    """Schools demo request page with product selection"""
+    template_name = 'home/schools.html'
+    form_class = SchoolDemoRequestForm
+    success_url = reverse_lazy('core:schools')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'School Implementation - Book Demo'
+        return context
+    
+    def form_valid(self, form):
+        try:
+            school_demo = form.save()
+            products_display = ', '.join(school_demo.get_products_display())
+            messages.success(self.request, 
+                f'🏫 School Demo Scheduled! Thank you {school_demo.contact_person}! '
+                f'We\'ve received your request for {school_demo.school_name} regarding: {products_display}. '
+                'Our team will contact you within 24 hours to schedule your personalized school demo.'
+            )
+            return super().form_valid(form)
+        except Exception as e:
+            messages.error(self.request, f'Error saving your school demo request: {str(e)}')
+            return self.form_invalid(form)
+    
+    def form_invalid(self, form):
+        messages.error(self.request, 'Please check the form for errors and try again.')
+        return super().form_invalid(form)
+
+
+class GalleryView(TemplateView):
+    """Gallery showcasing AI-based student courses and teacher training"""
+    template_name = 'home/gallery.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Success Stories & Gallery'
+        return context
+
 
 class ContactView(FormView):
     """Contact & Demo form"""
