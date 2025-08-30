@@ -1,177 +1,235 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Game-Based Learning Courses | Decipherworld{% endblock %}
+{% block title %}Professional 21st-Century Skill Courses | Decipherworld{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
-    <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold mb-6">
-            Game-Based Learning Courses
-        </h1>
-        <p class="text-xl mb-8 max-w-3xl mx-auto">
-            Transform complex subjects into engaging adventures. Our courses use game mechanics, 
-            collaboration, and real-world challenges to make learning irresistible.
-        </p>
+<!-- Modern Professional Hero Section -->
+<section class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
+    <div class="absolute inset-0 bg-white/40"></div>
+    
+    <!-- Subtle Background Pattern -->
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute top-20 left-20 w-32 h-32 bg-primary rounded-full blur-3xl"></div>
+        <div class="absolute top-40 right-32 w-24 h-24 bg-secondary rounded-full blur-2xl"></div>
+        <div class="absolute bottom-32 left-1/3 w-40 h-40 bg-accent rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="relative z-10 container mx-auto px-6 py-20 lg:py-32">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="mb-12">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-neutral mb-6 leading-tight">
+                    Professional <span class="text-primary">21st-Century</span> Skill Courses
+                </h1>
+                
+                <div class="space-y-6 mb-12">
+                    <p class="text-lg md:text-xl text-slate-700 leading-relaxed max-w-3xl mx-auto">
+                        Transform complex subjects into <strong class="text-primary">engaging experiences</strong>. Our courses use <strong class="text-secondary">collaborative learning</strong>, <strong class="text-accent">real-world challenges</strong>, and <strong class="text-neutral">structured methodologies</strong> to make education impactful.
+                    </p>
+                    
+                    <!-- Course Categories -->
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center text-base sm:text-lg">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 bg-primary rounded-full"></span>
+                            <span class="text-slate-600">Interactive Learning</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 bg-secondary rounded-full"></span>
+                            <span class="text-slate-600">Team Collaboration</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 bg-accent rounded-full"></span>
+                            <span class="text-slate-600">Real-World Applications</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Professional CTAs -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <a href="{% url 'core:contact' %}" class="btn btn-primary btn-lg px-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <i class="fas fa-rocket mr-2"></i>
+                    <span class="hidden xs:inline">Book School Demo</span>
+                    <span class="xs:hidden">Book Demo</span>
+                </a>
+                <a href="#courses" class="btn btn-outline btn-secondary btn-lg px-8 hover:btn-secondary shadow-lg hover:shadow-xl transition-all duration-300">
+                    <i class="fas fa-arrow-down mr-2"></i>
+                    <span class="hidden xs:inline">Explore Courses</span>
+                    <span class="xs:hidden">View Courses</span>
+                </a>
+            </div>
+            
+            <!-- Trust Indicators -->
+            <div class="grid grid-cols-3 gap-4 sm:gap-6 max-w-2xl mx-auto">
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20">
+                    <div class="text-primary mb-2">
+                        <i class="fas fa-graduation-cap text-xl sm:text-2xl"></i>
+                    </div>
+                    <div class="text-xl sm:text-2xl font-bold text-neutral mb-1">4</div>
+                    <div class="text-xs sm:text-sm text-slate-600">Core Subjects</div>
+                </div>
+                
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20">
+                    <div class="text-secondary mb-2">
+                        <i class="fas fa-users text-xl sm:text-2xl"></i>
+                    </div>
+                    <div class="text-xl sm:text-2xl font-bold text-neutral mb-1">500+</div>
+                    <div class="text-xs sm:text-sm text-slate-600">Schools</div>
+                </div>
+                
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20">
+                    <div class="text-accent mb-2">
+                        <i class="fas fa-star text-xl sm:text-2xl"></i>
+                    </div>
+                    <div class="text-xl sm:text-2xl font-bold text-neutral mb-1">95%</div>
+                    <div class="text-xs sm:text-sm text-slate-600">Engagement</div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- Courses Grid -->
-<section class="py-20">
-    <div class="container mx-auto px-4">
-        <div class="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
+<!-- Professional Courses Grid -->
+<section id="courses" class="py-20 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral mb-4">
+                Our Signature Course Portfolio
+            </h2>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                Comprehensive programs designed to prepare students for tomorrow's world with essential 21st-century skills
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
             
             <!-- AI Course -->
-            <div class="bg-white border rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div class="bg-gradient-to-r from-purple-500 to-blue-500 text-white p-6">
-                    <div class="text-4xl mb-4">🤖</div>
-                    <h3 class="text-2xl font-bold mb-2">Artificial Intelligence Summer Camp</h3>
-                    <p class="text-purple-100">6 Sessions | 2 hours each</p>
-                </div>
-                <div class="p-6">
-                    <h4 class="text-lg font-semibold mb-3 text-purple-600">
-                        "Hands-on introduction to AI/ML concepts through interactive online games and tools"
+            <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl p-8 text-white relative overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center gap-6 mb-6">
+                        <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-brain text-3xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl md:text-3xl font-bold mb-2">AI for All</h3>
+                            <p class="text-blue-100 text-sm sm:text-base">6 Sessions | 2 hours each | Future Ready</p>
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-lg md:text-xl font-semibold mb-4 text-blue-50">
+                        "Hands-on introduction to AI/ML concepts through interactive learning and professional tools"
                     </h4>
-                    <p class="text-gray-600 mb-4">
-                        Students explore key AI concepts through interactive games including Computer Vision, 
-                        Natural Language Processing, and Reinforcement Learning. Each session combines theory 
-                        with practical activities using tools like Teachable Machine and AI Gym.
+                    <p class="text-white/90 mb-6 leading-relaxed text-sm sm:text-base">
+                        Students explore key AI concepts through interactive experiences including Computer Vision, 
+                        Natural Language Processing, and Machine Learning. Each session combines theory 
+                        with practical activities using industry-standard tools like Teachable Machine.
                     </p>
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Computer Vision & Image Recognition</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Natural Language Processing & Chatbots</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Reinforcement Learning & Gaming AI</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">AI Ethics & Responsible Technology</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Final Project Showcase</span>
-                        </div>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Computer Vision</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Natural Language Processing</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Machine Learning</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">AI Ethics</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Project Showcase</span>
                     </div>
                 </div>
             </div>
 
             <!-- Entrepreneurship Course -->
-            <div class="bg-white border rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-6">
-                    <div class="text-4xl mb-4">💼</div>
-                    <h3 class="text-2xl font-bold mb-2">Entrepreneurship</h3>
-                    <p class="text-green-100">Ages 14-18 | 10 weeks</p>
-                </div>
-                <div class="p-6">
-                    <h4 class="text-lg font-semibold mb-3 text-green-600">
-                        "Build and scale your startup empire through market challenges and investor pitch battles"
+            <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-8 text-white relative overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center gap-6 mb-6">
+                        <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-3xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl md:text-3xl font-bold mb-2">Entrepreneurship Unleashed</h3>
+                            <p class="text-emerald-100 text-sm sm:text-base">Ages 14-18 | 10 weeks | Innovation Mindset</p>
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-lg md:text-xl font-semibold mb-4 text-emerald-50">
+                        "Build and scale your startup through structured market challenges and professional investor presentations"
                     </h4>
-                    <p class="text-gray-600 mb-4">
-                        Teams compete to build the next big startup through market research quests, 
-                        product development challenges, and high-stakes investor pitch competitions.
+                    <p class="text-white/90 mb-6 leading-relaxed text-sm sm:text-base">
+                        Teams collaborate to build innovative startups through structured market research, 
+                        product development methodologies, and professional investor presentation sessions.
                     </p>
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Business model development</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Market research and validation</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Financial planning and budgeting</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Presentation and pitching skills</span>
-                        </div>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Startup Development</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Market Research</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Pitch Presentations</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Business Models</span>
                     </div>
                 </div>
             </div>
 
             <!-- Financial Literacy Course -->
-            <div class="bg-white border rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-6">
-                    <div class="text-4xl mb-4">💰</div>
-                    <h3 class="text-2xl font-bold mb-2">Financial Literacy Summer Camp</h3>
-                    <p class="text-yellow-100">8 Sessions | 2 hours each</p>
-                </div>
-                <div class="p-6">
-                    <h4 class="text-lg font-semibold mb-3 text-yellow-600">
-                        "Master money through gameplays, simulations, and interactive team activities"
+            <div class="bg-gradient-to-br from-amber-500 to-orange-600 rounded-3xl p-8 text-white relative overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center gap-6 mb-6">
+                        <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-chart-pie text-3xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl md:text-3xl font-bold mb-2">Financial Literacy Simplified</h3>
+                            <p class="text-amber-100 text-sm sm:text-base">8 Sessions | 2 hours each | Lifelong Success</p>
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-lg md:text-xl font-semibold mb-4 text-amber-50">
+                        "Master money through structured simulations and interactive team activities"
                     </h4>
-                    <p class="text-gray-600 mb-4">
+                    <p class="text-white/90 mb-6 leading-relaxed text-sm sm:text-base">
                         Students learn practical financial skills through interactive sessions covering budgeting, 
                         investments, banking, and portfolio management. The course culminates in students presenting 
-                        their own financial portfolios to parents and judges.
+                        their comprehensive financial portfolios to parents and industry professionals.
                     </p>
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Budgeting & Scarcity Model</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Banks, Risk-Return & Investment Instruments</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Stocks, Mutual Funds & Real Estate</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Credit Management & Portfolio Planning</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Final Portfolio Presentation Event</span>
-                        </div>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Budgeting Systems</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Investment Strategy</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Portfolio Management</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Financial Planning</span>
                     </div>
                 </div>
             </div>
 
             <!-- Climate Change Course -->
-            <div class="bg-white border rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div class="bg-gradient-to-r from-green-600 to-blue-600 text-white p-6">
-                    <div class="text-4xl mb-4">🌍</div>
-                    <h3 class="text-2xl font-bold mb-2">Climate Change</h3>
-                    <p class="text-green-100">Ages 12-18 | 10 weeks</p>
-                </div>
-                <div class="p-6">
-                    <h4 class="text-lg font-semibold mb-3 text-green-600">
-                        "Become an eco-hero by designing sustainable cities and leading climate action missions"
+            <div class="bg-gradient-to-br from-green-600 to-emerald-700 rounded-3xl p-8 text-white relative overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center gap-6 mb-6">
+                        <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-leaf text-3xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl md:text-3xl font-bold mb-2">Climate Change Champions</h3>
+                            <p class="text-green-100 text-sm sm:text-base">Ages 12-18 | 10 weeks | Sustainable Future</p>
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-lg md:text-xl font-semibold mb-4 text-green-50">
+                        "Become environmental leaders by designing sustainable cities and leading climate action projects"
                     </h4>
-                    <p class="text-gray-600 mb-4">
+                    <p class="text-white/90 mb-6 leading-relaxed text-sm sm:text-base">
                         Teams tackle global climate challenges through city planning simulations, renewable energy 
-                        projects, and collaborative missions to create sustainable solutions.
+                        projects, and collaborative initiatives to create sustainable solutions for tomorrow's world.
                     </p>
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Climate science fundamentals</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Renewable energy systems</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Sustainable development projects</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-green-500 mr-2">✓</span>
-                            <span class="text-sm">Environmental impact assessment</span>
-                        </div>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Sustainable Design</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Renewable Energy</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Climate Solutions</span>
+                        <span class="px-4 py-2 bg-white/20 rounded-full text-xs sm:text-sm">Environmental Impact</span>
                     </div>
                 </div>
             </div>
@@ -180,20 +238,52 @@
     </div>
 </section>
 
-<!-- CTA Section -->
-<section class="py-20 bg-gray-50">
-    <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold mb-6">Ready to Transform Your Classroom?</h2>
-        <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Join thousands of schools already using game-based learning to boost student engagement and academic outcomes.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{% url 'core:contact' %}" class="bg-purple-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-purple-700 transition-colors">
-                Book Free Demo
-            </a>
-            <a href="mailto:hello@decipherworld.com" class="border-2 border-purple-600 text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-purple-600 hover:text-white transition-colors">
-                Contact Us
-            </a>
+<!-- Professional CTA Section -->
+<section class="py-20 bg-slate-50">
+    <div class="container mx-auto px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral mb-6">Ready to Transform Your School?</h2>
+            <p class="text-lg md:text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+                Join <strong class="text-primary">500+ schools</strong> already using our comprehensive <strong class="text-secondary">21st-century skill courses</strong> to boost <strong class="text-accent">student engagement</strong> and academic excellence.
+            </p>
+            
+            <!-- Key Benefits Summary -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10 max-w-2xl mx-auto">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-2">
+                        <i class="fas fa-users text-primary text-xl"></i>
+                    </div>
+                    <div class="text-lg font-bold text-neutral">500+ Schools</div>
+                    <div class="text-sm text-slate-500">Trust Our Programs</div>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mx-auto mb-2">
+                        <i class="fas fa-chart-line text-secondary text-xl"></i>
+                    </div>
+                    <div class="text-lg font-bold text-neutral">95%</div>
+                    <div class="text-sm text-slate-500">Student Engagement</div>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-2">
+                        <i class="fas fa-graduation-cap text-accent text-xl"></i>
+                    </div>
+                    <div class="text-lg font-bold text-neutral">4 Courses</div>
+                    <div class="text-sm text-slate-500">Core Subjects</div>
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:contact' %}" class="btn btn-primary btn-lg px-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    <span class="hidden xs:inline">Book Free Demo</span>
+                    <span class="xs:hidden">Book Demo</span>
+                </a>
+                <a href="mailto:hello@decipherworld.com" class="btn btn-outline btn-secondary btn-lg px-8 hover:btn-secondary shadow-lg hover:shadow-xl transition-all duration-300">
+                    <i class="fas fa-envelope mr-2"></i>
+                    <span class="hidden xs:inline">Contact Us</span>
+                    <span class="xs:hidden">Contact</span>
+                </a>
+            </div>
         </div>
     </div>
 </section>

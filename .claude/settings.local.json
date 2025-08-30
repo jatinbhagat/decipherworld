@@ -17,7 +17,8 @@
       "WebFetch(domain:www.perplexity.ai)",
       "Read(/Users/jatinbhagat/Downloads/**)",
       "Read(/var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_vMZ3al/**)",
-      "Read(/var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_dDTG2j/**)"
+      "Read(/var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_dDTG2j/**)",
+      "Read(/Users/jatinbhagat/Downloads/**)"
     ],
     "deny": [],
     "ask": []
