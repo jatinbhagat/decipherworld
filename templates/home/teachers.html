@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Training for Teachers - Boost Productivity 5X | Decipherworld{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div class="hero-content text-center max-w-6xl mx-auto px-4 py-20">
+        <div class="max-w-4xl">
+            <div class="mb-8">
+                <div class="flex items-center justify-center gap-4 mb-6">
+                    <div class="text-6xl">🤖</div>
+                    <div class="text-6xl">⚡</div>
+                    <div class="text-6xl">👩‍🏫</div>
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 text-slate-800">
+                    AI Training for Teachers
+                </h1>
+                <div class="flex justify-center gap-2 mb-6">
+                    <div class="badge badge-primary badge-lg">5X Productivity</div>
+                    <div class="badge badge-secondary badge-lg">40+ AI Tools</div>
+                    <div class="badge badge-accent badge-lg">Expert Training</div>
+                </div>
+            </div>
+            
+            <p class="text-xl md:text-2xl mb-8 text-slate-600 leading-relaxed">
+                Master AI tools that transform teaching. From automated lesson planning to instant grading, 
+                unlock superpowers that save 20+ hours weekly while creating personalized learning experiences.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <a href="{% url 'core:contact' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket mr-2"></i>
+                    Start AI Training
+                </a>
+                <a href="#curriculum" class="btn btn-outline btn-secondary btn-lg">
+                    <i class="fas fa-book mr-2"></i>
+                    View Curriculum
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Training Program Overview -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-slate-800 mb-4">Complete AI Teaching Transformation</h2>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                A comprehensive 8-week program designed specifically for educators to master AI tools and boost classroom productivity
+            </p>
+        </div>
+        
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Training Features -->
+            <div class="card bg-gradient-to-br from-blue-50 to-indigo-50 shadow-xl">
+                <div class="card-body">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="card-title text-2xl mb-4">5X Productivity Boost</h3>
+                    <p class="text-slate-600 mb-4">
+                        Save 20+ hours weekly with automated lesson planning, grading, and administrative tasks
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <div class="badge badge-outline">Lesson Planning</div>
+                        <div class="badge badge-outline">Auto Grading</div>
+                        <div class="badge badge-outline">Report Generation</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card bg-gradient-to-br from-purple-50 to-pink-50 shadow-xl">
+                <div class="card-body">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h3 class="card-title text-2xl mb-4">40+ AI Tools Mastery</h3>
+                    <p class="text-slate-600 mb-4">
+                        Master industry-leading tools: MagicSchool.ai, Eduaide.ai, Khanmigo, Curipod, and more
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <div class="badge badge-outline">MagicSchool.ai</div>
+                        <div class="badge badge-outline">Eduaide.ai</div>
+                        <div class="badge badge-outline">Khanmigo</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card bg-gradient-to-br from-green-50 to-teal-50 shadow-xl">
+                <div class="card-body">
+                    <div class="text-4xl mb-4">🏆</div>
+                    <h3 class="card-title text-2xl mb-4">Expert Certification</h3>
+                    <p class="text-slate-600 mb-4">
+                        Earn recognized credentials and ongoing support to become your school's AI champion
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <div class="badge badge-outline">Certification</div>
+                        <div class="badge badge-outline">24/7 Support</div>
+                        <div class="badge badge-outline">Community</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Curriculum Section -->
+<section id="curriculum" class="py-20 bg-slate-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-slate-800 mb-4">8-Week Curriculum</h2>
+            <p class="text-xl text-slate-600">Structured learning path from AI basics to advanced classroom implementation</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Week 1-4 -->
+            <div class="space-y-6">
+                <h3 class="text-2xl font-bold text-slate-800 mb-6">Foundation (Weeks 1-4)</h3>
+                
+                <div class="card bg-white shadow-lg">
+                    <div class="card-body">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="badge badge-primary">Week 1</div>
+                            <h4 class="text-xl font-semibold">AI Fundamentals for Educators</h4>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2">
+                            <li>Understanding AI in education context</li>
+                            <li>ChatGPT and prompt engineering basics</li>
+                            <li>AI ethics and responsible usage</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-white shadow-lg">
+                    <div class="card-body">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="badge badge-primary">Week 2</div>
+                            <h4 class="text-xl font-semibold">Lesson Planning Revolution</h4>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2">
+                            <li>MagicSchool.ai for curriculum design</li>
+                            <li>Automated lesson plan generation</li>
+                            <li>Differentiated learning materials</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-white shadow-lg">
+                    <div class="card-body">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="badge badge-primary">Week 3</div>
+                            <h4 class="text-xl font-semibold">Assessment & Feedback</h4>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2">
+                            <li>Automated quiz and test creation</li>
+                            <li>Instant feedback generation</li>
+                            <li>Rubric development with AI</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-white shadow-lg">
+                    <div class="card-body">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="badge badge-primary">Week 4</div>
+                            <h4 class="text-xl font-semibold">Student Engagement Tools</h4>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2">
+                            <li>Interactive presentations with Curipod</li>
+                            <li>Gamification strategies</li>
+                            <li>Personalized learning paths</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Week 5-8 -->
+            <div class="space-y-6">
+                <h3 class="text-2xl font-bold text-slate-800 mb-6">Advanced (Weeks 5-8)</h3>
+                
+                <div class="card bg-white shadow-lg">
+                    <div class="card-body">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="badge badge-secondary">Week 5</div>
+                            <h4 class="text-xl font-semibold">Administrative Efficiency</h4>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2">
+                            <li>Parent communication automation</li>
+                            <li>IEP and report generation</li>
+                            <li>Meeting summaries and action items</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-white shadow-lg">
+                    <div class="card-body">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="badge badge-secondary">Week 6</div>
+                            <h4 class="text-xl font-semibold">Data Analysis & Insights</h4>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2">
+                            <li>Student performance analytics</li>
+                            <li>Learning gap identification</li>
+                            <li>Predictive intervention strategies</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-white shadow-lg">
+                    <div class="card-body">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="badge badge-secondary">Week 7</div>
+                            <h4 class="text-xl font-semibold">Advanced AI Integration</h4>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2">
+                            <li>Khanmigo tutoring implementation</li>
+                            <li>AI-powered special needs support</li>
+                            <li>Multilingual classroom support</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-white shadow-lg">
+                    <div class="card-body">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="badge badge-accent">Week 8</div>
+                            <h4 class="text-xl font-semibold">Implementation & Certification</h4>
+                        </div>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2">
+                            <li>Final project presentation</li>
+                            <li>School-wide implementation planning</li>
+                            <li>Certification ceremony</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Teaching?</h2>
+            <p class="text-xl mb-8 opacity-90">
+                Join 500+ teachers who've already boosted their productivity by 5X with our AI training program.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:contact' %}" class="btn btn-accent btn-lg">
+                    <i class="fas fa-rocket mr-2"></i>
+                    Enroll Now
+                </a>
+                <a href="mailto:hello@decipherworld.com" class="btn btn-outline btn-white btn-lg">
+                    <i class="fas fa-envelope mr-2"></i>
+                    Schedule Consultation
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -21,6 +21,15 @@ class CoursesView(ListView):
     template_name = 'home/courses.html'
     context_object_name = 'courses'
 
+class TeachersView(TemplateView):
+    """AI Training for Teachers & Administrators"""
+    template_name = 'home/teachers.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'AI Training for Teachers - Boost Productivity 5X'
+        return context
+
 class ContactView(FormView):
     """Contact & Demo form"""
     template_name = 'home/contact.html'

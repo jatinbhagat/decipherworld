@@ -4,72 +4,71 @@
 {% block title %}Transform Learning Into Adventure | Decipherworld{% endblock %}
 
 {% block content %}
-<!-- Hero Section with Game Theme -->
-<section class="hero min-h-screen bg-gradient-to-br from-primary via-secondary to-accent text-primary-content relative overflow-hidden">
-    <div class="absolute inset-0 bg-black bg-opacity-20"></div>
-    <div class="hero-content text-center relative z-10 max-w-6xl mx-auto px-4 py-20">
+<!-- Professional Hero Section -->
+<section class="hero min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 relative overflow-hidden">
+    <div class="hero-content text-center max-w-6xl mx-auto px-4 py-20">
         <div class="max-w-4xl">
-            <!-- Main Title with Game Aesthetics -->
-            <div class="mb-6">
-                <div class="flex items-center justify-center gap-4 mb-4">
-                    <div class="text-6xl animate-pulse">🎮</div>
-                    <div class="text-6xl animate-bounce">🤖</div>
-                    <div class="text-6xl animate-pulse">⚡</div>
+            <!-- Professional Title -->
+            <div class="mb-8">
+                <div class="flex items-center justify-center gap-4 mb-6">
+                    <div class="text-5xl">🤖</div>
+                    <div class="text-5xl">📚</div>
+                    <div class="text-5xl">⚡</div>
                 </div>
-                <h1 class="text-4xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary-content to-accent-content bg-clip-text text-transparent">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 text-slate-800">
                     Transform Learning Into Adventure
                 </h1>
                 <div class="flex justify-center gap-2 mb-6">
-                    <div class="badge badge-accent badge-lg">World's First</div>
-                    <div class="badge badge-secondary badge-lg">Game & Team Based</div>
-                    <div class="badge badge-primary badge-lg">AI Powered</div>
+                    <div class="badge badge-primary badge-lg">World's First</div>
+                    <div class="badge badge-secondary badge-lg">Game & AI Based</div>
+                    <div class="badge badge-accent badge-lg">EdTech Platform</div>
                 </div>
             </div>
             
-            <p class="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed">
-                Where students level up through <span class="text-accent font-bold">games and teamwork</span>, 
-                while teachers unlock <span class="text-secondary font-bold">AI superpowers</span> to boost productivity by 5X. 
-                Join 500+ schools making education engaging, effective, and effortless.
+            <p class="text-xl md:text-2xl mb-8 text-slate-600 leading-relaxed">
+                Where students learn through <span class="text-primary font-semibold">interactive gaming</span> 
+                while teachers unlock <span class="text-secondary font-semibold">AI productivity tools</span> for 5X efficiency. 
+                Join 500+ schools making education engaging and effective.
             </p>
             
             <!-- Stats Cards -->
-            <div class="stats stats-vertical lg:stats-horizontal shadow-2xl bg-base-100 text-base-content mb-8">
+            <div class="stats stats-vertical lg:stats-horizontal shadow-lg bg-white border border-slate-200 mb-8">
                 <div class="stat">
                     <div class="stat-figure text-primary">
                         <i class="fas fa-school text-3xl"></i>
                     </div>
-                    <div class="stat-title">Schools</div>
+                    <div class="stat-title text-slate-600">Schools</div>
                     <div class="stat-value text-primary">500+</div>
-                    <div class="stat-desc">Across India & Beyond</div>
+                    <div class="stat-desc text-slate-500">Across India & Beyond</div>
                 </div>
                 
                 <div class="stat">
                     <div class="stat-figure text-secondary">
-                        <i class="fas fa-rocket text-3xl"></i>
+                        <i class="fas fa-chart-line text-3xl"></i>
                     </div>
-                    <div class="stat-title">Productivity</div>
+                    <div class="stat-title text-slate-600">Productivity</div>
                     <div class="stat-value text-secondary">5X</div>
-                    <div class="stat-desc">Teacher Efficiency</div>
+                    <div class="stat-desc text-slate-500">Teacher Efficiency</div>
                 </div>
                 
                 <div class="stat">
                     <div class="stat-figure text-accent">
-                        <i class="fas fa-gamepad text-3xl"></i>
+                        <i class="fas fa-graduation-cap text-3xl"></i>
                     </div>
-                    <div class="stat-title">Learning</div>
-                    <div class="stat-value text-accent">100%</div>
-                    <div class="stat-desc">Game-Based</div>
+                    <div class="stat-title text-slate-600">Engagement</div>
+                    <div class="stat-value text-accent">95%</div>
+                    <div class="stat-desc text-slate-500">Student Success</div>
                 </div>
             </div>
             
             <!-- CTA Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'core:contact' %}" class="btn btn-accent btn-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                <a href="{% url 'core:contact' %}" class="btn btn-primary btn-lg shadow-lg hover:shadow-xl transition-all duration-300">
                     <i class="fas fa-rocket mr-2"></i>
                     Book Free Demo
                 </a>
-                <a href="/teachers/" class="btn btn-outline btn-secondary btn-lg hover:btn-secondary shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
-                    <i class="fas fa-chalkboard-teacher mr-2"></i>
+                <a href="{% url 'core:teachers' %}" class="btn btn-outline btn-secondary btn-lg hover:btn-secondary shadow-lg hover:shadow-xl transition-all duration-300">
+                    <i class="fas fa-robot mr-2"></i>
                     AI for Teachers
                 </a>
             </div>
@@ -78,11 +77,11 @@
 </section>
 
 <!-- Dual Product Features -->
-<section class="py-20 bg-base-200">
+<section class="py-20 bg-slate-50">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold mb-4">The Complete EdTech Solution</h2>
-            <p class="text-xl text-base-content/70 max-w-3xl mx-auto">
+            <h2 class="text-4xl font-bold mb-4 text-slate-800">The Complete EdTech Solution</h2>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">
                 Two powerful platforms working together to revolutionize education through gaming and AI
             </p>
         </div>
