@@ -53,8 +53,8 @@
 <body data-theme="modern" class="bg-base-100">
     
     <!-- Mobile-First Navigation Header -->
-    <div class="navbar bg-white shadow-lg border-b border-base-200 fixed top-0 z-50 backdrop-blur-sm min-h-16 px-2 sm:px-4">
-        <div class="navbar-start flex-1">
+    <div class="navbar bg-white shadow-lg border-b border-base-200 fixed top-0 z-50 backdrop-blur-sm min-h-16 px-2 sm:px-4 max-w-full">
+        <div class="navbar-start">
             <!-- Mobile Menu -->
             <div class="dropdown">
                 <div tabindex="0" role="button" class="btn btn-ghost btn-sm lg:hidden p-2">
@@ -71,15 +71,15 @@
             </div>
             
             <!-- Professional Logo -->
-            <a href="{% url 'core:home' %}" class="btn btn-ghost text-lg font-bold p-2 flex-1 justify-start max-w-none">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+            <a href="{% url 'core:home' %}" class="btn btn-ghost text-lg font-bold p-2 flex-none">
+                <div class="flex items-center gap-2 lg:gap-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center flex-shrink-0">
                         <i class="fas fa-atom text-white text-sm"></i>
                     </div>
-                    <span class="text-neutral font-bold text-lg sm:text-xl">
+                    <span class="text-neutral font-bold text-base sm:text-lg lg:text-xl whitespace-nowrap">
                         Decipherworld
                     </span>
-                    <div class="badge badge-primary badge-xs sm:badge-sm hidden sm:inline-flex">AI EdTech</div>
+                    <div class="badge badge-primary badge-xs hidden md:inline-flex ml-1">AI EdTech</div>
                 </div>
             </a>
         </div>
