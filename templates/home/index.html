@@ -4,88 +4,311 @@
 {% block title %}Transform Learning Into Adventure | Decipherworld{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section bg-gradient-to-r from-purple-600 to-blue-600 text-white py-20">
-    <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl md:text-6xl font-bold mb-6">
-            Transform Learning Into Adventure
-        </h1>
-        <p class="text-xl md:text-2xl mb-8 max-w-4xl mx-auto">
-            Where students level up through games and teamwork, while teachers unlock AI superpowers to personalize every lesson. Join thousands of schools making education engaging, effective, and effortless.
-        </p>
-        
-        <div class="mb-8">
-            <span class="text-lg opacity-90">Trusted by 500+ schools across India and beyond</span>
-        </div>
-        
-        <p class="text-lg mb-10 max-w-3xl mx-auto opacity-90">
-            Students collaborate, compete, and create while mastering AI, entrepreneurship, financial literacy, and climate solutions. Teachers get AI-powered tools that adapt to every learner and simplify daily tasks.
-        </p>
-        
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{% url 'core:contact' %}" class="bg-white text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors">
-                Book Free Demo
-            </a>
-            <a href="{% url 'core:contact' %}" class="border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-purple-600 transition-colors">
-                Sign Up Your School
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- Product Highlights -->
-<section class="py-20">
-    <div class="container mx-auto px-4">
-        <div class="grid md:grid-cols-2 gap-12">
-            <div class="text-center md:text-left">
-                <div class="text-4xl mb-4">🎮</div>
-                <h3 class="text-2xl font-bold mb-4">Game-Based Student Platform</h3>
-                <h4 class="text-xl font-semibold mb-4 text-purple-600">Learn Through Play, Excel Through Teamwork</h4>
-                <p class="text-gray-600 leading-relaxed">
-                    Students dive into immersive learning adventures where every challenge builds real skills. Our game-based platform transforms complex concepts into engaging quests, fostering deep understanding through collaboration, healthy competition, and hands-on problem-solving. Watch engagement soar as students eagerly tackle everything from AI fundamentals to climate solutions.
-                </p>
+<!-- Hero Section with Game Theme -->
+<section class="hero min-h-screen bg-gradient-to-br from-primary via-secondary to-accent text-primary-content relative overflow-hidden">
+    <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+    <div class="hero-content text-center relative z-10 max-w-6xl mx-auto px-4 py-20">
+        <div class="max-w-4xl">
+            <!-- Main Title with Game Aesthetics -->
+            <div class="mb-6">
+                <div class="flex items-center justify-center gap-4 mb-4">
+                    <div class="text-6xl animate-pulse">🎮</div>
+                    <div class="text-6xl animate-bounce">🤖</div>
+                    <div class="text-6xl animate-pulse">⚡</div>
+                </div>
+                <h1 class="text-4xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary-content to-accent-content bg-clip-text text-transparent">
+                    Transform Learning Into Adventure
+                </h1>
+                <div class="flex justify-center gap-2 mb-6">
+                    <div class="badge badge-accent badge-lg">World's First</div>
+                    <div class="badge badge-secondary badge-lg">Game & Team Based</div>
+                    <div class="badge badge-primary badge-lg">AI Powered</div>
+                </div>
             </div>
             
-            <div class="text-center md:text-left">
-                <div class="text-4xl mb-4">🤖</div>
-                <h3 class="text-2xl font-bold mb-4">AI-Powered Teacher Tools</h3>
-                <h4 class="text-xl font-semibold mb-4 text-purple-600">Your Personal Teaching Assistant, Powered by Intelligence</h4>
-                <p class="text-gray-600 leading-relaxed">
-                    From lesson planning to progress tracking, our AI adapts to your teaching style and student needs. Get instant curriculum suggestions, automated assessments, and personalized learning pathways—all designed for educators who want maximum impact with minimal complexity. No tech expertise required, just better teaching outcomes.
-                </p>
+            <p class="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed">
+                Where students level up through <span class="text-accent font-bold">games and teamwork</span>, 
+                while teachers unlock <span class="text-secondary font-bold">AI superpowers</span> to boost productivity by 5X. 
+                Join 500+ schools making education engaging, effective, and effortless.
+            </p>
+            
+            <!-- Stats Cards -->
+            <div class="stats stats-vertical lg:stats-horizontal shadow-2xl bg-base-100 text-base-content mb-8">
+                <div class="stat">
+                    <div class="stat-figure text-primary">
+                        <i class="fas fa-school text-3xl"></i>
+                    </div>
+                    <div class="stat-title">Schools</div>
+                    <div class="stat-value text-primary">500+</div>
+                    <div class="stat-desc">Across India & Beyond</div>
+                </div>
+                
+                <div class="stat">
+                    <div class="stat-figure text-secondary">
+                        <i class="fas fa-rocket text-3xl"></i>
+                    </div>
+                    <div class="stat-title">Productivity</div>
+                    <div class="stat-value text-secondary">5X</div>
+                    <div class="stat-desc">Teacher Efficiency</div>
+                </div>
+                
+                <div class="stat">
+                    <div class="stat-figure text-accent">
+                        <i class="fas fa-gamepad text-3xl"></i>
+                    </div>
+                    <div class="stat-title">Learning</div>
+                    <div class="stat-value text-accent">100%</div>
+                    <div class="stat-desc">Game-Based</div>
+                </div>
+            </div>
+            
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:contact' %}" class="btn btn-accent btn-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-rocket mr-2"></i>
+                    Book Free Demo
+                </a>
+                <a href="/teachers/" class="btn btn-outline btn-secondary btn-lg hover:btn-secondary shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-chalkboard-teacher mr-2"></i>
+                    AI for Teachers
+                </a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Course Offerings Grid -->
-<section class="py-20 bg-gray-50">
+<!-- Dual Product Features -->
+<section class="py-20 bg-base-200">
     <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-12">Our Game-Based Learning Courses</h2>
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">The Complete EdTech Solution</h2>
+            <p class="text-xl text-base-content/70 max-w-3xl mx-auto">
+                Two powerful platforms working together to revolutionize education through gaming and AI
+            </p>
+        </div>
+        
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Student Platform Card -->
+            <div class="card bg-gradient-to-br from-primary to-secondary text-primary-content shadow-2xl">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="text-5xl">🎮</div>
+                        <div>
+                            <h3 class="card-title text-2xl">For Students</h3>
+                            <div class="badge badge-accent">Game-Based Learning</div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-xl font-semibold mb-4 text-accent-content">
+                        Learn Through Play, Excel Through Teamwork
+                    </h4>
+                    
+                    <p class="text-primary-content/90 mb-6 leading-relaxed">
+                        Students dive into immersive learning adventures where every challenge builds real skills. 
+                        Our game-based platform transforms complex concepts into engaging quests, fostering deep 
+                        understanding through collaboration, healthy competition, and hands-on problem-solving.
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <div class="badge badge-outline badge-sm">AI Courses</div>
+                        <div class="badge badge-outline badge-sm">Financial Literacy</div>
+                        <div class="badge badge-outline badge-sm">Entrepreneurship</div>
+                        <div class="badge badge-outline badge-sm">Climate Change</div>
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="{% url 'core:courses' %}" class="btn btn-accent">
+                            <i class="fas fa-gamepad mr-2"></i>
+                            Explore Courses
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Platform Card -->
+            <div class="card bg-gradient-to-br from-secondary to-accent text-secondary-content shadow-2xl">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="text-5xl">🤖</div>
+                        <div>
+                            <h3 class="card-title text-2xl">For Teachers</h3>
+                            <div class="badge badge-primary">AI Training & Tools</div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-xl font-semibold mb-4 text-primary-content">
+                        AI Superpowers for 5X Teaching Productivity
+                    </h4>
+                    
+                    <p class="text-secondary-content/90 mb-6 leading-relaxed">
+                        Master 40+ AI tools including MagicSchool.ai, Eduaide.ai, and Khanmigo. From automated lesson 
+                        planning to instant assessments, get everything you need to transform your classroom with AI. 
+                        No tech expertise required—just better teaching outcomes.
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <div class="badge badge-outline badge-sm">40+ AI Tools</div>
+                        <div class="badge badge-outline badge-sm">Lesson Planning</div>
+                        <div class="badge badge-outline badge-sm">Automated Grading</div>
+                        <div class="badge badge-outline badge-sm">Parent Communication</div>
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="/teachers/" class="btn btn-primary">
+                            <i class="fas fa-robot mr-2"></i>
+                            AI Training Program
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Game-Based Courses Showcase -->
+<section class="py-20 bg-base-100">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <div class="text-3xl">🎯</div>
+                <h2 class="text-4xl font-bold">Level Up With Our Courses</h2>
+                <div class="text-3xl">🏆</div>
+            </div>
+            <p class="text-xl text-base-content/70 max-w-3xl mx-auto">
+                Transform complex subjects into engaging adventures through team-based gaming
+            </p>
+        </div>
         
         <div class="grid md:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <div class="text-3xl mb-4">🤖</div>
-                <h3 class="text-xl font-bold mb-3">Artificial Intelligence</h3>
-                <p class="text-gray-600 italic">"Code your virtual companion and solve real-world puzzles using machine learning magic"</p>
+            <!-- AI Course -->
+            <div class="card bg-gradient-to-br from-purple-500 to-blue-600 text-primary-content shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="text-4xl">🤖</div>
+                        <div>
+                            <h3 class="card-title text-2xl">Artificial Intelligence</h3>
+                            <div class="badge badge-accent badge-sm">6 Sessions | 2 Hours Each</div>
+                        </div>
+                    </div>
+                    <p class="text-primary-content/90 text-lg italic mb-4">
+                        "Code your virtual companion and solve real-world puzzles using machine learning magic"
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <div class="badge badge-outline badge-sm">Computer Vision</div>
+                        <div class="badge badge-outline badge-sm">NLP & Chatbots</div>
+                        <div class="badge badge-outline badge-sm">Reinforcement Learning</div>
+                    </div>
+                </div>
             </div>
             
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <div class="text-3xl mb-4">💼</div>
-                <h3 class="text-xl font-bold mb-3">Entrepreneurship</h3>
-                <p class="text-gray-600 italic">"Build and scale your startup empire through market challenges and investor pitch battles"</p>
+            <!-- Entrepreneurship Course -->
+            <div class="card bg-gradient-to-br from-green-500 to-teal-600 text-primary-content shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="text-4xl">💼</div>
+                        <div>
+                            <h3 class="card-title text-2xl">Entrepreneurship</h3>
+                            <div class="badge badge-accent badge-sm">Ages 14-18 | 10 Weeks</div>
+                        </div>
+                    </div>
+                    <p class="text-primary-content/90 text-lg italic mb-4">
+                        "Build and scale your startup empire through market challenges and investor pitch battles"
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <div class="badge badge-outline badge-sm">Business Models</div>
+                        <div class="badge badge-outline badge-sm">Market Research</div>
+                        <div class="badge badge-outline badge-sm">Pitch Presentations</div>
+                    </div>
+                </div>
             </div>
             
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <div class="text-3xl mb-4">💰</div>
-                <h3 class="text-xl font-bold mb-3">Financial Literacy</h3>
-                <p class="text-gray-600 italic">"Master money through trading simulations, budgeting quests, and investment strategy games"</p>
+            <!-- Financial Literacy Course -->
+            <div class="card bg-gradient-to-br from-yellow-500 to-orange-600 text-primary-content shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="text-4xl">💰</div>
+                        <div>
+                            <h3 class="card-title text-2xl">Financial Literacy</h3>
+                            <div class="badge badge-accent badge-sm">8 Sessions | 2 Hours Each</div>
+                        </div>
+                    </div>
+                    <p class="text-primary-content/90 text-lg italic mb-4">
+                        "Master money through trading simulations, budgeting quests, and portfolio presentations"
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <div class="badge badge-outline badge-sm">Budgeting & Scarcity</div>
+                        <div class="badge badge-outline badge-sm">Investment Instruments</div>
+                        <div class="badge badge-outline badge-sm">Portfolio Planning</div>
+                    </div>
+                </div>
             </div>
             
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <div class="text-3xl mb-4">🌍</div>
-                <h3 class="text-xl font-bold mb-3">Climate Change</h3>
-                <p class="text-gray-600 italic">"Become an eco-hero by designing sustainable cities and leading climate action missions"</p>
+            <!-- Climate Change Course -->
+            <div class="card bg-gradient-to-br from-green-600 to-blue-600 text-primary-content shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="text-4xl">🌍</div>
+                        <div>
+                            <h3 class="card-title text-2xl">Climate Change</h3>
+                            <div class="badge badge-accent badge-sm">Ages 12-18 | 10 Weeks</div>
+                        </div>
+                    </div>
+                    <p class="text-primary-content/90 text-lg italic mb-4">
+                        "Become an eco-hero by designing sustainable cities and leading climate action missions"
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <div class="badge badge-outline badge-sm">Climate Science</div>
+                        <div class="badge badge-outline badge-sm">Renewable Energy</div>
+                        <div class="badge badge-outline badge-sm">Sustainable Cities</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="{% url 'core:courses' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-gamepad mr-2"></i>
+                View All Courses
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Social Proof & CTA -->
+<section class="py-20 bg-gradient-to-r from-base-300 to-base-200">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Classroom?</h2>
+            <p class="text-xl text-base-content/70 mb-8">
+                Join 500+ schools already using our game-based learning platform to boost student engagement 
+                and teacher productivity with AI.
+            </p>
+            
+            <!-- Trust Indicators -->
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <div class="stat bg-base-100 rounded-box shadow-lg">
+                    <div class="stat-title">Schools Using Platform</div>
+                    <div class="stat-value text-primary">500+</div>
+                </div>
+                <div class="stat bg-base-100 rounded-box shadow-lg">
+                    <div class="stat-title">Student Engagement</div>
+                    <div class="stat-value text-secondary">95%</div>
+                </div>
+                <div class="stat bg-base-100 rounded-box shadow-lg">
+                    <div class="stat-title">Teacher Productivity</div>
+                    <div class="stat-value text-accent">5X</div>
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:contact' %}" class="btn btn-accent btn-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-rocket mr-2"></i>
+                    Book Free Demo
+                </a>
+                <a href="mailto:hello@decipherworld.com" class="btn btn-outline btn-primary btn-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-envelope mr-2"></i>
+                    Contact Us
+                </a>
             </div>
         </div>
     </div>

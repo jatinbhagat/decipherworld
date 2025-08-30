@@ -5,8 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Decipherworld - Transform Learning Into Adventure{% endblock %}</title>
     
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS with DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom theme configuration -->
+    <script>
+        tailwind.config = {
+            daisyui: {
+                themes: ["light", "dark", "cyberpunk", "synthwave"],
+            },
+        }
+    </script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
     {% load static %}
@@ -19,56 +32,86 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
 </head>
-<body class="bg-white">
+<body data-theme="light" class="bg-base-100">
     
-    <!-- Navigation Header -->
-    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <a href="{% url 'core:home' %}" class="text-2xl font-bold text-purple-600">
-                        🎮 Decipherworld
-                    </a>
+    <!-- Game-themed Navigation Header -->
+    <div class="navbar bg-gradient-to-r from-primary via-secondary to-accent text-primary-content fixed top-0 z-50 shadow-2xl backdrop-blur-sm bg-opacity-95">
+        <div class="navbar-start">
+            <!-- Mobile Menu -->
+            <div class="dropdown">
+                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+                    <i class="fas fa-bars text-xl"></i>
                 </div>
-                
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex space-x-8">
-                    <a href="{% url 'core:home' %}" class="text-gray-700 hover:text-purple-600 font-medium transition-colors">Home</a>
-                    <a href="{% url 'core:courses' %}" class="text-gray-700 hover:text-purple-600 font-medium transition-colors">Courses</a>
-                    <a href="#about" class="text-gray-700 hover:text-purple-600 font-medium transition-colors">About</a>
-                    <a href="{% url 'core:contact' %}" class="text-gray-700 hover:text-purple-600 font-medium transition-colors">Contact</a>
-                </div>
-                
-                <!-- CTA Button -->
-                <div class="hidden md:block">
-                    <a href="{% url 'core:contact' %}" class="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors">
-                        Book Demo
-                    </a>
-                </div>
-                
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden">
-                    <button id="mobile-menu-button" class="text-gray-700 hover:text-purple-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
+                <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 text-base-content rounded-box z-[1] mt-3 w-52 p-2 shadow-xl">
+                    <li><a href="{% url 'core:home' %}" class="flex items-center gap-2"><i class="fas fa-home"></i>Home</a></li>
+                    <li><a href="{% url 'core:courses' %}" class="flex items-center gap-2"><i class="fas fa-gamepad"></i>Student Courses</a></li>
+                    <li><a href="/teachers/" class="flex items-center gap-2"><i class="fas fa-robot"></i>AI for Teachers</a></li>
+                    <li><a href="/schools/" class="flex items-center gap-2"><i class="fas fa-school"></i>Schools</a></li>
+                    <li><a href="/gallery/" class="flex items-center gap-2"><i class="fas fa-images"></i>Gallery</a></li>
+                    <li><a href="{% url 'core:contact' %}" class="flex items-center gap-2"><i class="fas fa-rocket"></i>Get Started</a></li>
+                </ul>
             </div>
             
-            <!-- Mobile Menu -->
-            <div id="mobile-menu" class="md:hidden hidden py-4 border-t">
-                <a href="{% url 'core:home' %}" class="block py-2 text-gray-700 hover:text-purple-600">Home</a>
-                <a href="{% url 'core:courses' %}" class="block py-2 text-gray-700 hover:text-purple-600">Courses</a>
-                <a href="#about" class="block py-2 text-gray-700 hover:text-purple-600">About</a>
-                <a href="{% url 'core:contact' %}" class="block py-2 text-gray-700 hover:text-purple-600">Contact</a>
-                <a href="{% url 'core:contact' %}" class="block py-2 mt-2 bg-purple-600 text-white px-4 py-2 rounded-lg text-center">
-                    Book Demo
-                </a>
-            </div>
+            <!-- Logo with Game Theme -->
+            <a href="{% url 'core:home' %}" class="btn btn-ghost text-xl font-bold">
+                <div class="flex items-center gap-2">
+                    <div class="text-2xl">🎮</div>
+                    <span class="bg-gradient-to-r from-primary-content to-accent-content bg-clip-text text-transparent">
+                        Decipherworld
+                    </span>
+                    <div class="badge badge-accent badge-sm">AI Powered</div>
+                </div>
+            </a>
         </div>
-    </nav>
+        
+        <!-- Desktop Navigation -->
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1 gap-2">
+                <li>
+                    <a href="{% url 'core:home' %}" class="btn btn-ghost btn-sm">
+                        <i class="fas fa-home"></i>Home
+                    </a>
+                </li>
+                <li>
+                    <div class="dropdown dropdown-hover">
+                        <div tabindex="0" role="button" class="btn btn-ghost btn-sm">
+                            <i class="fas fa-gamepad"></i>Students<i class="fas fa-chevron-down ml-1"></i>
+                        </div>
+                        <ul tabindex="0" class="dropdown-content bg-base-100 text-base-content rounded-box z-[1] mt-3 w-52 p-2 shadow-xl">
+                            <li><a href="{% url 'core:courses' %}" class="flex items-center gap-2"><i class="fas fa-robot"></i>AI Courses</a></li>
+                            <li><a href="{% url 'core:courses' %}" class="flex items-center gap-2"><i class="fas fa-coins"></i>Financial Literacy</a></li>
+                            <li><a href="{% url 'core:courses' %}" class="flex items-center gap-2"><i class="fas fa-seedling"></i>Climate Change</a></li>
+                            <li><a href="{% url 'core:courses' %}" class="flex items-center gap-2"><i class="fas fa-lightbulb"></i>Entrepreneurship</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="/teachers/" class="btn btn-ghost btn-sm">
+                        <i class="fas fa-chalkboard-teacher"></i>Teachers
+                        <div class="badge badge-secondary badge-xs">AI Training</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="/schools/" class="btn btn-ghost btn-sm">
+                        <i class="fas fa-school"></i>Schools
+                    </a>
+                </li>
+                <li>
+                    <a href="/gallery/" class="btn btn-ghost btn-sm">
+                        <i class="fas fa-images"></i>Gallery
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- CTA Button -->
+        <div class="navbar-end">
+            <a href="{% url 'core:contact' %}" class="btn btn-accent btn-sm lg:btn-md shadow-lg hover:shadow-xl transition-all duration-300">
+                <i class="fas fa-rocket"></i>
+                <span class="hidden sm:inline">Get Started</span>
+            </a>
+        </div>
+    </div>
     
     <!-- Main Content -->
     <main class="pt-16">
@@ -86,57 +129,105 @@
         {% endblock %}
     </main>
     
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
-        <div class="container mx-auto px-4">
-            <div class="grid md:grid-cols-4 gap-8">
+    <!-- Game-themed Footer -->
+    <footer class="footer footer-center bg-gradient-to-t from-base-300 to-base-200 text-base-content p-10">
+        <div class="grid grid-flow-col gap-4">
+            <div class="grid grid-flow-col gap-4">
                 <!-- Company Info -->
-                <div class="md:col-span-2">
-                    <div class="flex items-center mb-4">
-                        <span class="text-2xl font-bold">🎮 Decipherworld</span>
+                <div class="text-center">
+                    <div class="flex items-center justify-center gap-2 mb-4">
+                        <div class="text-3xl">🎮</div>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                            Decipherworld
+                        </span>
                     </div>
-                    <p class="text-gray-400 mb-4">
-                        Transforming education through game-based learning and AI-powered teaching tools. 
-                        Making learning engaging, effective, and effortless for students and teachers.
+                    <p class="text-base-content/70 max-w-md mx-auto mb-4">
+                        World's first game and team-based AI learning platform. 
+                        Transforming education for students and empowering teachers with 5X productivity.
                     </p>
-                    <div class="text-sm text-gray-400">
-                        <p>Trusted by 500+ schools across India and beyond</p>
+                    <div class="flex justify-center gap-2 mb-4">
+                        <div class="badge badge-primary">500+ Schools</div>
+                        <div class="badge badge-secondary">AI Powered</div>
+                        <div class="badge badge-accent">Game-Based</div>
                     </div>
                 </div>
-                
-                <!-- Quick Links -->
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
-                    <ul class="space-y-2">
-                        <li><a href="{% url 'core:home' %}" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
-                        <li><a href="{% url 'core:courses' %}" class="text-gray-400 hover:text-white transition-colors">Courses</a></li>
-                        <li><a href="#about" class="text-gray-400 hover:text-white transition-colors">About</a></li>
-                        <li><a href="{% url 'core:contact' %}" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Contact Info -->
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Get Started</h4>
-                    <ul class="space-y-2">
-                        <li><a href="{% url 'core:contact' %}" class="text-gray-400 hover:text-white transition-colors">Book Free Demo</a></li>
-                        <li><a href="mailto:hello@decipherworld.com" class="text-gray-400 hover:text-white transition-colors">hello@decipherworld.com</a></li>
-                    </ul>
-                </div>
             </div>
-            
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2025 Decipherworld. All rights reserved. | Making education engaging and effective.</p>
+        </div>
+        
+        <!-- Quick Links -->
+        <div class="grid grid-flow-col gap-8">
+            <div>
+                <span class="footer-title text-primary">Students</span> 
+                <a href="{% url 'core:courses' %}" class="link link-hover flex items-center gap-1">
+                    <i class="fas fa-robot text-xs"></i>AI Courses
+                </a>
+                <a href="{% url 'core:courses' %}" class="link link-hover flex items-center gap-1">
+                    <i class="fas fa-coins text-xs"></i>Financial Literacy
+                </a>
             </div>
+            <div>
+                <span class="footer-title text-secondary">Teachers</span> 
+                <a href="/teachers/" class="link link-hover flex items-center gap-1">
+                    <i class="fas fa-chalkboard-teacher text-xs"></i>AI Training
+                </a>
+                <a href="/teachers/" class="link link-hover flex items-center gap-1">
+                    <i class="fas fa-handshake text-xs"></i>Classroom Support
+                </a>
+            </div>
+            <div>
+                <span class="footer-title text-accent">Connect</span> 
+                <a href="{% url 'core:contact' %}" class="link link-hover flex items-center gap-1">
+                    <i class="fas fa-rocket text-xs"></i>Get Started
+                </a>
+                <a href="/gallery/" class="link link-hover flex items-center gap-1">
+                    <i class="fas fa-images text-xs"></i>Success Stories
+                </a>
+                <a href="mailto:hello@decipherworld.com" class="link link-hover flex items-center gap-1">
+                    <i class="fas fa-envelope text-xs"></i>Contact Us
+                </a>
+            </div>
+        </div>
+        
+        <!-- Social Links -->
+        <div>
+            <div class="grid grid-flow-col gap-4">
+                <a href="#" class="btn btn-circle btn-outline btn-sm" title="LinkedIn">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="#" class="btn btn-circle btn-outline btn-sm" title="Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="btn btn-circle btn-outline btn-sm" title="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="#" class="btn btn-circle btn-outline btn-sm" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Copyright -->
+        <div class="border-t border-base-300 pt-6 w-full text-center">
+            <p class="text-base-content/60">
+                &copy; 2025 Decipherworld. All rights reserved. | 
+                <span class="text-primary font-semibold">Making Education Engaging & Effective</span> ⚡
+            </p>
         </div>
     </footer>
     
-    <!-- Mobile Menu Script -->
+    <!-- Theme Toggle Script (Optional) -->
     <script>
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
-        });
+        // Optional: Add theme toggle functionality
+        function toggleTheme() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            const newTheme = theme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
     </script>
     
     {% block extra_js %}
