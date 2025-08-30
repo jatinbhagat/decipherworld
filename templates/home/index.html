@@ -4,293 +4,370 @@
 {% block title %}Elevate Your School with AI - Empowering Teachers, Engaging Learners | Decipherworld{% endblock %}
 
 {% block content %}
-<!-- Strategic Hero Section -->
-<section class="hero min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 relative overflow-hidden">
-    <div class="hero-content text-center w-full px-4 py-8 sm:py-16 lg:py-20">
-        <div class="w-full max-w-5xl mx-auto">
-            <!-- Strategic Title & Message -->
-            <div class="mb-6 sm:mb-8">
-                <div class="flex items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-6">
-                    <div class="text-3xl sm:text-4xl lg:text-5xl">🏫</div>
-                    <div class="text-3xl sm:text-4xl lg:text-5xl">🤖</div>
-                    <div class="text-3xl sm:text-4xl lg:text-5xl">🎮</div>
-                </div>
-                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 text-slate-800 leading-tight">
-                    Elevate Your School with AI—<br class="hidden sm:block">Empowering Teachers, Engaging Learners
+<!-- Modern Professional Hero Section -->
+<section class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
+    <div class="absolute inset-0 bg-white/40"></div>
+    
+    <!-- Subtle Background Pattern -->
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute top-20 left-20 w-32 h-32 bg-primary rounded-full blur-3xl"></div>
+        <div class="absolute top-40 right-32 w-24 h-24 bg-secondary rounded-full blur-2xl"></div>
+        <div class="absolute bottom-32 left-1/3 w-40 h-40 bg-accent rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="relative z-10 container mx-auto px-6 py-20 lg:py-32">
+        <div class="max-w-4xl mx-auto text-center">
+            <!-- Hero Content -->
+            <div class="mb-12">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-neutral mb-6 leading-tight">
+                    Elevate Your School with AI—
+                    <br class="hidden sm:block">
+                    <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        Empowering Teachers, Engaging Learners
+                    </span>
                 </h1>
-                <h2 class="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-4 sm:mb-6 text-slate-600 font-medium leading-relaxed">
-                    Game-Based Courses in AI, Entrepreneurship, Financial Literacy, and Climate Change
-                </h2>
+                
+                <p class="text-xl md:text-2xl text-slate-600 mb-8 leading-relaxed">
+                    Professional Courses in AI, Entrepreneurship, Financial Literacy, and Climate Change
+                </p>
+                
+                <p class="text-lg text-slate-500 mb-12 max-w-3xl mx-auto leading-relaxed">
+                    Transform education with our comprehensive platform featuring signature 21st-century skill courses and AI teacher training programs. Join 500+ schools already seeing remarkable results.
+                </p>
             </div>
             
-            <p class="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 text-slate-600 leading-relaxed px-2 sm:px-4 max-w-4xl mx-auto">
-                Transform education with our comprehensive platform featuring 
-                <span class="text-primary font-semibold">signature 21st-century skill courses</span> 
-                and <span class="text-secondary font-semibold">AI teacher training programs</span>. 
-                Join 500+ schools already seeing remarkable results.
-            </p>
-            
             <!-- Hero CTAs -->
-            <div class="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center px-4 mb-8">
-                <a href="{% url 'core:courses' %}" class="btn btn-primary btn-md sm:btn-lg shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base">
-                    <i class="fas fa-gamepad mr-2"></i>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+                <a href="{% url 'core:courses' %}" class="btn btn-primary btn-lg px-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <i class="fas fa-arrow-right mr-2"></i>
                     Explore Courses
                 </a>
-                <a href="{% url 'core:teachers' %}" class="btn btn-outline btn-secondary btn-md sm:btn-lg hover:btn-secondary shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base">
-                    <i class="fas fa-robot mr-2"></i>
-                    See AI Teacher Training
+                <a href="{% url 'core:teachers' %}" class="btn btn-outline btn-secondary btn-lg px-8 hover:btn-secondary shadow-lg hover:shadow-xl transition-all duration-300">
+                    <i class="fas fa-chalkboard-teacher mr-2"></i>
+                    AI Teacher Training
                 </a>
             </div>
             
             <!-- Trust Indicators -->
-            <div class="grid grid-cols-3 gap-2 sm:gap-4 max-w-lg mx-auto">
-                <div class="bg-white rounded-lg shadow-md border border-slate-200 p-3 sm:p-4 text-center">
-                    <div class="text-primary mb-1 sm:mb-2">
-                        <i class="fas fa-school text-lg sm:text-xl lg:text-2xl"></i>
+            <div class="grid grid-cols-3 gap-6 max-w-2xl mx-auto">
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+                    <div class="text-primary mb-2">
+                        <i class="fas fa-building text-2xl"></i>
                     </div>
-                    <div class="text-xs sm:text-sm text-slate-600 mb-1">Schools</div>
-                    <div class="text-lg sm:text-xl lg:text-2xl font-bold text-primary">500+</div>
-                    <div class="text-xs text-slate-500 hidden sm:block">India & Beyond</div>
+                    <div class="text-2xl font-bold text-neutral mb-1">500+</div>
+                    <div class="text-sm text-slate-600">Schools</div>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow-md border border-slate-200 p-3 sm:p-4 text-center">
-                    <div class="text-secondary mb-1 sm:mb-2">
-                        <i class="fas fa-chart-line text-lg sm:text-xl lg:text-2xl"></i>
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+                    <div class="text-secondary mb-2">
+                        <i class="fas fa-chart-line text-2xl"></i>
                     </div>
-                    <div class="text-xs sm:text-sm text-slate-600 mb-1">Productivity</div>
-                    <div class="text-lg sm:text-xl lg:text-2xl font-bold text-secondary">5X</div>
-                    <div class="text-xs text-slate-500 hidden sm:block">Efficiency</div>
+                    <div class="text-2xl font-bold text-neutral mb-1">5X</div>
+                    <div class="text-sm text-slate-600">Productivity</div>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow-md border border-slate-200 p-3 sm:p-4 text-center">
-                    <div class="text-accent mb-1 sm:mb-2">
-                        <i class="fas fa-graduation-cap text-lg sm:text-xl lg:text-2xl"></i>
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+                    <div class="text-accent mb-2">
+                        <i class="fas fa-users text-2xl"></i>
                     </div>
-                    <div class="text-xs sm:text-sm text-slate-600 mb-1">Engagement</div>
-                    <div class="text-lg sm:text-xl lg:text-2xl font-bold text-accent">95%</div>
-                    <div class="text-xs text-slate-500 hidden sm:block">Success</div>
+                    <div class="text-2xl font-bold text-neutral mb-1">95%</div>
+                    <div class="text-sm text-slate-600">Engagement</div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Our Signature 21st-Century Skill Courses -->
-<section class="py-10 sm:py-16 lg:py-20 bg-white">
-    <div class="container mx-auto px-4">
-        <div class="text-center mb-8 sm:mb-12 lg:mb-16">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-800">Our Signature 21st-Century Skill Courses</h2>
-            <p class="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto">
-                Preparing students for tomorrow's world with game-based learning and real-world applications
+<!-- Course Carousel Section - WhatsApp Status Style -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral mb-4">
+                Our Signature 21st-Century Skill Courses
+            </h2>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                Preparing students for tomorrow's world with innovative learning and real-world applications
             </p>
         </div>
         
-        <div class="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-6xl mx-auto">
-            <!-- AI for All -->
-            <div class="card bg-gradient-to-br from-purple-500 to-blue-600 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
-                <div class="card-body p-6 sm:p-8">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="text-4xl sm:text-5xl">🤖</div>
-                        <div>
-                            <h3 class="text-2xl sm:text-3xl font-bold">AI for All</h3>
-                            <div class="badge badge-accent badge-sm sm:badge-md">Future Workforce Ready</div>
-                        </div>
-                    </div>
-                    
-                    <p class="text-lg sm:text-xl mb-4 leading-relaxed">
-                        Students and teachers become AI-literate for the future workforce.
-                    </p>
-                    
-                    <p class="text-white/90 mb-6 leading-relaxed">
-                        Hands-on experience with Computer Vision, NLP, and Machine Learning through interactive games and real-world projects. No coding experience required—just curiosity and creativity.
-                    </p>
-                    
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <div class="badge badge-outline badge-sm">Computer Vision</div>
-                        <div class="badge badge-outline badge-sm">Chatbot Creation</div>
-                        <div class="badge badge-outline badge-sm">Game AI</div>
-                        <div class="badge badge-outline badge-sm">Ethics & Responsibility</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Entrepreneurship Unleashed -->
-            <div class="card bg-gradient-to-br from-green-500 to-teal-600 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
-                <div class="card-body p-6 sm:p-8">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="text-4xl sm:text-5xl">🚀</div>
-                        <div>
-                            <h3 class="text-2xl sm:text-3xl font-bold">Entrepreneurship Unleashed</h3>
-                            <div class="badge badge-accent badge-sm sm:badge-md">Innovation Mindset</div>
-                        </div>
-                    </div>
-                    
-                    <p class="text-lg sm:text-xl mb-4 leading-relaxed">
-                        Foster creativity, risk-taking, and business thinking with playful challenges.
-                    </p>
-                    
-                    <p class="text-white/90 mb-6 leading-relaxed">
-                        Build startup empires through market research quests, investor pitch battles, and business model competitions. Students learn to think like entrepreneurs while having fun.
-                    </p>
-                    
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <div class="badge badge-outline badge-sm">Startup Ideas</div>
-                        <div class="badge badge-outline badge-sm">Market Research</div>
-                        <div class="badge badge-outline badge-sm">Pitch Presentations</div>
-                        <div class="badge badge-outline badge-sm">Business Models</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Financial Literacy Simplified -->
-            <div class="card bg-gradient-to-br from-yellow-500 to-orange-600 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
-                <div class="card-body p-6 sm:p-8">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="text-4xl sm:text-5xl">💰</div>
-                        <div>
-                            <h3 class="text-2xl sm:text-3xl font-bold">Financial Literacy Simplified</h3>
-                            <div class="badge badge-accent badge-sm sm:badge-md">Lifelong Success</div>
-                        </div>
-                    </div>
-                    
-                    <p class="text-lg sm:text-xl mb-4 leading-relaxed">
-                        Interactive, game-powered money mastery for lifelong success.
-                    </p>
-                    
-                    <p class="text-white/90 mb-6 leading-relaxed">
-                        Master budgeting, investing, and financial planning through simulations and portfolio challenges. Students present their financial strategies to real judges.
-                    </p>
-                    
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <div class="badge badge-outline badge-sm">Budgeting Games</div>
-                        <div class="badge badge-outline badge-sm">Investment Strategy</div>
-                        <div class="badge badge-outline badge-sm">Portfolio Management</div>
-                        <div class="badge badge-outline badge-sm">Real-World Skills</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Climate Change Champions -->
-            <div class="card bg-gradient-to-br from-green-600 to-blue-600 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
-                <div class="card-body p-6 sm:p-8">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="text-4xl sm:text-5xl">🌍</div>
-                        <div>
-                            <h3 class="text-2xl sm:text-3xl font-bold">Climate Change Champions</h3>
-                            <div class="badge badge-accent badge-sm sm:badge-md">Sustainable Future</div>
-                        </div>
-                    </div>
-                    
-                    <p class="text-lg sm:text-xl mb-4 leading-relaxed">
-                        Empower young people as problem-solvers for a sustainable world.
-                    </p>
-                    
-                    <p class="text-white/90 mb-6 leading-relaxed">
-                        Design sustainable cities, lead climate action missions, and develop renewable energy solutions. Students become eco-heroes through collaborative challenges.
-                    </p>
-                    
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <div class="badge badge-outline badge-sm">Sustainable Cities</div>
-                        <div class="badge badge-outline badge-sm">Renewable Energy</div>
-                        <div class="badge badge-outline badge-sm">Climate Solutions</div>
-                        <div class="badge badge-outline badge-sm">Environmental Impact</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Special AI Teacher Training Spotlight Block -->
-<section class="py-10 sm:py-16 lg:py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white relative overflow-hidden">
-    <div class="absolute inset-0 bg-black bg-opacity-20"></div>
-    <div class="container mx-auto px-4 relative z-10">
-        <div class="max-w-4xl mx-auto text-center">
-            <div class="mb-8">
-                <div class="text-5xl sm:text-6xl lg:text-7xl mb-6">👩‍🏫🤖</div>
-                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-                    AI Teacher Training: Empowering Educators for Tomorrow
-                </h2>
-                <p class="text-xl sm:text-2xl mb-8 opacity-95 leading-relaxed">
-                    Jumpstart productivity, engagement, and personalized learning with hands-on AI workshops—built for real classrooms and real teachers.
-                </p>
-            </div>
-            
-            <!-- Training Highlights -->
-            <div class="grid md:grid-cols-3 gap-6 mb-10">
-                <div class="bg-white/20 backdrop-blur-sm rounded-lg p-6">
-                    <div class="text-3xl mb-3">⚡</div>
-                    <h3 class="text-xl font-bold mb-2">5X Productivity</h3>
-                    <p class="text-white/90">Save 20+ hours weekly with AI-powered lesson planning and grading</p>
-                </div>
-                
-                <div class="bg-white/20 backdrop-blur-sm rounded-lg p-6">
-                    <div class="text-3xl mb-3">🛠️</div>
-                    <h3 class="text-xl font-bold mb-2">40+ AI Tools</h3>
-                    <p class="text-white/90">Master MagicSchool.ai, Eduaide.ai, Khanmigo, and cutting-edge EdTech</p>
-                </div>
-                
-                <div class="bg-white/20 backdrop-blur-sm rounded-lg p-6">
-                    <div class="text-3xl mb-3">🎯</div>
-                    <h3 class="text-xl font-bold mb-2">Real Classrooms</h3>
-                    <p class="text-white/90">Practical training designed for actual teaching scenarios and outcomes</p>
-                </div>
-            </div>
-            
-            <a href="{% url 'core:teachers' %}" class="btn btn-accent btn-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
-                <i class="fas fa-rocket mr-2"></i>
-                Learn More About AI Teacher Training
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- How We Teach - Our Approach -->
-<section class="py-10 sm:py-16 lg:py-20 bg-slate-50">
-    <div class="container mx-auto px-4">
+        <!-- Interactive Course Carousel -->
         <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-8 sm:mb-12 lg:mb-16">
-                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-800">How We Teach: Our Game-Based Philosophy</h2>
-                <p class="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto">
-                    "Every lesson is a game. Every skill is learned through teamwork and joyful competition."
+            <!-- Course Navigation Dots -->
+            <div class="flex justify-center mb-8">
+                <div class="flex gap-2">
+                    <button class="course-nav-dot active w-3 h-3 rounded-full bg-primary transition-all duration-300" data-course="0"></button>
+                    <button class="course-nav-dot w-3 h-3 rounded-full bg-slate-300 transition-all duration-300" data-course="1"></button>
+                    <button class="course-nav-dot w-3 h-3 rounded-full bg-slate-300 transition-all duration-300" data-course="2"></button>
+                    <button class="course-nav-dot w-3 h-3 rounded-full bg-slate-300 transition-all duration-300" data-course="3"></button>
+                </div>
+            </div>
+            
+            <!-- Course Cards Container -->
+            <div class="course-carousel relative overflow-hidden">
+                <div class="course-track flex transition-transform duration-500 ease-in-out" style="transform: translateX(0%);">
+                    
+                    <!-- AI Course -->
+                    <div class="course-slide w-full flex-shrink-0 px-4">
+                        <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                            <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-6 mb-8">
+                                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-brain text-3xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-3xl font-bold mb-2">AI for All</h3>
+                                        <p class="text-blue-100 text-lg">Future Workforce Ready</p>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-xl mb-6 leading-relaxed text-blue-50">
+                                    Students and teachers become AI-literate for the future workforce.
+                                </p>
+                                
+                                <p class="text-white/90 mb-8 leading-relaxed">
+                                    Hands-on experience with Computer Vision, NLP, and Machine Learning through interactive projects. No coding experience required—just curiosity and creativity.
+                                </p>
+                                
+                                <div class="flex flex-wrap gap-3">
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Computer Vision</span>
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Natural Language Processing</span>
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Machine Learning</span>
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">AI Ethics</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Entrepreneurship Course -->
+                    <div class="course-slide w-full flex-shrink-0 px-4">
+                        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                            <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-6 mb-8">
+                                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-lightbulb text-3xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-3xl font-bold mb-2">Entrepreneurship Unleashed</h3>
+                                        <p class="text-emerald-100 text-lg">Innovation Mindset</p>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-xl mb-6 leading-relaxed text-emerald-50">
+                                    Foster creativity, risk-taking, and business thinking with structured challenges.
+                                </p>
+                                
+                                <p class="text-white/90 mb-8 leading-relaxed">
+                                    Build startup concepts through market research, business model development, and investor presentations. Students learn to think like entrepreneurs.
+                                </p>
+                                
+                                <div class="flex flex-wrap gap-3">
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Startup Development</span>
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Market Research</span>
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Pitch Presentations</span>
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Business Models</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Financial Literacy Course -->
+                    <div class="course-slide w-full flex-shrink-0 px-4">
+                        <div class="bg-gradient-to-br from-amber-500 to-orange-600 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                            <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-6 mb-8">
+                                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-chart-pie text-3xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-3xl font-bold mb-2">Financial Literacy Simplified</h3>
+                                        <p class="text-amber-100 text-lg">Lifelong Success</p>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-xl mb-6 leading-relaxed text-amber-50">
+                                    Interactive, practical money mastery for lifelong success.
+                                </p>
+                                
+                                <p class="text-white/90 mb-8 leading-relaxed">
+                                    Master budgeting, investing, and financial planning through simulations and portfolio challenges. Students present their financial strategies to real judges.
+                                </p>
+                                
+                                <div class="flex flex-wrap gap-3">
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Budgeting Systems</span>
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Investment Strategy</span>
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Portfolio Management</span>
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Financial Planning</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Climate Change Course -->
+                    <div class="course-slide w-full flex-shrink-0 px-4">
+                        <div class="bg-gradient-to-br from-green-600 to-emerald-700 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                            <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-6 mb-8">
+                                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-leaf text-3xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-3xl font-bold mb-2">Climate Change Champions</h3>
+                                        <p class="text-green-100 text-lg">Sustainable Future</p>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-xl mb-6 leading-relaxed text-green-50">
+                                    Empower young people as problem-solvers for a sustainable world.
+                                </p>
+                                
+                                <p class="text-white/90 mb-8 leading-relaxed">
+                                    Design sustainable cities, lead climate action missions, and develop renewable energy solutions. Students become environmental leaders through collaborative challenges.
+                                </p>
+                                
+                                <div class="flex flex-wrap gap-3">
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Sustainable Design</span>
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Renewable Energy</span>
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Climate Solutions</span>
+                                    <span class="px-4 py-2 bg-white/20 rounded-full text-sm">Environmental Impact</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Navigation Arrows -->
+            <div class="flex justify-center mt-8 gap-4">
+                <button class="prev-btn w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center hover:bg-slate-50 transition-colors">
+                    <i class="fas fa-chevron-left text-slate-600"></i>
+                </button>
+                <button class="next-btn w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center hover:bg-slate-50 transition-colors">
+                    <i class="fas fa-chevron-right text-slate-600"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- AI Teacher Training Spotlight -->
+<section class="py-20 bg-gradient-to-br from-slate-100 to-blue-50">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                <div class="bg-gradient-to-r from-primary to-secondary p-12 text-white text-center">
+                    <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-chalkboard-teacher text-4xl"></i>
+                    </div>
+                    <h2 class="text-4xl font-bold mb-4">
+                        AI Teacher Training: Empowering Educators for Tomorrow
+                    </h2>
+                    <p class="text-xl text-blue-50 mb-8 leading-relaxed">
+                        Jumpstart productivity, engagement, and personalized learning with hands-on AI workshops—built for real classrooms and real teachers.
+                    </p>
+                </div>
+                
+                <div class="p-12">
+                    <div class="grid md:grid-cols-3 gap-8 mb-10">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-rocket text-2xl text-primary"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-neutral mb-2">5X Productivity</h3>
+                            <p class="text-slate-600">Save 20+ hours weekly with AI-powered lesson planning and grading</p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-tools text-2xl text-secondary"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-neutral mb-2">40+ AI Tools</h3>
+                            <p class="text-slate-600">Master MagicSchool.ai, Eduaide.ai, Khanmigo, and cutting-edge EdTech</p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-target text-2xl text-accent"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-neutral mb-2">Real Classrooms</h3>
+                            <p class="text-slate-600">Practical training designed for actual teaching scenarios and outcomes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <a href="{% url 'core:teachers' %}" class="btn btn-primary btn-lg px-8">
+                            <i class="fas fa-arrow-right mr-2"></i>
+                            Learn More About AI Teacher Training
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How We Teach - Modern Professional -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-neutral mb-4">
+                    Our Modern Teaching Philosophy
+                </h2>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                    Every lesson is designed for engagement. Every skill is developed through collaboration and structured learning.
                 </p>
             </div>
             
-            <div class="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center">
-                <!-- Philosophy Text -->
-                <div class="order-2 lg:order-1">
-                    <h3 class="text-2xl sm:text-3xl font-bold mb-6 text-slate-800">Proprietary Games & Dynamic Challenges</h3>
-                    <p class="text-lg text-slate-600 mb-6 leading-relaxed">
-                        Our proprietary games and dynamic challenges drive deeper understanding and real-world readiness. Students don't just learn concepts—they live them through immersive experiences.
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <!-- Philosophy Content -->
+                <div>
+                    <h3 class="text-2xl font-bold text-neutral mb-6">
+                        Interactive Learning & Real-World Applications
+                    </h3>
+                    <p class="text-lg text-slate-600 mb-8 leading-relaxed">
+                        Our proprietary methodology and structured challenges drive deeper understanding and real-world readiness. Students don't just learn concepts—they apply them through immersive experiences.
                     </p>
                     
-                    <div class="space-y-4">
+                    <div class="space-y-6">
                         <div class="flex items-start gap-4">
-                            <div class="bg-primary text-white rounded-full p-2 mt-1">
-                                <i class="fas fa-users text-sm"></i>
+                            <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-users text-primary"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-slate-800 mb-1">Team-Driven Learning</h4>
-                                <p class="text-slate-600">Collaborative challenges that build communication and leadership skills</p>
+                                <h4 class="font-semibold text-neutral mb-2">Collaborative Learning</h4>
+                                <p class="text-slate-600">Team-based projects that build communication and leadership skills</p>
                             </div>
                         </div>
                         
                         <div class="flex items-start gap-4">
-                            <div class="bg-secondary text-white rounded-full p-2 mt-1">
-                                <i class="fas fa-trophy text-sm"></i>
+                            <div class="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-trophy text-secondary"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-slate-800 mb-1">Healthy Competition</h4>
-                                <p class="text-slate-600">Gamified elements that motivate and engage every student</p>
+                                <h4 class="font-semibold text-neutral mb-2">Achievement-Focused</h4>
+                                <p class="text-slate-600">Structured progression that motivates and engages every student</p>
                             </div>
                         </div>
                         
                         <div class="flex items-start gap-4">
-                            <div class="bg-accent text-white rounded-full p-2 mt-1">
-                                <i class="fas fa-brain text-sm"></i>
+                            <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-brain text-accent"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-slate-800 mb-1">Deep Understanding</h4>
+                                <h4 class="font-semibold text-neutral mb-2">Deep Understanding</h4>
                                 <p class="text-slate-600">Concepts become memorable through hands-on problem-solving</p>
                             </div>
                         </div>
@@ -298,31 +375,37 @@
                 </div>
                 
                 <!-- Visual Elements -->
-                <div class="order-1 lg:order-2">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
-                            <div class="text-3xl mb-3">🎮</div>
-                            <h4 class="font-bold text-slate-800 mb-2">Interactive Games</h4>
-                            <p class="text-slate-600 text-sm">Every lesson transformed into engaging gameplay</p>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-8 text-center">
+                        <div class="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-laptop text-2xl text-primary"></i>
                         </div>
-                        
-                        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
-                            <div class="text-3xl mb-3">🤝</div>
-                            <h4 class="font-bold text-slate-800 mb-2">Team Collaboration</h4>
-                            <p class="text-slate-600 text-sm">Building together, learning together</p>
+                        <h4 class="font-bold text-neutral mb-2">Interactive Learning</h4>
+                        <p class="text-slate-600 text-sm">Technology-enhanced educational experiences</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-secondary/5 to-secondary/10 rounded-2xl p-8 text-center">
+                        <div class="w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-handshake text-2xl text-secondary"></i>
                         </div>
-                        
-                        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
-                            <div class="text-3xl mb-3">🏆</div>
-                            <h4 class="font-bold text-slate-800 mb-2">Achievement System</h4>
-                            <p class="text-slate-600 text-sm">Progress tracking that motivates excellence</p>
+                        <h4 class="font-bold text-neutral mb-2">Team Collaboration</h4>
+                        <p class="text-slate-600 text-sm">Building together, learning together</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-accent/5 to-accent/10 rounded-2xl p-8 text-center">
+                        <div class="w-16 h-16 bg-accent/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-award text-2xl text-accent"></i>
                         </div>
-                        
-                        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
-                            <div class="text-3xl mb-3">🌟</div>
-                            <h4 class="font-bold text-slate-800 mb-2">Real Impact</h4>
-                            <p class="text-slate-600 text-sm">Skills that transfer to real-world success</p>
+                        <h4 class="font-bold text-neutral mb-2">Achievement System</h4>
+                        <p class="text-slate-600 text-sm">Progress tracking that motivates excellence</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl p-8 text-center">
+                        <div class="w-16 h-16 bg-orange-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-star text-2xl text-orange-700"></i>
                         </div>
+                        <h4 class="font-bold text-neutral mb-2">Real Impact</h4>
+                        <p class="text-slate-600 text-sm">Skills that transfer to real-world success</p>
                     </div>
                 </div>
             </div>
@@ -330,121 +413,171 @@
     </div>
 </section>
 
-<!-- Success Stories with Micro-Highlights -->
-<section class="py-10 sm:py-16 lg:py-20 bg-white">
-    <div class="container mx-auto px-4">
-        <div class="text-center mb-8 sm:mb-12 lg:mb-16">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-slate-800">Transforming Schools Across India</h2>
-            <p class="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto">
-                Real stories of student engagement and teacher empowerment through AI and game-based learning
+<!-- Success Stories - Clean & Professional -->
+<section class="py-20 bg-slate-50">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral mb-4">
+                Transforming Schools Across India
+            </h2>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                Real stories of student engagement and teacher empowerment through AI and innovative learning
             </p>
         </div>
         
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            <!-- Student Transformation -->
-            <div class="card bg-white border-2 border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div class="card-body p-6">
-                    <div class="text-4xl mb-4 text-center">🎯</div>
-                    <blockquote class="text-slate-600 italic mb-4">
-                        "My daughter learned to code an AI chatbot in just 6 sessions! She's now explaining machine learning to us at dinner. How AI and games made learning so much fun!"
-                    </blockquote>
-                    <div class="text-center">
-                        <div class="font-semibold text-slate-800">Priya Sharma</div>
-                        <div class="text-sm text-slate-500">Parent, Mumbai</div>
-                        <div class="rating rating-sm mt-2">
-                            <span class="text-yellow-500">⭐⭐⭐⭐⭐</span>
-                        </div>
-                    </div>
+        <div class="grid md:grid-cols-3 gap-8 mb-16">
+            <!-- Student Success -->
+            <div class="bg-white rounded-2xl p-8 shadow-lg border border-slate-100">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                    <i class="fas fa-user-graduate text-blue-600 text-xl"></i>
+                </div>
+                <blockquote class="text-slate-600 mb-6 italic">
+                    "My daughter learned to code an AI chatbot in just 6 sessions! She's now explaining machine learning to us at dinner. The AI curriculum made learning so engaging."
+                </blockquote>
+                <div>
+                    <div class="font-semibold text-neutral">Priya Sharma</div>
+                    <div class="text-sm text-slate-500">Parent, Mumbai</div>
                 </div>
             </div>
             
-            <!-- Teacher Empowerment -->
-            <div class="card bg-white border-2 border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div class="card-body p-6">
-                    <div class="text-4xl mb-4 text-center">🚀</div>
-                    <blockquote class="text-slate-600 italic mb-4">
-                        "AI training transformed how I teach. I now create personalized lessons in minutes instead of hours! Teacher training boosted my classroom engagement by 40%."
-                    </blockquote>
-                    <div class="text-center">
-                        <div class="font-semibold text-slate-800">Rajesh Kumar</div>
-                        <div class="text-sm text-slate-500">Math Teacher, Delhi</div>
-                        <div class="rating rating-sm mt-2">
-                            <span class="text-yellow-500">⭐⭐⭐⭐⭐</span>
-                        </div>
-                    </div>
+            <!-- Teacher Success -->
+            <div class="bg-white rounded-2xl p-8 shadow-lg border border-slate-100">
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+                    <i class="fas fa-chalkboard-teacher text-green-600 text-xl"></i>
+                </div>
+                <blockquote class="text-slate-600 mb-6 italic">
+                    "AI training transformed how I teach. I now create personalized lessons in minutes instead of hours! My classroom engagement increased by 40%."
+                </blockquote>
+                <div>
+                    <div class="font-semibold text-neutral">Rajesh Kumar</div>
+                    <div class="text-sm text-slate-500">Math Teacher, Delhi</div>
                 </div>
             </div>
             
-            <!-- School-wide Impact -->
-            <div class="card bg-white border-2 border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div class="card-body p-6">
-                    <div class="text-4xl mb-4 text-center">🏫</div>
-                    <blockquote class="text-slate-600 italic mb-4">
-                        "Our entire faculty is now AI-certified. Student engagement increased 40% in just one semester. Game-based learning changed everything!"
-                    </blockquote>
-                    <div class="text-center">
-                        <div class="font-semibold text-slate-800">Sarah Joseph</div>
-                        <div class="text-sm text-slate-500">Principal, Bangalore</div>
-                        <div class="rating rating-sm mt-2">
-                            <span class="text-yellow-500">⭐⭐⭐⭐⭐</span>
-                        </div>
-                    </div>
+            <!-- School Success -->
+            <div class="bg-white rounded-2xl p-8 shadow-lg border border-slate-100">
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+                    <i class="fas fa-school text-purple-600 text-xl"></i>
+                </div>
+                <blockquote class="text-slate-600 mb-6 italic">
+                    "Our entire faculty is now AI-certified. Student engagement increased 40% in just one semester. The innovative approach changed everything!"
+                </blockquote>
+                <div>
+                    <div class="font-semibold text-neutral">Sarah Joseph</div>
+                    <div class="text-sm text-slate-500">Principal, Bangalore</div>
                 </div>
             </div>
         </div>
         
-        <!-- Impact Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 max-w-4xl mx-auto">
+        <!-- Impact Metrics -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             <div class="text-center">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-2">500+</div>
+                <div class="text-3xl font-bold text-primary mb-2">500+</div>
                 <div class="text-slate-600">Schools Transformed</div>
             </div>
             <div class="text-center">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-secondary mb-2">300+</div>
+                <div class="text-3xl font-bold text-secondary mb-2">300+</div>
                 <div class="text-slate-600">Teachers Certified</div>
             </div>
             <div class="text-center">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-accent mb-2">95%</div>
+                <div class="text-3xl font-bold text-accent mb-2">95%</div>
                 <div class="text-slate-600">Student Engagement</div>
             </div>
             <div class="text-center">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-success mb-2">5X</div>
+                <div class="text-3xl font-bold text-orange-600 mb-2">5X</div>
                 <div class="text-slate-600">Teacher Productivity</div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Ready to Transform? CTA -->
-<section class="py-10 sm:py-16 lg:py-20 bg-gradient-to-r from-slate-100 to-blue-100">
-    <div class="container mx-auto px-4 text-center">
+<!-- Final CTA - Professional -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-6 text-center">
         <div class="max-w-4xl mx-auto">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-slate-800">Ready to Transform Your School?</h2>
-            <p class="text-base sm:text-lg lg:text-xl text-slate-600 mb-6 sm:mb-8 px-2">
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral mb-6">
+                Ready to Transform Your School?
+            </h2>
+            <p class="text-lg text-slate-600 mb-8">
                 Join the education revolution with signature 21st-century courses and AI teacher training that delivers real results.
             </p>
             
-            <!-- FAQ Integration -->
-            <div class="bg-white rounded-lg p-6 sm:p-8 mb-8 shadow-lg max-w-3xl mx-auto">
-                <h3 class="text-xl font-bold text-slate-800 mb-4">Who are these courses for?</h3>
+            <!-- Professional FAQ -->
+            <div class="bg-slate-50 rounded-2xl p-8 mb-10 text-left max-w-3xl mx-auto">
+                <h3 class="text-xl font-bold text-neutral mb-4">Who are these courses for?</h3>
                 <p class="text-slate-600 leading-relaxed">
                     Schools looking to empower students in <strong>AI, Financial Literacy, Entrepreneurship, and Climate Change</strong>, 
-                    plus provide game-changing <strong>AI teacher training</strong> that boosts productivity by 5X and transforms classroom outcomes.
+                    plus provide transformative <strong>AI teacher training</strong> that boosts productivity by 5X and enhances classroom outcomes.
                 </p>
             </div>
             
-            <div class="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center px-4">
-                <a href="{% url 'core:schools' %}" class="btn btn-primary btn-md sm:btn-lg shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto">
-                    <i class="fas fa-school mr-2"></i>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:schools' %}" class="btn btn-primary btn-lg px-8">
+                    <i class="fas fa-building mr-2"></i>
                     Book School Demo
                 </a>
-                <a href="{% url 'core:teachers' %}" class="btn btn-outline btn-secondary btn-md sm:btn-lg shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto">
-                    <i class="fas fa-robot mr-2"></i>
+                <a href="{% url 'core:teachers' %}" class="btn btn-outline btn-secondary btn-lg px-8">
+                    <i class="fas fa-chalkboard-teacher mr-2"></i>
                     AI Teacher Training
                 </a>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Course Carousel JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const track = document.querySelector('.course-track');
+    const slides = document.querySelectorAll('.course-slide');
+    const dots = document.querySelectorAll('.course-nav-dot');
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+    
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+    
+    function updateCarousel() {
+        const translateX = -currentIndex * 100;
+        track.style.transform = `translateX(${translateX}%)`;
+        
+        // Update dots
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
+            if (index === currentIndex) {
+                dot.classList.remove('bg-slate-300');
+                dot.classList.add('bg-primary');
+            } else {
+                dot.classList.remove('bg-primary');
+                dot.classList.add('bg-slate-300');
+            }
+        });
+    }
+    
+    function nextSlide() {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        updateCarousel();
+    }
+    
+    function prevSlide() {
+        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        updateCarousel();
+    }
+    
+    // Event listeners
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+    
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            currentIndex = index;
+            updateCarousel();
+        });
+    });
+    
+    // Auto-play
+    setInterval(nextSlide, 5000);
+});
+</script>
 
 {% endblock %}

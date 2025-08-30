@@ -9,24 +9,24 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Custom theme configuration -->
+    <!-- Modern Professional Theme Configuration -->
     <script>
         tailwind.config = {
             daisyui: {
                 themes: [
                     {
-                        professional: {
-                            "primary": "#3b82f6",        // Professional blue
-                            "secondary": "#6366f1",      // Indigo
-                            "accent": "#8b5cf6",         // Purple  
-                            "neutral": "#1f2937",        // Dark gray
-                            "base-100": "#ffffff",       // White
-                            "base-200": "#f8fafc",       // Light gray
-                            "base-300": "#e2e8f0",       // Medium gray
-                            "info": "#0ea5e9",           // Sky blue
-                            "success": "#22c55e",        // Green
-                            "warning": "#f59e0b",        // Amber
-                            "error": "#ef4444",          // Red
+                        modern: {
+                            "primary": "#2563eb",        // Modern blue
+                            "secondary": "#7c3aed",      // Modern purple
+                            "accent": "#059669",         // Modern green
+                            "neutral": "#374151",        // Refined gray
+                            "base-100": "#ffffff",       // Pure white
+                            "base-200": "#f9fafb",       // Subtle gray
+                            "base-300": "#f3f4f6",       // Light gray
+                            "info": "#0891b2",           // Cyan
+                            "success": "#059669",        // Emerald
+                            "warning": "#d97706",        // Orange
+                            "error": "#dc2626",          // Red
                         },
                     },
                     "light",
@@ -50,7 +50,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
 </head>
-<body data-theme="professional" class="bg-base-100">
+<body data-theme="modern" class="bg-base-100">
     
     <!-- Mobile-First Navigation Header -->
     <div class="navbar bg-white shadow-lg border-b border-base-200 fixed top-0 z-50 backdrop-blur-sm min-h-16 px-2 sm:px-4">
@@ -70,11 +70,13 @@
                 </ul>
             </div>
             
-            <!-- Mobile-Optimized Logo -->
+            <!-- Professional Logo -->
             <a href="{% url 'core:home' %}" class="btn btn-ghost text-lg font-bold p-2 flex-1 justify-start max-w-none">
-                <div class="flex items-center gap-2">
-                    <div class="text-xl sm:text-2xl">🤖</div>
-                    <span class="text-slate-800 font-bold text-lg sm:text-xl">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-atom text-white text-sm"></i>
+                    </div>
+                    <span class="text-neutral font-bold text-lg sm:text-xl">
                         Decipherworld
                     </span>
                     <div class="badge badge-primary badge-xs sm:badge-sm hidden sm:inline-flex">AI EdTech</div>
