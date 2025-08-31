@@ -8,72 +8,121 @@ SECRET_KEY = 'django-insecure-local-development-key-only'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
-# Database configuration - Try Supabase first, fallback to SQLite
+# Database configuration - Force Supabase PostgreSQL with robust error handling
 import dj_database_url
+import os
 
-# Try to use DATABASE_URL first (Supabase PostgreSQL)
-DATABASE_URL = config('DATABASE_URL', default='')
-
-if DATABASE_URL and not DATABASE_URL.startswith('postgresql://postgres.[your-'):
-    # Valid Supabase URL provided
+def get_database_config():
+    """Get database configuration with detailed debugging"""
+    
+    # Try multiple ways to get DATABASE_URL
+    database_url = None
+    
+    # Method 1: python-decouple
     try:
-        # Manual parsing for Supabase URLs with special characters in password
-        if 'aws-1-ap-south-1.pooler.supabase.com' in DATABASE_URL:
-            # Direct Supabase configuration for your specific setup
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.postgresql',
-                    'NAME': 'postgres',
-                    'USER': 'postgres.tpgymvjnrmugrjfjwtbb',
-                    'PASSWORD': 'OmNamoShivaay@#7',
-                    'HOST': 'aws-1-ap-south-1.pooler.supabase.com',
-                    'PORT': '6543',
-                    'OPTIONS': {
-                        'sslmode': 'require',
-                        'connect_timeout': 60,
-                        'application_name': 'django_decipherworld',
-                    },
-                    'CONN_MAX_AGE': 600,
-                }
-            }
-        else:
-            # Try dj_database_url for other formats
+        database_url = config('DATABASE_URL', default='')
+        if database_url:
+            print(f"✅ Got DATABASE_URL from decouple: {len(database_url)} chars")
+    except Exception as e:
+        print(f"⚠️  Decouple failed: {e}")
+    
+    # Method 2: Direct environment variable
+    if not database_url:
+        database_url = os.environ.get('DATABASE_URL', '')
+        if database_url:
+            print(f"✅ Got DATABASE_URL from os.environ: {len(database_url)} chars")
+    
+    # Method 3: Force hardcoded Supabase config (for debugging)
+    if not database_url or database_url.startswith('postgresql://postgres.[your-'):
+        print("🔧 Using hardcoded Supabase configuration")
+        return {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres.tpgymvjnrmugrjfjwtbb',
+            'PASSWORD': 'OmNamoShivaay@#7',
+            'HOST': 'aws-1-ap-south-1.pooler.supabase.com',
+            'PORT': '6543',
+            'OPTIONS': {
+                'sslmode': 'require',
+                'connect_timeout': 60,
+                'application_name': 'django_decipherworld',
+            },
+            'CONN_MAX_AGE': 600,
+        }
+    
+    # Parse the DATABASE_URL
+    if 'aws-1-ap-south-1.pooler.supabase.com' in database_url:
+        print("🔧 Using direct Supabase configuration (special chars in password)")
+        return {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres', 
+            'USER': 'postgres.tpgymvjnrmugrjfjwtbb',
+            'PASSWORD': 'OmNamoShivaay@#7',
+            'HOST': 'aws-1-ap-south-1.pooler.supabase.com',
+            'PORT': '6543',
+            'OPTIONS': {
+                'sslmode': 'require',
+                'connect_timeout': 60,
+                'application_name': 'django_decipherworld',
+            },
+            'CONN_MAX_AGE': 600,
+        }
+    else:
+        # Try to parse with dj_database_url
+        try:
             parsed_db = dj_database_url.parse(
-                DATABASE_URL,
+                database_url,
                 conn_max_age=600,
                 ssl_require=True
             )
             
-            # Ensure NAME is set properly
+            # Ensure NAME is set
             if not parsed_db.get('NAME'):
                 parsed_db['NAME'] = 'postgres'
+                
+            # Force TCP connection (never use sockets)
+            if not parsed_db.get('HOST') or parsed_db.get('HOST') in ['localhost', '127.0.0.1', '']:
+                raise ValueError("Invalid host - would use socket connection")
+                
+            print(f"✅ Parsed DATABASE_URL successfully")
+            return parsed_db
             
-            DATABASES = {
-                'default': parsed_db
+        except Exception as e:
+            print(f"❌ Failed to parse DATABASE_URL: {e}")
+            print("🔧 Falling back to hardcoded Supabase config")
+            return {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'postgres',
+                'USER': 'postgres.tpgymvjnrmugrjfjwtbb', 
+                'PASSWORD': 'OmNamoShivaay@#7',
+                'HOST': 'aws-1-ap-south-1.pooler.supabase.com',
+                'PORT': '6543',
+                'OPTIONS': {
+                    'sslmode': 'require',
+                    'connect_timeout': 60,
+                    'application_name': 'django_decipherworld',
+                },
+                'CONN_MAX_AGE': 600,
             }
-        
-        print("✅ Using Supabase PostgreSQL for local development")
-    except Exception as e:
-        print(f"❌ Error parsing DATABASE_URL: {e}")
-        print("📋 Falling back to SQLite - see SETUP_SUPABASE.md for setup instructions")
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
-            }
-        }
-else:
-    # No valid DATABASE_URL - use SQLite temporarily
+
+# Get database configuration
+try:
+    db_config = get_database_config()
+    DATABASES = {
+        'default': db_config
+    }
+    print("✅ Using Supabase PostgreSQL for local development")
+    print(f"🔌 Connecting to: {db_config['HOST']}:{db_config['PORT']}")
+    
+except Exception as e:
+    print(f"❌ Database configuration failed: {e}")
+    print("📋 Falling back to SQLite")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-    if not DATABASE_URL:
-        print("📋 Using SQLite temporarily - add DATABASE_URL to .env for Supabase PostgreSQL")
-    else:
-        print("📋 DATABASE_URL contains placeholders - using SQLite until real credentials are added")
 
 # For Supabase integration (optional in local dev)
 SUPABASE_URL = config('SUPABASE_URL', default='')
