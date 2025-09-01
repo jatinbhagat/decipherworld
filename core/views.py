@@ -105,6 +105,16 @@ class GalleryView(TemplateView):
         return context
 
 
+class SchoolPresentationView(TemplateView):
+    """School presentation page with embedded Gamma presentation"""
+    template_name = 'home/school-presentation.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'School Presentation - AI EdTech Solution'
+        return context
+
+
 class ContactView(FormView):
     """Contact & Demo form"""
     template_name = 'home/contact.html'

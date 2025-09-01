@@ -29,12 +29,24 @@
                 <span class="text-primary font-semibold">game-based student learning</span> and 
                 <span class="text-secondary font-semibold">AI-powered teacher training</span>.
             </p>
+
+            <!-- Quick Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center px-2 sm:px-4 mb-6 sm:mb-8">
+                <a href="{% url 'core:school-presentation' %}" class="btn btn-secondary btn-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                    <i class="fas fa-presentation-screen mr-2"></i>
+                    View School Presentation
+                </a>
+                <a href="#demo-form" class="btn btn-primary btn-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                    <i class="fas fa-calendar mr-2"></i>
+                    Book Demo Now
+                </a>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- School Demo Form Section -->
-<section class="py-10 sm:py-16 lg:py-20 bg-white">
+<section id="demo-form" class="py-10 sm:py-16 lg:py-20 bg-white">
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-8 sm:mb-12">
