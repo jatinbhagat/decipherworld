@@ -24,7 +24,8 @@
       "Read(/Users/jatinbhagat/Downloads/**)",
       "Read(/Users/jatinbhagat/Downloads/**)",
       "Read(/Users/jatinbhagat/Downloads/**)",
-      "Read(/Users/jatinbhagat/Downloads/**)"
+      "Read(/Users/jatinbhagat/Downloads/**)",
+      "Bash(echo $DJANGO_SETTINGS_MODULE)"
     ],
     "deny": [],
     "ask": []

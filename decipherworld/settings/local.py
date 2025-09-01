@@ -13,7 +13,7 @@ import dj_database_url
 import os
 
 def get_database_config():
-    """Get database configuration with detailed debugging"""
+    """Get database configuration with proper URL encoding support"""
     
     # Try multiple ways to get DATABASE_URL
     database_url = None
@@ -51,12 +51,45 @@ def get_database_config():
         }
     
     # Parse the DATABASE_URL
-    if 'aws-1-ap-south-1.pooler.supabase.com' in database_url:
-        print("🔧 Using direct Supabase configuration (special chars in password)")
+    try:
+        parsed_db = dj_database_url.parse(
+            database_url,
+            conn_max_age=600,
+            ssl_require=True
+        )
+        
+        # Ensure NAME is set
+        if not parsed_db.get('NAME'):
+            parsed_db['NAME'] = 'postgres'
+            
+        # Force TCP connection (never use sockets) 
+        if not parsed_db.get('HOST') or parsed_db.get('HOST') in ['localhost', '127.0.0.1', '']:
+            print(f"❌ Invalid host detected: {parsed_db.get('HOST')}")
+            raise ValueError("Invalid host - would use socket connection")
+        
+        # Force PORT to be set (never use default socket)
+        if not parsed_db.get('PORT'):
+            print("❌ No PORT specified - could default to socket")
+            raise ValueError("No PORT specified - would use socket connection")
+            
+        # Ensure we have all required connection parameters
+        required_fields = ['ENGINE', 'NAME', 'USER', 'PASSWORD', 'HOST', 'PORT']
+        for field in required_fields:
+            if not parsed_db.get(field):
+                print(f"❌ Missing required field: {field}")
+                raise ValueError(f"Missing required database field: {field}")
+                
+        print(f"✅ Parsed DATABASE_URL successfully")
+        print(f"🔌 Will connect to: {parsed_db['HOST']}:{parsed_db['PORT']}")
+        return parsed_db
+        
+    except Exception as e:
+        print(f"❌ Failed to parse DATABASE_URL: {e}")
+        print("🔧 Falling back to hardcoded Supabase config")
         return {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres', 
-            'USER': 'postgres.tpgymvjnrmugrjfjwtbb',
+            'NAME': 'postgres',
+            'USER': 'postgres.tpgymvjnrmugrjfjwtbb', 
             'PASSWORD': 'OmNamoShivaay@#7',
             'HOST': 'aws-1-ap-south-1.pooler.supabase.com',
             'PORT': '6543',
@@ -67,43 +100,6 @@ def get_database_config():
             },
             'CONN_MAX_AGE': 600,
         }
-    else:
-        # Try to parse with dj_database_url
-        try:
-            parsed_db = dj_database_url.parse(
-                database_url,
-                conn_max_age=600,
-                ssl_require=True
-            )
-            
-            # Ensure NAME is set
-            if not parsed_db.get('NAME'):
-                parsed_db['NAME'] = 'postgres'
-                
-            # Force TCP connection (never use sockets)
-            if not parsed_db.get('HOST') or parsed_db.get('HOST') in ['localhost', '127.0.0.1', '']:
-                raise ValueError("Invalid host - would use socket connection")
-                
-            print(f"✅ Parsed DATABASE_URL successfully")
-            return parsed_db
-            
-        except Exception as e:
-            print(f"❌ Failed to parse DATABASE_URL: {e}")
-            print("🔧 Falling back to hardcoded Supabase config")
-            return {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'postgres',
-                'USER': 'postgres.tpgymvjnrmugrjfjwtbb', 
-                'PASSWORD': 'OmNamoShivaay@#7',
-                'HOST': 'aws-1-ap-south-1.pooler.supabase.com',
-                'PORT': '6543',
-                'OPTIONS': {
-                    'sslmode': 'require',
-                    'connect_timeout': 60,
-                    'application_name': 'django_decipherworld',
-                },
-                'CONN_MAX_AGE': 600,
-            }
 
 # Get database configuration
 try:
