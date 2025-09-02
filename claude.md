@@ -1,8 +1,8 @@
-# claude_code.md – Prompts for Django + Supabase Website Code Generation
+# CLAUDE.md – Django + Azure Website Development Guide
 
 ## 1. Project Setup
 Prompt:  
-Generate step-by-step commands to initialize a Django project called `decipherworld`, add a `core` app, set up for deployment on Render.com, and connect with Supabase for authentication and data (PostgreSQL). Assume a fresh environment.
+Generate step-by-step commands to initialize a Django project called `decipherworld`, add a `core` app, and set up for deployment on Microsoft Azure App Service with Azure PostgreSQL. Assume a fresh environment.
 
 ---
 
@@ -12,9 +12,9 @@ Generate the recommended Django project folder structure for a site with landing
 
 ---
 
-## 3. Models & Supabase Integration
+## 3. Models & Django ORM
 Prompt:  
-Generate Django models for Courses, Schools, Teachers, DemoRequests. Show how to integrate with Supabase for authentication and CRUD, using `supabase-py` or recommended approach.
+Generate Django models for Courses, Schools, Teachers, DemoRequests. Use Django's built-in ORM and authentication system with PostgreSQL database.
 
 ---
 
@@ -23,7 +23,7 @@ Prompt:
 Generate example Django URLs, views (CBV where possible), and templates for:  
 - Homepage displaying product highlights and CTAs  
 - Courses page listing all courses dynamically  
-- Teacher/Admin signup/login with Supabase auth  
+- Teacher/Admin signup/login with Django auth  
 - Contact/demo request form  
 - Success page/messages
 
@@ -37,13 +37,13 @@ Generate responsive, minimal HTML + Tailwind CSS templates for each section (her
 
 ## 6. Demo Request Form Logic
 Prompt:  
-Generate Django form and view logic for submitting demo/contact requests, saving to Supabase, with error handling and success feedback on UI.
+Generate Django form and view logic for submitting demo/contact requests, saving to PostgreSQL using Django ORM, with error handling and success feedback on UI.
 
 ---
 
-## 7. Deployment
+## 7. Azure Deployment
 Prompt:  
-Generate a production-ready `render.yaml` (or Render.com config), suitable for Django, including static file serving, environment vars, and Github autodeploy.
+Generate Azure App Service deployment configuration with proper static file serving, environment variables, and GitHub Actions workflow for CI/CD.
 
 ---
 
@@ -53,8 +53,7 @@ Show how to map the content (site copy, emails, etc) you generated earlier into 
 
 ---
 
-## 9. Deployment Troubleshooting
-Common Render.com deployment issues and fixes:
+## 9. Azure Deployment Configuration
 
 ### Required Django Project Structure:
 ```
@@ -65,7 +64,9 @@ decipherworld/
 │   ├── settings/
 │   │   ├── __init__.py
 │   │   ├── base.py           # Base settings
-│   │   └── production.py     # Production overrides
+│   │   ├── local.py          # Local development
+│   │   ├── production.py     # Production overrides
+│   │   └── azure.py          # Azure-specific settings
 │   ├── urls.py
 │   └── wsgi.py
 ├── core/                      # Main app
@@ -79,15 +80,19 @@ decipherworld/
 ├── templates/
 ├── static/
 ├── requirements.txt
-└── render.yaml
+├── startup.sh                 # Azure startup script
+└── .github/workflows/
+    └── azure-webapps-python.yml
 ```
 
 ### Essential Files:
 - `manage.py`: Django management commands
 - `decipherworld/settings/base.py`: Common settings
 - `decipherworld/settings/production.py`: Production overrides
+- `decipherworld/settings/azure.py`: Azure-specific configuration
+- `startup.sh`: Azure App Service startup script
 - Proper `INSTALLED_APPS` and middleware configuration
-- Environment variables in Render dashboard
+- Environment variables in Azure App Service configuration
 
 ### Common Deployment Errors:
 1. Missing `manage.py` - prevents Django commands
@@ -95,48 +100,59 @@ decipherworld/
 3. Missing `BASE_DIR` in settings
 4. **Database connection issues** - Most common error
 5. Static files configuration errors
+6. Azure App Service startup configuration
 
-### Supabase Database Configuration:
+### Azure PostgreSQL Database Configuration:
 
-**CRITICAL**: Get the correct connection details from Supabase Dashboard:
+**CRITICAL**: Get the correct connection details from Azure Portal:
 
-**Step 1: Find Connection Details in Supabase**
-1. Go to Supabase Dashboard → Settings → Database
-2. Look for "Connection parameters" section
-3. Copy the exact values shown
+**Step 1: Find Connection Details in Azure Portal**
+1. Go to Azure Portal → PostgreSQL flexible servers
+2. Select your PostgreSQL server
+3. Go to "Settings" → "Connection strings"
+4. Copy the connection details
 
-**Step 2: Set Environment Variables in Render**
+**Step 2: Set Environment Variables in Azure App Service**
 
-✅ **METHOD 1 - Connection Pooling (Recommended):**
+✅ **METHOD 1 - CONNECTION STRING (Recommended):**
 ```
-DATABASE_URL = postgresql://postgres.tpgymvjnrmugrjfjwtbb:[YOUR-PASSWORD]@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true
-```
-
-✅ **METHOD 2 - Direct Connection (For migrations):**
-```
-DIRECT_URL = postgresql://postgres.tpgymvjnrmugrjfjwtbb:[YOUR-PASSWORD]@aws-1-ap-south-1.pooler.supabase.com:5432/postgres
+DATABASE_URL = postgresql://decipheradmin:[YOUR-PASSWORD]@decipherworld-db-server-ci01.postgres.database.azure.com:5432/decipherworld?sslmode=require
 ```
 
-✅ **METHOD 3 - Individual Parameters (Fallback):**
+✅ **METHOD 2 - Individual Parameters:**
 ```
-DB_HOST = aws-1-ap-south-1.pooler.supabase.com
-DB_NAME = postgres
-DB_USER = postgres.tpgymvjnrmugrjfjwtbb  
+DB_HOST = decipherworld-db-server-ci01.postgres.database.azure.com
+DB_NAME = decipherworld
+DB_USER = decipheradmin
 DB_PASSWORD = your_actual_password
-DB_PORT = 6543
+DB_PORT = 5432
 ```
 
 **IMPORTANT NOTES:**
-- **Connection Pooling (Port 6543)**: Better for production, handles many connections
-- **Direct Connection (Port 5432)**: Sometimes needed for migrations
-- **Your region may be different**: Check your actual Supabase connection strings
-- **Replace [YOUR-PASSWORD]**: Use your actual database password
+- **SSL Required**: Azure PostgreSQL requires SSL connections
+- **Port 5432**: Standard PostgreSQL port for Azure
+- **Firewall Rules**: Ensure Azure App Service has access to PostgreSQL server
+- **Connection Pooling**: Configure appropriately for production workloads
 
-**For your specific project**, use the exact connection strings from Supabase:
-- Region: `ap-south-1` (Asia Pacific - Mumbai)  
-- Host: `aws-1-ap-south-1.pooler.supabase.com`
-- User: `postgres.tpgymvjnrmugrjfjwtbb`
+**Azure Environment Variables Setup:**
+```bash
+# Set in Azure App Service Configuration
+az webapp config appsettings set --resource-group rg-decipherworld-prod --name decipherworld-app --settings \
+    DJANGO_SETTINGS_MODULE=decipherworld.settings.production \
+    DATABASE_URL="postgresql://decipheradmin:PASSWORD@HOST:5432/decipherworld?sslmode=require" \
+    SECRET_KEY="your-secret-key" \
+    DEBUG=False
+```
 
+### Azure Resources Required:
+1. **Resource Group**: `rg-decipherworld-prod`
+2. **App Service Plan**: `decipherworld-app-plan` (Linux)
+3. **Web App**: `decipherworld-app`
+4. **PostgreSQL Server**: `decipherworld-db-server-ci01`
+5. **PostgreSQL Database**: `decipherworld`
+
+### Template Structure:
+```
 decipherworld/
 ├── templates/
 │   ├── base.html
@@ -153,3 +169,17 @@ decipherworld/
 │   │   └── nav.html
 │   └── emails/
 │       └── onboarding.html     # Welcome email template
+```
+
+### Azure-Specific Configuration:
+- **Static Files**: Configure Azure Blob Storage or use WhiteNoise
+- **Logging**: Use Azure Application Insights
+- **SSL/HTTPS**: Enabled by default on Azure App Service
+- **Custom Domain**: Configure DNS and SSL certificates
+- **Scaling**: Configure auto-scaling rules based on demand
+
+### Development vs Production:
+- **Local Development**: Can use Azure PostgreSQL or SQLite
+- **Production**: Always use Azure PostgreSQL with SSL
+- **Environment Variables**: Use `.env` locally, Azure App Service settings in production
+- **Static Files**: WhiteNoise for simplicity, Azure Storage for high-traffic sites

@@ -27,18 +27,18 @@
 ## Development Settings
 
 - **Settings file**: `decipherworld/settings/local.py`
-- **Database**: SQLite (`db.sqlite3`) - automatically created
+- **Database**: Azure PostgreSQL (production) or SQLite (local fallback)
 - **Debug mode**: Enabled
 - **Static files**: Served by Django development server
 - **Email backend**: Console (emails printed to terminal)
 
 ## Environment Variables (Optional)
 
-Copy `.env.local` to `.env` and update with your Supabase credentials if you want to test Supabase integration:
+Create a `.env` file and update with your Azure PostgreSQL credentials if you want to test with production database locally:
 
 ```bash
-cp .env.local .env
-# Edit .env with your actual Supabase credentials
+# Create .env file with Azure database credentials
+DATABASE_URL=postgresql://decipheradmin:PASSWORD@decipherworld-db-server-ci01.postgres.database.azure.com:5432/decipherworld?sslmode=require
 ```
 
 ## Common Django Commands
@@ -73,7 +73,8 @@ decipherworld/
 │   ├── settings/
 │   │   ├── base.py        # Common settings
 │   │   ├── local.py       # Local development
-│   │   └── production.py  # Production settings
+│   │   ├── production.py  # Production settings
+│   │   └── azure.py       # Azure-specific settings
 │   ├── urls.py
 │   └── wsgi.py
 ├── core/                  # Main application
@@ -110,8 +111,8 @@ The project includes basic templates in the `templates/` directory. You can test
 
 ## Next Steps for Production
 
-When ready to deploy:
-1. Set environment variables in Render.com dashboard
+When ready to deploy to Azure:
+1. Set environment variables in Azure App Service configuration
 2. Use `decipherworld.settings.production` 
-3. Connect to Supabase PostgreSQL database
-4. Deploy using the configured `render.yaml`
+3. Ensure Azure PostgreSQL database is configured
+4. Deploy using Azure App Service deployment center or GitHub Actions

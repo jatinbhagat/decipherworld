@@ -8,7 +8,7 @@ SECRET_KEY = 'django-insecure-local-development-key-only'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
-# Database configuration - Force Supabase PostgreSQL with robust error handling
+# Database configuration - Azure PostgreSQL
 import dj_database_url
 import os
 
@@ -32,16 +32,16 @@ def get_database_config():
         if database_url:
             print(f"✅ Got DATABASE_URL from os.environ: {len(database_url)} chars")
     
-    # Method 3: Force hardcoded Supabase config (for debugging)
-    if not database_url or database_url.startswith('postgresql://postgres.[your-'):
-        print("🔧 Using hardcoded Supabase configuration")
+    # Method 3: Fall back to Azure individual environment variables
+    if not database_url:
+        print("🔧 Using individual Azure environment variables")
         return {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres.tpgymvjnrmugrjfjwtbb',
-            'PASSWORD': 'OmNamoShivaay@#7',
-            'HOST': 'aws-1-ap-south-1.pooler.supabase.com',
-            'PORT': '6543',
+            'NAME': config('DB_NAME', default='decipherworld'),
+            'USER': config('DB_USER', default='decipheradmin'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST', default='decipherworld-db-server-ci01.postgres.database.azure.com'),
+            'PORT': config('DB_PORT', default='5432'),
             'OPTIONS': {
                 'sslmode': 'require',
                 'connect_timeout': 60,
@@ -60,7 +60,7 @@ def get_database_config():
         
         # Ensure NAME is set
         if not parsed_db.get('NAME'):
-            parsed_db['NAME'] = 'postgres'
+            parsed_db['NAME'] = 'decipherworld'
             
         # Force TCP connection (never use sockets) 
         if not parsed_db.get('HOST') or parsed_db.get('HOST') in ['localhost', '127.0.0.1', '']:
@@ -85,20 +85,10 @@ def get_database_config():
         
     except Exception as e:
         print(f"❌ Failed to parse DATABASE_URL: {e}")
-        print("🔧 Falling back to hardcoded Supabase config")
+        print("📋 Falling back to SQLite for local development")
         return {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres.tpgymvjnrmugrjfjwtbb', 
-            'PASSWORD': 'OmNamoShivaay@#7',
-            'HOST': 'aws-1-ap-south-1.pooler.supabase.com',
-            'PORT': '6543',
-            'OPTIONS': {
-                'sslmode': 'require',
-                'connect_timeout': 60,
-                'application_name': 'django_decipherworld',
-            },
-            'CONN_MAX_AGE': 600,
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
 
 # Get database configuration
@@ -107,8 +97,12 @@ try:
     DATABASES = {
         'default': db_config
     }
-    print("✅ Using Supabase PostgreSQL for local development")
-    print(f"🔌 Connecting to: {db_config['HOST']}:{db_config['PORT']}")
+    
+    if 'postgresql' in db_config.get('ENGINE', ''):
+        print("✅ Using Azure PostgreSQL for local development")
+        print(f"🔌 Connecting to: {db_config['HOST']}:{db_config['PORT']}")
+    else:
+        print("✅ Using SQLite for local development")
     
 except Exception as e:
     print(f"❌ Database configuration failed: {e}")
@@ -119,11 +113,6 @@ except Exception as e:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
-# For Supabase integration (optional in local dev)
-SUPABASE_URL = config('SUPABASE_URL', default='')
-SUPABASE_KEY = config('SUPABASE_ANON_KEY', default='')
-SUPABASE_SERVICE_KEY = config('SUPABASE_SERVICE_KEY', default='')
 
 # Static Files (development)
 STATIC_URL = '/static/'
