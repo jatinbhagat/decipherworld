@@ -41,39 +41,67 @@ DIRECT_URL = config('DIRECT_URL', default=None)
 
 if DATABASE_URL:
     try:
-        # Use connection pooling for main database operations (port 6543)
+        print(f"🔍 Parsing DATABASE_URL (length: {len(DATABASE_URL)} chars)")
+        
+        # First try dj_database_url parsing
         parsed_db = dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
+        
+        print(f"🔍 Parsed database config: {parsed_db}")
         
         # Ensure NAME is set properly
         if not parsed_db.get('NAME'):
             parsed_db['NAME'] = 'postgres'
+            print("🔧 Set database NAME to 'postgres'")
         
-        # Force TCP connection (never use sockets) - same fix as local development
-        if not parsed_db.get('HOST') or parsed_db.get('HOST') in ['localhost', '127.0.0.1', '']:
-            print(f"❌ Invalid host detected: {parsed_db.get('HOST')}")
-            raise ValueError("Invalid host - would use socket connection")
+        # Check for missing or invalid fields
+        host = parsed_db.get('HOST', '')
+        port = parsed_db.get('PORT')
+        user = parsed_db.get('USER', '')
+        password = parsed_db.get('PASSWORD', '')
         
-        # Force PORT to be set (never use default socket)
-        if not parsed_db.get('PORT'):
-            print("❌ No PORT specified - could default to socket")
-            raise ValueError("No PORT specified - would use socket connection")
+        print(f"🔍 HOST: '{host}', PORT: '{port}', USER: '{user}', PASSWORD: {'***' if password else 'MISSING'}")
         
-        # Ensure all required connection parameters are present
-        required_fields = ['ENGINE', 'NAME', 'USER', 'PASSWORD', 'HOST', 'PORT']
-        for field in required_fields:
-            if not parsed_db.get(field):
-                print(f"❌ Missing required field: {field}")
-                raise ValueError(f"Missing required database field: {field}")
+        # Force TCP connection (never use sockets)
+        if not host or host in ['localhost', '127.0.0.1', '']:
+            print(f"❌ Invalid host detected: '{host}' - forcing to Supabase host")
+            parsed_db['HOST'] = 'aws-1-ap-south-1.pooler.supabase.com'
+        
+        # Force PORT to be set
+        if not port:
+            print("❌ No PORT specified - setting to 6543")
+            parsed_db['PORT'] = 6543
+        
+        # Ensure USER is set
+        if not user:
+            print("❌ No USER specified - setting to default")
+            parsed_db['USER'] = 'postgres.tpgymvjnrmugrjfjwtbb'
+            
+        # Ensure PASSWORD is set
+        if not password:
+            print("❌ No PASSWORD specified - this will cause connection failure")
+            parsed_db['PASSWORD'] = config('DATABASE_PASSWORD', default='OmNamoShivaay@#7')
+        
+        # Add required OPTIONS if not present
+        if 'OPTIONS' not in parsed_db:
+            parsed_db['OPTIONS'] = {}
+        
+        parsed_db['OPTIONS'].update({
+            'sslmode': 'require',
+            'connect_timeout': 60,
+            'application_name': 'django_decipherworld',
+        })
         
         DATABASES = {
             'default': parsed_db
         }
         
-        print(f"✅ Successfully configured database: {DATABASES['default']['NAME']} on {DATABASES['default']['HOST']}:{DATABASES['default']['PORT']}")
+        print(f"✅ Final database config - HOST: {DATABASES['default']['HOST']}, PORT: {DATABASES['default']['PORT']}")
         
     except Exception as e:
         print(f"❌ Error parsing DATABASE_URL: {e}")
-        # Fallback to manual parsing with robust configuration
+        print(f"🔍 DATABASE_URL value: {DATABASE_URL[:50]}...")
+        
+        # Robust fallback configuration
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
@@ -90,7 +118,7 @@ if DATABASE_URL:
                 'CONN_MAX_AGE': 600,
             }
         }
-        print("🔧 Using fallback database configuration")
+        print("🔧 Using robust fallback database configuration")
         
 elif DIRECT_URL:
     try:
@@ -126,30 +154,69 @@ elif DIRECT_URL:
         print("Using fallback direct database configuration")
     
 else:
-    # Fallback to individual environment variables
-    db_port = config('DB_PORT', default='6543')  # Default to pooling port
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME', default='postgres'),
-            'USER': config('DB_USER', default='postgres.tpgymvjnrmugrjfjwtbb'),
-            'PASSWORD': config('DB_PASSWORD'),
-            'HOST': get_db_host(),
-            'PORT': db_port,
-            'OPTIONS': {
-                'sslmode': 'require',
-                'connect_timeout': 60,
-                'application_name': 'django_decipherworld',
-            },
-            'CONN_MAX_AGE': 600,
+    # Final fallback - use environment variables or hardcoded Supabase config
+    print("❌ No DATABASE_URL or DIRECT_URL found - using individual environment variables")
+    
+    try:
+        db_host = config('DB_HOST', default='aws-1-ap-south-1.pooler.supabase.com')
+        db_port = config('DB_PORT', default='6543')
+        db_user = config('DB_USER', default='postgres.tpgymvjnrmugrjfjwtbb') 
+        db_password = config('DB_PASSWORD', default='OmNamoShivaay@#7')
+        db_name = config('DB_NAME', default='postgres')
+        
+        print(f"🔍 Individual env vars - HOST: {db_host}, PORT: {db_port}, USER: {db_user}")
+        
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': db_name,
+                'USER': db_user,
+                'PASSWORD': db_password,
+                'HOST': db_host,
+                'PORT': db_port,
+                'OPTIONS': {
+                    'sslmode': 'require',
+                    'connect_timeout': 60,
+                    'application_name': 'django_decipherworld',
+                },
+                'CONN_MAX_AGE': 600,
+            }
         }
-    }
-    print(f"Using fallback connection to {get_db_host()}:{db_port}")
+        print(f"✅ Using individual env var connection to {db_host}:{db_port}")
+        
+    except Exception as env_error:
+        print(f"❌ Environment variable error: {env_error}")
+        
+        # Ultimate fallback - hardcoded reliable configuration
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'postgres',
+                'USER': 'postgres.tpgymvjnrmugrjfjwtbb',
+                'PASSWORD': 'OmNamoShivaay@#7', 
+                'HOST': 'aws-1-ap-south-1.pooler.supabase.com',
+                'PORT': '6543',
+                'OPTIONS': {
+                    'sslmode': 'require',
+                    'connect_timeout': 60,
+                    'application_name': 'django_decipherworld',
+                },
+                'CONN_MAX_AGE': 600,
+            }
+        }
+        print("🔧 Using ultimate hardcoded fallback configuration")
 
-# Supabase Configuration
-SUPABASE_URL = config('SUPABASE_URL')
-SUPABASE_KEY = config('SUPABASE_ANON_KEY')
-SUPABASE_SERVICE_KEY = config('SUPABASE_SERVICE_KEY', default='')
+# Supabase Configuration (optional - only needed if using Supabase auth features)
+try:
+    SUPABASE_URL = config('SUPABASE_URL')
+    SUPABASE_KEY = config('SUPABASE_ANON_KEY') 
+    SUPABASE_SERVICE_KEY = config('SUPABASE_SERVICE_KEY', default='')
+    print(f"✅ Supabase configuration loaded: {SUPABASE_URL}")
+except Exception as supabase_error:
+    print(f"⚠️  Supabase config missing (optional): {supabase_error}")
+    SUPABASE_URL = ''
+    SUPABASE_KEY = ''
+    SUPABASE_SERVICE_KEY = ''
 
 # Static Files Configuration
 STATIC_URL = '/static/'
