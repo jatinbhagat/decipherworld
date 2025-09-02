@@ -27,7 +27,12 @@
       "Read(/Users/jatinbhagat/Downloads/**)",
       "Bash(echo $DJANGO_SETTINGS_MODULE)",
       "Bash(./verify_azure.sh)",
-      "Bash(az postgres flexible-server firewall-rule create:*)"
+      "Bash(az postgres flexible-server firewall-rule create:*)",
+      "Bash(az webapp restart:*)",
+      "Bash(az webapp deployment source config:*)",
+      "Bash(az webapp deployment source sync:*)",
+      "Bash(zip:*)",
+      "Read(/var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_rZR6ac/**)"
     ],
     "deny": [],
     "ask": []
