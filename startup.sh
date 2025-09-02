@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Simplified Azure App Service startup script
+# Azure App Service startup script for Django
 echo "🚀 Starting Decipherworld Django application..."
 
 # Set Django settings module for Azure
@@ -10,7 +10,15 @@ export DJANGO_SETTINGS_MODULE=decipherworld.settings.azure
 echo "📦 Installing dependencies..."
 pip install -r requirements.txt
 
-# Start Gunicorn server (skip migrations/collectstatic for now)
+# Run database migrations (essential for Django)
+echo "🗄️ Running database migrations..."
+python manage.py migrate --noinput --settings=decipherworld.settings.azure
+
+# Collect static files (needed for Django admin and CSS)
+echo "📁 Collecting static files..."
+python manage.py collectstatic --noinput --settings=decipherworld.settings.azure
+
+# Start Gunicorn server
 echo "🌐 Starting Gunicorn server..."
 exec gunicorn decipherworld.wsgi:application \
     --bind 0.0.0.0:${PORT:-8000} \
