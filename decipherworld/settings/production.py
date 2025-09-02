@@ -48,28 +48,40 @@ if DATABASE_URL:
         if not parsed_db.get('NAME'):
             parsed_db['NAME'] = 'postgres'
         
+        # Force TCP connection (never use sockets) - same fix as local development
+        if not parsed_db.get('HOST') or parsed_db.get('HOST') in ['localhost', '127.0.0.1', '']:
+            print(f"❌ Invalid host detected: {parsed_db.get('HOST')}")
+            raise ValueError("Invalid host - would use socket connection")
+        
+        # Force PORT to be set (never use default socket)
+        if not parsed_db.get('PORT'):
+            print("❌ No PORT specified - could default to socket")
+            raise ValueError("No PORT specified - would use socket connection")
+        
+        # Ensure all required connection parameters are present
+        required_fields = ['ENGINE', 'NAME', 'USER', 'PASSWORD', 'HOST', 'PORT']
+        for field in required_fields:
+            if not parsed_db.get(field):
+                print(f"❌ Missing required field: {field}")
+                raise ValueError(f"Missing required database field: {field}")
+        
         DATABASES = {
             'default': parsed_db
         }
         
-        # Override port if using pooling (should be 6543 for connection pooling)
-        if 'pgbouncer=true' in DATABASE_URL:
-            DATABASES['default']['PORT'] = 6543
-            print("Using Supabase connection pooling (port 6543)")
-        
-        print(f"Successfully configured database: {DATABASES['default']['NAME']} on {DATABASES['default']['HOST']}")
+        print(f"✅ Successfully configured database: {DATABASES['default']['NAME']} on {DATABASES['default']['HOST']}:{DATABASES['default']['PORT']}")
         
     except Exception as e:
-        print(f"Error parsing DATABASE_URL: {e}")
-        # Fallback to manual parsing
+        print(f"❌ Error parsing DATABASE_URL: {e}")
+        # Fallback to manual parsing with robust configuration
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
                 'NAME': 'postgres',
                 'USER': config('DATABASE_USER', default='postgres.tpgymvjnrmugrjfjwtbb'),
-                'PASSWORD': config('DATABASE_PASSWORD'),
+                'PASSWORD': config('DATABASE_PASSWORD', default='OmNamoShivaay@#7'),
                 'HOST': 'aws-1-ap-south-1.pooler.supabase.com',
-                'PORT': 6543,
+                'PORT': '6543',
                 'OPTIONS': {
                     'sslmode': 'require',
                     'connect_timeout': 60,
@@ -78,7 +90,7 @@ if DATABASE_URL:
                 'CONN_MAX_AGE': 600,
             }
         }
-        print("Using fallback database configuration")
+        print("🔧 Using fallback database configuration")
         
 elif DIRECT_URL:
     try:
@@ -156,6 +168,23 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Additional Security Settings for Production
+SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=31536000, cast=int)  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Secure Cookies
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Force HTTPS for forms
+CSRF_USE_SESSIONS = False
 
 # CORS Settings (if using frontend frameworks)
 CORS_ALLOWED_ORIGINS = [

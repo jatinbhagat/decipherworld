@@ -9,8 +9,12 @@ services:
         value: 3.11.0
       - key: DJANGO_SETTINGS_MODULE
         value: decipherworld.settings.production
+      - key: DEBUG
+        value: "False"
       - key: SECURE_SSL_REDIRECT
-        value: "False"  # Set to False during initial deployment
+        value: "True"  # Enable HTTPS redirect in production
+      - key: SECURE_HSTS_SECONDS
+        value: "31536000"  # 1 year HSTS
       - key: DJANGO_LOG_LEVEL
-        value: DEBUG
+        value: INFO
     region: oregon
