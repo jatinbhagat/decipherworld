@@ -37,20 +37,20 @@ az postgres flexible-server create \
     --sku-name Standard_B1ms \
     --tier Burstable \
     --storage-size 32 \
-    --version 13 \
+    --version 14 \
     --public-access 0.0.0.0
 
 # Create database
 az postgres flexible-server db create \
     --resource-group rg-decipherworld-prod \
-    --server-name decipherworld-db-server \
+    --server-name decipherworld-db-server-ci01 \
     --database-name decipherworld
 
 # Create App Service Plan
 az appservice plan create \
     --resource-group rg-decipherworld-prod \
     --name decipherworld-app-plan \
-    --location eastus \
+    --location centralindia \
     --sku B1 \
     --is-linux
 

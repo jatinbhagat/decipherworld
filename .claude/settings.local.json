@@ -32,7 +32,14 @@
       "Bash(az webapp deployment source config:*)",
       "Bash(az webapp deployment source sync:*)",
       "Bash(zip:*)",
-      "Read(/var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_rZR6ac/**)"
+      "Read(/var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_rZR6ac/**)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(nslookup:*)",
+      "Bash(az webapp config hostname add:*)",
+      "Bash(az webapp config ssl create:*)",
+      "Bash(az webapp config ssl bind:*)",
+      "Bash(timeout 30 az webapp config ssl create --resource-group rg-decipherworld-prod --name decipherworld-app --hostname www.decipherworld.com)"
     ],
     "deny": [],
     "ask": []

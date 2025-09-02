@@ -79,6 +79,9 @@
                         src="https://gamma.app/embed/b6vdmi77284durd" 
                         class="absolute top-0 left-0 w-full h-full rounded-lg shadow-inner"
                         allow="fullscreen" 
+                        allowfullscreen
+                        webkitallowfullscreen
+                        mozallowfullscreen
                         title="Empowering Education: AI & Future-Ready Skills for K-12"
                         loading="lazy">
                     </iframe>
@@ -260,12 +263,16 @@ function enterFullscreen(iframe, button, buttonText, hint) {
         const fullscreenIframe = document.createElement('iframe');
         fullscreenIframe.src = iframe.src;
         fullscreenIframe.allow = 'fullscreen';
+        fullscreenIframe.allowfullscreen = true;
+        fullscreenIframe.webkitallowfullscreen = true;
+        fullscreenIframe.mozallowfullscreen = true;
         fullscreenIframe.title = iframe.title;
         fullscreenIframe.style.cssText = `
             width: 100%;
             height: 100%;
             border: none;
             background: white;
+            display: none;
         `;
         
         // Add loading indicator
@@ -287,14 +294,21 @@ function enterFullscreen(iframe, button, buttonText, hint) {
         
         // Assemble fullscreen container
         fullscreenContainer.appendChild(loader);
+        fullscreenContainer.appendChild(fullscreenIframe);
         fullscreenContainer.appendChild(closeBtn);
         document.body.appendChild(fullscreenContainer);
         
-        // Hide loader and show iframe when loaded
+        // Show iframe and hide loader when loaded
         fullscreenIframe.onload = () => {
             loader.style.display = 'none';
-            fullscreenContainer.appendChild(fullscreenIframe);
+            fullscreenIframe.style.display = 'block';
         };
+        
+        // Fallback to show iframe after 3 seconds even if onload doesn't fire
+        setTimeout(() => {
+            loader.style.display = 'none';
+            fullscreenIframe.style.display = 'block';
+        }, 3000);
         
         // Fade in
         setTimeout(() => {
