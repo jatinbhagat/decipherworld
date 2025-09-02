@@ -25,7 +25,9 @@
       "Read(/Users/jatinbhagat/Downloads/**)",
       "Read(/Users/jatinbhagat/Downloads/**)",
       "Read(/Users/jatinbhagat/Downloads/**)",
-      "Bash(echo $DJANGO_SETTINGS_MODULE)"
+      "Bash(echo $DJANGO_SETTINGS_MODULE)",
+      "Bash(./verify_azure.sh)",
+      "Bash(az postgres flexible-server firewall-rule create:*)"
     ],
     "deny": [],
     "ask": []
