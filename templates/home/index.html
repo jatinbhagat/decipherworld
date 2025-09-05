@@ -1,7 +1,60 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Elevate Your School with AI - Empowering Teachers, Engaging Learners | Decipherworld{% endblock %}
+{% block title %}Decipherworld - AI EdTech Platform | Game-Based Learning & Teacher Training{% endblock %}
+
+{% block meta_description %}Transform education with Decipherworld's AI-powered platform. 500+ schools trust our game-based courses in AI, Financial Literacy, Entrepreneurship & Climate Change. 5X teacher productivity boost.{% endblock %}
+
+{% block meta_keywords %}AI education platform, game-based learning, teacher training, AI courses, financial literacy, entrepreneurship education, climate change courses, EdTech platform, school AI implementation{% endblock %}
+
+{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'core:home' %}{% endblock %}
+
+{% block og_title %}Decipherworld - Leading AI EdTech Platform for Schools{% endblock %}
+{% block og_description %}Join 500+ schools transforming education with AI-powered courses and teacher training. Game-based learning in AI, Financial Literacy, Entrepreneurship & Climate Change.{% endblock %}
+
+{% block structured_data %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "Decipherworld",
+    "description": "Leading AI EdTech platform transforming education with game-based learning and teacher training",
+    "url": "{{ request.scheme }}://{{ request.get_host }}",
+    "logo": "{{ request.scheme }}://{{ request.get_host }}{% load static %}{% static 'images/decipherworld-logo.png' %}",
+    "hasCredential": [
+        {
+            "@type": "Course",
+            "name": "AI for All",
+            "description": "Comprehensive AI literacy course for students and teachers",
+            "provider": {
+                "@type": "Organization",
+                "name": "Decipherworld"
+            },
+            "educationalLevel": "Secondary",
+            "teaches": "Artificial Intelligence, Machine Learning, Computer Vision, Natural Language Processing"
+        },
+        {
+            "@type": "Course", 
+            "name": "Entrepreneurship Unleashed",
+            "description": "Foster creativity, risk-taking, and business thinking through structured challenges",
+            "provider": {
+                "@type": "Organization",
+                "name": "Decipherworld"
+            },
+            "educationalLevel": "Secondary",
+            "teaches": "Entrepreneurship, Business Development, Innovation, Leadership"
+        }
+    ],
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "500",
+        "bestRating": "5"
+    }
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <!-- Modern Professional Hero Section -->

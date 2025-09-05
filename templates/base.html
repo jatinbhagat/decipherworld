@@ -5,6 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Decipherworld - Transform Learning Into Adventure{% endblock %}</title>
     
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{% block meta_description %}Transform learning into adventure with Decipherworld's game-based education platform. AI-powered tools for teachers, engaging learning for students.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}education, game-based learning, AI teaching tools, student engagement, EdTech, teacher training, AI courses{% endblock %}">
+    <meta name="author" content="Decipherworld">
+    <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{% block og_title %}{% block title %}Decipherworld - Transform Learning Into Adventure{% endblock %}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{% block meta_description %}Transform learning into adventure with Decipherworld's game-based education platform. AI-powered tools for teachers, engaging learning for students.{% endblock %}{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% load static %}{% static 'images/decipherworld-logo.png' %}{% endblock %}">
+    <meta property="og:site_name" content="Decipherworld">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="{% block twitter_card %}summary_large_image{% endblock %}">
+    <meta name="twitter:title" content="{% block twitter_title %}{% block title %}Decipherworld - Transform Learning Into Adventure{% endblock %}{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}{% block meta_description %}Transform learning into adventure with Decipherworld's game-based education platform. AI-powered tools for teachers, engaging learning for students.{% endblock %}{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% load static %}{% static 'images/decipherworld-logo.png' %}{% endblock %}">
+    
     <!-- Tailwind CSS with DaisyUI -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -43,12 +66,52 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     
-    <!-- Meta tags for SEO -->
-    <meta name="description" content="Transform learning into adventure with Decipherworld's game-based education platform. AI-powered tools for teachers, engaging learning for students.">
-    <meta name="keywords" content="education, game-based learning, AI teaching tools, student engagement, EdTech">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    
+    <!-- Structured Data (JSON-LD) -->
+    {% block structured_data %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Decipherworld",
+        "description": "AI-powered educational technology platform for schools, offering game-based learning courses and teacher training programs.",
+        "url": "{{ request.scheme }}://{{ request.get_host }}",
+        "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/decipherworld-logo.png' %}",
+        "foundingDate": "2023",
+        "sameAs": [
+            "https://www.linkedin.com/company/decipherworld",
+            "https://twitter.com/decipherworld"
+        ],
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "IN"
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "email": "hello@decipherworld.com",
+            "contactType": "customer service"
+        }
+    }
+    </script>
+    {% endblock %}
+    
+    <!-- Google Analytics -->
+    {% if not debug %}
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
+    
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="REPLACE_WITH_YOUR_VERIFICATION_CODE">
+    {% endif %}
 </head>
 <body data-theme="modern" class="bg-base-100">
     

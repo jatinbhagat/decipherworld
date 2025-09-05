@@ -1,7 +1,78 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Professional 21st-Century Skill Courses | Decipherworld{% endblock %}
+{% block title %}AI, Financial Literacy & Climate Change Courses for Students | Decipherworld{% endblock %}
+
+{% block meta_description %}Signature 21st-century skill courses for students: AI for All, Financial Literacy, Entrepreneurship, and Climate Change. Game-based learning with real-world applications and interactive challenges.{% endblock %}
+
+{% block meta_keywords %}AI courses for students, financial literacy education, entrepreneurship courses, climate change education, 21st century skills, game-based learning, student courses{% endblock %}
+
+{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'core:courses' %}{% endblock %}
+
+{% block og_title %}AI & Life Skills Courses for Students - Game-Based Learning{% endblock %}
+{% block og_description %}Engage students with our signature courses in AI, Financial Literacy, Entrepreneurship, and Climate Change. Interactive, game-based learning with real-world applications.{% endblock %}
+
+{% block structured_data %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Decipherworld Student Courses",
+    "description": "Comprehensive 21st-century skill courses for students",
+    "itemListElement": [
+        {
+            "@type": "Course",
+            "position": 1,
+            "name": "AI for All",
+            "description": "Students and teachers become AI-literate for the future workforce through hands-on Computer Vision, NLP, and Machine Learning projects",
+            "provider": {
+                "@type": "EducationalOrganization",
+                "name": "Decipherworld"
+            },
+            "educationalLevel": "Secondary",
+            "teaches": "Artificial Intelligence, Computer Vision, Natural Language Processing, Machine Learning, AI Ethics"
+        },
+        {
+            "@type": "Course",
+            "position": 2,
+            "name": "Financial Literacy Simplified",
+            "description": "Interactive, practical money mastery through simulations and portfolio challenges",
+            "provider": {
+                "@type": "EducationalOrganization", 
+                "name": "Decipherworld"
+            },
+            "educationalLevel": "Secondary",
+            "teaches": "Budgeting, Investment Strategy, Portfolio Management, Financial Planning"
+        },
+        {
+            "@type": "Course",
+            "position": 3,
+            "name": "Entrepreneurship Unleashed",
+            "description": "Foster creativity and business thinking through market research, business model development, and investor presentations",
+            "provider": {
+                "@type": "EducationalOrganization",
+                "name": "Decipherworld"
+            },
+            "educationalLevel": "Secondary", 
+            "teaches": "Startup Development, Market Research, Business Models, Pitch Presentations"
+        },
+        {
+            "@type": "Course",
+            "position": 4,
+            "name": "Climate Change Champions",
+            "description": "Empower students as environmental problem-solvers through sustainable city design and renewable energy solutions",
+            "provider": {
+                "@type": "EducationalOrganization",
+                "name": "Decipherworld"
+            },
+            "educationalLevel": "Secondary",
+            "teaches": "Sustainable Design, Renewable Energy, Climate Solutions, Environmental Impact"
+        }
+    ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <!-- Modern Professional Hero Section -->

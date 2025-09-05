@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views_robots import robots_txt
 
 app_name = 'core'
 
@@ -11,4 +12,5 @@ urlpatterns = [
     path('school-presentation/', views.SchoolPresentationView.as_view(), name='school-presentation'),
     path('gallery/', views.GalleryView.as_view(), name='gallery'),
     path('contact/', views.ContactView.as_view(), name='contact'),
+    path('robots.txt', robots_txt, name='robots_txt'),
 ]

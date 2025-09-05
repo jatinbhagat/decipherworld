@@ -3,6 +3,49 @@
 
 {% block title %}AI Training for Teachers - Boost Productivity 5X | Decipherworld{% endblock %}
 
+{% block meta_description %}Professional AI training for teachers and educators. Master 40+ AI tools, boost productivity 5X, and transform your classroom with hands-on workshops designed for real teaching scenarios.{% endblock %}
+
+{% block meta_keywords %}AI training for teachers, teacher professional development, AI tools for education, MagicSchool.ai, Eduaide.ai, Khanmigo, EdTech training, teacher productivity, AI in classroom{% endblock %}
+
+{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'core:teachers' %}{% endblock %}
+
+{% block og_title %}AI Training for Teachers - Transform Your Classroom with AI Tools{% endblock %}
+{% block og_description %}Join 300+ certified teachers who boosted productivity 5X with our AI training. Master MagicSchool.ai, Eduaide.ai, and 40+ tools designed for real classrooms.{% endblock %}
+
+{% block structured_data %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "AI Training for Teachers",
+    "description": "Comprehensive AI training program for educators to boost productivity and enhance teaching effectiveness",
+    "provider": {
+        "@type": "EducationalOrganization",
+        "name": "Decipherworld",
+        "url": "{{ request.scheme }}://{{ request.get_host }}"
+    },
+    "educationalLevel": "Professional Development",
+    "teaches": "AI tools for education, MagicSchool.ai, Eduaide.ai, Khanmigo, lesson planning automation, grading automation",
+    "courseMode": "Online",
+    "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "Online",
+        "instructor": {
+            "@type": "Organization",
+            "name": "Decipherworld"
+        }
+    },
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "300",
+        "bestRating": "5"
+    }
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <!-- Modern Professional Hero Section -->
 <section class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
