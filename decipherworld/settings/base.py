@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-temp-key-change-in-production'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver', 'decipherworld.com', 'www.decipherworld.com']
 
 # Application definition
 INSTALLED_APPS = [
@@ -60,13 +60,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'decipherworld.wsgi.application'
 
-# Database
+# Database - Use SQLite for local development to avoid connectivity issues
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Comment out if you need to use PostgreSQL locally
+# import os
+# from decouple import config
+# import dj_database_url
+# if config('DATABASE_URL', default=None):
+#     DATABASES['default'] = dj_database_url.parse(config('DATABASE_URL'))
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

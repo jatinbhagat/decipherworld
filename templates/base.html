@@ -15,8 +15,8 @@
     <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="{% block og_title %}{% block title %}Decipherworld - Transform Learning Into Adventure{% endblock %}{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}{% block meta_description %}Transform learning into adventure with Decipherworld's game-based education platform. AI-powered tools for teachers, engaging learning for students.{% endblock %}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Decipherworld - Transform Learning Into Adventure{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Transform learning into adventure with Decipherworld's game-based education platform. AI-powered tools for teachers, engaging learning for students.{% endblock %}">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
     <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% load static %}{% static 'images/decipherworld-logo.png' %}{% endblock %}">
@@ -24,8 +24,8 @@
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="{% block twitter_card %}summary_large_image{% endblock %}">
-    <meta name="twitter:title" content="{% block twitter_title %}{% block title %}Decipherworld - Transform Learning Into Adventure{% endblock %}{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}{% block meta_description %}Transform learning into adventure with Decipherworld's game-based education platform. AI-powered tools for teachers, engaging learning for students.{% endblock %}{% endblock %}">
+    <meta name="twitter:title" content="{% block twitter_title %}Decipherworld - Transform Learning Into Adventure{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Transform learning into adventure with Decipherworld's game-based education platform. AI-powered tools for teachers, engaging learning for students.{% endblock %}">
     <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% load static %}{% static 'images/decipherworld-logo.png' %}{% endblock %}">
     
     <!-- Tailwind CSS with DaisyUI -->
@@ -101,12 +101,12 @@
     <!-- Google Analytics -->
     {% if not debug %}
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HSDPNKZ94G"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'GA_MEASUREMENT_ID');
+      gtag('config', 'G-HSDPNKZ94G');
     </script>
     
     <!-- Google Search Console Verification -->
