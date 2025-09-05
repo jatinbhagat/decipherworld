@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - DecipherWorld | Founded by IIM Alumni{% endblock %}
+
+{% block meta_description %}DecipherWorld is an AI-powered, game-based learning platform founded by IIM alumni. Transforming education through innovative technology, trusted by parents and educators worldwide.{% endblock %}
+
+{% block meta_keywords %}about DecipherWorld, IIM alumni founded, AI education platform, game-based learning, EdTech company, child safety, educational innovation{% endblock %}
+
+{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'core:about' %}{% endblock %}
+
+{% block og_title %}About DecipherWorld - AI-Powered Learning by IIM Alumni{% endblock %}
+{% block og_description %}Founded by IIM alumni with expertise in AI, EdTech, and growth strategy. Transforming education through game-based learning for millions of children worldwide.{% endblock %}
+
+{% block structured_data %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "mainEntity": {
+        "@type": "EducationalOrganization",
+        "name": "DecipherWorld",
+        "description": "Innovative, game-based learning platform built with cutting-edge AI",
+        "url": "{{ request.scheme }}://{{ request.get_host }}",
+        "foundingDate": "2023",
+        "founder": {
+            "@type": "Person",
+            "alumniOf": {
+                "@type": "EducationalOrganization", 
+                "name": "Indian Institute of Management (IIM)"
+            }
+        },
+        "mission": "To make learning accessible, delightful, and effective by blending the excitement of gameplay with the power of intelligent, adaptive education",
+        "areaServed": "Global"
+    }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden py-20">
+    <div class="absolute inset-0 bg-white/30"></div>
+    
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-20 left-10 w-40 h-40 bg-blue-500 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute top-40 right-20 w-32 h-32 bg-purple-500 rounded-full blur-2xl animate-pulse delay-1000"></div>
+        <div class="absolute bottom-32 left-1/3 w-48 h-48 bg-pink-500 rounded-full blur-3xl animate-pulse delay-2000"></div>
+    </div>
+    
+    <div class="relative z-10 container mx-auto px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <!-- Hero Content -->
+            <div class="mb-16">
+                <h1 class="text-5xl md:text-6xl font-bold text-neutral mb-8 leading-tight">
+                    About 
+                    <span class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                        DecipherWorld
+                    </span>
+                </h1>
+                
+                <p class="text-2xl md:text-3xl text-slate-600 mb-8 leading-relaxed">
+                    Transforming education into a fun, engaging, and meaningful experience
+                </p>
+                
+                <p class="text-lg text-slate-500 mb-12 max-w-3xl mx-auto leading-relaxed">
+                    An innovative, game-based learning platform built with cutting-edge AI, designed to spark curiosity, cultivate joy, and empower every child to reach their fullest potential.
+                </p>
+            </div>
+            
+            <!-- Trust Badges -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 text-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-graduation-cap text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="text-sm font-semibold text-neutral">IIM Alumni</div>
+                    <div class="text-xs text-slate-600">Founded</div>
+                </div>
+                
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 text-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-brain text-purple-600 text-xl"></i>
+                    </div>
+                    <div class="text-sm font-semibold text-neutral">AI-Driven</div>
+                    <div class="text-xs text-slate-600">Learning</div>
+                </div>
+                
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 text-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-shield-alt text-green-600 text-xl"></i>
+                    </div>
+                    <div class="text-sm font-semibold text-neutral">Child Safe</div>
+                    <div class="text-xs text-slate-600">COPPA Compliant</div>
+                </div>
+                
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 text-center">
+                    <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-heart text-orange-600 text-xl"></i>
+                    </div>
+                    <div class="text-sm font-semibold text-neutral">Trusted</div>
+                    <div class="text-xs text-slate-600">By Parents</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission Section -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-neutral mb-8">
+                Our <span class="text-primary">Mission</span>
+            </h2>
+            <div class="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-3xl p-12 border border-primary/10">
+                <p class="text-xl md:text-2xl text-slate-700 leading-relaxed">
+                    To make learning <strong class="text-primary">accessible</strong>, 
+                    <strong class="text-secondary">delightful</strong>, and 
+                    <strong class="text-accent">effective</strong> by blending the excitement of 
+                    gameplay with the power of intelligent, adaptive education.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Trust DecipherWorld Section -->
+<section class="py-20 bg-slate-50">
+    <div class="container mx-auto px-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold text-neutral text-center mb-16">
+                Why Trust <span class="text-secondary">DecipherWorld?</span>
+            </h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Founded by IIM Alumni -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-university text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral mb-4">Founded by IIM Alumni</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Born from world-class academic and leadership pedigree—backed by an alumnus of the prestigious Indian Institute of Management (IIM).
+                    </p>
+                </div>
+                
+                <!-- Expertise -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-cogs text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral mb-4">AI, EdTech & Growth Expertise</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Years of experience shaping digital education, product innovation, and AI-enabled solutions for leading startups and unicorns worldwide.
+                    </p>
+                </div>
+                
+                <!-- Track Record -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-line text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral mb-4">Scalable Impact</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Proven to drive real educational outcomes and user engagement, with products that have scaled to millions and been recognized for excellence.
+                    </p>
+                </div>
+                
+                <!-- Global Leadership -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-globe text-orange-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral mb-4">Global Leadership</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Led by a diverse team with backgrounds at top-tier technology, fintech, and education companies—combining deep technical, pedagogical, and design expertise.
+                    </p>
+                </div>
+                
+                <!-- Trusted by Educators -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-pink-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-users text-pink-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral mb-4">Trusted by Parents & Educators</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        DecipherWorld delivers measurable improvements in engagement and knowledge retention, validated through feedback from families and teachers.
+                    </p>
+                </div>
+                
+                <!-- Data Privacy -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-shield-alt text-red-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral mb-4">Data Privacy & Child Safety</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Built with strict standards for child data security, online safety, and responsible AI. 100% COPPA compliant.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Vision Section -->
+<section class="py-20 bg-gradient-to-r from-primary to-secondary text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/10"></div>
+    <div class="relative z-10 container mx-auto px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-8">
+                Our <span class="text-yellow-300">Vision</span>
+            </h2>
+            <p class="text-2xl md:text-3xl leading-relaxed">
+                To become the world's most effective learning platform—empowering every child, everywhere, to learn, grow, and thrive.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral mb-12">
+                Our <span class="text-accent">Impact</span>
+            </h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-primary mb-2">500+</div>
+                    <div class="text-slate-600">Schools Reached</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-secondary mb-2">10K+</div>
+                    <div class="text-slate-600">Students Learning</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-accent mb-2">95%</div>
+                    <div class="text-slate-600">Engagement Rate</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-orange-600 mb-2">4.8★</div>
+                    <div class="text-slate-600">Parent Rating</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-20 bg-slate-50">
+    <div class="container mx-auto px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral mb-6">
+                Join the DecipherWorld Journey
+            </h2>
+            <p class="text-lg text-slate-600 mb-8">
+                Experience the future of learning. Always learning, always evolving.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:contact' %}" class="btn btn-primary btn-lg px-8">
+                    <i class="fas fa-rocket mr-2"></i>
+                    Book Your Demo
+                </a>
+                <a href="{% url 'core:courses' %}" class="btn btn-outline btn-secondary btn-lg px-8">
+                    <i class="fas fa-play mr-2"></i>
+                    Explore Courses
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -15,6 +15,15 @@ class HomeView(TemplateView):
         context['page_title'] = 'Transform Learning Into Adventure'
         return context
 
+class AboutView(TemplateView):
+    """About Us page with company information and mission"""
+    template_name = 'home/about.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'About Us - DecipherWorld | Founded by IIM Alumni'
+        return context
+
 class CoursesView(ListView):
     """Course offerings with detailed descriptions"""
     model = Course
