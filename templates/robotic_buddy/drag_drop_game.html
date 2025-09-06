@@ -1,0 +1,367 @@
+{% extends 'robotic_buddy/base.html' %}
+
+{% block game_title %}Drag & Drop Animal Training{% endblock %}
+
+{% block game_content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Game Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
+            🐾 Drag & Drop Animal Training
+        </h1>
+        <p class="text-lg text-gray-600 mb-4">
+            Drag animals into the correct categories to teach your AI buddy!
+        </p>
+        
+        <!-- Game Progress -->
+        <div class="game-card bg-white p-4 max-w-md mx-auto">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-gray-700">Training Progress</span>
+                <span class="text-sm text-gray-600"><span id="examples-count">0</span> / 8 examples</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div id="progress-bar" class="bg-gradient-to-r from-blue-400 to-purple-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Game Instructions -->
+    <div class="game-card bg-gradient-to-r from-blue-100 to-purple-100 p-6 mb-8">
+        <div class="flex items-start space-x-4">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xl">
+                🤖
+            </div>
+            <div class="flex-1">
+                <h3 class="font-semibold text-gray-800 mb-2">Your AI Buddy Says:</h3>
+                <p id="buddy-instruction" class="text-gray-700">
+                    Hi! I'm ready to learn about animals! Drag each animal from the left into the correct category on the right. 
+                    I'll watch and learn from your examples!
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Training Interface -->
+    <div class="grid lg:grid-cols-4 gap-6">
+        <!-- Animal Pool -->
+        <div class="lg:col-span-1">
+            <div class="game-card bg-white p-4 sticky top-32">
+                <h3 class="font-semibold text-gray-800 mb-4 text-center">🎲 Animals to Sort</h3>
+                <div id="animal-pool" class="space-y-3 min-h-[300px]">
+                    <!-- Animals will be populated here -->
+                </div>
+                <button id="new-animal-btn" class="btn btn-sm btn-outline btn-primary w-full mt-4">
+                    Get New Animal
+                </button>
+            </div>
+        </div>
+        
+        <!-- Classification Categories -->
+        <div class="lg:col-span-3">
+            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <!-- Mammals -->
+                <div class="game-card bg-white p-4">
+                    <div class="text-center mb-4">
+                        <div class="text-4xl mb-2">🦁</div>
+                        <h3 class="font-semibold text-gray-800">Mammals</h3>
+                        <p class="text-sm text-gray-600">Warm-blooded, have hair or fur</p>
+                    </div>
+                    <div class="drop-zone min-h-[100px] border-3 border-dashed border-gray-300 rounded-lg p-4 text-center flex items-center justify-center" 
+                         data-category="mammals" id="mammals-zone">
+                        <div class="text-gray-400 text-sm">Drop mammals here</div>
+                    </div>
+                    <div id="mammals-items" class="mt-3 flex flex-wrap gap-2">
+                        <!-- Classified mammals will appear here -->
+                    </div>
+                </div>
+                
+                <!-- Birds -->
+                <div class="game-card bg-white p-4">
+                    <div class="text-center mb-4">
+                        <div class="text-4xl mb-2">🦅</div>
+                        <h3 class="font-semibold text-gray-800">Birds</h3>
+                        <p class="text-sm text-gray-600">Have feathers and wings</p>
+                    </div>
+                    <div class="drop-zone min-h-[100px] border-3 border-dashed border-gray-300 rounded-lg p-4 text-center flex items-center justify-center" 
+                         data-category="birds" id="birds-zone">
+                        <div class="text-gray-400 text-sm">Drop birds here</div>
+                    </div>
+                    <div id="birds-items" class="mt-3 flex flex-wrap gap-2">
+                        <!-- Classified birds will appear here -->
+                    </div>
+                </div>
+                
+                <!-- Fish -->
+                <div class="game-card bg-white p-4">
+                    <div class="text-center mb-4">
+                        <div class="text-4xl mb-2">🐟</div>
+                        <h3 class="font-semibold text-gray-800">Fish</h3>
+                        <p class="text-sm text-gray-600">Live in water, have gills</p>
+                    </div>
+                    <div class="drop-zone min-h-[100px] border-3 border-dashed border-gray-300 rounded-lg p-4 text-center flex items-center justify-center" 
+                         data-category="fish" id="fish-zone">
+                        <div class="text-gray-400 text-sm">Drop fish here</div>
+                    </div>
+                    <div id="fish-items" class="mt-3 flex flex-wrap gap-2">
+                        <!-- Classified fish will appear here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Buddy Response Area -->
+            <div id="buddy-response" class="game-card bg-white p-6 mb-6" style="display: none;">
+                <div class="flex items-start space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-xl">
+                        🤖
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-purple-800 mb-2">Your AI Buddy Says:</h4>
+                        <p id="buddy-message" class="text-purple-700"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Game Actions -->
+            <div class="text-center">
+                <button id="test-buddy-btn" class="btn btn-primary btn-lg mr-3" style="display: none;">
+                    🧠 Test My Buddy's Learning!
+                </button>
+                <button id="complete-session-btn" class="btn btn-success btn-lg" style="display: none;">
+                    🎉 Complete Training Session
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Simple game state without database dependency
+let gameState = {
+    currentAnimalIndex: 0,
+    examplesGiven: 0,
+    maxExamples: 8,
+    correctPredictions: 0,
+    totalPredictions: 0,
+    animals: [
+        { name: 'Dog', emoji: '🐕', category: 'mammals' },
+        { name: 'Cat', emoji: '🐱', category: 'mammals' },
+        { name: 'Eagle', emoji: '🦅', category: 'birds' },
+        { name: 'Goldfish', emoji: '🐠', category: 'fish' },
+        { name: 'Lion', emoji: '🦁', category: 'mammals' },
+        { name: 'Parrot', emoji: '🦜', category: 'birds' },
+        { name: 'Shark', emoji: '🦈', category: 'fish' },
+        { name: 'Elephant', emoji: '🐘', category: 'mammals' },
+        { name: 'Owl', emoji: '🦉', category: 'birds' },
+        { name: 'Whale', emoji: '🐋', category: 'mammals' }
+    ],
+    usedAnimals: []
+};
+
+function showBuddyMessage(message, isCorrect = true) {
+    const responseDiv = document.getElementById('buddy-response');
+    const messageEl = document.getElementById('buddy-message');
+    
+    messageEl.textContent = message;
+    responseDiv.style.display = 'block';
+    
+    if (isCorrect) {
+        responseDiv.className = 'game-card bg-gradient-to-r from-green-100 to-blue-100 p-6 mb-6';
+    } else {
+        responseDiv.className = 'game-card bg-gradient-to-r from-orange-100 to-red-100 p-6 mb-6';
+    }
+    
+    setTimeout(() => {
+        responseDiv.style.display = 'none';
+    }, 4000);
+}
+
+function updateBuddyMessage(message) {
+    document.getElementById('buddy-instruction').textContent = message;
+}
+
+function updateProgress() {
+    const progress = (gameState.examplesGiven / gameState.maxExamples) * 100;
+    document.getElementById('progress-bar').style.width = progress + '%';
+    document.getElementById('examples-count').textContent = gameState.examplesGiven;
+    
+    // Show test button after 3 examples
+    if (gameState.examplesGiven >= 3) {
+        document.getElementById('test-buddy-btn').style.display = 'inline-block';
+    }
+    
+    // Show complete button after max examples
+    if (gameState.examplesGiven >= gameState.maxExamples) {
+        document.getElementById('complete-session-btn').style.display = 'inline-block';
+        document.getElementById('new-animal-btn').style.display = 'none';
+        updateBuddyMessage("Wow! I think I've learned a lot! You can test my knowledge or complete our training!");
+    }
+}
+
+function addNewAnimal() {
+    // Get random animal that hasn't been used recently
+    const availableAnimals = gameState.animals.filter(animal => 
+        !gameState.usedAnimals.includes(animal.name)
+    );
+    
+    if (availableAnimals.length === 0) {
+        // Reset used animals if we've used them all
+        gameState.usedAnimals = [];
+        gameState.currentAnimalIndex = 0;
+    }
+    
+    const currentAnimal = availableAnimals.length > 0 ? 
+        availableAnimals[Math.floor(Math.random() * availableAnimals.length)] :
+        gameState.animals[gameState.currentAnimalIndex % gameState.animals.length];
+    
+    gameState.usedAnimals.push(currentAnimal.name);
+    
+    // Add animal to the pool
+    const animalPool = document.getElementById('animal-pool');
+    animalPool.innerHTML = ''; // Clear previous animals
+    
+    const animalElement = document.createElement('div');
+    animalElement.className = 'draggable-item bg-blue-50 border-2 border-blue-200 rounded-lg p-4 text-center cursor-grab hover:bg-blue-100 transition-colors shadow-sm';
+    animalElement.draggable = true;
+    animalElement.dataset.item = currentAnimal.name;
+    animalElement.dataset.category = currentAnimal.category;
+    animalElement.innerHTML = `
+        <div class="text-4xl mb-2">${currentAnimal.emoji}</div>
+        <div class="text-sm font-medium text-gray-800">${currentAnimal.name}</div>
+    `;
+    
+    // Add drag event listeners
+    animalElement.addEventListener('dragstart', function(e) {
+        this.classList.add('opacity-50');
+        e.dataTransfer.setData('text/plain', this.dataset.item);
+        e.dataTransfer.effectAllowed = 'move';
+    });
+    
+    animalElement.addEventListener('dragend', function() {
+        this.classList.remove('opacity-50');
+    });
+    
+    animalPool.appendChild(animalElement);
+    
+    // Update instructions
+    updateBuddyMessage(`I see a ${currentAnimal.name}! Can you drag it to the correct category to teach me?`);
+}
+
+// Set up drop zones
+function setupDropZones() {
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+        zone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            this.classList.add('border-blue-400', 'bg-blue-50');
+        });
+        
+        zone.addEventListener('dragleave', function() {
+            this.classList.remove('border-blue-400', 'bg-blue-50');
+        });
+        
+        zone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('border-blue-400', 'bg-blue-50');
+            
+            const animalName = e.dataTransfer.getData('text/plain');
+            const category = this.dataset.category;
+            
+            // Find the dragged animal element
+            const animalElement = document.querySelector(`[data-item="${animalName}"]`);
+            if (animalElement) {
+                const correctCategory = animalElement.dataset.category;
+                const isCorrect = correctCategory === category;
+                
+                // Move animal to category display
+                const categoryItems = document.getElementById(category + '-items');
+                const itemElement = document.createElement('span');
+                itemElement.className = `inline-block ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} px-3 py-1 rounded-full text-sm font-medium m-1`;
+                itemElement.innerHTML = `${animalElement.querySelector('.text-4xl').textContent} ${animalName}`;
+                categoryItems.appendChild(itemElement);
+                
+                // Remove the draggable animal
+                animalElement.remove();
+                
+                // Update drop zone text
+                if (this.children.length === 1 && this.children[0].classList.contains('text-gray-400')) {
+                    this.innerHTML = '';
+                }
+                
+                // Show feedback
+                if (isCorrect) {
+                    showBuddyMessage(`Excellent! ${animalName} is indeed a ${category.slice(0, -1)}! I'm learning from your example! 🌟`);
+                } else {
+                    showBuddyMessage(`Hmm, ${animalName} is actually a ${correctCategory.slice(0, -1)}, not a ${category.slice(0, -1)}. Thanks for the correction - I'll remember that! 🤔`, false);
+                }
+                
+                gameState.examplesGiven++;
+                updateProgress();
+                
+                // Add new animal after delay
+                setTimeout(() => {
+                    if (gameState.examplesGiven < gameState.maxExamples) {
+                        addNewAnimal();
+                    }
+                }, 3000);
+            }
+        });
+    });
+}
+
+// Test buddy function
+function testBuddyKnowledge() {
+    const testAnimal = gameState.animals[Math.floor(Math.random() * gameState.animals.length)];
+    
+    // Simple "AI" prediction logic (gets smarter with more examples)
+    const accuracy = Math.min(0.9, 0.4 + (gameState.examplesGiven * 0.06));
+    const isCorrect = Math.random() < accuracy;
+    
+    let prediction;
+    if (isCorrect) {
+        prediction = testAnimal.category;
+    } else {
+        const wrongCategories = ['mammals', 'birds', 'fish'].filter(c => c !== testAnimal.category);
+        prediction = wrongCategories[Math.floor(Math.random() * wrongCategories.length)];
+    }
+    
+    const confidence = isCorrect ? 
+        Math.round((70 + Math.random() * 25)) : 
+        Math.round((30 + Math.random() * 40));
+    
+    showBuddyMessage(
+        `Let me test my knowledge! I think a ${testAnimal.name} ${testAnimal.emoji} is a ${prediction.slice(0, -1)}. I'm ${confidence}% confident! ${isCorrect ? 'Did I get it right? 🎉' : 'Hmm, was I correct? 🤔'}`,
+        isCorrect
+    );
+    
+    if (isCorrect) {
+        gameState.correctPredictions++;
+    }
+    gameState.totalPredictions++;
+}
+
+// Initialize game
+document.addEventListener('DOMContentLoaded', function() {
+    setupDropZones();
+    addNewAnimal();
+    
+    // Event listeners
+    document.getElementById('new-animal-btn').addEventListener('click', addNewAnimal);
+    
+    document.getElementById('test-buddy-btn').addEventListener('click', testBuddyKnowledge);
+    
+    document.getElementById('complete-session-btn').addEventListener('click', function() {
+        const accuracy = gameState.totalPredictions > 0 ? 
+            Math.round((gameState.correctPredictions / gameState.totalPredictions) * 100) : 0;
+            
+        showBuddyMessage(
+            `Amazing training session! You taught me ${gameState.examplesGiven} examples and I achieved ${accuracy}% accuracy on my tests! Thank you for making me smarter! 🎓✨`
+        );
+        
+        setTimeout(() => {
+            alert('🎉 Congratulations! Your AI buddy is now much smarter thanks to your training!');
+            window.location.href = '{% url "robotic_buddy:activities" %}';
+        }, 3000);
+    });
+});
+</script>
+{% endblock %}

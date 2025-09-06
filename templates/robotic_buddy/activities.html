@@ -1,0 +1,229 @@
+{% extends 'robotic_buddy/base.html' %}
+
+{% block game_title %}Training Activities{% endblock %}
+
+{% block game_content %}
+<div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            🎯 Training Activities
+        </h1>
+        <p class="text-lg text-gray-600">
+            Choose an activity to train your AI buddy and teach it new skills!
+        </p>
+    </div>
+    
+    {% if buddy %}
+        <!-- Buddy Info Header -->
+        <div class="bg-white rounded-2xl p-6 mb-8 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="buddy-avatar w-16 h-16 buddy-{{ buddy.personality }} flex items-center justify-center text-white text-2xl">
+                        {% if buddy.personality == 'cheerful' %}😊
+                        {% elif buddy.personality == 'curious' %}🤔
+                        {% elif buddy.personality == 'patient' %}😌
+                        {% elif buddy.personality == 'playful' %}😄
+                        {% else %}🦉{% endif %}
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">{{ buddy.name }}</h2>
+                        <div class="flex items-center space-x-2">
+                            <span class="level-badge">Level {{ buddy.current_level }}</span>
+                            <span class="xp-badge">{{ buddy.experience_points }} XP</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'robotic_buddy:my_buddy' %}" class="btn btn-sm btn-outline btn-primary">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Activities Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Simple Training Game -->
+        <div class="game-card bg-white p-6 border border-green-200">
+            <div class="text-center mb-4">
+                <div class="text-4xl mb-3">🐾</div>
+                <h3 class="text-xl font-bold text-gray-800">Simple Animal Training</h3>
+                <span class="badge badge-success mb-2">Recommended</span>
+            </div>
+            <p class="text-gray-600 mb-4 text-sm">
+                Easy click-based training! Click buttons to teach your buddy about different animals.
+            </p>
+            <div class="space-y-2 mb-4">
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                    Super easy to use
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                    Instant feedback
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                    No account needed
+                </div>
+            </div>
+            <a href="{% url 'robotic_buddy:simple_game' %}" class="btn btn-primary w-full">
+                Start Training! 🚀
+            </a>
+        </div>
+        
+        <!-- Advanced Drag & Drop Game -->
+        <div class="game-card bg-white p-6 border border-blue-200">
+            <div class="text-center mb-4">
+                <div class="text-4xl mb-3">🎮</div>
+                <h3 class="text-xl font-bold text-gray-800">Advanced Classification</h3>
+                <span class="badge badge-primary mb-2">Interactive</span>
+            </div>
+            <p class="text-gray-600 mb-4 text-sm">
+                Advanced drag-and-drop training with full progress tracking and buddy creation.
+            </p>
+            <div class="space-y-2 mb-4">
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                    Drag & drop interface
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                    Full progress tracking
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                    Buddy customization
+                </div>
+            </div>
+            <a href="{% url 'robotic_buddy:drag_drop_game' %}" class="btn btn-secondary w-full">
+                Start Drag & Drop!
+            </a>
+        </div>
+        
+        <!-- Coming Soon Activities -->
+        <div class="game-card bg-white p-6 border border-gray-200 opacity-60">
+            <div class="text-center mb-4">
+                <div class="text-4xl mb-3">🗣️</div>
+                <h3 class="text-xl font-bold text-gray-800">Voice Commands</h3>
+                <span class="badge badge-secondary mb-2">Coming Soon</span>
+            </div>
+            <p class="text-gray-600 mb-4 text-sm">
+                Teach your buddy to understand and respond to voice commands and speech patterns.
+            </p>
+            <div class="space-y-2 mb-4">
+                <div class="flex items-center text-sm text-gray-500">
+                    <span class="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
+                    Speech recognition
+                </div>
+                <div class="flex items-center text-sm text-gray-500">
+                    <span class="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
+                    Command training
+                </div>
+                <div class="flex items-center text-sm text-gray-500">
+                    <span class="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
+                    Voice responses
+                </div>
+            </div>
+            <button class="btn btn-disabled w-full" disabled>
+                Coming Soon...
+            </button>
+        </div>
+        
+        <div class="game-card bg-white p-6 border border-gray-200 opacity-60">
+            <div class="text-center mb-4">
+                <div class="text-4xl mb-3">😊</div>
+                <h3 class="text-xl font-bold text-gray-800">Emotion Recognition</h3>
+                <span class="badge badge-secondary mb-2">Coming Soon</span>
+            </div>
+            <p class="text-gray-600 mb-4 text-sm">
+                Train your buddy to recognize different emotions and facial expressions.
+            </p>
+            <div class="space-y-2 mb-4">
+                <div class="flex items-center text-sm text-gray-500">
+                    <span class="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
+                    Emotion detection
+                </div>
+                <div class="flex items-center text-sm text-gray-500">
+                    <span class="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
+                    Facial recognition
+                </div>
+                <div class="flex items-center text-sm text-gray-500">
+                    <span class="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
+                    Mood analysis
+                </div>
+            </div>
+            <button class="btn btn-disabled w-full" disabled>
+                Coming Soon...
+            </button>
+        </div>
+        
+        <div class="game-card bg-white p-6 border border-gray-200 opacity-60">
+            <div class="text-center mb-4">
+                <div class="text-4xl mb-3">🧩</div>
+                <h3 class="text-xl font-bold text-gray-800">Pattern Recognition</h3>
+                <span class="badge badge-secondary mb-2">Coming Soon</span>
+            </div>
+            <p class="text-gray-600 mb-4 text-sm">
+                Help your buddy identify and learn visual patterns and sequences.
+            </p>
+            <div class="space-y-2 mb-4">
+                <div class="flex items-center text-sm text-gray-500">
+                    <span class="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
+                    Visual patterns
+                </div>
+                <div class="flex items-center text-sm text-gray-500">
+                    <span class="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
+                    Sequence learning
+                </div>
+                <div class="flex items-center text-sm text-gray-500">
+                    <span class="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
+                    Shape recognition
+                </div>
+            </div>
+            <button class="btn btn-disabled w-full" disabled>
+                Coming Soon...
+            </button>
+        </div>
+    </div>
+    
+    <!-- Help Section -->
+    <div class="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8">
+        <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">🤔 New to AI Training?</h3>
+            <p class="text-gray-600">Here's how to get started with your AI buddy!</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span class="text-xl">1️⃣</span>
+                </div>
+                <h4 class="font-semibold text-gray-800 mb-2">Start Simple</h4>
+                <p class="text-sm text-gray-600">Begin with "Simple Animal Training" - it's the easiest way to understand AI learning!</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span class="text-xl">2️⃣</span>
+                </div>
+                <h4 class="font-semibold text-gray-800 mb-2">Watch & Learn</h4>
+                <p class="text-sm text-gray-600">See how your buddy gets smarter with each example you provide!</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span class="text-xl">3️⃣</span>
+                </div>
+                <h4 class="font-semibold text-gray-800 mb-2">Test Knowledge</h4>
+                <p class="text-sm text-gray-600">After training, test what your buddy has learned and see its predictions!</p>
+            </div>
+        </div>
+        
+        <div class="text-center mt-6">
+            <a href="{% url 'robotic_buddy:simple_game' %}" class="btn btn-lg btn-primary">
+                🚀 Start Your First Training Session!
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -237,6 +237,13 @@ class SimpleGameView(TemplateView):
     template_name = 'robotic_buddy/simple_game.html'
 
 
+class DragDropGameView(TemplateView):
+    """
+    Drag and drop animal classification game (no database required)
+    """
+    template_name = 'robotic_buddy/drag_drop_game.html'
+
+
 class ClassificationGameView(TemplateView):
     """
     Our MVP classification training game
