@@ -1,18 +1,67 @@
 {% extends 'robotic_buddy/base.html' %}
 
-{% block game_title %}Meet Your AI Buddy{% endblock %}
+{% block game_title %}AI Learning Games - Create Your AI Buddy{% endblock %}
+
+{% block meta_description %}Create and train your own AI buddy through interactive educational games. Kids learn artificial intelligence and machine learning concepts through hands-on activities, drag-and-drop games, and personalized AI training sessions.{% endblock %}
+
+{% block meta_keywords %}AI buddy games, create AI companion, kids AI education, machine learning for children, interactive AI training, STEM education games, artificial intelligence learning, AI classification games{% endblock %}
+
+{% block og_title %}Create Your AI Buddy - Interactive AI Learning Games{% endblock %}
+{% block og_description %}Join thousands of kids learning AI! Create your personal AI buddy and teach it through fun games. Perfect introduction to machine learning concepts for young learners.{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<!-- Structured Data for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Game",
+  "name": "AI Buddy Learning Games",
+  "description": "Interactive educational games where kids create and train their own AI companions to learn machine learning concepts through hands-on activities.",
+  "url": "{{ request.build_absolute_uri }}",
+  "applicationCategory": "Educational Game",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "educationalUse": "STEM Education",
+  "educationalLevel": "Elementary School, Middle School",
+  "learningResourceType": "Game",
+  "audience": {
+    "@type": "EducationalAudience",
+    "educationalRole": "student",
+    "audienceType": "children ages 6-16"
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "Decipherworld",
+    "url": "https://decipherworld.com"
+  },
+  "keywords": ["AI education", "machine learning for kids", "STEM games", "artificial intelligence", "educational technology", "interactive learning"]
+}
+</script>
+{% endblock %}
 
 {% block game_content %}
 <div class="text-center py-8">
     <!-- Welcome Hero Section -->
     <div class="mb-12">
         <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">
-            Meet Your <span class="text-primary">AI Buddy</span>! 🤖
+            Create Your <span class="text-primary">AI Learning Buddy</span>! 🤖
         </h1>
         <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-            Create your own AI companion and teach it amazing things! 
-            Watch as your buddy learns from you and becomes smarter with every lesson.
+            The world's most fun way to learn artificial intelligence! Create your personal AI companion, 
+            teach it through interactive games, and discover how machine learning really works. 
+            Perfect for ages 6-16.
         </p>
+        <div class="mt-6 flex flex-wrap justify-center gap-3 text-sm">
+            <span class="badge badge-primary">Ages 6-16</span>
+            <span class="badge badge-secondary">No Sign-up Required</span>
+            <span class="badge badge-accent">100% Educational</span>
+            <span class="badge badge-success">STEM Approved</span>
+        </div>
     </div>
     
     {% if has_buddy %}
@@ -81,14 +130,17 @@
             
             <!-- Preview of Available Activities -->
             <div>
-                <h3 class="text-2xl font-bold text-gray-800 mb-6">🎯 What You'll Teach Your Buddy</h3>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">🎯 AI Learning Games & Activities</h2>
                 <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
                     <div class="game-card bg-white p-6 text-center">
                         <div class="activity-icon classification-icon">🐾</div>
-                        <h4 class="font-bold text-gray-800 mb-2">Animal Classification</h4>
+                        <h3 class="font-bold text-gray-800 mb-2">Animal Classification Game</h3>
                         <p class="text-sm text-gray-600">
-                            Teach your buddy to recognize different animals and sort them into categories!
+                            Train your AI buddy to classify animals using machine learning! Drag and drop animals into categories and watch your buddy learn pattern recognition through hands-on training.
                         </p>
+                        <div class="mt-3">
+                            <span class="badge badge-sm badge-success">Available Now</span>
+                        </div>
                     </div>
                     
                     <div class="game-card bg-white p-6 text-center">

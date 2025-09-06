@@ -1,9 +1,26 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{% block game_title %}AI Buddy Game{% endblock %} - Decipherworld{% endblock %}
+{% block title %}{% block game_title %}AI Learning Games{% endblock %} - Interactive AI Education | Decipherworld{% endblock %}
 
 {% block extra_head %}
+<!-- SEO Meta Tags for AI Learning Games -->
+<meta name="description" content="{% block meta_description %}Interactive AI learning games for kids. Create your AI buddy, teach it through fun activities, and learn machine learning concepts through hands-on play. Perfect for STEM education.{% endblock %}">
+<meta name="keywords" content="{% block meta_keywords %}AI games for kids, machine learning education, STEM games, AI buddy, interactive learning, artificial intelligence for children, educational games, AI training{% endblock %}">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph Meta Tags -->
+<meta property="og:title" content="{% block og_title %}AI Learning Games - Create Your AI Buddy | Decipherworld{% endblock %}">
+<meta property="og:description" content="{% block og_description %}Teach your own AI buddy through interactive games! Kids learn machine learning concepts by training their AI companion in a fun, educational environment.{% endblock %}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:site_name" content="Decipherworld">
+
+<!-- Twitter Card Meta Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{% block twitter_title %}AI Learning Games - Interactive AI Education{% endblock %}">
+<meta name="twitter:description" content="{% block twitter_description %}Create and train your AI buddy! Educational games that teach kids machine learning through hands-on activities.{% endblock %}">
+
 <!-- Game-specific styles and animations -->
 <style>
     /* Kid-friendly animations and styles */
