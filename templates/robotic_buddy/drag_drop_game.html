@@ -179,11 +179,41 @@
                     </div>
                 </div>
                 
-                <!-- Decision Process -->
-                <div id="decision-process" class="hidden">
-                    <h4 class="font-bold text-purple-700 mb-2 text-center">🤔 My Thinking Process:</h4>
-                    <div id="decision-steps" class="space-y-1 text-xs text-purple-600 bg-white p-3 rounded-lg">
-                        <!-- Decision steps will be populated here -->
+                <!-- Thinking Process History -->
+                <div id="thinking-history" class="mb-6" style="display: none;">
+                    <h4 class="font-bold text-purple-700 mb-3 text-center">🤔 My Thinking Process History:</h4>
+                    <div id="thinking-container" class="max-h-64 overflow-y-auto space-y-3 bg-gradient-to-b from-purple-50 to-indigo-50 p-3 rounded-lg border border-purple-200">
+                        <!-- Thinking history will be populated here -->
+                    </div>
+                    <div class="text-center mt-2">
+                        <button id="toggle-brain-mode" class="btn btn-sm btn-secondary">
+                            🧠 See How I Think! (Advanced)
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Advanced AI Brain Mode -->
+                <div id="advanced-brain-mode" class="mt-4" style="display: none;">
+                    <!-- Pattern Detective -->
+                    <div class="mb-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
+                        <h5 class="font-bold text-green-700 mb-3 text-center">🔍 Pattern Detective - What I See:</h5>
+                        <div id="pattern-features" class="grid grid-cols-3 gap-2 mb-3">
+                            <!-- Feature detection boxes will appear here -->
+                        </div>
+                        <div id="similarity-scores" class="text-xs text-green-600">
+                            <!-- Similarity comparisons will appear here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Classification Boundaries -->
+                    <div class="mb-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+                        <h5 class="font-bold text-indigo-700 mb-3 text-center">📊 Classification Map - Where Animals Live:</h5>
+                        <div id="classification-map" class="bg-white rounded-lg p-3 min-h-32">
+                            <!-- Classification visualization will appear here -->
+                        </div>
+                        <div class="text-xs text-indigo-600 mt-2 text-center">
+                            Animals cluster together by similar features. Boundaries show where I decide between categories.
+                        </div>
                     </div>
                 </div>
                 
@@ -242,6 +272,23 @@ let gameState = {
         mammals: [],
         birds: [],
         fish: []
+    },
+    // Thinking Process History
+    thinkingHistory: [],
+    // Advanced AI Brain Mode
+    brainModeActive: false,
+    // Animal Features for Pattern Recognition
+    animalFeatures: {
+        'Dog': { fur: 1, feathers: 0, scales: 0, liveInWater: 0, hasWings: 0, warmBlooded: 1 },
+        'Cat': { fur: 1, feathers: 0, scales: 0, liveInWater: 0, hasWings: 0, warmBlooded: 1 },
+        'Eagle': { fur: 0, feathers: 1, scales: 0, liveInWater: 0, hasWings: 1, warmBlooded: 1 },
+        'Goldfish': { fur: 0, feathers: 0, scales: 1, liveInWater: 1, hasWings: 0, warmBlooded: 0 },
+        'Lion': { fur: 1, feathers: 0, scales: 0, liveInWater: 0, hasWings: 0, warmBlooded: 1 },
+        'Parrot': { fur: 0, feathers: 1, scales: 0, liveInWater: 0, hasWings: 1, warmBlooded: 1 },
+        'Shark': { fur: 0, feathers: 0, scales: 1, liveInWater: 1, hasWings: 0, warmBlooded: 0 },
+        'Elephant': { fur: 1, feathers: 0, scales: 0, liveInWater: 0, hasWings: 0, warmBlooded: 1 },
+        'Owl': { fur: 0, feathers: 1, scales: 0, liveInWater: 0, hasWings: 1, warmBlooded: 1 },
+        'Whale': { fur: 0, feathers: 0, scales: 0, liveInWater: 1, hasWings: 0, warmBlooded: 1 }
     }
 };
 
@@ -478,21 +525,169 @@ function calculateCategoryAccuracy(category) {
     return Math.max(0.1, data.correct / data.total); // Minimum 10% accuracy
 }
 
-function showDecisionProcess(animal, prediction, confidence, reasoning) {
-    const decisionEl = document.getElementById('decision-process');
-    const stepsEl = document.getElementById('decision-steps');
+// Enhanced Thinking Process Functions
+function addToThinkingHistory(animal, prediction, confidence, reasoning, features, patterns) {
+    const timestamp = new Date().toLocaleTimeString();
+    const thinkingEntry = {
+        animal,
+        prediction,
+        confidence,
+        reasoning,
+        features,
+        patterns,
+        timestamp
+    };
     
-    decisionEl.classList.remove('hidden');
-    stepsEl.innerHTML = `
-        <div>1. Looking at ${animal}...</div>
-        <div>2. Checking my memory palace...</div>
-        <div>3. ${reasoning}</div>
-        <div>4. Prediction: ${prediction} (${confidence}% confident)</div>
+    gameState.thinkingHistory.push(thinkingEntry);
+    updateThinkingHistoryDisplay();
+    
+    if (gameState.brainModeActive) {
+        updatePatternDetective(animal, features);
+        updateClassificationMap(animal, prediction, patterns);
+    }
+}
+
+function updateThinkingHistoryDisplay() {
+    const container = document.getElementById('thinking-container');
+    const historyEl = document.getElementById('thinking-history');
+    
+    // Show thinking history after first prediction
+    if (gameState.thinkingHistory.length > 0) {
+        historyEl.style.display = 'block';
+    }
+    
+    // Display all thinking processes as conversation bubbles
+    container.innerHTML = gameState.thinkingHistory.map((entry, index) => `
+        <div class="thinking-bubble bg-white p-3 rounded-lg border border-purple-300 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <div class="font-semibold text-purple-800 text-sm">🤔 Thinking ${index + 1}: ${entry.animal}</div>
+                <div class="text-xs text-gray-500">${entry.timestamp}</div>
+            </div>
+            <div class="space-y-1 text-xs text-purple-600">
+                <div>1. Looking at ${entry.animal}...</div>
+                <div>2. Checking my memory palace...</div>
+                <div>3. ${entry.reasoning}</div>
+                <div>4. Prediction: <strong>${entry.prediction}</strong> (${entry.confidence}% confident)</div>
+            </div>
+        </div>
+    `).join('');
+    
+    // Auto-scroll to latest
+    container.scrollTop = container.scrollHeight;
+}
+
+function updatePatternDetective(animal, features) {
+    const featuresContainer = document.getElementById('pattern-features');
+    const similarityContainer = document.getElementById('similarity-scores');
+    
+    // Show feature detection boxes
+    const featureBoxes = [
+        { name: 'Has Fur', value: features.fur, emoji: '🦔' },
+        { name: 'Has Feathers', value: features.feathers, emoji: '🪶' },
+        { name: 'Has Scales', value: features.scales, emoji: '🐟' },
+        { name: 'Lives in Water', value: features.liveInWater, emoji: '🌊' },
+        { name: 'Has Wings', value: features.hasWings, emoji: '🪽' },
+        { name: 'Warm Blooded', value: features.warmBlooded, emoji: '🔥' }
+    ];
+    
+    featuresContainer.innerHTML = featureBoxes.map(feature => {
+        const isPresent = feature.value > 0;
+        return `
+            <div class="feature-box p-2 rounded text-center text-xs ${isPresent ? 'bg-green-100 border-green-300' : 'bg-gray-100 border-gray-300'} border">
+                <div class="text-lg mb-1">${feature.emoji}</div>
+                <div class="font-medium ${isPresent ? 'text-green-800' : 'text-gray-500'}">${feature.name}</div>
+                <div class="text-xs ${isPresent ? 'text-green-600' : 'text-gray-400'}">${isPresent ? '✓ Yes' : '✗ No'}</div>
+            </div>
+        `;
+    }).join('');
+    
+    // Show similarity to learned examples
+    const similarities = calculateSimilarities(animal);
+    similarityContainer.innerHTML = similarities.length > 0 ? 
+        `<div class="font-medium mb-1">Pattern Matching:</div>` +
+        similarities.map(sim => `
+            <div class="similarity-bar flex items-center mb-1">
+                <span class="text-xs w-16">${sim.example}:</span>
+                <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-400 h-2 rounded-full" style="width: ${sim.similarity}%"></div>
+                </div>
+                <span class="text-xs w-8">${sim.similarity}%</span>
+            </div>
+        `).join('') :
+        '<div class="text-xs">No examples to compare with yet.</div>';
+}
+
+function updateClassificationMap(animal, prediction, patterns) {
+    const mapContainer = document.getElementById('classification-map');
+    
+    // Simple 2D visualization of animal clusters
+    const positions = {
+        mammals: { x: 20, y: 60, color: '#dc2626' },
+        birds: { x: 50, y: 20, color: '#2563eb' },
+        fish: { x: 80, y: 80, color: '#16a34a' }
+    };
+    
+    let mapHTML = '<div class="relative w-full h-32">';
+    
+    // Draw category regions
+    Object.keys(positions).forEach(category => {
+        const pos = positions[category];
+        mapHTML += `
+            <div class="absolute w-16 h-16 rounded-full opacity-20" 
+                 style="background-color: ${pos.color}; left: ${pos.x - 8}%; top: ${pos.y - 20}%;">
+            </div>
+            <div class="absolute text-xs font-medium" 
+                 style="color: ${pos.color}; left: ${pos.x - 5}%; top: ${pos.y + 5}%;">
+                ${category.charAt(0).toUpperCase() + category.slice(1)}
+            </div>
+        `;
+    });
+    
+    // Show current animal position
+    const currentPos = positions[gameState.animals.find(a => a.name === animal)?.category || 'mammals'];
+    mapHTML += `
+        <div class="absolute w-4 h-4 rounded-full bg-purple-600 border-2 border-white shadow-lg animate-pulse" 
+             style="left: ${currentPos.x - 2}%; top: ${currentPos.y - 10}%;">
+        </div>
+        <div class="absolute text-xs font-bold text-purple-800" 
+             style="left: ${currentPos.x - 3}%; top: ${currentPos.y + 15}%;">
+            ${animal}
+        </div>
     `;
     
-    setTimeout(() => {
-        decisionEl.classList.add('hidden');
-    }, 5000);
+    mapHTML += '</div>';
+    mapContainer.innerHTML = mapHTML;
+}
+
+function calculateSimilarities(animal) {
+    const currentFeatures = gameState.animalFeatures[animal];
+    const similarities = [];
+    
+    // Compare with learned examples from memory palace
+    Object.keys(gameState.memoryPalace).forEach(category => {
+        gameState.memoryPalace[category].forEach(example => {
+            if (example.animal !== animal && gameState.animalFeatures[example.animal]) {
+                const exampleFeatures = gameState.animalFeatures[example.animal];
+                let similarity = 0;
+                let totalFeatures = 0;
+                
+                Object.keys(currentFeatures).forEach(feature => {
+                    totalFeatures++;
+                    if (currentFeatures[feature] === exampleFeatures[feature]) {
+                        similarity++;
+                    }
+                });
+                
+                const percentSimilarity = Math.round((similarity / totalFeatures) * 100);
+                similarities.push({
+                    example: example.animal,
+                    similarity: percentSimilarity
+                });
+            }
+        });
+    });
+    
+    return similarities.sort((a, b) => b.similarity - a.similarity).slice(0, 3);
 }
 
 // Enhanced Test buddy function with category-specific learning
@@ -520,8 +715,11 @@ function testBuddyKnowledge() {
     
     const confidence = Math.round(categoryAccuracy * 100);
     
-    // Show decision process visualization
-    showDecisionProcess(testAnimal.name, prediction.slice(0, -1), confidence, reasoning);
+    // Add to thinking history with enhanced information
+    const features = gameState.animalFeatures[testAnimal.name];
+    const patterns = calculateSimilarities(testAnimal.name);
+    
+    addToThinkingHistory(testAnimal.name, prediction.slice(0, -1), confidence, reasoning, features, patterns);
     
     setTimeout(() => {
         showBuddyMessage(
@@ -613,6 +811,29 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('new-animal-btn').addEventListener('click', addNewAnimal);
     
     document.getElementById('test-buddy-btn').addEventListener('click', testBuddyKnowledge);
+    
+    // Brain mode toggle
+    document.getElementById('toggle-brain-mode').addEventListener('click', function() {
+        gameState.brainModeActive = !gameState.brainModeActive;
+        const brainModeEl = document.getElementById('advanced-brain-mode');
+        
+        if (gameState.brainModeActive) {
+            brainModeEl.style.display = 'block';
+            this.textContent = '🧠 Hide Advanced Mode';
+            this.className = 'btn btn-sm btn-warning';
+            
+            // Update visualizations if we have thinking history
+            if (gameState.thinkingHistory.length > 0) {
+                const lastEntry = gameState.thinkingHistory[gameState.thinkingHistory.length - 1];
+                updatePatternDetective(lastEntry.animal, lastEntry.features);
+                updateClassificationMap(lastEntry.animal, lastEntry.prediction, lastEntry.patterns);
+            }
+        } else {
+            brainModeEl.style.display = 'none';
+            this.textContent = '🧠 See How I Think! (Advanced)';
+            this.className = 'btn btn-sm btn-secondary';
+        }
+    });
     
     document.getElementById('complete-session-btn').addEventListener('click', function() {
         // Calculate detailed learning statistics
