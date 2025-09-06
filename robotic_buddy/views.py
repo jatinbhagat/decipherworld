@@ -230,6 +230,13 @@ class TrainingSessionView(TemplateView):
         return context
 
 
+class SimpleGameView(TemplateView):
+    """
+    Simple click-based animal classification game
+    """
+    template_name = 'robotic_buddy/simple_game.html'
+
+
 class ClassificationGameView(TemplateView):
     """
     Our MVP classification training game

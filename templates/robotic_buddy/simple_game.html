@@ -1,0 +1,251 @@
+{% extends 'robotic_buddy/base.html' %}
+
+{% block game_title %}Train Your AI Buddy{% endblock %}
+
+{% block game_content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Simple Step-by-Step Instructions -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            🎓 Teach Your AI Buddy About Animals!
+        </h1>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-blue-800 mb-4">📚 How to Train:</h2>
+            <div class="grid md:grid-cols-3 gap-4 text-left">
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                    <div>
+                        <h3 class="font-semibold text-blue-800">See the Animal</h3>
+                        <p class="text-blue-700 text-sm">Look at the animal that appears below</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                    <div>
+                        <h3 class="font-semibold text-green-800">Click the Right Box</h3>
+                        <p class="text-green-700 text-sm">Click which category it belongs to</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                    <div>
+                        <h3 class="font-semibold text-purple-800">Watch Buddy Learn</h3>
+                        <p class="text-purple-700 text-sm">See your buddy get smarter!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Current Animal to Classify -->
+    <div class="text-center mb-8">
+        <div class="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
+            <h3 class="text-xl font-semibold mb-4">🐾 What type of animal is this?</h3>
+            <div id="current-animal" class="mb-6">
+                <div class="text-8xl mb-4">🐕</div>
+                <h2 class="text-2xl font-bold text-gray-800">Dog</h2>
+            </div>
+            
+            <!-- Simple Click Buttons -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                <button class="category-btn bg-orange-100 hover:bg-orange-200 border-2 border-orange-300 rounded-xl p-6 transition-all transform hover:scale-105" data-category="mammals">
+                    <div class="text-4xl mb-2">🦁</div>
+                    <h3 class="font-bold text-orange-800">Mammals</h3>
+                    <p class="text-sm text-orange-600">Has fur, warm blood</p>
+                </button>
+                
+                <button class="category-btn bg-blue-100 hover:bg-blue-200 border-2 border-blue-300 rounded-xl p-6 transition-all transform hover:scale-105" data-category="birds">
+                    <div class="text-4xl mb-2">🦅</div>
+                    <h3 class="font-bold text-blue-800">Birds</h3>
+                    <p class="text-sm text-blue-600">Has feathers, can fly</p>
+                </button>
+                
+                <button class="category-btn bg-green-100 hover:bg-green-200 border-2 border-green-300 rounded-xl p-6 transition-all transform hover:scale-105" data-category="fish">
+                    <div class="text-4xl mb-2">🐟</div>
+                    <h3 class="font-bold text-green-800">Fish</h3>
+                    <p class="text-sm text-green-600">Lives in water, has gills</p>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Progress -->
+    <div class="bg-white rounded-xl p-6 mb-8">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-gray-800">🎯 Training Progress</h3>
+            <span class="text-sm text-gray-600"><span id="examples-count">0</span> / 8 examples</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-4">
+            <div id="progress-bar" class="bg-gradient-to-r from-blue-400 to-purple-500 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+    </div>
+    
+    <!-- Buddy Response Area -->
+    <div id="buddy-response" class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-6 mb-8" style="display: none;">
+        <div class="flex items-start space-x-4">
+            <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-xl">
+                🤖
+            </div>
+            <div class="flex-1">
+                <h4 class="font-semibold text-purple-800 mb-2">Your AI Buddy Says:</h4>
+                <p id="buddy-message" class="text-purple-700"></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Test Buddy Button -->
+    <div class="text-center">
+        <button id="test-buddy-btn" class="btn btn-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105" style="display: none;">
+            🧠 Test My Buddy's Knowledge!
+        </button>
+        
+        <button id="complete-btn" class="btn btn-lg bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105" style="display: none;">
+            🎉 Training Complete!
+        </button>
+    </div>
+</div>
+
+<script>
+// Simple game state
+let currentAnimalIndex = 0;
+let examplesGiven = 0;
+let maxExamples = 8;
+let isTestMode = false;
+
+// Simple animal dataset
+const animals = [
+    { name: 'Dog', emoji: '🐕', category: 'mammals' },
+    { name: 'Cat', emoji: '🐱', category: 'mammals' },
+    { name: 'Eagle', emoji: '🦅', category: 'birds' },
+    { name: 'Fish', emoji: '🐟', category: 'fish' },
+    { name: 'Lion', emoji: '🦁', category: 'mammals' },
+    { name: 'Parrot', emoji: '🦜', category: 'birds' },
+    { name: 'Shark', emoji: '🦈', category: 'fish' },
+    { name: 'Elephant', emoji: '🐘', category: 'mammals' }
+];
+
+function showAnimal(animal) {
+    document.getElementById('current-animal').innerHTML = `
+        <div class="text-8xl mb-4">${animal.emoji}</div>
+        <h2 class="text-2xl font-bold text-gray-800">${animal.name}</h2>
+    `;
+}
+
+function updateProgress() {
+    const percent = (examplesGiven / maxExamples) * 100;
+    document.getElementById('progress-bar').style.width = percent + '%';
+    document.getElementById('examples-count').textContent = examplesGiven;
+    
+    if (examplesGiven >= 3) {
+        document.getElementById('test-buddy-btn').style.display = 'block';
+    }
+    
+    if (examplesGiven >= maxExamples) {
+        document.getElementById('complete-btn').style.display = 'block';
+    }
+}
+
+function showBuddyMessage(message, isCorrect = true) {
+    const responseDiv = document.getElementById('buddy-response');
+    const messageEl = document.getElementById('buddy-message');
+    
+    messageEl.textContent = message;
+    responseDiv.style.display = 'block';
+    
+    if (isCorrect) {
+        responseDiv.className = 'bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-6 mb-8';
+    } else {
+        responseDiv.className = 'bg-gradient-to-r from-orange-100 to-red-100 rounded-xl p-6 mb-8';
+    }
+    
+    setTimeout(() => {
+        responseDiv.style.display = 'none';
+    }, 3000);
+}
+
+function nextAnimal() {
+    if (currentAnimalIndex < animals.length - 1) {
+        currentAnimalIndex++;
+        showAnimal(animals[currentAnimalIndex]);
+    } else {
+        // Restart from beginning
+        currentAnimalIndex = 0;
+        showAnimal(animals[currentAnimalIndex]);
+    }
+}
+
+// Category button handlers
+document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const selectedCategory = this.dataset.category;
+        const currentAnimal = animals[currentAnimalIndex];
+        const isCorrect = selectedCategory === currentAnimal.category;
+        
+        // Visual feedback
+        if (isCorrect) {
+            this.classList.add('bg-green-200', 'border-green-400');
+            showBuddyMessage(`Great! ${currentAnimal.name} is indeed a ${selectedCategory.slice(0, -1)}! I'm learning! 🌟`);
+        } else {
+            this.classList.add('bg-red-200', 'border-red-400');
+            const correctCategory = currentAnimal.category;
+            showBuddyMessage(`Oops! ${currentAnimal.name} is actually a ${correctCategory.slice(0, -1)}, not a ${selectedCategory.slice(0, -1)}. Thanks for teaching me! 🤔`, false);
+        }
+        
+        // Disable buttons temporarily
+        document.querySelectorAll('.category-btn').forEach(b => b.disabled = true);
+        
+        examplesGiven++;
+        updateProgress();
+        
+        // Next animal after delay
+        setTimeout(() => {
+            // Reset button colors
+            document.querySelectorAll('.category-btn').forEach(b => {
+                b.classList.remove('bg-green-200', 'border-green-400', 'bg-red-200', 'border-red-400');
+                b.disabled = false;
+            });
+            
+            if (examplesGiven < maxExamples) {
+                nextAnimal();
+            }
+        }, 2000);
+    });
+});
+
+// Test buddy button
+document.getElementById('test-buddy-btn').addEventListener('click', function() {
+    alert('🧠 Testing mode! Now I\'ll try to guess the next animal myself. Watch me predict!');
+    
+    nextAnimal();
+    const currentAnimal = animals[currentAnimalIndex];
+    
+    // Simple "AI" prediction (random with some bias toward correct answer)
+    const categories = ['mammals', 'birds', 'fish'];
+    let prediction;
+    
+    if (Math.random() < 0.7) { // 70% chance of being correct
+        prediction = currentAnimal.category;
+    } else {
+        const wrongCategories = categories.filter(c => c !== currentAnimal.category);
+        prediction = wrongCategories[Math.floor(Math.random() * wrongCategories.length)];
+    }
+    
+    setTimeout(() => {
+        const isCorrect = prediction === currentAnimal.category;
+        showBuddyMessage(
+            `I think this ${currentAnimal.name} is a ${prediction.slice(0, -1)}! ${isCorrect ? 'Did I get it right? 🎉' : 'Hmm, did I make a mistake? 🤔'}`,
+            isCorrect
+        );
+    }, 1000);
+});
+
+// Complete button
+document.getElementById('complete-btn').addEventListener('click', function() {
+    alert('🎉 Congratulations! You\'ve successfully taught your AI Buddy about animals! Your buddy is now smarter thanks to you!');
+    window.location.href = '{% url "robotic_buddy:home" %}';
+});
+
+// Initialize
+showAnimal(animals[0]);
+</script>
+{% endblock %}

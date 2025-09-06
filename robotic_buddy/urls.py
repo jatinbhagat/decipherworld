@@ -16,6 +16,7 @@ urlpatterns = [
     
     # Classification Game (our first MVP feature)
     path('classification-game/', views.ClassificationGameView.as_view(), name='classification_game'),
+    path('simple-game/', views.SimpleGameView.as_view(), name='simple_game'),
     
     # AJAX endpoints for game interactions
     path('api/submit-example/', views.submit_training_example, name='submit_example'),

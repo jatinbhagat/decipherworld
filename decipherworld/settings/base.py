@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-temp-key-change-in-production'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver', 'decipherworld.com', 'www.decipherworld.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver', 'decipherworld.com', 'www.decipherworld.com', '169.254.131.4', '169.254.131.1']
 
 # Application definition
 INSTALLED_APPS = [
