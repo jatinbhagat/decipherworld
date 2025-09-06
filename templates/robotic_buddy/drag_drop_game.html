@@ -319,6 +319,7 @@ function addNewAnimal() {
     
     // Add drag event listeners
     animalElement.addEventListener('dragstart', function(e) {
+        console.log('Drag started for:', this.dataset.item);
         this.classList.add('opacity-50');
         e.dataTransfer.setData('text/plain', this.dataset.item);
         e.dataTransfer.effectAllowed = 'move';
@@ -336,7 +337,12 @@ function addNewAnimal() {
 
 // Set up drop zones
 function setupDropZones() {
-    document.querySelectorAll('.drop-zone').forEach(zone => {
+    console.log('Setting up drop zones...');
+    const dropZones = document.querySelectorAll('.drop-zone');
+    console.log('Found', dropZones.length, 'drop zones');
+    
+    dropZones.forEach(zone => {
+        console.log('Setting up zone:', zone.dataset.category);
         zone.addEventListener('dragover', function(e) {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
@@ -348,17 +354,22 @@ function setupDropZones() {
         });
         
         zone.addEventListener('drop', function(e) {
+            console.log('Drop event triggered!'); // Debug log
             e.preventDefault();
             this.classList.remove('border-blue-400', 'bg-blue-50');
             
             const animalName = e.dataTransfer.getData('text/plain');
             const category = this.dataset.category;
             
+            console.log('Animal:', animalName, 'Category:', category); // Debug log
+            
             // Find the dragged animal element
             const animalElement = document.querySelector(`[data-item="${animalName}"]`);
             if (animalElement) {
                 const correctCategory = animalElement.dataset.category;
                 const isCorrect = correctCategory === category;
+                
+                console.log('Correct category:', correctCategory, 'Is correct:', isCorrect); // Debug log
                 
                 // Move animal to category display
                 const categoryItems = document.getElementById(category + '-items');
@@ -375,23 +386,31 @@ function setupDropZones() {
                     this.innerHTML = '';
                 }
                 
-                // Record training data for enhanced learning
-                recordTrainingExample(animalName, correctCategory, category, isCorrect);
+                // Record training data (wrapped in try-catch to prevent errors)
+                try {
+                    recordTrainingExample(animalName, correctCategory, category, isCorrect);
+                    updateAIVisualization();
+                } catch (error) {
+                    console.log('Error in learning functions:', error);
+                }
                 
-                // Show feedback with learning insights
+                // Show feedback
                 if (isCorrect) {
-                    showBuddyMessage(`Excellent! ${animalName} is indeed a ${category.slice(0, -1)}! I'm storing this in my ${correctCategory} memory palace! 🌟`);
+                    showBuddyMessage(`Excellent! ${animalName} is indeed a ${category.slice(0, -1)}! I'm learning from your example! 🌟`);
                 } else {
-                    showBuddyMessage(`Hmm, ${animalName} is actually a ${correctCategory.slice(0, -1)}, not a ${category.slice(0, -1)}. I'm updating my understanding - thanks for the correction! 🤔`, false);
+                    showBuddyMessage(`Hmm, ${animalName} is actually a ${correctCategory.slice(0, -1)}, not a ${category.slice(0, -1)}. Thanks for the correction - I'll remember that! 🤔`, false);
                 }
                 
                 gameState.examplesGiven++;
                 updateProgress();
-                updateAIVisualization();
                 
                 // Show AI brain after 2 examples
-                if (gameState.examplesGiven >= 2) {
-                    document.getElementById('ai-visualization').style.display = 'block';
+                try {
+                    if (gameState.examplesGiven >= 2) {
+                        document.getElementById('ai-visualization').style.display = 'block';
+                    }
+                } catch (error) {
+                    console.log('Error showing AI visualization:', error);
                 }
                 
                 // Add new animal after delay
@@ -400,6 +419,8 @@ function setupDropZones() {
                         addNewAnimal();
                     }
                 }, 3000);
+            } else {
+                console.log('Animal element not found!');
             }
         });
     });
@@ -517,8 +538,76 @@ function testBuddyKnowledge() {
 
 // Initialize game
 document.addEventListener('DOMContentLoaded', function() {
-    setupDropZones();
-    addNewAnimal();
+    console.log('DOM loaded, initializing game...');
+    
+    // Add a slight delay to ensure all elements are ready
+    setTimeout(() => {
+        setupDropZones();
+        addNewAnimal();
+        
+        // Backup method - directly attach events to each zone
+        const mammalsZone = document.getElementById('mammals-zone');
+        const birdsZone = document.getElementById('birds-zone');
+        const fishZone = document.getElementById('fish-zone');
+        
+        [mammalsZone, birdsZone, fishZone].forEach(zone => {
+            if (zone) {
+                console.log('Setting backup events for:', zone.id);
+                zone.ondragover = function(e) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    this.style.backgroundColor = '#dbeafe';
+                    this.style.borderColor = '#3b82f6';
+                };
+                
+                zone.ondragleave = function(e) {
+                    this.style.backgroundColor = '';
+                    this.style.borderColor = '';
+                };
+                
+                zone.ondrop = function(e) {
+                    e.preventDefault();
+                    console.log('Backup drop triggered on:', this.id);
+                    this.style.backgroundColor = '';
+                    this.style.borderColor = '';
+                    
+                    const animalName = e.dataTransfer.getData('text/plain');
+                    const category = this.dataset.category;
+                    
+                    const animalElement = document.querySelector(`[data-item="${animalName}"]`);
+                    if (animalElement) {
+                        const correctCategory = animalElement.dataset.category;
+                        const isCorrect = correctCategory === category;
+                        
+                        // Simple processing without complex functions
+                        const categoryItems = document.getElementById(category + '-items');
+                        const itemElement = document.createElement('span');
+                        itemElement.className = `inline-block ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} px-3 py-1 rounded-full text-sm font-medium m-1`;
+                        itemElement.innerHTML = `${animalElement.querySelector('.text-4xl').textContent} ${animalName}`;
+                        categoryItems.appendChild(itemElement);
+                        
+                        animalElement.remove();
+                        
+                        // Basic feedback
+                        showBuddyMessage(isCorrect ? 
+                            `Great! ${animalName} is a ${category.slice(0, -1)}! 🌟` :
+                            `Actually, ${animalName} is a ${correctCategory.slice(0, -1)}, not a ${category.slice(0, -1)}. Thanks for teaching me! 🤔`, 
+                            isCorrect
+                        );
+                        
+                        gameState.examplesGiven++;
+                        updateProgress();
+                        
+                        setTimeout(() => {
+                            if (gameState.examplesGiven < gameState.maxExamples) {
+                                addNewAnimal();
+                            }
+                        }, 3000);
+                    }
+                };
+            }
+        });
+    }, 100);
     
     // Event listeners
     document.getElementById('new-animal-btn').addEventListener('click', addNewAnimal);
