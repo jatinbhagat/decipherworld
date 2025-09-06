@@ -41,7 +41,8 @@
       "Bash(az webapp config ssl bind:*)",
       "Bash(timeout 30 az webapp config ssl create --resource-group rg-decipherworld-prod --name decipherworld-app --hostname www.decipherworld.com)",
       "WebSearch",
-      "Bash(az webapp log tail:*)"
+      "Bash(az webapp log tail:*)",
+      "WebFetch(domain:decipherworld.com)"
     ],
     "deny": [],
     "ask": []

@@ -121,6 +121,82 @@
                 </div>
             </div>
             
+            <!-- AI Brain Visualization -->
+            <div id="ai-visualization" class="game-card bg-gradient-to-r from-purple-50 to-pink-50 p-6 mb-6 border-2 border-purple-200" style="display: none;">
+                <div class="text-center mb-4">
+                    <h3 class="text-xl font-bold text-purple-800 mb-2">🧠 Inside My AI Brain</h3>
+                    <p class="text-sm text-purple-600 font-medium">Watch me learn and think! This is how AI works!</p>
+                    <div class="mt-2 animate-pulse text-xs text-purple-500">✨ Real AI learning happening here! ✨</div>
+                </div>
+                
+                <!-- Memory Palace -->
+                <div class="mb-6">
+                    <h4 class="font-bold text-purple-700 mb-3 text-center">📚 My Memory Palace - Where I Store What I Learn:</h4>
+                    <div class="grid grid-cols-3 gap-3 text-xs">
+                        <div class="bg-gradient-to-b from-red-100 to-red-50 p-3 rounded-lg text-center border-2 border-red-200 shadow-sm">
+                            <div class="text-2xl mb-1">🦁</div>
+                            <div class="font-bold text-red-800">Mammals</div>
+                            <div id="mammals-memory" class="text-red-600 mt-2 font-medium">Empty</div>
+                        </div>
+                        <div class="bg-gradient-to-b from-blue-100 to-blue-50 p-3 rounded-lg text-center border-2 border-blue-200 shadow-sm">
+                            <div class="text-2xl mb-1">🦅</div>
+                            <div class="font-bold text-blue-800">Birds</div>
+                            <div id="birds-memory" class="text-blue-600 mt-2 font-medium">Empty</div>
+                        </div>
+                        <div class="bg-gradient-to-b from-green-100 to-green-50 p-3 rounded-lg text-center border-2 border-green-200 shadow-sm">
+                            <div class="text-2xl mb-1">🐟</div>
+                            <div class="font-bold text-green-800">Fish</div>
+                            <div id="fish-memory" class="text-green-600 mt-2 font-medium">Empty</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Confidence Thermometer -->
+                <div class="mb-6">
+                    <h4 class="font-bold text-purple-700 mb-3 text-center">🌡️ My Confidence Thermometer - How Sure I Am:</h4>
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <span class="w-16 text-xs text-gray-600">Mammals:</span>
+                            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
+                                <div id="mammals-confidence" class="bg-red-400 h-2 rounded-full transition-all" style="width: 0%"></div>
+                            </div>
+                            <span id="mammals-percent" class="text-xs text-gray-600">0%</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-16 text-xs text-gray-600">Birds:</span>
+                            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
+                                <div id="birds-confidence" class="bg-blue-400 h-2 rounded-full transition-all" style="width: 0%"></div>
+                            </div>
+                            <span id="birds-percent" class="text-xs text-gray-600">0%</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-16 text-xs text-gray-600">Fish:</span>
+                            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
+                                <div id="fish-confidence" class="bg-green-400 h-2 rounded-full transition-all" style="width: 0%"></div>
+                            </div>
+                            <span id="fish-percent" class="text-xs text-gray-600">0%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Decision Process -->
+                <div id="decision-process" class="hidden">
+                    <h4 class="font-bold text-purple-700 mb-2 text-center">🤔 My Thinking Process:</h4>
+                    <div id="decision-steps" class="space-y-1 text-xs text-purple-600 bg-white p-3 rounded-lg">
+                        <!-- Decision steps will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Learning Insights -->
+                <div class="mt-4 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
+                    <h5 class="font-bold text-orange-700 text-xs mb-1">💡 Did You Know?</h5>
+                    <p class="text-xs text-orange-600">
+                        This is how real AI works! Every example you give me helps me learn patterns. 
+                        The more good examples I get for each category, the better I become at recognizing similar animals!
+                    </p>
+                </div>
+            </div>
+            
             <!-- Game Actions -->
             <div class="text-center">
                 <button id="test-buddy-btn" class="btn btn-primary btn-lg mr-3" style="display: none;">
@@ -135,7 +211,7 @@
 </div>
 
 <script>
-// Simple game state without database dependency
+// Enhanced AI Learning System with Category-Specific Training
 let gameState = {
     currentAnimalIndex: 0,
     examplesGiven: 0,
@@ -154,7 +230,19 @@ let gameState = {
         { name: 'Owl', emoji: '🦉', category: 'birds' },
         { name: 'Whale', emoji: '🐋', category: 'mammals' }
     ],
-    usedAnimals: []
+    usedAnimals: [],
+    // Enhanced Learning Data - tracks category-specific training quality
+    learningData: {
+        mammals: { correct: 0, total: 0, examples: [] },
+        birds: { correct: 0, total: 0, examples: [] },
+        fish: { correct: 0, total: 0, examples: [] }
+    },
+    // Memory Palace - visual representation of learned examples
+    memoryPalace: {
+        mammals: [],
+        birds: [],
+        fish: []
+    }
 };
 
 function showBuddyMessage(message, isCorrect = true) {
@@ -287,15 +375,24 @@ function setupDropZones() {
                     this.innerHTML = '';
                 }
                 
-                // Show feedback
+                // Record training data for enhanced learning
+                recordTrainingExample(animalName, correctCategory, category, isCorrect);
+                
+                // Show feedback with learning insights
                 if (isCorrect) {
-                    showBuddyMessage(`Excellent! ${animalName} is indeed a ${category.slice(0, -1)}! I'm learning from your example! 🌟`);
+                    showBuddyMessage(`Excellent! ${animalName} is indeed a ${category.slice(0, -1)}! I'm storing this in my ${correctCategory} memory palace! 🌟`);
                 } else {
-                    showBuddyMessage(`Hmm, ${animalName} is actually a ${correctCategory.slice(0, -1)}, not a ${category.slice(0, -1)}. Thanks for the correction - I'll remember that! 🤔`, false);
+                    showBuddyMessage(`Hmm, ${animalName} is actually a ${correctCategory.slice(0, -1)}, not a ${category.slice(0, -1)}. I'm updating my understanding - thanks for the correction! 🤔`, false);
                 }
                 
                 gameState.examplesGiven++;
                 updateProgress();
+                updateAIVisualization();
+                
+                // Show AI brain after 2 examples
+                if (gameState.examplesGiven >= 2) {
+                    document.getElementById('ai-visualization').style.display = 'block';
+                }
                 
                 // Add new animal after delay
                 setTimeout(() => {
@@ -308,30 +405,109 @@ function setupDropZones() {
     });
 }
 
-// Test buddy function
-function testBuddyKnowledge() {
-    const testAnimal = gameState.animals[Math.floor(Math.random() * gameState.animals.length)];
-    
-    // Simple "AI" prediction logic (gets smarter with more examples)
-    const accuracy = Math.min(0.9, 0.4 + (gameState.examplesGiven * 0.06));
-    const isCorrect = Math.random() < accuracy;
-    
-    let prediction;
-    if (isCorrect) {
-        prediction = testAnimal.category;
-    } else {
-        const wrongCategories = ['mammals', 'birds', 'fish'].filter(c => c !== testAnimal.category);
-        prediction = wrongCategories[Math.floor(Math.random() * wrongCategories.length)];
+// Enhanced learning functions
+function recordTrainingExample(animalName, correctCategory, givenCategory, wasCorrect) {
+    // Update learning data for the correct category
+    gameState.learningData[correctCategory].total++;
+    if (wasCorrect) {
+        gameState.learningData[correctCategory].correct++;
     }
     
-    const confidence = isCorrect ? 
-        Math.round((70 + Math.random() * 25)) : 
-        Math.round((30 + Math.random() * 40));
+    // Store example in memory palace
+    const example = {
+        animal: animalName,
+        correct: wasCorrect,
+        confusion: wasCorrect ? null : givenCategory
+    };
+    gameState.memoryPalace[correctCategory].push(example);
     
-    showBuddyMessage(
-        `Let me test my knowledge! I think a ${testAnimal.name} ${testAnimal.emoji} is a ${prediction.slice(0, -1)}. I'm ${confidence}% confident! ${isCorrect ? 'Did I get it right? 🎉' : 'Hmm, was I correct? 🤔'}`,
-        isCorrect
-    );
+    // Limit memory palace size (keep recent examples)
+    if (gameState.memoryPalace[correctCategory].length > 3) {
+        gameState.memoryPalace[correctCategory].shift();
+    }
+}
+
+function updateAIVisualization() {
+    // Update Memory Palace display
+    ['mammals', 'birds', 'fish'].forEach(category => {
+        const memoryEl = document.getElementById(category + '-memory');
+        const examples = gameState.memoryPalace[category];
+        
+        if (examples.length === 0) {
+            memoryEl.textContent = 'Empty';
+        } else {
+            const recent = examples.slice(-2).map(ex => 
+                ex.correct ? `✓${ex.animal}` : `✗${ex.animal}`
+            ).join(' ');
+            memoryEl.textContent = recent;
+        }
+        
+        // Update confidence levels
+        const data = gameState.learningData[category];
+        const confidence = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
+        
+        document.getElementById(category + '-confidence').style.width = confidence + '%';
+        document.getElementById(category + '-percent').textContent = confidence + '%';
+    });
+}
+
+function calculateCategoryAccuracy(category) {
+    const data = gameState.learningData[category];
+    if (data.total === 0) return 0.33; // Base probability
+    return Math.max(0.1, data.correct / data.total); // Minimum 10% accuracy
+}
+
+function showDecisionProcess(animal, prediction, confidence, reasoning) {
+    const decisionEl = document.getElementById('decision-process');
+    const stepsEl = document.getElementById('decision-steps');
+    
+    decisionEl.classList.remove('hidden');
+    stepsEl.innerHTML = `
+        <div>1. Looking at ${animal}...</div>
+        <div>2. Checking my memory palace...</div>
+        <div>3. ${reasoning}</div>
+        <div>4. Prediction: ${prediction} (${confidence}% confident)</div>
+    `;
+    
+    setTimeout(() => {
+        decisionEl.classList.add('hidden');
+    }, 5000);
+}
+
+// Enhanced Test buddy function with category-specific learning
+function testBuddyKnowledge() {
+    const testAnimal = gameState.animals[Math.floor(Math.random() * gameState.animals.length)];
+    const correctCategory = testAnimal.category;
+    
+    // Use actual learning data to determine accuracy
+    const categoryAccuracy = calculateCategoryAccuracy(correctCategory);
+    const isCorrect = Math.random() < categoryAccuracy;
+    
+    let prediction, reasoning;
+    if (isCorrect) {
+        prediction = correctCategory;
+        const examples = gameState.memoryPalace[correctCategory];
+        reasoning = examples.length > 0 ? 
+            `I remember learning about similar ${correctCategory}!` :
+            `This looks like the ${correctCategory} I've been learning about.`;
+    } else {
+        // Make realistic mistakes based on common confusions
+        const wrongCategories = ['mammals', 'birds', 'fish'].filter(c => c !== correctCategory);
+        prediction = wrongCategories[Math.floor(Math.random() * wrongCategories.length)];
+        reasoning = `I'm still learning about ${correctCategory} - this looks similar to ${prediction} I've seen.`;
+    }
+    
+    const confidence = Math.round(categoryAccuracy * 100);
+    
+    // Show decision process visualization
+    showDecisionProcess(testAnimal.name, prediction.slice(0, -1), confidence, reasoning);
+    
+    setTimeout(() => {
+        showBuddyMessage(
+            `Let me test my knowledge! I think a ${testAnimal.name} ${testAnimal.emoji} is a ${prediction.slice(0, -1)}. I'm ${confidence}% confident based on my training! ${isCorrect ? 'Did I get it right? 🎉' : 'Hmm, was I correct? 🤔'}`,
+            isCorrect
+        );
+    }, 2000);
     
     if (isCorrect) {
         gameState.correctPredictions++;
@@ -350,17 +526,54 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('test-buddy-btn').addEventListener('click', testBuddyKnowledge);
     
     document.getElementById('complete-session-btn').addEventListener('click', function() {
-        const accuracy = gameState.totalPredictions > 0 ? 
+        // Calculate detailed learning statistics
+        const stats = {
+            mammals: gameState.learningData.mammals,
+            birds: gameState.learningData.birds,
+            fish: gameState.learningData.fish
+        };
+        
+        const overallAccuracy = gameState.totalPredictions > 0 ? 
             Math.round((gameState.correctPredictions / gameState.totalPredictions) * 100) : 0;
-            
-        showBuddyMessage(
-            `Amazing training session! You taught me ${gameState.examplesGiven} examples and I achieved ${accuracy}% accuracy on my tests! Thank you for making me smarter! 🎓✨`
-        );
+        
+        // Find best and worst learned categories
+        let bestCategory = 'mammals';
+        let worstCategory = 'mammals';
+        let bestScore = 0;
+        let worstScore = 100;
+        
+        Object.keys(stats).forEach(category => {
+            if (stats[category].total > 0) {
+                const score = Math.round((stats[category].correct / stats[category].total) * 100);
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestCategory = category;
+                }
+                if (score < worstScore) {
+                    worstScore = score;
+                    worstCategory = category;
+                }
+            }
+        });
+        
+        let personalizedMessage = `Amazing training session! You taught me ${gameState.examplesGiven} examples and I achieved ${overallAccuracy}% accuracy on my tests!`;
+        
+        if (bestScore > 0) {
+            personalizedMessage += ` I'm especially good at ${bestCategory} now (${bestScore}% accuracy)!`;
+        }
+        
+        if (worstScore < bestScore && stats[worstCategory].total > 0) {
+            personalizedMessage += ` I could use more practice with ${worstCategory} though!`;
+        }
+        
+        personalizedMessage += ` Thank you for making me smarter! 🎓✨`;
+        
+        showBuddyMessage(personalizedMessage);
         
         setTimeout(() => {
-            alert('🎉 Congratulations! Your AI buddy is now much smarter thanks to your training!');
+            alert('🎉 Congratulations! Your AI buddy learned from your training and can see how its knowledge improved!');
             window.location.href = '{% url "robotic_buddy:activities" %}';
-        }, 3000);
+        }, 4000);
     });
 });
 </script>
