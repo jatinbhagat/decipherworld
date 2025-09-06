@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% block game_title %}AI Buddy Game{% endblock %} - Decipherworld{% endblock %}
+
+{% block extra_head %}
+<!-- Game-specific styles and animations -->
+<style>
+    /* Kid-friendly animations and styles */
+    .buddy-avatar {
+        transition: all 0.3s ease;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    .buddy-avatar:hover {
+        transform: scale(1.05);
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .game-card {
+        transition: all 0.3s ease;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+    
+    .game-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    }
+    
+    .progress-bar {
+        background: linear-gradient(90deg, #10b981, #06d6a0, #f59e0b);
+        height: 8px;
+        border-radius: 4px;
+        transition: width 0.8s ease;
+    }
+    
+    .buddy-speech {
+        position: relative;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 1rem;
+        padding: 1rem;
+        color: white;
+        margin: 1rem 0;
+        animation: bubble-in 0.5s ease-out;
+    }
+    
+    .buddy-speech::before {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 20px;
+        width: 0;
+        height: 0;
+        border: 8px solid transparent;
+        border-top-color: #764ba2;
+    }
+    
+    @keyframes bubble-in {
+        0% { opacity: 0; transform: translateY(10px) scale(0.9); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    .level-badge {
+        background: linear-gradient(45deg, #ffd700, #ffed4a);
+        color: #1a202c;
+        border-radius: 50px;
+        padding: 0.25rem 0.75rem;
+        font-weight: bold;
+        font-size: 0.875rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .xp-badge {
+        background: linear-gradient(45deg, #10b981, #06d6a0);
+        color: white;
+        border-radius: 50px;
+        padding: 0.25rem 0.75rem;
+        font-weight: bold;
+        font-size: 0.875rem;
+    }
+    
+    /* Color themes for different buddy personalities */
+    .buddy-cheerful { background: linear-gradient(135deg, #ffeaa7, #fab1a0); }
+    .buddy-curious { background: linear-gradient(135deg, #a8e6cf, #88d8c0); }
+    .buddy-patient { background: linear-gradient(135deg, #b8860b, #daa520); }
+    .buddy-playful { background: linear-gradient(135deg, #ff6b6b, #feca57); }
+    .buddy-wise { background: linear-gradient(135deg, #4834d4, #686de0); }
+    
+    /* Training activity icons */
+    .activity-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .classification-icon { color: #10b981; }
+    .command-icon { color: #3b82f6; }
+    .emotion-icon { color: #f59e0b; }
+    .pattern-icon { color: #8b5cf6; }
+    
+    /* Game interaction elements */
+    .draggable-item {
+        cursor: grab;
+        transition: all 0.2s ease;
+        user-select: none;
+    }
+    
+    .draggable-item:hover {
+        transform: scale(1.05);
+    }
+    
+    .draggable-item.dragging {
+        cursor: grabbing;
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+    
+    .drop-zone {
+        min-height: 100px;
+        border: 3px dashed #cbd5e0;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .drop-zone.drag-over {
+        border-color: #10b981;
+        background-color: #f0fff4;
+        transform: scale(1.02);
+    }
+    
+    .drop-zone.has-items {
+        border-color: #10b981;
+        border-style: solid;
+        background-color: #f0fdf4;
+    }
+    
+    /* Responsive design for mobile */
+    @media (max-width: 768px) {
+        .buddy-avatar {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .game-card {
+            margin-bottom: 1rem;
+        }
+        
+        .buddy-speech {
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<!-- Game JavaScript utilities -->
+<script>
+    // Global game utilities
+    window.GameUtils = {
+        // Show buddy message with animation
+        showBuddyMessage: function(message, type = 'info') {
+            const container = document.getElementById('buddy-messages');
+            if (!container) return;
+            
+            const messageEl = document.createElement('div');
+            messageEl.className = `buddy-speech ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : ''}`;
+            messageEl.innerHTML = message;
+            
+            container.appendChild(messageEl);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                messageEl.style.animation = 'bubble-out 0.3s ease-in';
+                setTimeout(() => messageEl.remove(), 300);
+            }, 5000);
+        },
+        
+        // Update progress bar with animation
+        updateProgress: function(percentage, elementId = 'progress-bar') {
+            const bar = document.getElementById(elementId);
+            if (bar) {
+                bar.style.width = percentage + '%';
+            }
+        },
+        
+        // Play sound effect (placeholder for future implementation)
+        playSound: function(soundType) {
+            // Future: Add sound effects
+            console.log('Playing sound:', soundType);
+        },
+        
+        // AJAX utility for game interactions
+        gameAjax: function(url, data, callback) {
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(callback)
+            .catch(error => {
+                console.error('Game AJAX error:', error);
+                this.showBuddyMessage('Oops! Something went wrong. Let\'s try again!', 'error');
+            });
+        }
+    };
+    
+    // Initialize drag and drop functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make draggable items draggable
+        document.querySelectorAll('.draggable-item').forEach(item => {
+            item.draggable = true;
+            
+            item.addEventListener('dragstart', function(e) {
+                this.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', this.dataset.item || this.textContent);
+            });
+            
+            item.addEventListener('dragend', function() {
+                this.classList.remove('dragging');
+            });
+        });
+        
+        // Make drop zones functional
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            zone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+            });
+            
+            zone.addEventListener('dragleave', function() {
+                this.classList.remove('drag-over');
+            });
+            
+            zone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                this.classList.add('has-items');
+                
+                const data = e.dataTransfer.getData('text/plain');
+                // Handle drop logic in specific game templates
+                if (window.handleDrop) {
+                    window.handleDrop(this, data);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <!-- Game Header with Buddy Info -->
+    {% if buddy %}
+    <div class="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between py-3">
+                <!-- Buddy Avatar & Name -->
+                <div class="flex items-center space-x-3">
+                    <div class="buddy-avatar w-12 h-12 rounded-full buddy-{{ buddy.personality }} flex items-center justify-center text-white font-bold text-lg">
+                        {% if buddy.personality == 'cheerful' %}😊
+                        {% elif buddy.personality == 'curious' %}🤔
+                        {% elif buddy.personality == 'patient' %}😌
+                        {% elif buddy.personality == 'playful' %}😄
+                        {% else %}🦉{% endif %}
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-lg text-gray-800">{{ buddy.name }}</h2>
+                        <div class="flex items-center space-x-2">
+                            <span class="level-badge">Level {{ buddy.current_level }}</span>
+                            <span class="xp-badge">{{ buddy.experience_points }} XP</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="hidden md:flex items-center space-x-4 text-sm text-gray-600">
+                    <div>Sessions: {{ buddy.total_training_sessions }}</div>
+                    <div>Examples: {{ buddy.total_examples_learned }}</div>
+                </div>
+                
+                <!-- Navigation -->
+                <div class="flex items-center space-x-2">
+                    <a href="{% url 'robotic_buddy:my_buddy' %}" class="btn btn-sm btn-primary">Dashboard</a>
+                    <a href="{% url 'robotic_buddy:activities' %}" class="btn btn-sm btn-secondary">Activities</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Main Game Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {% block game_content %}
+        <!-- Game-specific content goes here -->
+        {% endblock %}
+    </div>
+    
+    <!-- Buddy Messages Area -->
+    <div id="buddy-messages" class="fixed bottom-4 right-4 w-80 max-w-sm z-50 space-y-2">
+        <!-- Dynamic messages will appear here -->
+    </div>
+    
+    <!-- Achievement Popup (hidden by default) -->
+    <div id="achievement-popup" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 mx-4 max-w-sm text-center animate-bounce">
+            <div class="text-6xl mb-4">🏆</div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Achievement Unlocked!</h3>
+            <p class="text-gray-600 mb-4" id="achievement-text"></p>
+            <button class="btn btn-primary" onclick="document.getElementById('achievement-popup').classList.add('hidden')">
+                Awesome!
+            </button>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<!-- Additional JavaScript for specific games -->
+{% endblock %}
+{% endblock %}

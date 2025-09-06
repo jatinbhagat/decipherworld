@@ -1,78 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}AI, Financial Literacy & Climate Change Courses for Students | Decipherworld{% endblock %}
-
-{% block meta_description %}Signature 21st-century skill courses for students: AI for All, Financial Literacy, Entrepreneurship, and Climate Change. Game-based learning with real-world applications and interactive challenges.{% endblock %}
-
-{% block meta_keywords %}AI courses for students, financial literacy education, entrepreneurship courses, climate change education, 21st century skills, game-based learning, student courses{% endblock %}
-
-{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'core:courses' %}{% endblock %}
-
-{% block og_title %}AI & Life Skills Courses for Students - Game-Based Learning{% endblock %}
-{% block og_description %}Engage students with our signature courses in AI, Financial Literacy, Entrepreneurship, and Climate Change. Interactive, game-based learning with real-world applications.{% endblock %}
-
-{% block structured_data %}
-{{ block.super }}
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": "Decipherworld Student Courses",
-    "description": "Comprehensive 21st-century skill courses for students",
-    "itemListElement": [
-        {
-            "@type": "Course",
-            "position": 1,
-            "name": "AI for All",
-            "description": "Students and teachers become AI-literate for the future workforce through hands-on Computer Vision, NLP, and Machine Learning projects",
-            "provider": {
-                "@type": "EducationalOrganization",
-                "name": "Decipherworld"
-            },
-            "educationalLevel": "Secondary",
-            "teaches": "Artificial Intelligence, Computer Vision, Natural Language Processing, Machine Learning, AI Ethics"
-        },
-        {
-            "@type": "Course",
-            "position": 2,
-            "name": "Financial Literacy Simplified",
-            "description": "Interactive, practical money mastery through simulations and portfolio challenges",
-            "provider": {
-                "@type": "EducationalOrganization", 
-                "name": "Decipherworld"
-            },
-            "educationalLevel": "Secondary",
-            "teaches": "Budgeting, Investment Strategy, Portfolio Management, Financial Planning"
-        },
-        {
-            "@type": "Course",
-            "position": 3,
-            "name": "Entrepreneurship Unleashed",
-            "description": "Foster creativity and business thinking through market research, business model development, and investor presentations",
-            "provider": {
-                "@type": "EducationalOrganization",
-                "name": "Decipherworld"
-            },
-            "educationalLevel": "Secondary", 
-            "teaches": "Startup Development, Market Research, Business Models, Pitch Presentations"
-        },
-        {
-            "@type": "Course",
-            "position": 4,
-            "name": "Climate Change Champions",
-            "description": "Empower students as environmental problem-solvers through sustainable city design and renewable energy solutions",
-            "provider": {
-                "@type": "EducationalOrganization",
-                "name": "Decipherworld"
-            },
-            "educationalLevel": "Secondary",
-            "teaches": "Sustainable Design, Renewable Energy, Climate Solutions, Environmental Impact"
-        }
-    ]
-}
-</script>
-{% endblock %}
+{% block title %}Professional 21st-Century Skill Courses | Decipherworld{% endblock %}
 
 {% block content %}
 <!-- Modern Professional Hero Section -->
@@ -144,7 +73,7 @@
                     <div class="text-secondary mb-2">
                         <i class="fas fa-users text-xl sm:text-2xl"></i>
                     </div>
-                    <div class="text-xl sm:text-2xl font-bold text-neutral mb-1">5+</div>
+                    <div class="text-xl sm:text-2xl font-bold text-neutral mb-1">500+</div>
                     <div class="text-xs sm:text-sm text-slate-600">Schools</div>
                 </div>
                 
@@ -315,7 +244,7 @@
         <div class="max-w-4xl mx-auto">
             <h2 class="text-3xl md:text-4xl font-bold text-neutral mb-6">Ready to Transform Your School?</h2>
             <p class="text-lg md:text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-                Join <strong class="text-primary">5+ schools</strong> already using our comprehensive <strong class="text-secondary">21st-century skill courses</strong> to boost <strong class="text-accent">student engagement</strong> and academic excellence.
+                Join <strong class="text-primary">500+ schools</strong> already using our comprehensive <strong class="text-secondary">21st-century skill courses</strong> to boost <strong class="text-accent">student engagement</strong> and academic excellence.
             </p>
             
             <!-- Key Benefits Summary -->
@@ -324,7 +253,7 @@
                     <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-2">
                         <i class="fas fa-users text-primary text-xl"></i>
                     </div>
-                    <div class="text-lg font-bold text-neutral">5+ Schools</div>
+                    <div class="text-lg font-bold text-neutral">500+ Schools</div>
                     <div class="text-sm text-slate-500">Trust Our Programs</div>
                 </div>
                 <div class="text-center">

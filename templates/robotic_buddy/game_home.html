@@ -1,0 +1,183 @@
+{% extends 'robotic_buddy/base.html' %}
+
+{% block game_title %}Meet Your AI Buddy{% endblock %}
+
+{% block game_content %}
+<div class="text-center py-8">
+    <!-- Welcome Hero Section -->
+    <div class="mb-12">
+        <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">
+            Meet Your <span class="text-primary">AI Buddy</span>! 🤖
+        </h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            Create your own AI companion and teach it amazing things! 
+            Watch as your buddy learns from you and becomes smarter with every lesson.
+        </p>
+    </div>
+    
+    {% if has_buddy %}
+        <!-- Existing Buddy Welcome -->
+        <div class="game-card bg-white p-8 max-w-md mx-auto mb-8">
+            <div class="buddy-avatar w-24 h-24 mx-auto mb-4 buddy-{{ buddy.personality }} flex items-center justify-center text-white text-3xl">
+                {% if buddy.personality == 'cheerful' %}😊
+                {% elif buddy.personality == 'curious' %}🤔
+                {% elif buddy.personality == 'patient' %}😌
+                {% elif buddy.personality == 'playful' %}😄
+                {% else %}🦉{% endif %}
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ buddy.name }}</h2>
+            <p class="text-gray-600 mb-4">Level {{ buddy.current_level }} • {{ buddy.experience_points }} XP</p>
+            
+            <div class="buddy-speech">
+                {{ buddy.get_personality_greeting }}
+            </div>
+            
+            <div class="space-y-3 mt-6">
+                <a href="{% url 'robotic_buddy:my_buddy' %}" class="btn btn-primary btn-lg w-full">
+                    Continue Learning! 🚀
+                </a>
+                <a href="{% url 'robotic_buddy:classification_game' %}" class="btn btn-secondary btn-lg w-full">
+                    Quick Game 🎮
+                </a>
+            </div>
+        </div>
+        
+        <!-- Recent Activity Preview -->
+        {% if buddy.total_training_sessions > 0 %}
+        <div class="game-card bg-white p-6 max-w-md mx-auto">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">🏆 Your Progress</h3>
+            <div class="grid grid-cols-3 gap-4 text-center">
+                <div>
+                    <div class="text-2xl font-bold text-primary">{{ buddy.total_training_sessions }}</div>
+                    <div class="text-xs text-gray-600">Training Sessions</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-success">{{ buddy.total_examples_learned }}</div>
+                    <div class="text-xs text-gray-600">Examples Taught</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-warning">{{ buddy.current_level }}</div>
+                    <div class="text-xs text-gray-600">Current Level</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+    {% else %}
+        <!-- New User Experience -->
+        <div class="space-y-8">
+            <!-- Create Buddy Call-to-Action -->
+            <div class="game-card bg-gradient-to-br from-purple-500 to-pink-500 text-white p-8 max-w-lg mx-auto">
+                <div class="text-6xl mb-4">🤖</div>
+                <h2 class="text-2xl font-bold mb-4">Create Your AI Buddy!</h2>
+                <p class="mb-6">
+                    Your buddy will learn everything you teach it! 
+                    Choose its personality, colors, and give it a special name.
+                </p>
+                <a href="{% url 'robotic_buddy:create_buddy' %}" class="btn btn-lg bg-white text-purple-600 hover:bg-gray-100 border-0">
+                    Create My Buddy! ✨
+                </a>
+            </div>
+            
+            <!-- Preview of Available Activities -->
+            <div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">🎯 What You'll Teach Your Buddy</h3>
+                <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                    <div class="game-card bg-white p-6 text-center">
+                        <div class="activity-icon classification-icon">🐾</div>
+                        <h4 class="font-bold text-gray-800 mb-2">Animal Classification</h4>
+                        <p class="text-sm text-gray-600">
+                            Teach your buddy to recognize different animals and sort them into categories!
+                        </p>
+                    </div>
+                    
+                    <div class="game-card bg-white p-6 text-center">
+                        <div class="activity-icon command-icon">🗣️</div>
+                        <h4 class="font-bold text-gray-800 mb-2">Voice Commands</h4>
+                        <p class="text-sm text-gray-600">
+                            Train your buddy to understand and respond to your voice commands!
+                        </p>
+                        <span class="badge badge-secondary mt-2">Coming Soon</span>
+                    </div>
+                    
+                    <div class="game-card bg-white p-6 text-center">
+                        <div class="activity-icon emotion-icon">😊</div>
+                        <h4 class="font-bold text-gray-800 mb-2">Emotion Recognition</h4>
+                        <p class="text-sm text-gray-600">
+                            Help your buddy learn to identify different emotions and feelings!
+                        </p>
+                        <span class="badge badge-secondary mt-2">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- How It Works -->
+            <div class="max-w-3xl mx-auto">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">🧠 How Your Buddy Learns</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                            1️⃣
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">You Teach</h4>
+                        <p class="text-sm text-gray-600">
+                            Show your buddy examples by dragging, clicking, or speaking
+                        </p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                            2️⃣
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Buddy Learns</h4>
+                        <p class="text-sm text-gray-600">
+                            Your buddy processes the examples and starts making predictions
+                        </p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                            3️⃣
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Gets Smarter</h4>
+                        <p class="text-sm text-gray-600">
+                            With more examples, your buddy becomes better at guessing correctly!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Quick Demo Video/Animation Section -->
+<div class="mt-16 text-center">
+    <div class="game-card bg-gradient-to-r from-indigo-100 to-purple-100 p-8 max-w-2xl mx-auto">
+        <h3 class="text-2xl font-bold text-gray-800 mb-4">🎬 See It In Action!</h3>
+        <p class="text-gray-600 mb-4">
+            Watch how kids around the world are teaching their AI buddies amazing things!
+        </p>
+        <div class="bg-white rounded-lg p-8 text-gray-400">
+            <!-- Placeholder for future demo video -->
+            <div class="text-4xl mb-2">🎥</div>
+            <p>Demo video coming soon!</p>
+        </div>
+    </div>
+</div>
+
+<!-- Call-to-Action for Teachers/Parents -->
+<div class="mt-16 text-center">
+    <div class="max-w-2xl mx-auto">
+        <h3 class="text-xl font-semibold text-gray-800 mb-3">
+            👨‍🏫 For Teachers & Parents
+        </h3>
+        <p class="text-gray-600 mb-4">
+            The AI Buddy game is part of Decipherworld's comprehensive AI education platform. 
+            Perfect for introducing kids to machine learning concepts in a fun, hands-on way!
+        </p>
+        <a href="{% url 'core:schools' %}" class="btn btn-outline btn-primary">
+            Learn More About Our School Programs
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,303 @@
+{% extends 'robotic_buddy/base.html' %}
+
+{% block game_title %}{{ buddy.name }} - My AI Buddy{% endblock %}
+
+{% block game_content %}
+<div class="grid lg:grid-cols-3 gap-8">
+    <!-- Left Column - Buddy Info & Greeting -->
+    <div class="lg:col-span-1 space-y-6">
+        <!-- Buddy Avatar & Stats -->
+        <div class="game-card bg-white p-6 text-center">
+            <div class="buddy-avatar w-24 h-24 mx-auto mb-4 buddy-{{ buddy.personality }} flex items-center justify-center text-white text-3xl">
+                {% if buddy.personality == 'cheerful' %}😊
+                {% elif buddy.personality == 'curious' %}🤔
+                {% elif buddy.personality == 'patient' %}😌
+                {% elif buddy.personality == 'playful' %}😄
+                {% else %}🦉{% endif %}
+            </div>
+            
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ buddy.name }}</h1>
+            <div class="flex justify-center items-center space-x-2 mb-4">
+                <span class="level-badge">Level {{ buddy.current_level }}</span>
+                <span class="xp-badge">{{ buddy.experience_points }} XP</span>
+            </div>
+            
+            <!-- XP Progress to Next Level -->
+            <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                {% with next_level_xp=buddy.current_level|add:1|mul:100 current_level_xp=buddy.current_level|mul:100 %}
+                {% with progress_pct=buddy.experience_points|sub:current_level_xp|div:100|mul:100 %}
+                <div class="progress-bar h-2" style="width: {{ progress_pct|default:0 }}%"></div>
+                {% endwith %}
+                {% endwith %}
+            </div>
+            <p class="text-xs text-gray-600">
+                {% with next_level_xp=buddy.current_level|add:1|mul:100 %}
+                {{ buddy.experience_points|sub:buddy.current_level|mul:100 }} / 100 XP to Level {{ buddy.current_level|add:1 }}
+                {% endwith %}
+            </p>
+        </div>
+        
+        <!-- Buddy Greeting -->
+        <div class="game-card bg-white p-6">
+            <div class="buddy-speech">
+                {{ greeting_message }}
+            </div>
+            {% if buddy.total_training_sessions == 0 %}
+            <div class="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <p class="text-sm text-yellow-800">
+                    <strong>💡 Tip:</strong> Start with the Animal Classification game to teach your buddy its first skill!
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="game-card bg-white p-6">
+            <h3 class="font-semibold text-gray-800 mb-4 flex items-center">
+                📊 Learning Progress
+            </h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Training Sessions</span>
+                    <span class="font-bold text-primary">{{ buddy.total_training_sessions }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Examples Learned</span>
+                    <span class="font-bold text-success">{{ buddy.total_examples_learned }}</span>
+                </div>
+                {% if recent_sessions %}
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Latest Activity</span>
+                    <span class="text-xs text-gray-500">{{ recent_sessions.0.started_at|timesince }} ago</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column - Activities & Training -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Quick Training Access -->
+        <div class="game-card bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6">
+            <h2 class="text-2xl font-bold mb-3">🚀 Ready to Train?</h2>
+            <p class="mb-4 opacity-90">Jump into your favorite activity or try something new!</p>
+            <div class="flex flex-wrap gap-3">
+                <a href="{% url 'robotic_buddy:classification_game' %}" class="btn bg-white text-blue-600 hover:bg-gray-100 border-0">
+                    🐾 Animal Classification
+                </a>
+                {% if buddy.current_level >= 2 %}
+                <a href="{% url 'robotic_buddy:activities' %}" class="btn btn-outline btn-white">
+                    🗣️ Voice Commands
+                </a>
+                {% endif %}
+                <a href="{% url 'robotic_buddy:activities' %}" class="btn btn-outline btn-white">
+                    View All Activities
+                </a>
+            </div>
+        </div>
+        
+        <!-- Available Activities -->
+        <div class="game-card bg-white p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-semibold text-gray-800">🎯 Training Activities</h3>
+                <a href="{% url 'robotic_buddy:activities' %}" class="btn btn-sm btn-outline btn-primary">View All</a>
+            </div>
+            
+            {% if available_activities %}
+            <div class="grid sm:grid-cols-2 gap-4">
+                {% for activity in available_activities %}
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-start space-x-3">
+                        <div class="text-2xl">
+                            {% if activity.activity_type == 'classification' %}🐾
+                            {% elif activity.activity_type == 'command_training' %}🗣️
+                            {% elif activity.activity_type == 'emotion_detection' %}😊
+                            {% elif activity.activity_type == 'pattern_recognition' %}🔍
+                            {% else %}🧠{% endif %}
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-medium text-gray-800 mb-1">{{ activity.name }}</h4>
+                            <p class="text-sm text-gray-600 mb-2">{{ activity.description|truncatewords:12 }}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">Level {{ activity.required_level }}+</span>
+                                {% if activity.activity_type == 'classification' %}
+                                <a href="{% url 'robotic_buddy:classification_game' %}" class="btn btn-xs btn-primary">
+                                    Start Training
+                                </a>
+                                {% else %}
+                                <a href="{% url 'robotic_buddy:activity_detail' activity.id %}" class="btn btn-xs btn-outline btn-primary">
+                                    Learn More
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-gray-500">
+                <div class="text-4xl mb-3">🔒</div>
+                <p>No activities available yet. Keep training to unlock more!</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Recent Training Sessions -->
+        {% if recent_sessions %}
+        <div class="game-card bg-white p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">📚 Recent Training</h3>
+            <div class="space-y-3">
+                {% for session in recent_sessions %}
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <div class="text-lg">
+                            {% if session.activity.activity_type == 'classification' %}🐾
+                            {% elif session.activity.activity_type == 'command_training' %}🗣️
+                            {% elif session.activity.activity_type == 'emotion_detection' %}😊
+                            {% else %}🧠{% endif %}
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">{{ session.activity.name }}</div>
+                            <div class="text-sm text-gray-600">
+                                {{ session.examples_provided }} examples • 
+                                {% if session.status == 'completed' %}
+                                    {{ session.accuracy }}% accuracy
+                                {% else %}
+                                    {{ session.status|title }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-gray-500">{{ session.started_at|timesince }} ago</div>
+                        {% if session.status == 'completed' %}
+                            <div class="text-xs text-green-600">+{{ session.experience_earned }} XP</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if buddy.total_training_sessions > recent_sessions|length %}
+            <div class="text-center mt-4">
+                <a href="{% url 'robotic_buddy:buddy_stats' %}" class="btn btn-sm btn-outline btn-secondary">
+                    View Full History
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- Achievement Showcase -->
+        <div class="game-card bg-white p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">🏆 Achievements</h3>
+            {% if buddy.total_training_sessions == 0 %}
+            <div class="text-center py-6 text-gray-500">
+                <div class="text-3xl mb-2">🎯</div>
+                <p class="mb-4">Complete your first training session to start earning achievements!</p>
+                <a href="{% url 'robotic_buddy:classification_game' %}" class="btn btn-sm btn-primary">
+                    Start Training
+                </a>
+            </div>
+            {% else %}
+            <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                <!-- First Steps Achievement -->
+                {% if buddy.total_training_sessions >= 1 %}
+                <div class="text-center p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <div class="text-2xl mb-1">🎓</div>
+                    <div class="text-xs font-medium">First Steps</div>
+                </div>
+                {% else %}
+                <div class="text-center p-3 bg-gray-50 rounded-lg border border-gray-200 opacity-50">
+                    <div class="text-2xl mb-1">🎓</div>
+                    <div class="text-xs">First Steps</div>
+                </div>
+                {% endif %}
+                
+                <!-- Good Teacher Achievement -->
+                {% if buddy.total_examples_learned >= 10 %}
+                <div class="text-center p-3 bg-green-50 rounded-lg border border-green-200">
+                    <div class="text-2xl mb-1">👨‍🏫</div>
+                    <div class="text-xs font-medium">Good Teacher</div>
+                </div>
+                {% else %}
+                <div class="text-center p-3 bg-gray-50 rounded-lg border border-gray-200 opacity-50">
+                    <div class="text-2xl mb-1">👨‍🏫</div>
+                    <div class="text-xs">Good Teacher</div>
+                </div>
+                {% endif %}
+                
+                <!-- Level Up Achievement -->
+                {% if buddy.current_level >= 2 %}
+                <div class="text-center p-3 bg-purple-50 rounded-lg border border-purple-200">
+                    <div class="text-2xl mb-1">⬆️</div>
+                    <div class="text-xs font-medium">Level Up!</div>
+                </div>
+                {% else %}
+                <div class="text-center p-3 bg-gray-50 rounded-lg border border-gray-200 opacity-50">
+                    <div class="text-2xl mb-1">⬆️</div>
+                    <div class="text-xs">Level Up!</div>
+                </div>
+                {% endif %}
+                
+                <!-- More achievements placeholder -->
+                <div class="text-center p-3 bg-gray-50 rounded-lg border border-gray-200 opacity-50">
+                    <div class="text-2xl mb-1">🔮</div>
+                    <div class="text-xs">Coming Soon</div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="{% url 'robotic_buddy:achievements' %}" class="btn btn-sm btn-outline btn-secondary">
+                    View All Achievements
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Hidden elements for JavaScript -->
+<input type="hidden" id="buddy-level" value="{{ buddy.current_level }}">
+<input type="hidden" id="buddy-xp" value="{{ buddy.experience_points }}">
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Show welcome message for new users
+    {% if buddy.total_training_sessions == 0 %}
+    setTimeout(() => {
+        window.GameUtils.showBuddyMessage(
+            "Welcome! I'm so excited to start learning with you! Let's begin with the Animal Classification game! 🐾"
+        );
+    }, 1000);
+    {% endif %}
+    
+    // Animate level progress bar
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) {
+        setTimeout(() => {
+            progressBar.style.width = progressBar.style.width || '0%';
+        }, 500);
+    }
+    
+    // Check for level up celebration
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('level_up') === 'true') {
+        const newLevel = urlParams.get('new_level');
+        if (newLevel) {
+            setTimeout(() => {
+                document.getElementById('achievement-text').textContent = `Your buddy reached Level ${newLevel}! 🎉`;
+                document.getElementById('achievement-popup').classList.remove('hidden');
+                window.GameUtils.showBuddyMessage(
+                    `Wow! I just reached Level ${newLevel}! I'm getting so much smarter thanks to you! 🌟`,
+                    'success'
+                );
+            }, 500);
+        }
+    }
+});
+</script>
+{% endblock %}

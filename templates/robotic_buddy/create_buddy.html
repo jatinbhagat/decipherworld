@@ -1,0 +1,275 @@
+{% extends 'robotic_buddy/base.html' %}
+
+{% block game_title %}Create Your AI Buddy{% endblock %}
+
+{% block game_content %}
+<div class="max-w-2xl mx-auto">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            Create Your <span class="text-primary">AI Buddy</span>! ✨
+        </h1>
+        <p class="text-lg text-gray-600">
+            Let's bring your AI companion to life! Choose its name, personality, and colors.
+        </p>
+    </div>
+    
+    <form method="post" class="space-y-8" id="buddy-form">
+        {% csrf_token %}
+        
+        <!-- Buddy Preview -->
+        <div class="game-card bg-white p-6 text-center">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">👀 Buddy Preview</h3>
+            <div id="buddy-preview" class="buddy-avatar w-32 h-32 mx-auto mb-4 buddy-cheerful flex items-center justify-center text-white text-4xl">
+                😊
+            </div>
+            <div class="text-xl font-bold text-gray-800" id="buddy-name-preview">Buddy</div>
+            <div class="text-sm text-gray-600" id="buddy-personality-preview">Cheerful & Energetic</div>
+        </div>
+        
+        <!-- Buddy Name -->
+        <div class="game-card bg-white p-6">
+            <label class="block text-lg font-semibold text-gray-800 mb-3">
+                🏷️ What's your buddy's name?
+            </label>
+            <input 
+                type="text" 
+                name="name" 
+                id="buddy-name" 
+                class="input input-lg input-bordered w-full text-center text-xl" 
+                placeholder="Enter a cool name..." 
+                maxlength="50"
+                value="Buddy"
+                required
+            >
+            <p class="text-sm text-gray-500 mt-2">Choose a special name for your AI companion!</p>
+        </div>
+        
+        <!-- Personality Selection -->
+        <div class="game-card bg-white p-6">
+            <label class="block text-lg font-semibold text-gray-800 mb-3">
+                🎭 Choose your buddy's personality
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {% for value, label in personalities %}
+                <div class="relative">
+                    <input 
+                        type="radio" 
+                        name="personality" 
+                        value="{{ value }}" 
+                        id="personality-{{ value }}"
+                        class="peer sr-only"
+                        {% if value == 'cheerful' %}checked{% endif %}
+                    >
+                    <label 
+                        for="personality-{{ value }}" 
+                        class="personality-option flex items-center p-4 rounded-lg border-2 border-gray-200 cursor-pointer hover:border-primary transition-all peer-checked:border-primary peer-checked:bg-primary/10"
+                        data-personality="{{ value }}"
+                    >
+                        <div class="text-2xl mr-3">
+                            {% if value == 'cheerful' %}😊
+                            {% elif value == 'curious' %}🤔
+                            {% elif value == 'patient' %}😌
+                            {% elif value == 'playful' %}😄
+                            {% elif value == 'wise' %}🦉
+                            {% endif %}
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-800">{{ label }}</div>
+                            <div class="text-sm text-gray-600">
+                                {% if value == 'cheerful' %}Always happy and encouraging!
+                                {% elif value == 'curious' %}Loves to ask questions and explore!
+                                {% elif value == 'patient' %}Takes time to understand everything!
+                                {% elif value == 'playful' %}Makes learning fun and exciting!
+                                {% elif value == 'wise' %}Thoughtful and full of knowledge!
+                                {% endif %}
+                            </div>
+                        </div>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Color Selection -->
+        <div class="game-card bg-white p-6">
+            <label class="block text-lg font-semibold text-gray-800 mb-3">
+                🎨 Pick your buddy's colors
+            </label>
+            
+            <!-- Primary Color -->
+            <div class="mb-6">
+                <h4 class="font-medium text-gray-700 mb-3">Main Color</h4>
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                    {% for value, label in colors %}
+                    <div class="relative">
+                        <input 
+                            type="radio" 
+                            name="primary_color" 
+                            value="{{ value }}" 
+                            id="primary-{{ value }}"
+                            class="peer sr-only"
+                            {% if value == 'blue' %}checked{% endif %}
+                        >
+                        <label 
+                            for="primary-{{ value }}" 
+                            class="color-option block w-full h-12 rounded-lg cursor-pointer border-4 border-transparent peer-checked:border-gray-800 transition-all hover:scale-105"
+                            style="background-color: 
+                                {% if value == 'blue' %}#3b82f6
+                                {% elif value == 'green' %}#10b981
+                                {% elif value == 'purple' %}#8b5cf6
+                                {% elif value == 'orange' %}#f59e0b
+                                {% elif value == 'pink' %}#ec4899
+                                {% elif value == 'red' %}#ef4444
+                                {% endif %}"
+                            data-color="{{ value }}"
+                            title="{{ label }}"
+                        ></label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Secondary Color -->
+            <div>
+                <h4 class="font-medium text-gray-700 mb-3">Accent Color</h4>
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                    {% for value, label in colors %}
+                    <div class="relative">
+                        <input 
+                            type="radio" 
+                            name="secondary_color" 
+                            value="{{ value }}" 
+                            id="secondary-{{ value }}"
+                            class="peer sr-only"
+                            {% if value == 'green' %}checked{% endif %}
+                        >
+                        <label 
+                            for="secondary-{{ value }}" 
+                            class="color-option block w-full h-12 rounded-lg cursor-pointer border-4 border-transparent peer-checked:border-gray-800 transition-all hover:scale-105"
+                            style="background-color: 
+                                {% if value == 'blue' %}#3b82f6
+                                {% elif value == 'green' %}#10b981
+                                {% elif value == 'purple' %}#8b5cf6
+                                {% elif value == 'orange' %}#f59e0b
+                                {% elif value == 'pink' %}#ec4899
+                                {% elif value == 'red' %}#ef4444
+                                {% endif %}"
+                            data-color="{{ value }}"
+                            title="{{ label }}"
+                        ></label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-lg px-12">
+                Create My Buddy! 🚀
+            </button>
+            <p class="text-sm text-gray-500 mt-2">
+                Your buddy will be ready to start learning right away!
+            </p>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.getElementById('buddy-name');
+    const namePreview = document.getElementById('buddy-name-preview');
+    const personalityPreview = document.getElementById('buddy-personality-preview');
+    const buddyPreview = document.getElementById('buddy-preview');
+    
+    // Personality emoji mapping
+    const personalityEmojis = {
+        'cheerful': '😊',
+        'curious': '🤔', 
+        'patient': '😌',
+        'playful': '😄',
+        'wise': '🦉'
+    };
+    
+    const personalityLabels = {
+        'cheerful': 'Cheerful & Energetic',
+        'curious': 'Curious & Inquisitive',
+        'patient': 'Patient & Thoughtful', 
+        'playful': 'Playful & Fun-loving',
+        'wise': 'Wise & Encouraging'
+    };
+    
+    // Update name preview
+    nameInput.addEventListener('input', function() {
+        const name = this.value || 'Buddy';
+        namePreview.textContent = name;
+    });
+    
+    // Update personality preview
+    document.querySelectorAll('input[name="personality"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const personality = this.value;
+            buddyPreview.textContent = personalityEmojis[personality];
+            buddyPreview.className = `buddy-avatar w-32 h-32 mx-auto mb-4 buddy-${personality} flex items-center justify-center text-white text-4xl`;
+            personalityPreview.textContent = personalityLabels[personality];
+        });
+    });
+    
+    // Color gradient mapping
+    const colorGradients = {
+        'blue': 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+        'green': 'linear-gradient(135deg, #10b981, #059669)',
+        'purple': 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+        'orange': 'linear-gradient(135deg, #f59e0b, #d97706)',
+        'pink': 'linear-gradient(135deg, #ec4899, #db2777)',
+        'red': 'linear-gradient(135deg, #ef4444, #dc2626)'
+    };
+    
+    // Update color preview
+    function updateColorPreview() {
+        const primaryColor = document.querySelector('input[name="primary_color"]:checked')?.value || 'blue';
+        const secondaryColor = document.querySelector('input[name="secondary_color"]:checked')?.value || 'green';
+        
+        // Create a gradient combining both colors
+        buddyPreview.style.background = `linear-gradient(135deg, ${getColorValue(primaryColor)}, ${getColorValue(secondaryColor)})`;
+    }
+    
+    function getColorValue(color) {
+        const colorMap = {
+            'blue': '#3b82f6',
+            'green': '#10b981', 
+            'purple': '#8b5cf6',
+            'orange': '#f59e0b',
+            'pink': '#ec4899',
+            'red': '#ef4444'
+        };
+        return colorMap[color] || '#3b82f6';
+    }
+    
+    document.querySelectorAll('input[name="primary_color"], input[name="secondary_color"]').forEach(radio => {
+        radio.addEventListener('change', updateColorPreview);
+    });
+    
+    // Initial color preview
+    updateColorPreview();
+    
+    // Form validation and animation
+    document.getElementById('buddy-form').addEventListener('submit', function(e) {
+        const name = nameInput.value.trim();
+        if (!name) {
+            e.preventDefault();
+            nameInput.focus();
+            alert('Please give your buddy a name!');
+            return;
+        }
+        
+        // Add loading animation
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = 'Creating Your Buddy... ⏳';
+        submitBtn.disabled = true;
+    });
+});
+</script>
+{% endblock %}

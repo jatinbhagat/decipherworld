@@ -15,15 +15,6 @@ class HomeView(TemplateView):
         context['page_title'] = 'Transform Learning Into Adventure'
         return context
 
-class AboutView(TemplateView):
-    """About Us page with company information and mission"""
-    template_name = 'home/about.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'About Us - DecipherWorld | Founded by IIM Alumni'
-        return context
-
 class CoursesView(ListView):
     """Course offerings with detailed descriptions"""
     model = Course
@@ -111,16 +102,6 @@ class GalleryView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Success Stories & Gallery'
-        return context
-
-
-class SchoolPresentationView(TemplateView):
-    """School presentation page with embedded Gamma presentation"""
-    template_name = 'home/school-presentation.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'School Presentation - AI EdTech Solution'
         return context
 
 
@@ -216,7 +197,7 @@ def send_onboarding_email(demo_request):
 
     Cheers,
     The Decipherworld Team
-    hello@decipherworld.com
+    customerservice@decipherworld.com
     '''
     
     send_mail(
