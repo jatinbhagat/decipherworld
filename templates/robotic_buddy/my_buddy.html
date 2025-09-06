@@ -24,16 +24,10 @@
             
             <!-- XP Progress to Next Level -->
             <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-                {% with next_level_xp=buddy.current_level|add:1|mul:100 current_level_xp=buddy.current_level|mul:100 %}
-                {% with progress_pct=buddy.experience_points|sub:current_level_xp|div:100|mul:100 %}
-                <div class="progress-bar h-2" style="width: {{ progress_pct|default:0 }}%"></div>
-                {% endwith %}
-                {% endwith %}
+                <div class="progress-bar h-2" id="xp-progress" style="width: 0%"></div>
             </div>
-            <p class="text-xs text-gray-600">
-                {% with next_level_xp=buddy.current_level|add:1|mul:100 %}
-                {{ buddy.experience_points|sub:buddy.current_level|mul:100 }} / 100 XP to Level {{ buddy.current_level|add:1 }}
-                {% endwith %}
+            <p class="text-xs text-gray-600" id="xp-text">
+                {{ buddy.experience_points }} XP - Level {{ buddy.current_level }}
             </p>
         </div>
         
@@ -275,11 +269,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
     {% endif %}
     
-    // Animate level progress bar
-    const progressBar = document.querySelector('.progress-bar');
-    if (progressBar) {
+    // Calculate and animate level progress bar
+    const buddyLevel = {{ buddy.current_level }};
+    const buddyXP = {{ buddy.experience_points }};
+    const currentLevelXP = (buddyLevel - 1) * 100;
+    const nextLevelXP = buddyLevel * 100;
+    const xpInCurrentLevel = buddyXP - currentLevelXP;
+    const progressPercent = Math.min(100, (xpInCurrentLevel / 100) * 100);
+    
+    const progressBar = document.getElementById('xp-progress');
+    const xpText = document.getElementById('xp-text');
+    
+    if (progressBar && xpText) {
         setTimeout(() => {
-            progressBar.style.width = progressBar.style.width || '0%';
+            progressBar.style.width = progressPercent + '%';
+            xpText.textContent = `${xpInCurrentLevel} / 100 XP to Level ${buddyLevel + 1}`;
         }, 500);
     }
     
