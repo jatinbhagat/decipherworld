@@ -1,0 +1,14 @@
+<step title="Incoming Request" date="2025-09-03T00:56:36.809" instance="378edf" url="/api/publish?async=true&amp;deployer=GITHUB_ONE_DEPLOY&amp;type=zip&amp;message=%7B%22type%22%3A%22deployment%22%2C%22sha%22%3A%2285c8293e5cf4d0027b39d603c7c09d74dcd2c54d%22%2C%22repoName%22%3A%22jatinbhagat%2Fdecipherworld%22%2C%22actor%22%3A%22jatinbhagat%22%2C%22slotName%22%3A%22Production%22%2C%22commitMessage%22%3A%22index%22%7D" method="POST" type="request" pid="772,1,33" Host="decipherworld-app.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_e3e0cc90f51bd273b88d59801700c10a24014198b431abe6f1e4c8246061ffdf" Authorization="Bas..." Content-Type="application/octet-stream" Cookie="ARRAffinity=378edfce271436517950788fe4512f9ff5f554211c9bdccd63796f2a24a09e02;Path=/;HttpOnly;Secure;Domain=decipherworld-app.scm.azurewebsites.net; ARRAffinitySameSite=378edfce271436517950788fe4512f9ff5f554211c9bdccd63796f2a24a09e02;Path=/;HttpOnly;SameSite=None;Secure;Domain=decipherworld-app.scm.azurewebsites.net" Transfer-Encoding="chunked" X-ARR-LOG-ID="9dfe701b-5874-44d5-bf7b-5a8de708fe1d" CLIENT-IP="172.174.167.19:31744" X-SITE-DEPLOYMENT-ID="decipherworld-app" WAS-DEFAULT-HOSTNAME="decipherworld-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/publish?async=true&amp;deployer=GITHUB_ONE_DEPLOY&amp;type=zip&amp;message=%7B%22type%22%3A%22deployment%22%2C%22sha%22%3A%2285c8293e5cf4d0027b39d603c7c09d74dcd2c54d%22%2C%22repoName%22%3A%22jatinbhagat%2Fdecipherworld%22%2C%22actor%22%3A%22jatinbhagat%22%2C%22slotName%22%3A%22Production%22%2C%22commitMessage%22%3A%22index%22%7D" X-Client-IP="172.174.167.19" X-Client-Port="31744" >
+  <step title="OneDeploy" date="2025-09-03T00:56:36.888" >
+    <step title="Starting PushDeployAsync" date="2025-09-03T00:56:36.911" /><!-- duration: 30ms -->
+    <step title="Writing artifact to /tmp/zipdeploy/86e75442-2d98-48a5-a1b2-79fef78a75b1.zip" date="2025-09-03T00:56:37.019" >
+      <step title="Writing multipart request body to /tmp/zipdeploy/86e75442-2d98-48a5-a1b2-79fef78a75b1.zip" date="2025-09-03T00:56:37.042" /><!-- duration: 30ms -->
+    </step><!-- duration: 725ms -->
+    <step title="Start deployment in the background" date="2025-09-03T00:56:37.794" >
+      <step title="Acquiring Deployment Lock" date="2025-09-03T00:56:37.845" /><!-- duration: 19ms -->
+      <step title="Cannot Acquire Deployment Lock already held" date="2025-09-03T00:56:37.905" /><!-- duration: 12ms -->
+    </step><!-- duration: 261ms -->
+    <step title="There is a deployment currently in progress. Please try again when it completes." date="2025-09-03T00:56:38.078" /><!-- duration: 40ms -->
+  </step><!-- duration: 1270ms -->
+  <step title="Outgoing response" date="2025-09-03T00:56:38.228" type="response" statusCode="409" statusText="Conflict" /><!-- duration: 30ms -->
+</step><!-- duration: 1501ms -->

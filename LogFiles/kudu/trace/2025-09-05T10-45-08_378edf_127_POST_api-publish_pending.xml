@@ -1,0 +1,14 @@
+<step title="Incoming Request" date="2025-09-05T10:45:08.701" instance="378edf" url="/api/publish?async=true&amp;deployer=GITHUB_ONE_DEPLOY&amp;type=zip&amp;message=%7B%22type%22%3A%22deployment%22%2C%22sha%22%3A%22f9244cd18776a2d77d2925ce4dfb377fb048a309%22%2C%22repoName%22%3A%22jatinbhagat%2Fdecipherworld%22%2C%22actor%22%3A%22jatinbhagat%22%2C%22slotName%22%3A%22Production%22%2C%22commitMessage%22%3A%22Sitemap%20fix%22%7D" method="POST" type="request" pid="774,1,24" Host="decipherworld-app.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_e3e0cc90f51bd273b88d59801700c10a24014198b431abe6f1e4c8246061ffdf" Authorization="Bas..." Content-Type="application/octet-stream" Cookie="ARRAffinity=378edfce271436517950788fe4512f9ff5f554211c9bdccd63796f2a24a09e02;Path=/;HttpOnly;Secure;Domain=decipherworld-app.scm.azurewebsites.net; ARRAffinitySameSite=378edfce271436517950788fe4512f9ff5f554211c9bdccd63796f2a24a09e02;Path=/;HttpOnly;SameSite=None;Secure;Domain=decipherworld-app.scm.azurewebsites.net" Transfer-Encoding="chunked" X-ARR-LOG-ID="5ff934ec-8e31-4262-80e6-8af93810410d" CLIENT-IP="68.220.58.0:31680" X-SITE-DEPLOYMENT-ID="decipherworld-app" WAS-DEFAULT-HOSTNAME="decipherworld-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/publish?async=true&amp;deployer=GITHUB_ONE_DEPLOY&amp;type=zip&amp;message=%7B%22type%22%3A%22deployment%22%2C%22sha%22%3A%22f9244cd18776a2d77d2925ce4dfb377fb048a309%22%2C%22repoName%22%3A%22jatinbhagat%2Fdecipherworld%22%2C%22actor%22%3A%22jatinbhagat%22%2C%22slotName%22%3A%22Production%22%2C%22commitMessage%22%3A%22Sitemap%20fix%22%7D" X-Client-IP="68.220.58.0" X-Client-Port="31680" >
+  <step title="OneDeploy" date="2025-09-05T10:45:08.723" >
+    <step title="Starting PushDeployAsync" date="2025-09-05T10:45:08.738" /><!-- duration: 5ms -->
+    <step title="Writing artifact to /tmp/zipdeploy/07a0c890-9452-4d9b-aff9-3634ed98825a.zip" date="2025-09-05T10:45:08.758" >
+      <step title="Writing multipart request body to /tmp/zipdeploy/07a0c890-9452-4d9b-aff9-3634ed98825a.zip" date="2025-09-05T10:45:08.766" /><!-- duration: 5ms -->
+    </step><!-- duration: 1026ms -->
+    <step title="Removing previous build artifact&apos;s manifest file" date="2025-09-05T10:45:09.795" >
+      <step title="Start deployment in the background" date="2025-09-05T10:45:09.811" >
+        <step title="Acquiring Deployment Lock" date="2025-09-05T10:45:09.849" /><!-- duration: 4ms -->
+        <step title="Acquired Deployment Lock" date="2025-09-05T10:45:09.891" /><!-- duration: 4ms -->
+      </step><!-- duration: 178ms -->
+    </step><!-- duration: 205ms -->
+    <step title="Outgoing response" date="2025-09-05T10:45:10.007" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 4ms -->
+  </step><!-- duration: 1292ms -->

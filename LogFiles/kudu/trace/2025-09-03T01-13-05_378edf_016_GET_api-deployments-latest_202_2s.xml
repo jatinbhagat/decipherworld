@@ -1,0 +1,11 @@
+<step title="Incoming Request" date="2025-09-03T01:13:05.108" instance="378edf" url="/api/deployments/latest?deployer=OneDeploy&amp;time=2025-09-03_01-12-24Z" method="GET" type="request" pid="774,1,18" Host="decipherworld-app.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_e3e0cc90f51bd273b88d59801700c10a24014198b431abe6f1e4c8246061ffdf" Authorization="Bas..." Content-Type="application/json; charset=utf-8" Cookie="ARRAffinity=378edfce271436517950788fe4512f9ff5f554211c9bdccd63796f2a24a09e02;Path=/;HttpOnly;Secure;Domain=decipherworld-app.scm.azurewebsites.net; ARRAffinitySameSite=378edfce271436517950788fe4512f9ff5f554211c9bdccd63796f2a24a09e02;Path=/;HttpOnly;SameSite=None;Secure;Domain=decipherworld-app.scm.azurewebsites.net" Content-Length="0" X-ARR-LOG-ID="a12c09b8-66b2-4584-8c5b-ed8aa9bdab54" CLIENT-IP="4.236.159.115:43032" X-SITE-DEPLOYMENT-ID="decipherworld-app" WAS-DEFAULT-HOSTNAME="decipherworld-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/latest?deployer=OneDeploy&amp;time=2025-09-03_01-12-24Z" X-Client-IP="4.236.159.115" X-Client-Port="43032" >
+  <step title="Cleanup Xml Logs" date="2025-09-03T01:13:05.111" >
+    <step title="Cleanup Infos" date="2025-09-03T01:13:05.125" totalFiles="511" totalCleanup="351" /><!-- duration: 6ms -->
+  </step><!-- duration: 23ms -->
+  <step title="DeploymentService.GetResult" date="2025-09-03T01:13:05.162" >
+    <step title="DeploymentService.GetLatestDeployment" date="2025-09-03T01:13:05.180" >
+      <step title="DeploymentManager.GetResults" date="2025-09-03T01:13:05.184" /><!-- duration: 1643ms -->
+    </step><!-- duration: 1694ms -->
+  </step><!-- duration: 1724ms -->
+  <step title="Outgoing response" date="2025-09-03T01:13:06.906" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 30ms -->
+</step><!-- duration: 1857ms -->
