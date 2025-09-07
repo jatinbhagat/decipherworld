@@ -23,7 +23,7 @@ class GamesSitemap(Sitemap):
 
     def items(self):
         return ['robotic_buddy:home', 'robotic_buddy:activities', 'robotic_buddy:simple_game', 
-                'robotic_buddy:drag_drop_game']
+                'robotic_buddy:drag_drop_game', 'robotic_buddy:emotion_game']
 
     def location(self, item):
         return reverse(item)

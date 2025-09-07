@@ -18,6 +18,7 @@ urlpatterns = [
     path('classification-game/', views.ClassificationGameView.as_view(), name='classification_game'),
     path('simple-game/', views.SimpleGameView.as_view(), name='simple_game'),
     path('drag-drop-game/', views.DragDropGameView.as_view(), name='drag_drop_game'),
+    path('emotion-game/', views.EmotionGameView.as_view(), name='emotion_game'),
     
     # AJAX endpoints for game interactions
     path('api/submit-example/', views.submit_training_example, name='submit_example'),

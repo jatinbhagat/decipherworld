@@ -244,6 +244,13 @@ class DragDropGameView(TemplateView):
     template_name = 'robotic_buddy/drag_drop_game.html'
 
 
+class EmotionGameView(TemplateView):
+    """
+    Emotion recognition training game - teach AI buddy to understand emotions
+    """
+    template_name = 'robotic_buddy/emotion_game.html'
+
+
 class ClassificationGameView(TemplateView):
     """
     Our MVP classification training game

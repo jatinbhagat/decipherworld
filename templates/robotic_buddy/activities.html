@@ -129,32 +129,36 @@
             </button>
         </div>
         
-        <div class="game-card bg-white p-6 border border-gray-200 opacity-60">
+        <div class="game-card bg-white p-6 border border-purple-200">
             <div class="text-center mb-4">
                 <div class="text-4xl mb-3">😊</div>
                 <h3 class="text-xl font-bold text-gray-800">Emotion Recognition</h3>
-                <span class="badge badge-secondary mb-2">Coming Soon</span>
+                <span class="badge badge-primary mb-2">Available Now!</span>
             </div>
             <p class="text-gray-600 mb-4 text-sm">
-                Train your buddy to recognize different emotions and facial expressions.
+                Teach your buddy to understand human emotions through real-life scenarios and live camera recognition!
             </p>
             <div class="space-y-2 mb-4">
-                <div class="flex items-center text-sm text-gray-500">
-                    <span class="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
-                    Emotion detection
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                    Scenario-based learning
                 </div>
-                <div class="flex items-center text-sm text-gray-500">
-                    <span class="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
-                    Facial recognition
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                    Emotion context understanding
                 </div>
-                <div class="flex items-center text-sm text-gray-500">
-                    <span class="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
-                    Mood analysis
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                    AI emotion brain visualization
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                    <span class="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                    Live camera emotion detection
                 </div>
             </div>
-            <button class="btn btn-disabled w-full" disabled>
-                Coming Soon...
-            </button>
+            <a href="{% url 'robotic_buddy:emotion_game' %}" class="btn btn-primary w-full">
+                Start Emotion Training! 💝
+            </a>
         </div>
         
         <div class="game-card bg-white p-6 border border-gray-200 opacity-60">
