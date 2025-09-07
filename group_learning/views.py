@@ -110,11 +110,15 @@ class JoinSessionForm(ModelForm):
         super().__init__(*args, **kwargs)
         
         if self.session:
-            # Add role choices based on game
-            roles = Role.objects.filter(
-                scenarios__game=self.session.game,
-                is_active=True
-            ).distinct().values_list('id', 'name')
+            # Add role choices based on game - handle case where session.game is None
+            if self.session.game:
+                roles = Role.objects.filter(
+                    scenarios__game=self.session.game,
+                    is_active=True
+                ).distinct().values_list('id', 'name')
+            else:
+                # If no game assigned, show all active roles
+                roles = Role.objects.filter(is_active=True).values_list('id', 'name')
             self.fields['preferred_role'].choices = [('', 'No preference')] + list(roles)
 
 
