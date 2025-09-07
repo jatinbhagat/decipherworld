@@ -243,7 +243,16 @@ class OutcomeAdmin(admin.ModelAdmin):
     )
     
     def get_actions(self, obj):
-        return ", ".join([f"{action.role.short_name}: {action.title}" for action in obj.required_actions.all()[:2]])
+        try:
+            actions = []
+            for action in obj.required_actions.all()[:2]:
+                if action.role:
+                    actions.append(f"{action.role.short_name}: {action.title}")
+                else:
+                    actions.append(action.title)
+            return ", ".join(actions) if actions else "None"
+        except Exception as e:
+            return f"Error: {str(e)}"
     get_actions.short_description = 'Required Actions'
 
 
