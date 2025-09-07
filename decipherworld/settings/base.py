@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'core',  # Your main app
     'robotic_buddy',  # AI learning game for kids
+    'group_learning',  # Group-based scenario learning platform
 ]
 
 MIDDLEWARE = [

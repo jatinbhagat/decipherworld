@@ -1,0 +1,299 @@
+{% extends 'group_learning/base.html' %}
+{% load group_learning_extras %}
+
+{% block title %}Session Results - {{ session.game.title }}{% endblock %}
+
+{% block nav_items %}
+    <a href="{% url 'group_learning:gameplay' session.session_code %}" class="text-gray-600 hover:text-gray-900">← Back to Game</a>
+    <div class="flex items-center">
+        <span class="text-sm text-gray-600">Session: {{ session.session_code }}</span>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <div class="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-lg p-8 mb-6">
+            <h1 class="text-4xl font-bold mb-3">📊 Session Results</h1>
+            <h2 class="text-xl text-green-100 mb-2">{{ session.game.title }}</h2>
+            <p class="text-green-100">See how your collective decisions shaped the outcome</p>
+        </div>
+    </div>
+    
+    <!-- Session Overview -->
+    <div class="grid md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-3xl font-bold text-indigo-600">{{ session.session_code }}</div>
+            <div class="text-sm text-gray-500">Session Code</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-3xl font-bold text-indigo-600">{{ player_actions.count }}</div>
+            <div class="text-sm text-gray-500">Total Actions</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-3xl font-bold text-indigo-600">{{ player_actions|unique_players|length }}</div>
+            <div class="text-sm text-gray-500">Players</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-3xl font-bold text-indigo-600">
+                {% if session.started_at and session.completed_at %}
+                    {{ session.completed_at|timesince:session.started_at }}
+                {% else %}
+                    {{ session.game.estimated_duration }} min
+                {% endif %}
+            </div>
+            <div class="text-sm text-gray-500">Duration</div>
+        </div>
+    </div>
+    
+    <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Main Results -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Outcome -->
+            {% if outcome %}
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="bg-gradient-to-r from-{{ outcome.outcome_type }}-500 to-{{ outcome.outcome_type }}-600 text-white p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-2xl font-bold">{{ outcome.title }}</h2>
+                                <p class="text-{{ outcome.outcome_type }}-100 mt-1">{{ outcome.get_outcome_type_display }}</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-4xl font-bold">{{ outcome.success_score }}/100</div>
+                                <div class="text-sm text-{{ outcome.outcome_type }}-100">Success Score</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="prose max-w-none">
+                            <p class="text-gray-700 mb-4">{{ outcome.description }}</p>
+                            
+                            {% if outcome.immediate_consequences %}
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Immediate Consequences</h3>
+                                <ul class="text-gray-600 mb-4 space-y-1">
+                                    {% for consequence in outcome.immediate_consequences %}
+                                        <li class="flex items-start">
+                                            <span class="text-indigo-500 mr-2">•</span>
+                                            {{ consequence }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                            
+                            {% if outcome.long_term_effects %}
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Long-term Effects</h3>
+                                <ul class="text-gray-600 mb-4 space-y-1">
+                                    {% for effect in outcome.long_term_effects %}
+                                        <li class="flex items-start">
+                                            <span class="text-indigo-500 mr-2">•</span>
+                                            {{ effect }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                            
+                            {% if outcome.learning_points %}
+                                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-4">
+                                    <h4 class="font-semibold text-blue-800 mb-2">Key Learning Points</h4>
+                                    <ul class="text-blue-700 space-y-1">
+                                        {% for point in outcome.learning_points %}
+                                            <li class="flex items-start">
+                                                <span class="text-blue-500 mr-2">💡</span>
+                                                {{ point }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+                    <div class="text-gray-400 mb-4">
+                        <svg class="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-700 mb-2">No Outcome Available</h3>
+                    <p class="text-gray-600">The session hasn't reached a point where outcomes can be calculated yet.</p>
+                </div>
+            {% endif %}
+            
+            <!-- Player Actions Summary -->
+            {% if player_actions %}
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Actions Taken by Players</h3>
+                    <div class="space-y-6">
+                        {% regroup player_actions by role as role_actions %}
+                        {% for role_group in role_actions %}
+                            <div class="border-l-4 pl-4" style="border-color: {{ role_group.grouper.color }};">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3" 
+                                         style="background-color: {{ role_group.grouper.color }}20; color: {{ role_group.grouper.color }};">
+                                        {{ role_group.grouper.icon }}
+                                    </div>
+                                    <h4 class="text-lg font-semibold text-gray-800">
+                                        {{ role_group.grouper.name }} Actions
+                                    </h4>
+                                </div>
+                                
+                                <div class="space-y-3 ml-11">
+                                    {% for action in role_group.list %}
+                                        <div class="bg-gray-50 rounded-lg p-4">
+                                            <div class="flex items-start justify-between">
+                                                <div class="flex-1">
+                                                    <h5 class="font-medium text-gray-800">{{ action.action.title }}</h5>
+                                                    <p class="text-sm text-gray-600 mt-1">{{ action.action.description|truncatewords:15 }}</p>
+                                                    {% if action.reasoning %}
+                                                        <div class="mt-2 p-2 bg-white rounded border-l-2 border-gray-300">
+                                                            <span class="text-xs text-gray-500 font-medium">{{ action.player_name }}'s reasoning:</span>
+                                                            <p class="text-sm text-gray-700 mt-1">"{{ action.reasoning }}"</p>
+                                                        </div>
+                                                    {% endif %}
+                                                    <div class="flex items-center mt-2 space-x-3 text-xs">
+                                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                                            {{ action.action.get_action_type_display }}
+                                                        </span>
+                                                        <span class="text-gray-500">
+                                                            by {{ action.player_name }}
+                                                        </span>
+                                                        <span class="text-gray-500">
+                                                            {{ action.decision_time|timesince }} ago
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Learning Objectives Covered -->
+            {% if learning_objectives %}
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Learning Objectives</h3>
+                    <div class="space-y-3">
+                        {% for objective in learning_objectives %}
+                            <div class="border rounded-lg p-3">
+                                <h4 class="font-medium text-gray-800 mb-1">{{ objective.title }}</h4>
+                                <p class="text-xs text-gray-600 mb-2">{{ objective.description|truncatewords:12 }}</p>
+                                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
+                                    {{ objective.get_objective_type_display }}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Next Steps -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">What's Next?</h3>
+                <div class="space-y-3">
+                    <a href="{% url 'group_learning:reflection' session.session_code %}" 
+                       class="block w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors text-center">
+                        🤔 Reflect on Learning
+                    </a>
+                    <a href="{% url 'group_learning:game_list' %}" 
+                       class="block w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors text-center">
+                        🎮 Play Another Game
+                    </a>
+                    <a href="{% url 'group_learning:session_detail' session.session_code %}" 
+                       class="block w-full bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors text-center">
+                        ⚙️ Session Details
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Session Statistics -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Session Stats</h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Game:</span>
+                        <span class="font-medium">{{ session.game.title|truncatewords:3 }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Status:</span>
+                        <span class="font-medium capitalize">{{ session.get_status_display }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Created:</span>
+                        <span class="font-medium">{{ session.created_at|timesince }} ago</span>
+                    </div>
+                    {% if session.started_at %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Started:</span>
+                            <span class="font-medium">{{ session.started_at|timesince }} ago</span>
+                        </div>
+                    {% endif %}
+                    {% if outcome %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Outcome Type:</span>
+                            <span class="font-medium capitalize">{{ outcome.get_outcome_type_display }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Success Score:</span>
+                            <span class="font-medium">{{ outcome.success_score }}/100</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Share Results -->
+            <div class="bg-green-50 rounded-lg p-6 border-2 border-dashed border-green-200">
+                <h3 class="text-lg font-semibold text-green-900 mb-3">Share Your Results</h3>
+                <div class="text-center">
+                    <div class="bg-white p-3 rounded-lg border mb-3">
+                        <div class="text-lg font-mono font-bold text-green-600">{{ session.session_code }}</div>
+                        <div class="text-xs text-gray-500">Session Code</div>
+                    </div>
+                    <button onclick="shareResults()" class="text-sm text-green-600 hover:text-green-800">
+                        📤 Share Session
+                    </button>
+                </div>
+                <div class="mt-4 text-xs text-gray-600">
+                    Share your session results with friends or educators.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function shareResults() {
+    const sessionCode = '{{ session.session_code }}';
+    const gameTitle = '{{ session.game.title|escapejs }}';
+    const url = window.location.href;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: `${gameTitle} - Session Results`,
+            text: `Check out our group learning results from ${gameTitle}! Session code: ${sessionCode}`,
+            url: url
+        });
+    } else {
+        // Fallback to copy to clipboard
+        const shareText = `${gameTitle} - Session Results\nSession code: ${sessionCode}\n${url}`;
+        navigator.clipboard.writeText(shareText).then(() => {
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '✓ Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    }
+}
+</script>
+{% endblock %}

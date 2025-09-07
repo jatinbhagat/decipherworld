@@ -1,0 +1,241 @@
+{% extends 'group_learning/base.html' %}
+
+{% block title %}Session {{ session.session_code }} - {{ session.game.title }}{% endblock %}
+
+{% block nav_items %}
+    <a href="{% url 'group_learning:game_list' %}" class="text-gray-600 hover:text-gray-900">← Back to Games</a>
+    <div class="flex items-center">
+        <span id="session-status" class="status-indicator status-{{ session.status }}" title="Status: {{ session.status }}"></span>
+        <span class="ml-2 text-sm text-gray-600">{{ session.get_status_display }}</span>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto" data-session-code="{{ session.session_code }}">
+    <!-- Session Header -->
+    <div class="text-center mb-8">
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">
+                Session {{ session.session_code }}
+            </h1>
+            <h2 class="text-2xl text-indigo-600 mb-4">{{ session.game.title }}</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">{{ session.game.description }}</p>
+            
+            <!-- Session Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-indigo-600" id="player-count">{{ player_count }}</div>
+                    <div class="text-sm text-gray-500">Players Joined</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-indigo-600">{{ session.game.min_players }}-{{ session.game.max_players }}</div>
+                    <div class="text-sm text-gray-500">Players Needed</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-indigo-600">{{ session.game.estimated_duration }}</div>
+                    <div class="text-sm text-gray-500">Minutes</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-indigo-600">{{ available_roles.count }}</div>
+                    <div class="text-sm text-gray-500">Available Roles</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Join Session Form -->
+            {% if session.status == 'waiting' or session.status == 'in_progress' %}
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">
+                        🎮 Join This Session
+                    </h3>
+                    <form method="post" action="{% url 'group_learning:join_session' session.session_code %}">
+                        {% csrf_token %}
+                        
+                        <!-- Player Name -->
+                        <div class="mb-4">
+                            <label for="id_player_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                Your Name
+                            </label>
+                            {{ join_form.player_name }}
+                            <p class="text-xs text-gray-500 mt-1">{{ join_form.player_name.help_text }}</p>
+                        </div>
+                        
+                        <!-- Preferred Role -->
+                        <div class="mb-6">
+                            <label for="id_preferred_role" class="block text-sm font-medium text-gray-700 mb-2">
+                                Preferred Role
+                            </label>
+                            {{ join_form.preferred_role }}
+                            <p class="text-xs text-gray-500 mt-1">{{ join_form.preferred_role.help_text }}</p>
+                        </div>
+                        
+                        <button type="submit" 
+                                class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors font-medium">
+                            Join Session
+                        </button>
+                    </form>
+                </div>
+            {% else %}
+                <div class="bg-gray-100 rounded-lg p-6 text-center">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-2">
+                        Session No Longer Accepting Players
+                    </h3>
+                    <p class="text-gray-600">
+                        This session is {{ session.get_status_display|lower }} and not accepting new players.
+                    </p>
+                </div>
+            {% endif %}
+            
+            <!-- Current Players -->
+            {% if players %}
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">
+                        👥 Players in Session ({{ player_count }})
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {% for player in players %}
+                            <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                                <div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
+                                    {{ player.player_name|first|upper }}
+                                </div>
+                                <div>
+                                    <div class="font-medium text-gray-800">{{ player.player_name }}</div>
+                                    <div class="text-xs text-gray-500">Joined session</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Game Progress -->
+            {% if session.status == 'in_progress' %}
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">
+                        🎯 Game in Progress
+                    </h3>
+                    {% if session.current_scenario %}
+                        <div class="border-l-4 border-green-400 pl-4">
+                            <h4 class="font-semibold text-gray-800">Current Scenario</h4>
+                            <p class="text-gray-600">{{ session.current_scenario.title }}</p>
+                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full mt-2 inline-block">
+                                {{ session.current_scenario.get_urgency_level_display }}
+                            </span>
+                        </div>
+                    {% endif %}
+                    <a href="{% url 'group_learning:gameplay' session.session_code %}" 
+                       class="inline-block mt-4 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors">
+                        Enter Game →
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Available Roles -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Available Roles</h3>
+                <div class="space-y-3">
+                    {% for role in available_roles %}
+                        <div class="role-card border rounded-lg p-3 hover:shadow-md">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center mr-3" 
+                                     style="background-color: {{ role.color }}20; color: {{ role.color }};">
+                                    <span class="text-lg">{{ role.icon }}</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium text-gray-800">{{ role.name }}</h4>
+                                    <p class="text-xs text-gray-600 mb-2">{{ role.description|truncatewords:12 }}</p>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">
+                                            Authority: {{ role.authority_level }}/5
+                                        </span>
+                                        {% if role.expertise_areas %}
+                                            <span class="text-xs text-indigo-600">
+                                                {{ role.expertise_areas|first }}
+                                                {% if role.expertise_areas|length > 1 %}+{{ role.expertise_areas|length|add:"-1" }}{% endif %}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Session Info -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Session Info</h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Status:</span>
+                        <span class="font-medium capitalize">{{ session.get_status_display }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Created:</span>
+                        <span class="font-medium">{{ session.created_at|timesince }} ago</span>
+                    </div>
+                    {% if session.started_at %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Started:</span>
+                            <span class="font-medium">{{ session.started_at|timesince }} ago</span>
+                        </div>
+                    {% endif %}
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Auto-assign:</span>
+                        <span class="font-medium">{{ session.auto_assign_roles|yesno:"Yes,No" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Spectators:</span>
+                        <span class="font-medium">{{ session.allow_spectators|yesno:"Allowed,Not allowed" }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Share Session -->
+            <div class="bg-indigo-50 rounded-lg p-6 border-2 border-dashed border-indigo-200">
+                <h3 class="text-lg font-semibold text-indigo-900 mb-3">Share Session</h3>
+                <div class="text-center">
+                    <div class="bg-white p-3 rounded-lg border mb-3">
+                        <div class="text-2xl font-mono font-bold text-indigo-600">{{ session.session_code }}</div>
+                        <div class="text-xs text-gray-500">Session Code</div>
+                    </div>
+                    <button onclick="copySessionCode()" class="text-sm text-indigo-600 hover:text-indigo-800">
+                        📋 Copy Code
+                    </button>
+                </div>
+                <div class="mt-4 text-xs text-gray-600">
+                    Share this code with other players so they can join your session.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copySessionCode() {
+    const sessionCode = '{{ session.session_code }}';
+    navigator.clipboard.writeText(sessionCode).then(() => {
+        // Show temporary success message
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = '✓ Copied!';
+        setTimeout(() => {
+            button.textContent = originalText;
+        }, 2000);
+    });
+}
+</script>
+
+<style>
+    input[type="text"], select {
+        @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500;
+    }
+</style>
+{% endblock %}

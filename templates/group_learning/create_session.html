@@ -1,0 +1,124 @@
+{% extends 'group_learning/base.html' %}
+
+{% block title %}Create Session - {{ game.title }}{% endblock %}
+
+{% block nav_items %}
+    <a href="{% url 'group_learning:game_detail' game.pk %}" class="text-gray-600 hover:text-gray-900">← Back to Game</a>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Create New Session</h1>
+        <p class="text-gray-600">Set up a new game session for <strong>{{ game.title }}</strong></p>
+    </div>
+    
+    <!-- Game Overview Card -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+        <div class="scenario-card text-white p-6">
+            <h2 class="text-xl font-bold mb-2">{{ game.title }}</h2>
+            {% if game.subtitle %}
+                <p class="text-blue-100 text-sm">{{ game.subtitle }}</p>
+            {% endif %}
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">{{ game.min_players }}-{{ game.max_players }}</div>
+                    <div class="text-xs text-gray-500">Players</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">{{ game.estimated_duration }}</div>
+                    <div class="text-xs text-gray-500">Minutes</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">{{ game.get_difficulty_level_display }}</div>
+                    <div class="text-xs text-gray-500">Difficulty</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-indigo-600">{{ game.target_age_min }}-{{ game.target_age_max }}</div>
+                    <div class="text-xs text-gray-500">Age Range</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Session Configuration Form -->
+    <form method="post" class="bg-white rounded-lg shadow-lg p-8">
+        {% csrf_token %}
+        
+        <h2 class="text-xl font-bold text-gray-900 mb-6">Session Configuration</h2>
+        
+        <!-- Facilitator Name -->
+        <div class="mb-6">
+            <label for="id_facilitator_name" class="block text-sm font-medium text-gray-700 mb-2">
+                Facilitator Name (Optional)
+            </label>
+            {{ form.facilitator_name }}
+            <p class="text-sm text-gray-500 mt-1">{{ form.facilitator_name.help_text }}</p>
+        </div>
+        
+        <!-- Session Settings -->
+        <div class="space-y-6">
+            <div class="flex items-center">
+                {{ form.allow_spectators }}
+                <label for="id_allow_spectators" class="ml-2 text-sm text-gray-700">
+                    Allow spectators to observe the game
+                </label>
+            </div>
+            
+            <div class="flex items-center">
+                {{ form.auto_assign_roles }}
+                <label for="id_auto_assign_roles" class="ml-2 text-sm text-gray-700">
+                    Automatically assign roles to players (recommended)
+                </label>
+            </div>
+        </div>
+        
+        <!-- Form Errors -->
+        {% if form.non_field_errors %}
+            <div class="mt-6 p-4 bg-red-100 border border-red-200 rounded-md">
+                {% for error in form.non_field_errors %}
+                    <p class="text-red-700 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- Submit Button -->
+        <div class="mt-8 flex justify-between">
+            <a href="{% url 'group_learning:game_detail' game.pk %}" 
+               class="bg-gray-300 text-gray-700 py-3 px-6 rounded-md hover:bg-gray-400 transition-colors">
+                Cancel
+            </a>
+            <button type="submit" 
+                    class="bg-green-600 text-white py-3 px-8 rounded-md hover:bg-green-700 transition-colors font-medium">
+                🎮 Create Session
+            </button>
+        </div>
+        
+        <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+            <div class="flex">
+                <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+                <div class="text-sm text-blue-700">
+                    <strong>How it works:</strong> After creating the session, you'll receive a unique session code to share with players. 
+                    Players can join using this code and will be assigned roles either automatically or manually based on your settings.
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Custom form styling */
+    input[type="text"], input[type="email"] {
+        @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500;
+    }
+    
+    input[type="checkbox"] {
+        @apply h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500;
+    }
+</style>
+{% endblock %}

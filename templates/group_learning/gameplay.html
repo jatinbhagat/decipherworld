@@ -1,0 +1,363 @@
+{% extends 'group_learning/base.html' %}
+
+{% block title %}{{ session.game.title }} - Playing as {{ player_role.name|default:"Observer" }}{% endblock %}
+
+{% block nav_items %}
+    <a href="{% url 'group_learning:session_detail' session.session_code %}" class="text-gray-600 hover:text-gray-900">← Session {{ session.session_code }}</a>
+    <div class="flex items-center">
+        <span id="session-status" class="status-indicator status-{{ session.status }}" title="Status: {{ session.status }}"></span>
+        <span class="ml-2 text-sm text-gray-600">{{ session.get_status_display }}</span>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto" data-session-code="{{ session.session_code }}">
+    <!-- Game Header -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{{ session.game.title }}</h1>
+                <p class="text-gray-600">Session: {{ session.session_code }} • Player: <strong>{{ player_name }}</strong></p>
+            </div>
+            {% if player_role %}
+                <div class="text-right">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center mr-3" 
+                             style="background-color: {{ player_role.color }}20; color: {{ player_role.color }};">
+                            <span class="text-2xl">{{ player_role.icon }}</span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-lg">{{ player_role.name }}</div>
+                            <div class="text-sm text-gray-600">Your Role</div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Main Gameplay Area -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Current Scenario -->
+            {% if current_scenario %}
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-2xl font-bold">{{ current_scenario.title }}</h2>
+                                <p class="text-red-100 mt-1">{{ current_scenario.get_scenario_type_display }}</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-medium">
+                                    {{ current_scenario.get_urgency_level_display }}
+                                </div>
+                                {% if current_scenario.time_limit %}
+                                    <div class="text-sm text-red-100 mt-1">
+                                        ⏰ {{ current_scenario.time_limit }} min limit
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="prose max-w-none">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Situation</h3>
+                            <p class="text-gray-700 mb-4">{{ current_scenario.situation_description }}</p>
+                            
+                            {% if current_scenario.location %}
+                                <div class="flex items-center text-sm text-gray-600 mb-2">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    <strong>Location:</strong> {{ current_scenario.location }}
+                                </div>
+                            {% endif %}
+                            
+                            {% if current_scenario.cultural_context %}
+                                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-4">
+                                    <h4 class="font-semibold text-blue-800 mb-2">Cultural Context</h4>
+                                    <p class="text-blue-700 text-sm">{{ current_scenario.cultural_context }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Available Actions -->
+            {% if player_role and available_actions %}
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">
+                        🎯 Your Available Actions as {{ player_role.short_name }}
+                    </h3>
+                    <div class="space-y-4">
+                        {% for action in available_actions %}
+                            <div class="border rounded-lg p-4 hover:shadow-md transition-shadow action-card">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">{{ action.title }}</h4>
+                                        <p class="text-gray-600 text-sm mt-1">{{ action.description }}</p>
+                                        
+                                        <div class="flex items-center mt-3 space-x-4 text-xs">
+                                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                                {{ action.get_action_type_display }}
+                                            </span>
+                                            <span class="text-gray-500">
+                                                Cost: {{ action.get_resource_cost_display }}
+                                            </span>
+                                            <span class="text-gray-500">
+                                                Time: {{ action.get_time_required_display }}
+                                            </span>
+                                        </div>
+                                        
+                                        {% if action.effectiveness_factors %}
+                                            <div class="mt-2">
+                                                <span class="text-xs text-gray-500">Effectiveness depends on:</span>
+                                                <div class="flex flex-wrap gap-1 mt-1">
+                                                    {% for factor in action.effectiveness_factors %}
+                                                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                                            {{ factor }}
+                                                        </span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <button onclick="selectAction({{ action.id }}, '{{ action.title|escapejs }}')" 
+                                            class="action-button bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors ml-4">
+                                        Choose This
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% elif player_role %}
+                <div class="bg-gray-100 rounded-lg p-6 text-center">
+                    <p class="text-gray-600">No actions available for your role at this time.</p>
+                    <p class="text-sm text-gray-500 mt-2">Please wait for other players to complete their actions.</p>
+                </div>
+            {% else %}
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+                    <h3 class="text-lg font-semibold text-yellow-800 mb-2">Role Assignment Needed</h3>
+                    <p class="text-yellow-700">You haven't been assigned a role yet. Please wait for the facilitator to assign roles or enable auto-assignment.</p>
+                </div>
+            {% endif %}
+            
+            <!-- Your Previous Actions -->
+            {% if player_actions %}
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">
+                        📋 Your Actions This Session
+                    </h3>
+                    <div class="space-y-3">
+                        {% for action in player_actions %}
+                            <div class="border-l-4 border-green-400 pl-4 py-2">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h4 class="font-medium text-gray-800">{{ action.action.title }}</h4>
+                                        {% if action.reasoning %}
+                                            <p class="text-sm text-gray-600 mt-1">{{ action.reasoning }}</p>
+                                        {% endif %}
+                                        <div class="text-xs text-gray-500 mt-1">
+                                            {{ action.decision_time|timesince }} ago
+                                        </div>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                                        Completed
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Role Information -->
+            {% if player_role %}
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Role</h3>
+                    <div class="text-center">
+                        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" 
+                             style="background-color: {{ player_role.color }}20; color: {{ player_role.color }};">
+                            <span class="text-3xl">{{ player_role.icon }}</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800">{{ player_role.name }}</h4>
+                        <p class="text-sm text-gray-600 mt-2">{{ player_role.description }}</p>
+                        
+                        <div class="mt-4 text-xs">
+                            <div class="bg-gray-100 px-3 py-1 rounded-full inline-block">
+                                Authority Level: {{ player_role.authority_level }}/5
+                            </div>
+                        </div>
+                        
+                        {% if player_role.expertise_areas %}
+                            <div class="mt-3">
+                                <span class="text-xs text-gray-500">Areas of Expertise:</span>
+                                <div class="flex flex-wrap gap-1 mt-1 justify-center">
+                                    {% for area in player_role.expertise_areas %}
+                                        <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded">
+                                            {{ area }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Recent Session Actions -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Actions</h3>
+                <div id="recent-actions" class="space-y-2 text-sm">
+                    <div class="text-gray-500 text-center py-4">Loading...</div>
+                </div>
+                <div class="mt-4 text-center">
+                    <button onclick="loadRecentActions()" class="text-indigo-600 hover:text-indigo-800 text-sm">
+                        Refresh Actions
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Session Navigation -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Session Options</h3>
+                <div class="space-y-3">
+                    <a href="{% url 'group_learning:session_results' session.session_code %}" 
+                       class="block w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors text-center">
+                        📊 View Results
+                    </a>
+                    <a href="{% url 'group_learning:reflection' session.session_code %}" 
+                       class="block w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 transition-colors text-center">
+                        🤔 Reflection
+                    </a>
+                    <a href="{% url 'group_learning:session_detail' session.session_code %}" 
+                       class="block w-full bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors text-center">
+                        ⚙️ Session Info
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Action Selection Modal -->
+<div id="actionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-md w-full">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirm Action</h3>
+        <div id="actionDetails" class="mb-4">
+            <!-- Action details will be inserted here -->
+        </div>
+        
+        <form id="actionForm" method="post" action="{% url 'group_learning:player_action' session.session_code %}">
+            {% csrf_token %}
+            <input type="hidden" id="actionId" name="action_id">
+            
+            <div class="mb-4">
+                <label for="reasoning" class="block text-sm font-medium text-gray-700 mb-2">
+                    Your Reasoning (Optional)
+                </label>
+                <textarea id="reasoning" name="reasoning" rows="3" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                          placeholder="Explain why you're choosing this action..."></textarea>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeActionModal()" 
+                        class="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors">
+                    Confirm Action
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function selectAction(actionId, actionTitle) {
+    document.getElementById('actionId').value = actionId;
+    document.getElementById('actionDetails').innerHTML = `
+        <p class="text-gray-700">You are about to choose: <strong>${actionTitle}</strong></p>
+        <p class="text-sm text-gray-500 mt-2">This action will be recorded and may affect the game outcome.</p>
+    `;
+    document.getElementById('actionModal').classList.remove('hidden');
+    document.getElementById('actionModal').classList.add('flex');
+}
+
+function closeActionModal() {
+    document.getElementById('actionModal').classList.add('hidden');
+    document.getElementById('actionModal').classList.remove('flex');
+    document.getElementById('reasoning').value = '';
+}
+
+function loadRecentActions() {
+    const sessionCode = '{{ session.session_code }}';
+    fetch(`/learn/api/session/${sessionCode}/actions/`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('recent-actions');
+            if (data.actions.length === 0) {
+                container.innerHTML = '<div class="text-gray-500 text-center py-2">No actions yet</div>';
+                return;
+            }
+            
+            const actionsHtml = data.actions.map(action => `
+                <div class="border-l-2 border-gray-200 pl-3 py-1">
+                    <div class="font-medium text-gray-800">${action.player_name} (${action.role})</div>
+                    <div class="text-xs text-gray-600">${action.action_title}</div>
+                    <div class="text-xs text-gray-500">${action.decision_time}</div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = actionsHtml;
+        })
+        .catch(error => {
+            console.log('Failed to load recent actions:', error);
+        });
+}
+
+// Handle form submission
+document.getElementById('actionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeActionModal();
+            location.reload(); // Refresh to show updated state
+        } else {
+            alert('Error: ' + (data.error || 'Action failed'));
+        }
+    })
+    .catch(error => {
+        console.error('Action submission failed:', error);
+        alert('Failed to submit action. Please try again.');
+    });
+});
+
+// Load recent actions on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadRecentActions();
+});
+</script>
+{% endblock %}

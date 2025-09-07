@@ -1,0 +1,209 @@
+{% extends 'group_learning/base.html' %}
+
+{% block title %}{{ game.title }}{% endblock %}
+
+{% block nav_items %}
+    <a href="{% url 'group_learning:game_list' %}" class="text-gray-600 hover:text-gray-900">← Back to Games</a>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Game Header -->
+    <div class="scenario-card text-white rounded-lg p-8 mb-8">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-3">{{ game.title }}</h1>
+            {% if game.subtitle %}
+                <p class="text-xl text-blue-100 mb-4">{{ game.subtitle }}</p>
+            {% endif %}
+            <div class="flex justify-center space-x-6 text-sm">
+                <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full">
+                    {{ game.get_game_type_display }}
+                </span>
+                <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full">
+                    {{ game.get_difficulty_level_display }}
+                </span>
+                <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full">
+                    {{ game.min_players }}-{{ game.max_players }} players
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Game Description -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">About This Game</h2>
+                <div class="prose text-gray-600">
+                    <p class="mb-4">{{ game.description }}</p>
+                    {% if game.context %}
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Context</h3>
+                        <p class="mb-4">{{ game.context }}</p>
+                    {% endif %}
+                    {% if game.introduction_text %}
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">How It Begins</h3>
+                        <p class="italic bg-gray-50 p-4 rounded border-l-4 border-indigo-400">
+                            "{{ game.introduction_text }}"
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Learning Objectives -->
+            {% if game.learning_objectives.all %}
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Learning Objectives</h2>
+                    <div class="space-y-4">
+                        {% for objective in game.learning_objectives.all %}
+                            <div class="border-l-4 border-indigo-400 pl-4">
+                                <h3 class="font-semibold text-gray-800">{{ objective.title }}</h3>
+                                <p class="text-gray-600 text-sm mb-2">{{ objective.description }}</p>
+                                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
+                                    {{ objective.get_objective_type_display }}
+                                </span>
+                                {% if objective.success_criteria %}
+                                    <div class="mt-2">
+                                        <span class="text-xs text-gray-500 font-medium">Success Criteria:</span>
+                                        <ul class="text-xs text-gray-500 mt-1 ml-4">
+                                            {% for criteria in objective.success_criteria %}
+                                                <li class="list-disc">{{ criteria }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Scenarios Preview -->
+            {% if scenarios %}
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Game Scenarios</h2>
+                    <div class="space-y-4">
+                        {% for scenario in scenarios %}
+                            <div class="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h3 class="font-semibold text-gray-800">
+                                            {{ scenario.order }}. {{ scenario.title }}
+                                        </h3>
+                                        <p class="text-gray-600 text-sm mt-1">{{ scenario.situation_description|truncatewords:25 }}</p>
+                                        <div class="flex items-center mt-2 space-x-4">
+                                            <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                                                {{ scenario.get_scenario_type_display }}
+                                            </span>
+                                            <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
+                                                {{ scenario.get_urgency_level_display }}
+                                            </span>
+                                            {% if scenario.location %}
+                                                <span class="text-xs text-gray-500">
+                                                    📍 {{ scenario.location }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Game Stats -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Game Details</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Players:</span>
+                        <span class="font-medium">{{ game.min_players }}-{{ game.max_players }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Duration:</span>
+                        <span class="font-medium">~{{ game.estimated_duration }} min</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Difficulty:</span>
+                        <span class="font-medium">{{ game.get_difficulty_level_display }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Age Range:</span>
+                        <span class="font-medium">{{ game.target_age_min }}-{{ game.target_age_max }} years</span>
+                    </div>
+                    {% if scenarios %}
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Scenarios:</span>
+                        <span class="font-medium">{{ scenarios|length }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Roles Preview -->
+            {% if roles %}
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Available Roles</h3>
+                    <div class="space-y-3">
+                        {% for role in roles %}
+                            <div class="role-card border rounded-lg p-3 hover:shadow-md">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3" 
+                                         style="background-color: {{ role.color }}20; color: {{ role.color }};">
+                                        {{ role.icon }}
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-gray-800">{{ role.name }}</h4>
+                                        <p class="text-xs text-gray-600">{{ role.description|truncatewords:8 }}</p>
+                                        <div class="flex items-center mt-1">
+                                            <span class="text-xs bg-gray-100 px-1 rounded">
+                                                Authority: {{ role.authority_level }}/5
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Action Button -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Ready to Play?</h3>
+                <a href="{% url 'group_learning:create_session' game.pk %}" 
+                   class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors text-center font-medium block mb-3">
+                    🎮 Start New Session
+                </a>
+                <p class="text-xs text-gray-500 text-center">
+                    You'll get a session code to share with other players
+                </p>
+            </div>
+            
+            <!-- Quick Join -->
+            <div class="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300">
+                <h4 class="font-medium text-gray-700 mb-2">Join Existing Session</h4>
+                <form method="get" action="{% url 'group_learning:session_detail' session_code='JOIN' %}">
+                    <div class="flex">
+                        <input type="text" 
+                               name="session_code" 
+                               placeholder="SESSION CODE" 
+                               class="flex-1 border border-gray-300 rounded-l-md px-3 py-2 text-sm font-mono text-center focus:ring-indigo-500 focus:border-indigo-500"
+                               pattern="[A-Z0-9]{6}"
+                               maxlength="6">
+                        <button type="button" 
+                                onclick="this.form.action = this.form.action.replace('JOIN', this.form.session_code.value.toUpperCase()); this.form.submit();"
+                                class="bg-indigo-600 text-white px-3 py-2 rounded-r-md hover:bg-indigo-700 text-sm">
+                            Join
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

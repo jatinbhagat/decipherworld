@@ -1,0 +1,214 @@
+{% extends 'group_learning/base.html' %}
+{% load group_learning_extras %}
+
+{% block title %}Learning Reflection - {{ session.game.title }}{% endblock %}
+
+{% block nav_items %}
+    <a href="{% url 'group_learning:gameplay' session.session_code %}" class="text-gray-600 hover:text-gray-900">← Back to Game</a>
+    <div class="flex items-center">
+        <span class="text-sm text-gray-600">Session: {{ session.session_code }}</span>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg p-8 mb-6">
+            <h1 class="text-4xl font-bold mb-3">🤔 Learning Reflection</h1>
+            <h2 class="text-xl text-purple-100 mb-2">{{ session.game.title }}</h2>
+            <p class="text-purple-100">Take a moment to reflect on your learning experience</p>
+        </div>
+    </div>
+    
+    <!-- Reflection Instructions -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+        <h3 class="text-lg font-semibold text-blue-900 mb-3">How to Reflect</h3>
+        <div class="text-blue-800 space-y-2">
+            <p>• Think about what you learned through this experience</p>
+            <p>• Consider how your role influenced your decision-making</p>
+            <p>• Reflect on how you collaborated with other players</p>
+            <p>• Rate your confidence and engagement honestly</p>
+            <p>• Your responses help improve future learning experiences</p>
+        </div>
+    </div>
+    
+    <!-- Player Information -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Your Session Summary</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-indigo-600">{{ player_name }}</div>
+                <div class="text-sm text-gray-500">Your Name</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-indigo-600">{{ session.session_code }}</div>
+                <div class="text-sm text-gray-500">Session Code</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-indigo-600">{{ session.game.estimated_duration }} min</div>
+                <div class="text-sm text-gray-500">Game Duration</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reflection Form -->
+    {% if learning_objectives %}
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            {% for objective in learning_objectives %}
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="border-l-4 border-indigo-400 pl-4 mb-4">
+                        <h3 class="text-xl font-bold text-gray-900">{{ objective.title }}</h3>
+                        <p class="text-gray-600 mt-1">{{ objective.description }}</p>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full mt-2 inline-block">
+                            {{ objective.get_objective_type_display }}
+                        </span>
+                    </div>
+                    
+                    <!-- Success Criteria -->
+                    {% if objective.success_criteria %}
+                        <div class="mb-4 bg-gray-50 p-3 rounded-lg">
+                            <h4 class="font-medium text-gray-700 mb-2">Success Criteria:</h4>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                {% for criteria in objective.success_criteria %}
+                                    <li class="flex items-start">
+                                        <span class="text-indigo-500 mr-2">•</span>
+                                        {{ criteria }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Reflection Question -->
+                    <div class="mb-4">
+                        <label for="reflection_{{ objective.id }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            What did you learn about {{ objective.title|lower }}? How did the experience help you understand this concept?
+                        </label>
+                        <textarea name="reflection_{{ objective.id }}" 
+                                  id="reflection_{{ objective.id }}" 
+                                  rows="4" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                  placeholder="Share your thoughts, insights, and key takeaways from this learning objective..."
+                                  required></textarea>
+                    </div>
+                    
+                    <!-- Confidence and Engagement Ratings -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Confidence Level -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Confidence Level
+                            </label>
+                            <p class="text-xs text-gray-500 mb-3">How confident do you feel about this learning objective now?</p>
+                            <div class="space-y-2">
+                                {% for value, label in "1,Not confident at all|2,Slightly confident|3,Moderately confident|4,Very confident|5,Extremely confident"|split:"|" %}
+                                    {% with parts=label|split:"," %}
+                                        <label class="flex items-center">
+                                            <input type="radio" 
+                                                   name="confidence_{{ objective.id }}" 
+                                                   value="{{ parts.0 }}" 
+                                                   class="mr-2 text-indigo-600"
+                                                   {% if parts.0 == "3" %}checked{% endif %}>
+                                            <span class="text-sm">{{ parts.0 }} - {{ parts.1 }}</span>
+                                        </label>
+                                    {% endwith %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Engagement Level -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Engagement Level
+                            </label>
+                            <p class="text-xs text-gray-500 mb-3">How engaged were you with this aspect of the game?</p>
+                            <div class="space-y-2">
+                                {% for value, label in "1,Not engaged at all|2,Slightly engaged|3,Moderately engaged|4,Very engaged|5,Extremely engaged"|split:"|" %}
+                                    {% with parts=label|split:"," %}
+                                        <label class="flex items-center">
+                                            <input type="radio" 
+                                                   name="engagement_{{ objective.id }}" 
+                                                   value="{{ parts.0 }}" 
+                                                   class="mr-2 text-indigo-600"
+                                                   {% if parts.0 == "3" %}checked{% endif %}>
+                                            <span class="text-sm">{{ parts.0 }} - {{ parts.1 }}</span>
+                                        </label>
+                                    {% endwith %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <!-- Overall Experience Reflection -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Overall Experience</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label for="overall_reflection" class="block text-sm font-medium text-gray-700 mb-2">
+                            How would you describe your overall learning experience? What surprised you?
+                        </label>
+                        <textarea name="overall_reflection" 
+                                  id="overall_reflection" 
+                                  rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                  placeholder="Reflect on your overall experience playing this scenario..."></textarea>
+                    </div>
+                    
+                    <div>
+                        <label for="role_impact" class="block text-sm font-medium text-gray-700 mb-2">
+                            How did your assigned role influence your thinking and decision-making?
+                        </label>
+                        <textarea name="role_impact" 
+                                  id="role_impact" 
+                                  rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                  placeholder="Consider how taking on a specific role shaped your perspective..."></textarea>
+                    </div>
+                    
+                    <div>
+                        <label for="collaboration_thoughts" class="block text-sm font-medium text-gray-700 mb-2">
+                            What did you learn about working with others to solve complex problems?
+                        </label>
+                        <textarea name="collaboration_thoughts" 
+                                  id="collaboration_thoughts" 
+                                  rows="3" 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                  placeholder="Think about the collaborative aspects of the experience..."></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="text-center">
+                <button type="submit" 
+                        class="bg-purple-600 text-white py-4 px-8 rounded-lg hover:bg-purple-700 transition-colors font-medium text-lg">
+                    💭 Submit Reflection
+                </button>
+                <p class="text-sm text-gray-500 mt-2">
+                    Your reflection helps improve learning experiences for future players
+                </p>
+            </div>
+        </form>
+    {% else %}
+        <!-- No Learning Objectives -->
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+            <div class="text-gray-400 mb-4">
+                <svg class="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-700 mb-2">No Learning Objectives Available</h3>
+            <p class="text-gray-600 mb-6">This session doesn't have specific learning objectives to reflect on.</p>
+            <a href="{% url 'group_learning:session_results' session.session_code %}" 
+               class="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition-colors">
+                View Session Results
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
