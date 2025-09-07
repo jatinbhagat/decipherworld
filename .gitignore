@@ -32,6 +32,18 @@ dist/
 build/
 .coverage
 .pytest_cache/
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
 
 # Node (if using frontend build tools)
 node_modules/
@@ -40,3 +52,44 @@ npm-debug.log*
 # Temporary files
 *.tmp
 *.temp
+
+# Azure deployment logs and files
+LogFiles/
+deployments/
+webapp-logs.zip
+*.zip
+.deployment
+
+# Azure deployment artifacts
+decipherworld-deployment.zip
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Local development
+.env.development
+.env.staging
+
+# Editor backups
+*~
+\#*\#
+.\#*
+
+# Mac specific
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Django migrations during development (uncomment if needed)
+# */migrations/0*.py

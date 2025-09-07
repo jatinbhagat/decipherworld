@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(az webapp config appsettings list:*)",
-      "WebFetch(domain:www.decipherworld.com)"
+      "WebFetch(domain:www.decipherworld.com)",
+      "Bash(git rm:*)",
+      "Bash(find:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,7 +1,0 @@
-<step title="Incoming Request" date="2025-09-03T01:12:19.285" instance="378edf" url="/diagnostics/runtime" method="GET" type="request" pid="774,1,7" Host="decipherworld-app.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_e3e0cc90f51bd273b88d59801700c10a24014198b431abe6f1e4c8246061ffdf" Authorization="Bas..." Content-Type="application/json; charset=utf-8" Content-Length="0" X-ARR-LOG-ID="698d8e6b-c442-4464-921e-6b3a57d4d225" CLIENT-IP="4.236.159.115:43032" X-SITE-DEPLOYMENT-ID="decipherworld-app" WAS-DEFAULT-HOSTNAME="decipherworld-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/diagnostics/runtime" X-Client-IP="4.236.159.115" X-Client-Port="43032" >
-  <step title="Cleanup Xml Logs" date="2025-09-03T01:12:19.304" >
-    <step title="Cleanup Infos" date="2025-09-03T01:12:19.365" totalFiles="501" totalCleanup="341" /><!-- duration: 22ms -->
-  </step><!-- duration: 93ms -->
-  <step title="RuntimeController.GetRuntimeVersions" date="2025-09-03T01:12:19.456" /><!-- duration: 11ms -->
-  <step title="Outgoing response" date="2025-09-03T01:12:20.290" type="response" statusCode="200" statusText="OK" /><!-- duration: 22ms -->
-</step><!-- duration: 1037ms -->

@@ -1,8 +1,0 @@
-<step title="Incoming Request" date="2025-09-07T04:58:36.879" instance="378edf" url="/logstream/application" method="GET" type="request" pid="774,1,51" Host="decipherworld-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.77.0 (HOMEBREW)" Accept-Encoding="identity" Authorization="Bas..." x-ms-client-request-id="4be3b32a-8ba7-11f0-ae95-3afb4d2e539d" X-ARR-LOG-ID="4be3b32a-8ba7-11f0-ae95-3afb4d2e539d" CLIENT-IP="223.190.87.8:3486" X-SITE-DEPLOYMENT-ID="decipherworld-app" WAS-DEFAULT-HOSTNAME="decipherworld-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/logstream/application" X-Client-IP="223.190.87.8" X-Client-Port="3486" >
-  <step title="Cleanup Xml Logs" date="2025-09-07T04:58:36.883" >
-    <step title="Cleanup Infos" date="2025-09-07T04:58:36.920" totalFiles="900" totalCleanup="740" /><!-- duration: 11ms -->
-  </step><!-- duration: 53ms -->
-  <step title="LogStreamHandlerMiddleware.Invoke" date="2025-09-07T04:58:36.948" /><!-- duration: 269ms -->
-  <step title="Error occurred" date="2025-09-07T05:00:37.216" type="error" text="LogStreamManager: ProcessRequest end" /><!-- duration: 6ms -->
-  <step title="Outgoing response" date="2025-09-07T05:00:37.233" type="response" statusCode="200" statusText="OK" /><!-- duration: 4ms -->
-</step><!-- duration: 120362ms -->

@@ -1,6 +1,0 @@
-<step title="Incoming Request" date="2025-09-07T17:08:47.279" instance="378edf" url="/api/settings" method="GET" type="request" pid="770,1,28" Accept="*/*" Host="decipherworld-app.scm.azurewebsites.net" User-Agent="AZURECLI/2.77.0 (HOMEBREW)" Accept-Encoding="gzip, deflate" Authorization="Bas..." x-ms-client-request-id="4c39f882-8c0d-11f0-a4ab-3afb4d2e539d" X-ARR-LOG-ID="4c39f882-8c0d-11f0-a4ab-3afb4d2e539d" CLIENT-IP="223.190.87.8:29302" X-SITE-DEPLOYMENT-ID="decipherworld-app" WAS-DEFAULT-HOSTNAME="decipherworld-app.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/settings" X-Client-IP="223.190.87.8" X-Client-Port="29302" >
-  <step title="Cleanup Xml Logs" date="2025-09-07T17:08:47.291" >
-    <step title="Cleanup Infos" date="2025-09-07T17:08:47.316" totalFiles="1045" totalCleanup="885" /><!-- duration: 8ms -->
-  </step><!-- duration: 43ms -->
-  <step title="Outgoing response" date="2025-09-07T17:08:47.345" type="response" statusCode="200" statusText="OK" /><!-- duration: 4ms -->
-</step><!-- duration: 73ms -->
