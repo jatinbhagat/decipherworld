@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Group Learning{% endblock %} - DecipherWorld</title>
     
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{% block description %}Collaborative group learning through immersive role-playing scenarios. Learn climate change, problem-solving, and teamwork through engaging educational games.{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}group learning, collaborative education, role-playing games, climate education, scenario-based learning, educational games, teamwork, problem solving{% endblock %}">
+    <meta name="author" content="DecipherWorld">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{% block og_title %}{{ block.super }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Experience collaborative learning through immersive role-playing scenarios and educational games.{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:site_name" content="DecipherWorld - Group Learning">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@DecipherWorld">
+    <meta name="twitter:title" content="{% block twitter_title %}{{ block.super }}{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Collaborative group learning through educational scenarios and games.{% endblock %}">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     

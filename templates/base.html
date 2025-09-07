@@ -43,12 +43,92 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     
-    <!-- Meta tags for SEO -->
-    <meta name="description" content="Transform learning into adventure with Decipherworld's game-based education platform. AI-powered tools for teachers, engaging learning for students.">
-    <meta name="keywords" content="education, game-based learning, AI teaching tools, student engagement, EdTech">
+    <!-- Enhanced SEO Meta Tags -->
+    <meta name="description" content="{% block description %}Transform learning into adventure with Decipherworld's game-based education platform. AI-powered tools for teachers, engaging learning for students, and collaborative group learning experiences.{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}education, game-based learning, AI teaching tools, student engagement, EdTech, collaborative learning, climate education, STEM education, group learning platform{% endblock %}">
+    <meta name="author" content="DecipherWorld">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
     
-    <!-- Favicon -->
+    <!-- Open Graph Meta Tags for Social Sharing -->
+    <meta property="og:title" content="{% block og_title %}{{ block.super }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Transform learning into adventure with game-based education, AI tools, and collaborative group learning experiences.{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:site_name" content="DecipherWorld">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/decipherworld-og-image.jpg' %}{% endblock %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@DecipherWorld">
+    <meta name="twitter:title" content="{% block twitter_title %}{{ block.super }}{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Game-based education platform with AI tools and collaborative learning experiences.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/decipherworld-twitter-card.jpg' %}{% endblock %}">
+    
+    <!-- Educational Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        "name": "DecipherWorld",
+        "description": "Game-based education platform transforming learning through AI tools and collaborative experiences",
+        "url": "{{ request.scheme }}://{{ request.get_host }}",
+        "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/decipherworld-logo.png' %}",
+        "sameAs": [
+            "https://twitter.com/decipherworld",
+            "https://linkedin.com/company/decipherworld"
+        ],
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+1-XXX-XXX-XXXX",
+            "contactType": "Customer Service",
+            "availableLanguage": ["English"]
+        },
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US"
+        },
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Educational Services",
+            "itemListElement": [
+                {
+                    "@type": "OfferCatalog",
+                    "name": "AI Learning Games",
+                    "description": "Interactive AI-powered learning games for students"
+                },
+                {
+                    "@type": "OfferCatalog", 
+                    "name": "Group Learning Platform",
+                    "description": "Collaborative scenario-based learning experiences"
+                },
+                {
+                    "@type": "OfferCatalog",
+                    "name": "Teacher AI Tools", 
+                    "description": "AI-powered tools to enhance teaching effectiveness"
+                }
+            ]
+        }
+    }
+    </script>
+    
+    <!-- Additional Structured Data for Educational Content -->
+    {% block structured_data %}{% endblock %}
+    
+    <!-- Favicon and App Icons -->
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'site.webmanifest' %}">
+    
+    <!-- Performance and SEO Enhancements -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
 </head>
 <body data-theme="modern" class="bg-base-100">
     
@@ -64,6 +144,7 @@
                     <li><a href="{% url 'core:home' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-home text-primary"></i>Home</a></li>
                     <li><a href="{% url 'core:courses' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-graduation-cap text-primary"></i>Student Courses</a></li>
                     <li><a href="{% url 'robotic_buddy:home' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-gamepad text-warning"></i>AI Learning Games</a></li>
+                    <li><a href="{% url 'group_learning:game_list' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-users text-accent"></i>Group Learning<span class="badge badge-accent badge-xs ml-2">NEW</span></a></li>
                     <li><a href="{% url 'core:teachers' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-robot text-secondary"></i>AI for Teachers</a></li>
                     <li><a href="{% url 'core:schools' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-building text-accent"></i>Schools</a></li>
                     <li><a href="{% url 'core:gallery' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-images text-info"></i>Gallery</a></li>
@@ -100,8 +181,13 @@
                 </li>
                 <li>
                     <a href="{% url 'robotic_buddy:home' %}" class="btn btn-ghost btn-sm text-slate-700 hover:text-warning">
-                        <i class="fas fa-gamepad text-warning"></i>Games
-                        <div class="badge badge-warning badge-xs">NEW</div>
+                        <i class="fas fa-gamepad text-warning"></i>AI Games
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'group_learning:game_list' %}" class="btn btn-ghost btn-sm text-slate-700 hover:text-accent">
+                        <i class="fas fa-users text-accent"></i>Group Learning
+                        <div class="badge badge-accent badge-xs">NEW</div>
                     </a>
                 </li>
                 <li>
