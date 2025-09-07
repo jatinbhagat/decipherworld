@@ -274,6 +274,9 @@
                                 <button id="start-camera-btn" class="btn btn-sm btn-primary">
                                     📷 Start Camera
                                 </button>
+                                <button id="capture-emotion-btn" class="btn btn-sm btn-success hidden">
+                                    📸 Capture Emotion
+                                </button>
                                 <button id="stop-camera-btn" class="btn btn-sm btn-secondary hidden">
                                     ⏹️ Stop Camera
                                 </button>
@@ -287,7 +290,66 @@
                         <div id="camera-instructions" class="text-sm text-gray-600">
                             <p>1. Click "Start Camera" to begin</p>
                             <p>2. Make facial expressions for different emotions</p>
-                            <p>3. Watch as your AI buddy learns to recognize your emotions!</p>
+                            <p>3. Click "Capture Emotion" to teach your buddy</p>
+                            <p>4. Accept or reject each capture to train your AI buddy!</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Emotion Capture Review Modal -->
+                    <div id="emotion-capture-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                        <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+                            <h3 class="text-lg font-semibold mb-4">🎭 Captured Emotion</h3>
+                            <div class="text-center mb-4">
+                                <div class="bg-gray-100 rounded-lg p-4 mb-4">
+                                    <canvas id="captured-emotion-canvas" width="200" height="150" class="mx-auto rounded border"></canvas>
+                                </div>
+                                <div id="captured-emotion-analysis" class="text-sm text-gray-700"></div>
+                            </div>
+                            <div class="flex justify-center space-x-3">
+                                <button id="reject-capture-btn" class="btn btn-sm btn-outline-secondary">
+                                    ❌ Reject
+                                </button>
+                                <button id="accept-capture-btn" class="btn btn-sm btn-success">
+                                    ✅ Accept & Train
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Training History -->
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">🎯 Camera Training History</h4>
+                        <div id="camera-training-history" class="grid grid-cols-3 gap-2 text-center">
+                            <div class="training-emotion-count" data-emotion="happy">
+                                <div class="text-2xl">😊</div>
+                                <div class="text-sm font-medium">Happy</div>
+                                <div class="text-xs text-gray-600"><span id="happy-count">0</span> captures</div>
+                            </div>
+                            <div class="training-emotion-count" data-emotion="sad">
+                                <div class="text-2xl">😢</div>
+                                <div class="text-sm font-medium">Sad</div>
+                                <div class="text-xs text-gray-600"><span id="sad-count">0</span> captures</div>
+                            </div>
+                            <div class="training-emotion-count" data-emotion="angry">
+                                <div class="text-2xl">😠</div>
+                                <div class="text-sm font-medium">Angry</div>
+                                <div class="text-xs text-gray-600"><span id="angry-count">0</span> captures</div>
+                            </div>
+                            <div class="training-emotion-count" data-emotion="surprised">
+                                <div class="text-2xl">😲</div>
+                                <div class="text-sm font-medium">Surprised</div>
+                                <div class="text-xs text-gray-600"><span id="surprised-count">0</span> captures</div>
+                            </div>
+                            <div class="training-emotion-count" data-emotion="scared">
+                                <div class="text-2xl">😨</div>
+                                <div class="text-sm font-medium">Scared</div>
+                                <div class="text-xs text-gray-600"><span id="scared-count">0</span> captures</div>
+                            </div>
+                            <div class="training-emotion-count" data-emotion="neutral">
+                                <div class="text-2xl">😐</div>
+                                <div class="text-sm font-medium">Neutral</div>
+                                <div class="text-xs text-gray-600"><span id="neutral-count">0</span> captures</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -295,10 +357,10 @@
                 <!-- Emotion Detection Results -->
                 <div class="space-y-4">
                     <div class="bg-white rounded-lg p-4">
-                        <h3 class="font-semibold text-gray-800 mb-3">Live Emotion Detection</h3>
+                        <h3 class="font-semibold text-gray-800 mb-3">📸 Captured Emotions</h3>
                         <div id="camera-emotion-results" class="space-y-2">
                             <div class="text-center text-gray-500 py-8">
-                                Start camera to see emotion detection results
+                                Start camera and capture emotions to train your AI buddy
                             </div>
                         </div>
                     </div>
@@ -395,17 +457,21 @@ function updateBuddyMessage(message) {
 }
 
 function updateProgress() {
-    const progress = (emotionGameState.examplesGiven / emotionGameState.maxExamples) * 100;
+    const totalExamples = getTotalTrainingExamples();
+    const progress = (totalExamples / emotionGameState.maxExamples) * 100;
     document.getElementById('progress-bar').style.width = progress + '%';
-    document.getElementById('examples-count').textContent = emotionGameState.examplesGiven;
+    document.getElementById('examples-count').textContent = totalExamples;
     
-    // Show test button after 3 examples
-    if (emotionGameState.examplesGiven >= 3) {
+    // Show test button only after minimum training threshold
+    if (hasEnoughTrainingData()) {
         document.getElementById('test-buddy-btn').style.display = 'inline-block';
+        updateBuddyMessage(`Great! I now have ${totalExamples} training examples! You can test my knowledge or continue teaching me more emotions.`);
+    } else {
+        updateBuddyMessage(`I'm learning! I need ${TRAINING_THRESHOLDS.MIN_TOTAL_EXAMPLES - totalExamples} more examples before I can make predictions.`);
     }
     
     // Show complete button after max examples
-    if (emotionGameState.examplesGiven >= emotionGameState.maxExamples) {
+    if (totalExamples >= emotionGameState.maxExamples) {
         document.getElementById('complete-session-btn').style.display = 'inline-block';
         document.getElementById('new-scenario-btn').style.display = 'none';
         updateBuddyMessage("Wow! I think I understand emotions much better now! You can test my knowledge or complete our training!");
@@ -656,30 +722,75 @@ function setupDragItems() {
 
 // Test buddy function
 function testBuddyEmotionKnowledge() {
+    // Check if there's enough training data for AI responses
+    if (!hasEnoughTrainingData()) {
+        showBuddyMessage(
+            `I need more training before I can make predictions! Please teach me at least ${TRAINING_THRESHOLDS.MIN_TOTAL_EXAMPLES} examples first. I've only learned from ${getTotalTrainingExamples()} examples so far. 📚`,
+            false
+        );
+        return;
+    }
+    
     const testScenario = emotionGameState.scenarios[Math.floor(Math.random() * emotionGameState.scenarios.length)];
     const correctEmotion = testScenario.emotion;
     
-    // Use actual learning data to determine accuracy
-    const emotionAccuracy = emotionGameState.emotionData[correctEmotion].total > 0 ? 
-        emotionGameState.emotionData[correctEmotion].correct / emotionGameState.emotionData[correctEmotion].total : 0.33;
+    // Get training data for this specific emotion
+    const emotionTraining = getTrainingDataForEmotion(correctEmotion);
     
-    const isCorrect = Math.random() < emotionAccuracy;
+    // AI makes prediction based on actual training data
+    let prediction;
+    let confidence = 0;
+    let reasoning = "";
     
-    let prediction, reasoning;
-    if (isCorrect) {
-        prediction = correctEmotion;
-        reasoning = `I remember learning about situations like this - they usually involve ${correctEmotion} feelings!`;
+    if (emotionTraining.examples === 0) {
+        // No training for this emotion - AI should guess based on most trained emotions
+        const trainedEmotions = Object.keys(emotionGameState.emotionData).filter(emotion => 
+            getTrainingDataForEmotion(emotion).examples > 0
+        );
+        
+        if (trainedEmotions.length === 0) {
+            prediction = 'neutral'; // Default fallback
+            confidence = 25;
+            reasoning = "I haven't been trained on emotions like this yet, so I'm just guessing.";
+        } else {
+            // Pick the most trained emotion as bias
+            prediction = trainedEmotions.reduce((maxEmotion, emotion) => 
+                getTrainingDataForEmotion(emotion).examples > getTrainingDataForEmotion(maxEmotion).examples ? 
+                emotion : maxEmotion
+            );
+            confidence = Math.min(40, getTrainingDataForEmotion(prediction).examples * 10);
+            reasoning = `I haven't learned about this type of situation, but it reminds me of ${prediction} situations I've been taught.`;
+        }
     } else {
-        const wrongEmotions = ['happy', 'sad', 'angry', 'surprised', 'scared', 'neutral'].filter(e => e !== correctEmotion);
-        prediction = wrongEmotions[Math.floor(Math.random() * wrongEmotions.length)];
-        reasoning = `This situation reminds me of ${prediction} examples I've seen before.`;
+        // AI has training data for this emotion
+        const accuracy = emotionTraining.correct / emotionTraining.total;
+        confidence = Math.min(95, Math.round(accuracy * 100) + (emotionTraining.examples * 5));
+        
+        if (Math.random() < accuracy) {
+            // Correct prediction based on training
+            prediction = correctEmotion;
+            reasoning = `I've learned about ${emotionTraining.examples} similar situations and I'm confident this is ${correctEmotion}!`;
+        } else {
+            // Wrong prediction - AI makes mistake based on confusion from training
+            const confusableEmotions = Object.keys(emotionGameState.emotionData).filter(emotion => 
+                emotion !== correctEmotion && getTrainingDataForEmotion(emotion).examples > 0
+            );
+            
+            if (confusableEmotions.length > 0) {
+                prediction = confusableEmotions[Math.floor(Math.random() * confusableEmotions.length)];
+                reasoning = `This situation is tricky! It reminds me of the ${prediction} examples I've been taught.`;
+            } else {
+                prediction = correctEmotion; // Fallback if no other trained emotions
+                reasoning = `This matches the ${correctEmotion} examples I remember learning.`;
+            }
+        }
     }
     
-    const confidence = Math.round(emotionAccuracy * 100);
+    const isCorrect = prediction === correctEmotion;
     
     setTimeout(() => {
         showBuddyMessage(
-            `Let me test my emotion understanding! In this situation: "${testScenario.text}" - I think the person feels ${prediction}. I'm ${confidence}% confident! ${isCorrect ? 'Did I get it right? 🎉' : 'Was I correct? 🤔'}`,
+            `Let me test my emotion understanding! In this situation: "${testScenario.text}" - I think the person feels ${prediction}. I'm ${confidence}% confident! ${reasoning} ${isCorrect ? 'Did I get it right? 🎉' : 'Was I correct? 🤔'}`,
             isCorrect
         );
     }, 1000);
@@ -734,7 +845,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Camera functionality event listeners
     document.getElementById('start-camera-btn').addEventListener('click', startCamera);
+    document.getElementById('capture-emotion-btn').addEventListener('click', captureEmotion);
     document.getElementById('stop-camera-btn').addEventListener('click', stopCameraStream);
+    document.getElementById('accept-capture-btn').addEventListener('click', acceptCapturedEmotion);
+    document.getElementById('reject-capture-btn').addEventListener('click', rejectCapturedEmotion);
     document.getElementById('next-challenge-btn').addEventListener('click', startEmotionChallenge);
     document.getElementById('end-practice-btn').addEventListener('click', endEmotionPractice);
 });
@@ -744,6 +858,45 @@ let videoStream = null;
 let isModelLoaded = false;
 let emotionDetectionInterval = null;
 let currentChallenge = null;
+let currentCaptureData = null;
+
+// Camera training data
+let cameraTrainingData = {
+    happy: 0,
+    sad: 0,
+    angry: 0,
+    surprised: 0,
+    scared: 0,
+    neutral: 0
+};
+
+// Training requirements and thresholds
+const TRAINING_THRESHOLDS = {
+    MIN_EXAMPLES_PER_EMOTION: 2,  // Minimum examples needed per emotion
+    MIN_TOTAL_EXAMPLES: 6,        // Minimum total examples before AI responses
+    TEST_MODE_THRESHOLD: 3        // Examples needed before test button shows
+};
+
+function getTotalTrainingExamples() {
+    return emotionGameState.examplesGiven + 
+           Object.values(cameraTrainingData).reduce((sum, count) => sum + count, 0);
+}
+
+function hasEnoughTrainingData() {
+    const totalExamples = getTotalTrainingExamples();
+    return totalExamples >= TRAINING_THRESHOLDS.MIN_TOTAL_EXAMPLES;
+}
+
+function getTrainingDataForEmotion(emotion) {
+    const scenarioExamples = emotionGameState.emotionData[emotion];
+    const cameraExamples = cameraTrainingData[emotion] || 0;
+    
+    return {
+        total: scenarioExamples.total + cameraExamples,
+        correct: scenarioExamples.correct + cameraExamples, // Camera examples are assumed correct since user accepts them
+        examples: scenarioExamples.examples.length + cameraExamples
+    };
+}
 
 // Emotion challenges for the practice game
 const emotionChallenges = [
@@ -773,6 +926,147 @@ async function loadFaceApiModels() {
     }
 }
 
+async function captureEmotion() {
+    const video = document.getElementById('emotion-camera');
+    const canvas = document.getElementById('emotion-canvas');
+    const captureCanvas = document.getElementById('captured-emotion-canvas');
+    
+    if (!video.videoWidth || !video.videoHeight) {
+        alert('Please wait for the camera to fully load before capturing.');
+        return;
+    }
+    
+    try {
+        // Capture current frame to a temporary canvas
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = video.videoWidth;
+        tempCanvas.height = video.videoHeight;
+        tempCtx.drawImage(video, 0, 0);
+        
+        // Detect emotions in the captured frame
+        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+            .withFaceExpressions();
+            
+        if (detections.length === 0) {
+            alert('No face detected! Please make sure your face is visible in the camera.');
+            return;
+        }
+        
+        const expressions = detections[0].expressions;
+        
+        // Find the emotion with highest confidence
+        let topEmotion = null;
+        let maxConfidence = 0;
+        
+        Object.keys(expressions).forEach(emotion => {
+            if (expressions[emotion] > maxConfidence) {
+                maxConfidence = expressions[emotion];
+                topEmotion = emotion;
+            }
+        });
+        
+        // Store capture data for review
+        currentCaptureData = {
+            emotion: topEmotion,
+            confidence: Math.round(maxConfidence * 100),
+            canvas: tempCanvas
+        };
+        
+        // Display in the review modal
+        const captureCtx = captureCanvas.getContext('2d');
+        captureCtx.drawImage(tempCanvas, 0, 0, captureCanvas.width, captureCanvas.height);
+        
+        // Show analysis
+        const analysisText = `Detected: ${topEmotion.toUpperCase()} (${currentCaptureData.confidence}% confidence)`;
+        document.getElementById('captured-emotion-analysis').textContent = analysisText;
+        
+        // Show modal
+        document.getElementById('emotion-capture-modal').classList.remove('hidden');
+        
+        document.getElementById('buddy-camera-feedback').textContent = 
+            `I detected ${topEmotion} with ${currentCaptureData.confidence}% confidence. Do you want to teach me this is correct?`;
+            
+    } catch (error) {
+        console.error('Error capturing emotion:', error);
+        alert('Error analyzing your expression. Please try again.');
+    }
+}
+
+function acceptCapturedEmotion() {
+    if (!currentCaptureData) return;
+    
+    const emotion = currentCaptureData.emotion;
+    
+    // Add to camera training data
+    cameraTrainingData[emotion]++;
+    
+    // Also add to main emotion training data for integration
+    emotionGameState.emotionData[emotion].total++;
+    emotionGameState.emotionData[emotion].correct++; // Since user accepted it
+    emotionGameState.emotionData[emotion].examples.push({
+        type: 'camera',
+        confidence: currentCaptureData.confidence
+    });
+    
+    // Update training history display
+    document.getElementById(`${emotion}-count`).textContent = cameraTrainingData[emotion];
+    
+    // Add to captured emotions display
+    addCapturedEmotionToHistory(emotion, currentCaptureData.confidence, true);
+    
+    // Update overall progress
+    emotionGameState.examplesGiven++;
+    updateProgress();
+    
+    // Close modal
+    document.getElementById('emotion-capture-modal').classList.add('hidden');
+    
+    // Show buddy feedback
+    document.getElementById('buddy-camera-feedback').textContent = 
+        `Great! I learned that this expression is ${emotion}! I now have ${cameraTrainingData[emotion]} examples of ${emotion}. Keep teaching me!`;
+    
+    currentCaptureData = null;
+}
+
+function rejectCapturedEmotion() {
+    // Close modal without saving
+    document.getElementById('emotion-capture-modal').classList.add('hidden');
+    
+    if (currentCaptureData) {
+        document.getElementById('buddy-camera-feedback').textContent = 
+            `Okay, I won't learn from that example. Try making another expression and capture again!`;
+    }
+    
+    currentCaptureData = null;
+}
+
+function addCapturedEmotionToHistory(emotion, confidence, accepted) {
+    const emotionEmojis = {
+        happy: '😊', sad: '😢', angry: '😠', surprised: '😲', 
+        scared: '😨', neutral: '😐', fearful: '😨'
+    };
+    
+    const historyHtml = `
+        <div class="flex items-center justify-between p-2 bg-gray-50 rounded border mb-2">
+            <div class="flex items-center space-x-2">
+                <span class="text-xl">${emotionEmojis[emotion] || '😐'}</span>
+                <span class="text-sm font-medium">${emotion}</span>
+                <span class="text-xs text-gray-500">${confidence}%</span>
+            </div>
+            <div class="text-xs ${accepted ? 'text-green-600' : 'text-red-600'}">
+                ${accepted ? '✅ Accepted' : '❌ Rejected'}
+            </div>
+        </div>
+    `;
+    
+    const resultsDiv = document.getElementById('camera-emotion-results');
+    if (resultsDiv.innerHTML.includes('Ready to capture emotions')) {
+        resultsDiv.innerHTML = '<div class="space-y-2"></div>';
+    }
+    resultsDiv.firstElementChild.insertAdjacentHTML('afterbegin', historyHtml);
+}
+
 async function startCamera() {
     try {
         // Load models if not already loaded
@@ -793,19 +1087,24 @@ async function startCamera() {
         videoStream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = videoStream;
         
-        // Update UI
+        // Update UI - show capture and stop buttons
         document.getElementById('start-camera-btn').classList.add('hidden');
+        document.getElementById('capture-emotion-btn').classList.remove('hidden');
         document.getElementById('stop-camera-btn').classList.remove('hidden');
         
-        // Start emotion detection
+        // Setup canvas when video loads
         video.addEventListener('loadeddata', () => {
-            startEmotionDetection();
-            document.getElementById('emotion-practice-game').classList.remove('hidden');
-            startEmotionChallenge();
+            const canvas = document.getElementById('emotion-canvas');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
         });
         
         document.getElementById('buddy-camera-feedback').textContent = 
-            "Camera started! I'm now analyzing your facial expressions in real-time. Try making different faces!";
+            "Camera started! Make facial expressions and click 'Capture Emotion' to teach me!";
+        
+        // Update camera results section
+        document.getElementById('camera-emotion-results').innerHTML = 
+            '<div class="text-center text-blue-600 py-4">📷 Ready to capture emotions! Make an expression and click the capture button.</div>';
             
     } catch (error) {
         console.error('Camera access error:', error);
@@ -980,8 +1279,12 @@ function stopCameraStream() {
     
     // Reset UI
     document.getElementById('start-camera-btn').classList.remove('hidden');
+    document.getElementById('capture-emotion-btn').classList.add('hidden');
     document.getElementById('stop-camera-btn').classList.add('hidden');
     document.getElementById('emotion-practice-game').classList.add('hidden');
+    
+    // Close any open modal
+    document.getElementById('emotion-capture-modal').classList.add('hidden');
     
     // Clear canvas and results
     const canvas = document.getElementById('emotion-canvas');
@@ -989,12 +1292,13 @@ function stopCameraStream() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     document.getElementById('camera-emotion-results').innerHTML = 
-        '<div class="text-center text-gray-500 py-8">Camera stopped</div>';
+        '<div class="text-center text-gray-500 py-8">Start camera and capture emotions to train your AI buddy</div>';
         
     document.getElementById('buddy-camera-feedback').textContent = 
         "Camera stopped. Thanks for the emotion training session!";
         
     currentChallenge = null;
+    currentCaptureData = null;
 }
 
 // Load Face-API models when the page loads

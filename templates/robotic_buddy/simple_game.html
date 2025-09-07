@@ -112,6 +112,17 @@ let examplesGiven = 0;
 let maxExamples = 8;
 let isTestMode = false;
 
+// Training data tracking
+let categoryTrainingData = {
+    mammals: { correct: 0, total: 0, examples: [] },
+    birds: { correct: 0, total: 0, examples: [] },
+    fish: { correct: 0, total: 0, examples: [] }
+};
+
+// Training thresholds
+const MIN_EXAMPLES_FOR_AI = 6;
+const MIN_EXAMPLES_PER_CATEGORY = 2;
+
 // Simple animal dataset
 const animals = [
     { name: 'Dog', emoji: '🐕', category: 'mammals' },
@@ -131,12 +142,39 @@ function showAnimal(animal) {
     `;
 }
 
+function recordTrainingExample(selectedCategory, correctCategory, animalName) {
+    const isCorrect = selectedCategory === correctCategory;
+    
+    // Record the training data
+    categoryTrainingData[correctCategory].total++;
+    categoryTrainingData[correctCategory].examples.push({
+        animal: animalName,
+        userGuess: selectedCategory,
+        correct: isCorrect
+    });
+    
+    if (isCorrect) {
+        categoryTrainingData[correctCategory].correct++;
+    }
+}
+
+function hasEnoughTrainingForAI() {
+    return examplesGiven >= MIN_EXAMPLES_FOR_AI;
+}
+
+function getTrainingAccuracyForCategory(category) {
+    const data = categoryTrainingData[category];
+    if (data.total === 0) return 0.33; // Random guess if no training
+    return data.correct / data.total;
+}
+
 function updateProgress() {
     const percent = (examplesGiven / maxExamples) * 100;
     document.getElementById('progress-bar').style.width = percent + '%';
     document.getElementById('examples-count').textContent = examplesGiven;
     
-    if (examplesGiven >= 3) {
+    // Only show test button after sufficient training
+    if (hasEnoughTrainingForAI()) {
         document.getElementById('test-buddy-btn').style.display = 'block';
     }
     
@@ -191,6 +229,9 @@ document.querySelectorAll('.category-btn').forEach(btn => {
             showBuddyMessage(`Oops! ${currentAnimal.name} is actually a ${correctCategory.slice(0, -1)}, not a ${selectedCategory.slice(0, -1)}. Thanks for teaching me! 🤔`, false);
         }
         
+        // Record training data
+        recordTrainingExample(selectedCategory, currentAnimal.category, currentAnimal.name);
+        
         // Disable buttons temporarily
         document.querySelectorAll('.category-btn').forEach(b => b.disabled = true);
         
@@ -214,26 +255,76 @@ document.querySelectorAll('.category-btn').forEach(btn => {
 
 // Test buddy button
 document.getElementById('test-buddy-btn').addEventListener('click', function() {
-    alert('🧠 Testing mode! Now I\'ll try to guess the next animal myself. Watch me predict!');
+    // Check if AI has enough training
+    if (!hasEnoughTrainingForAI()) {
+        showBuddyMessage(
+            `I need more training before I can make predictions! Please teach me at least ${MIN_EXAMPLES_FOR_AI} examples first. I've only learned from ${examplesGiven} examples so far. 📚`,
+            false
+        );
+        return;
+    }
+    
+    alert('🧠 Testing mode! Now I\'ll try to guess the next animal myself based on what you\'ve taught me!');
     
     nextAnimal();
     const currentAnimal = animals[currentAnimalIndex];
+    const correctCategory = currentAnimal.category;
     
-    // Simple "AI" prediction (random with some bias toward correct answer)
-    const categories = ['mammals', 'birds', 'fish'];
+    // AI prediction based on actual training data
     let prediction;
+    let confidence = 0;
+    let reasoning = "";
     
-    if (Math.random() < 0.7) { // 70% chance of being correct
-        prediction = currentAnimal.category;
+    const categoryAccuracy = getTrainingAccuracyForCategory(correctCategory);
+    const categoryTraining = categoryTrainingData[correctCategory];
+    
+    if (categoryTraining.total === 0) {
+        // No training for this category - AI guesses based on most trained category
+        const trainedCategories = Object.keys(categoryTrainingData).filter(cat => 
+            categoryTrainingData[cat].total > 0
+        );
+        
+        if (trainedCategories.length === 0) {
+            prediction = 'mammals'; // Default fallback
+            confidence = 25;
+            reasoning = "I haven't been trained on categories like this yet, so I'm just guessing.";
+        } else {
+            // Pick the most trained category as bias
+            prediction = trainedCategories.reduce((maxCat, cat) => 
+                categoryTrainingData[cat].total > categoryTrainingData[maxCat].total ? cat : maxCat
+            );
+            confidence = Math.min(40, categoryTrainingData[prediction].total * 10);
+            reasoning = `I haven't learned about ${correctCategory} yet, but this reminds me of the ${prediction} I've been taught.`;
+        }
     } else {
-        const wrongCategories = categories.filter(c => c !== currentAnimal.category);
-        prediction = wrongCategories[Math.floor(Math.random() * wrongCategories.length)];
+        // AI has training data for this category
+        confidence = Math.min(95, Math.round(categoryAccuracy * 100) + (categoryTraining.total * 5));
+        
+        if (Math.random() < categoryAccuracy) {
+            // Correct prediction based on training
+            prediction = correctCategory;
+            reasoning = `I've learned about ${categoryTraining.total} ${correctCategory} and I'm confident this is one!`;
+        } else {
+            // Wrong prediction - AI makes mistake based on confusion
+            const otherCategories = Object.keys(categoryTrainingData).filter(cat => 
+                cat !== correctCategory && categoryTrainingData[cat].total > 0
+            );
+            
+            if (otherCategories.length > 0) {
+                prediction = otherCategories[Math.floor(Math.random() * otherCategories.length)];
+                reasoning = `This is tricky! It reminds me of the ${prediction} examples I've learned.`;
+            } else {
+                prediction = correctCategory;
+                reasoning = `Based on my training, I think this matches what I know about ${correctCategory}.`;
+            }
+        }
     }
     
+    const isCorrect = prediction === correctCategory;
+    
     setTimeout(() => {
-        const isCorrect = prediction === currentAnimal.category;
         showBuddyMessage(
-            `I think this ${currentAnimal.name} is a ${prediction.slice(0, -1)}! ${isCorrect ? 'Did I get it right? 🎉' : 'Hmm, did I make a mistake? 🤔'}`,
+            `I think this ${currentAnimal.name} is a ${prediction.slice(0, -1)}! I'm ${confidence}% confident. ${reasoning} ${isCorrect ? 'Did I get it right? 🎉' : 'Was I correct? 🤔'}`,
             isCorrect
         );
     }, 1000);
