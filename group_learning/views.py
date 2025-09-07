@@ -113,7 +113,7 @@ class JoinSessionForm(ModelForm):
             # Add role choices based on game - handle case where session.game is None
             if self.session.game:
                 roles = Role.objects.filter(
-                    scenarios__game=self.session.game,
+                    scenario__game=self.session.game,
                     is_active=True
                 ).distinct().values_list('id', 'name')
             else:
@@ -142,7 +142,7 @@ class SessionDetailView(DetailView):
         # Get available roles - handle case where session.game is None
         if session.game:
             context['available_roles'] = Role.objects.filter(
-                scenarios__game=session.game,
+                scenario__game=session.game,
                 is_active=True
             ).distinct()
         else:
