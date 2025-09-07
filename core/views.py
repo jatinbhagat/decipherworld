@@ -95,6 +95,16 @@ class SchoolsView(FormView):
         return super().form_invalid(form)
 
 
+class SchoolPresentationView(TemplateView):
+    """School presentation page showcasing AI EdTech solution"""
+    template_name = 'home/school-presentation.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'School Presentation - AI EdTech Solution'
+        return context
+
+
 class GalleryView(TemplateView):
     """Gallery showcasing AI-based student courses and teacher training"""
     template_name = 'home/gallery.html'
