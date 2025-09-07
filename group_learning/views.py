@@ -135,11 +135,15 @@ class SessionDetailView(DetailView):
         context['players'] = players
         context['player_count'] = len(players)
         
-        # Get available roles
-        context['available_roles'] = Role.objects.filter(
-            scenarios__game=session.game,
-            is_active=True
-        ).distinct()
+        # Get available roles - handle case where session.game is None
+        if session.game:
+            context['available_roles'] = Role.objects.filter(
+                scenarios__game=session.game,
+                is_active=True
+            ).distinct()
+        else:
+            # If no game assigned, show all active roles
+            context['available_roles'] = Role.objects.filter(is_active=True)
         
         context['join_form'] = JoinSessionForm(session=session)
         return context
