@@ -79,7 +79,7 @@ def get_azure_database_config():
             'NAME': config('DB_NAME', default='decipherworld'),
             'USER': config('DB_USER', default='decipheradmin'),
             'PASSWORD': config('DB_PASSWORD'),
-            'HOST': config('DB_HOST', default='decipherworld-db-server.postgres.database.azure.com'),
+            'HOST': config('DB_HOST', default='decipherworld-db-server-ci01.postgres.database.azure.com'),
             'PORT': config('DB_PORT', default='5432'),
             'OPTIONS': {
                 'sslmode': 'require',

@@ -42,7 +42,13 @@
       "Bash(timeout 30 az webapp config ssl create --resource-group rg-decipherworld-prod --name decipherworld-app --hostname www.decipherworld.com)",
       "WebSearch",
       "Bash(az webapp log tail:*)",
-      "WebFetch(domain:decipherworld.com)"
+      "WebFetch(domain:decipherworld.com)",
+      "Bash(az webapp deployment source show:*)",
+      "Bash(az webapp show:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=decipherworld.settings.azure python manage.py check --deploy)",
+      "Bash(DJANGO_SETTINGS_MODULE=decipherworld.settings.azure python manage.py makemigrations --dry-run)",
+      "Bash(DJANGO_SETTINGS_MODULE=decipherworld.settings.azure python manage.py collectstatic --dry-run --noinput)",
+      "Bash(DJANGO_SETTINGS_MODULE=decipherworld.settings.azure python manage.py shell -c \"from core.views import SchoolPresentationView; print(''Import successful''); from django.test import Client; c = Client(); response = c.get(''/school-presentation/''); print(''Response status:'', response.status_code)\")"
     ],
     "deny": [],
     "ask": []
