@@ -42,22 +42,28 @@
     </div>
     
     <!-- Training Interface -->
-    <div class="grid lg:grid-cols-4 gap-6">
-        <!-- Animal Pool -->
-        <div class="lg:col-span-1">
-            <div class="game-card bg-white p-4 sticky top-32">
-                <h3 class="font-semibold text-gray-800 mb-4 text-center">🎲 Animals to Sort</h3>
-                <div id="animal-pool" class="space-y-3 min-h-[300px]">
-                    <!-- Animals will be populated here -->
-                </div>
-                <button id="new-animal-btn" class="btn btn-sm btn-outline btn-primary w-full mt-4">
-                    Get New Animal
+    <div class="space-y-6">
+        <!-- Mobile-First Animal Pool -->
+        <div class="game-card bg-white p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-gray-800">🎲 Animal to Classify</h3>
+                <button id="new-animal-btn" class="btn btn-sm btn-outline btn-primary">
+                    Next Animal
                 </button>
+            </div>
+            <div id="animal-pool" class="text-center">
+                <!-- Current animal will be displayed here -->
+            </div>
+            
+            <!-- Mobile Instructions -->
+            <div class="text-center text-sm text-gray-600 mt-4">
+                <div class="hidden md:block">🖱️ Drag the animal to the correct category below</div>
+                <div class="md:hidden">👆 Tap the animal, then tap the correct category below</div>
             </div>
         </div>
         
         <!-- Classification Categories -->
-        <div class="lg:col-span-3">
+        <div>
             <div class="grid md:grid-cols-3 gap-4 mb-6">
                 <!-- Mammals -->
                 <div class="game-card bg-white p-4">
@@ -66,9 +72,12 @@
                         <h3 class="font-semibold text-gray-800">Mammals</h3>
                         <p class="text-sm text-gray-600">Warm-blooded, have hair or fur</p>
                     </div>
-                    <div class="drop-zone min-h-[100px] border-3 border-dashed border-gray-300 rounded-lg p-4 text-center flex items-center justify-center" 
+                    <div class="drop-zone min-h-[120px] border-3 border-dashed border-gray-300 rounded-lg p-4 text-center flex items-center justify-center touch-manipulation hover:border-orange-400 hover:bg-orange-50 transition-colors duration-200" 
                          data-category="mammals" id="mammals-zone">
-                        <div class="text-gray-400 text-sm">Drop mammals here</div>
+                        <div class="text-gray-400 text-sm">
+                            <div class="hidden md:block">Drop mammals here</div>
+                            <div class="md:hidden">Tap for mammals</div>
+                        </div>
                     </div>
                     <div id="mammals-items" class="mt-3 flex flex-wrap gap-2">
                         <!-- Classified mammals will appear here -->
@@ -82,9 +91,12 @@
                         <h3 class="font-semibold text-gray-800">Birds</h3>
                         <p class="text-sm text-gray-600">Have feathers and wings</p>
                     </div>
-                    <div class="drop-zone min-h-[100px] border-3 border-dashed border-gray-300 rounded-lg p-4 text-center flex items-center justify-center" 
+                    <div class="drop-zone min-h-[120px] border-3 border-dashed border-gray-300 rounded-lg p-4 text-center flex items-center justify-center touch-manipulation hover:border-blue-400 hover:bg-blue-50 transition-colors duration-200" 
                          data-category="birds" id="birds-zone">
-                        <div class="text-gray-400 text-sm">Drop birds here</div>
+                        <div class="text-gray-400 text-sm">
+                            <div class="hidden md:block">Drop birds here</div>
+                            <div class="md:hidden">Tap for birds</div>
+                        </div>
                     </div>
                     <div id="birds-items" class="mt-3 flex flex-wrap gap-2">
                         <!-- Classified birds will appear here -->
@@ -98,9 +110,12 @@
                         <h3 class="font-semibold text-gray-800">Fish</h3>
                         <p class="text-sm text-gray-600">Live in water, have gills</p>
                     </div>
-                    <div class="drop-zone min-h-[100px] border-3 border-dashed border-gray-300 rounded-lg p-4 text-center flex items-center justify-center" 
+                    <div class="drop-zone min-h-[120px] border-3 border-dashed border-gray-300 rounded-lg p-4 text-center flex items-center justify-center touch-manipulation hover:border-green-400 hover:bg-green-50 transition-colors duration-200" 
                          data-category="fish" id="fish-zone">
-                        <div class="text-gray-400 text-sm">Drop fish here</div>
+                        <div class="text-gray-400 text-sm">
+                            <div class="hidden md:block">Drop fish here</div>
+                            <div class="md:hidden">Tap for fish</div>
+                        </div>
                     </div>
                     <div id="fish-items" class="mt-3 flex flex-wrap gap-2">
                         <!-- Classified fish will appear here -->

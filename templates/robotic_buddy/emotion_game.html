@@ -41,57 +41,73 @@
     </div>
     
     <!-- Training Interface -->
-    <div class="grid lg:grid-cols-4 gap-6">
-        <!-- Emotion Options -->
-        <div class="lg:col-span-1">
-            <div class="game-card bg-white p-4 sticky top-32">
-                <h3 class="font-semibold text-gray-800 mb-4 text-center">😊 Emotions</h3>
-                <div id="emotion-pool" class="space-y-3 min-h-[300px]">
-                    <div class="draggable-item bg-yellow-50 border-2 border-yellow-200 rounded-lg p-3 text-center cursor-grab hover:bg-yellow-100 transition-colors shadow-sm" draggable="true" data-item="happy" data-emotion="happy">
-                        <div class="text-3xl mb-1">😊</div>
-                        <div class="text-sm font-medium text-gray-800">Happy</div>
-                    </div>
-                    <div class="draggable-item bg-blue-50 border-2 border-blue-200 rounded-lg p-3 text-center cursor-grab hover:bg-blue-100 transition-colors shadow-sm" draggable="true" data-item="sad" data-emotion="sad">
-                        <div class="text-3xl mb-1">😢</div>
-                        <div class="text-sm font-medium text-gray-800">Sad</div>
-                    </div>
-                    <div class="draggable-item bg-red-50 border-2 border-red-200 rounded-lg p-3 text-center cursor-grab hover:bg-red-100 transition-colors shadow-sm" draggable="true" data-item="angry" data-emotion="angry">
-                        <div class="text-3xl mb-1">😠</div>
-                        <div class="text-sm font-medium text-gray-800">Angry</div>
-                    </div>
-                    <div class="draggable-item bg-orange-50 border-2 border-orange-200 rounded-lg p-3 text-center cursor-grab hover:bg-orange-100 transition-colors shadow-sm" draggable="true" data-item="surprised" data-emotion="surprised">
-                        <div class="text-3xl mb-1">😮</div>
-                        <div class="text-sm font-medium text-gray-800">Surprised</div>
-                    </div>
-                    <div class="draggable-item bg-purple-50 border-2 border-purple-200 rounded-lg p-3 text-center cursor-grab hover:bg-purple-100 transition-colors shadow-sm" draggable="true" data-item="scared" data-emotion="scared">
-                        <div class="text-3xl mb-1">😨</div>
-                        <div class="text-sm font-medium text-gray-800">Scared</div>
-                    </div>
-                    <div class="draggable-item bg-gray-50 border-2 border-gray-200 rounded-lg p-3 text-center cursor-grab hover:bg-gray-100 transition-colors shadow-sm" draggable="true" data-item="neutral" data-emotion="neutral">
-                        <div class="text-3xl mb-1">😐</div>
-                        <div class="text-sm font-medium text-gray-800">Neutral</div>
-                    </div>
+    <div class="space-y-6">
+        <!-- Mobile-First Emotion Options -->
+        <div class="game-card bg-white p-4">
+            <h3 class="font-semibold text-gray-800 mb-4 text-center">😊 Choose the Emotion</h3>
+            
+            <!-- Mobile-Optimized Emotion Grid -->
+            <div id="emotion-pool" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+                <div class="draggable-item bg-yellow-50 border-2 border-yellow-200 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:bg-yellow-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
+                     draggable="true" data-item="happy" data-emotion="happy">
+                    <div class="text-4xl sm:text-3xl mb-1">😊</div>
+                    <div class="text-xs sm:text-sm font-medium text-gray-800">Happy</div>
                 </div>
-                <button id="new-scenario-btn" class="btn btn-sm btn-outline btn-primary w-full mt-4">
-                    Get New Scenario
-                </button>
+                <div class="draggable-item bg-blue-50 border-2 border-blue-200 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:bg-blue-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
+                     draggable="true" data-item="sad" data-emotion="sad">
+                    <div class="text-4xl sm:text-3xl mb-1">😢</div>
+                    <div class="text-xs sm:text-sm font-medium text-gray-800">Sad</div>
+                </div>
+                <div class="draggable-item bg-red-50 border-2 border-red-200 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:bg-red-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
+                     draggable="true" data-item="angry" data-emotion="angry">
+                    <div class="text-4xl sm:text-3xl mb-1">😠</div>
+                    <div class="text-xs sm:text-sm font-medium text-gray-800">Angry</div>
+                </div>
+                <div class="draggable-item bg-orange-50 border-2 border-orange-200 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:bg-orange-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
+                     draggable="true" data-item="surprised" data-emotion="surprised">
+                    <div class="text-4xl sm:text-3xl mb-1">😮</div>
+                    <div class="text-xs sm:text-sm font-medium text-gray-800">Surprised</div>
+                </div>
+                <div class="draggable-item bg-purple-50 border-2 border-purple-200 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:bg-purple-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
+                     draggable="true" data-item="scared" data-emotion="scared">
+                    <div class="text-4xl sm:text-3xl mb-1">😨</div>
+                    <div class="text-xs sm:text-sm font-medium text-gray-800">Scared</div>
+                </div>
+                <div class="draggable-item bg-gray-50 border-2 border-gray-200 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:bg-gray-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
+                     draggable="true" data-item="neutral" data-emotion="neutral">
+                    <div class="text-4xl sm:text-3xl mb-1">😐</div>
+                    <div class="text-xs sm:text-sm font-medium text-gray-800">Neutral</div>
+                </div>
             </div>
+            
+            <!-- Mobile Instructions -->
+            <div class="text-center text-sm text-gray-600 mb-3">
+                <div class="hidden md:block">🖱️ Drag the emotion or click to select</div>
+                <div class="md:hidden">👆 Tap an emotion, then tap the scenario below</div>
+            </div>
+            
+            <button id="new-scenario-btn" class="btn btn-sm btn-outline btn-primary w-full">
+                Get New Scenario
+            </button>
         </div>
         
         <!-- Current Scenario -->
-        <div class="lg:col-span-3">
+        <div>
             <div class="grid gap-6 mb-6">
                 <!-- Scenario Card -->
                 <div class="game-card bg-white p-6">
                     <div class="text-center mb-4">
                         <h3 class="font-semibold text-gray-800 mb-3">📖 Emotion Scenario</h3>
                     </div>
-                    <div class="drop-zone min-h-[150px] border-3 border-dashed border-gray-300 rounded-lg p-6 text-center" 
+                    <div class="drop-zone min-h-[180px] border-3 border-dashed border-gray-300 rounded-lg p-4 sm:p-6 text-center touch-manipulation hover:border-purple-400 transition-colors duration-200" 
                          id="scenario-zone">
                         <div id="scenario-content" class="mb-4">
                             <div class="text-gray-400 text-sm">Loading scenario...</div>
                         </div>
-                        <div class="text-gray-400 text-sm">Drag the emotion that matches this scenario here</div>
+                        <div class="text-gray-400 text-sm">
+                            <div class="hidden md:block">🖱️ Drag the emotion that matches this scenario here</div>
+                            <div class="md:hidden">👆 Tap this area after selecting an emotion above</div>
+                        </div>
                     </div>
                     <div id="scenario-result" class="mt-3 text-center">
                         <!-- Results will appear here -->
@@ -237,8 +253,8 @@
         <!-- Camera Mode Toggle -->
         <div class="flex justify-center mb-6">
             <div class="btn-group">
-                <button id="scenario-mode-btn" class="btn btn-primary">📖 Scenario Mode</button>
-                <button id="camera-mode-btn" class="btn btn-outline btn-primary">📹 Camera Mode</button>
+                <button id="scenario-mode-btn" class="btn btn-primary text-sm sm:text-base px-3 sm:px-4">📖 <span class="hidden sm:inline">Scenario </span>Mode</button>
+                <button id="camera-mode-btn" class="btn btn-outline btn-primary text-sm sm:text-base px-3 sm:px-4">📹 <span class="hidden sm:inline">Camera </span>Mode</button>
             </div>
         </div>
         
@@ -317,13 +333,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/dist/face-api.min.js"></script>
 
 <script>
-// Enhanced Emotion Learning System
+// Enhanced Emotion Learning System with Mobile Support
 let emotionGameState = {
     currentScenarioIndex: 0,
     examplesGiven: 0,
     maxExamples: 8,
     correctPredictions: 0,
     totalPredictions: 0,
+    selectedEmotion: null, // For mobile tap-to-select interaction
+    isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
     
     // Emotion learning data
     emotionData: {
@@ -468,10 +486,11 @@ function updateEmotionVisualization() {
     });
 }
 
-// Set up drag and drop
+// Enhanced drop zone with mobile support
 function setupEmotionDropZone() {
     const dropZone = document.getElementById('scenario-zone');
     
+    // Traditional drag events
     dropZone.addEventListener('dragover', function(e) {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
@@ -482,63 +501,108 @@ function setupEmotionDropZone() {
         this.classList.remove('border-purple-400', 'bg-purple-50');
     });
     
+    // Mobile tap-to-place support
+    dropZone.addEventListener('click', function(e) {
+        if (emotionGameState.selectedEmotion) {
+            e.preventDefault();
+            
+            // Use the selected emotion
+            const draggedEmotion = emotionGameState.selectedEmotion;
+            
+            // Process the drop
+            handleEmotionDrop(draggedEmotion);
+            
+            // Clear selection
+            emotionGameState.selectedEmotion = null;
+            document.querySelectorAll('.draggable-item').forEach(el => {
+                el.classList.remove('ring-4', 'ring-purple-400', 'ring-opacity-50', 'selected-emotion');
+            });
+            
+            // Reset drop zone style
+            this.classList.remove('border-purple-400', 'bg-purple-50');
+            this.classList.add('border-gray-300');
+            
+            // Haptic feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(100);
+            }
+        } else if (emotionGameState.isMobile) {
+            // Guide user to select an emotion first
+            updateBuddyMessage("Please select an emotion from above first, then tap here!");
+            
+            // Briefly highlight the emotion options
+            const emotionPool = document.getElementById('emotion-pool');
+            emotionPool.classList.add('ring-2', 'ring-yellow-400', 'ring-opacity-75');
+            setTimeout(() => {
+                emotionPool.classList.remove('ring-2', 'ring-yellow-400', 'ring-opacity-75');
+            }, 1500);
+        }
+    });
+    
     dropZone.addEventListener('drop', function(e) {
         e.preventDefault();
         this.classList.remove('border-purple-400', 'bg-purple-50');
         
         const draggedEmotion = e.dataTransfer.getData('text/plain');
-        const correctEmotion = emotionGameState.currentScenario.emotion;
-        const isCorrect = draggedEmotion === correctEmotion;
-        
-        // Show result
-        const resultEl = document.getElementById('scenario-result');
-        const emotionEmojis = {
-            happy: '😊', sad: '😢', angry: '😠', 
-            surprised: '😮', scared: '😨', neutral: '😐'
-        };
-        
-        resultEl.innerHTML = `
-            <div class="p-4 rounded-lg ${isCorrect ? 'bg-green-100 border border-green-300' : 'bg-orange-100 border border-orange-300'}">
-                <div class="text-2xl mb-2">${emotionEmojis[draggedEmotion]}</div>
-                <div class="font-medium ${isCorrect ? 'text-green-800' : 'text-orange-800'}">
-                    You chose: ${draggedEmotion.charAt(0).toUpperCase() + draggedEmotion.slice(1)}
-                </div>
-                ${!isCorrect ? `<div class="text-sm text-orange-600 mt-1">Correct answer: ${correctEmotion.charAt(0).toUpperCase() + correctEmotion.slice(1)} ${emotionEmojis[correctEmotion]}</div>` : ''}
-            </div>
-        `;
-        
-        // Record the example
-        recordEmotionExample(draggedEmotion, correctEmotion, isCorrect);
-        
-        // Show feedback
-        if (isCorrect) {
-            showBuddyMessage(`Perfect! That person is indeed feeling ${correctEmotion}! I'm learning to understand emotions better! 🌟`);
-        } else {
-            showBuddyMessage(`I see! That person is actually feeling ${correctEmotion}, not ${draggedEmotion}. Thank you for teaching me the difference! 🤔`, false);
-        }
-        
-        emotionGameState.examplesGiven++;
-        updateProgress();
-        updateEmotionVisualization();
-        
-        // Show AI brain after 2 examples
-        if (emotionGameState.examplesGiven >= 2) {
-            document.getElementById('ai-visualization').style.display = 'block';
-        }
-        
-        // Load new scenario after delay
-        setTimeout(() => {
-            if (emotionGameState.examplesGiven < emotionGameState.maxExamples) {
-                loadNewScenario();
-                resultEl.innerHTML = '';
-            }
-        }, 3000);
+        handleEmotionDrop(draggedEmotion);
     });
 }
 
-// Set up drag items
+// Unified function to handle both drag/drop and tap interactions
+function handleEmotionDrop(draggedEmotion) {
+    const correctEmotion = emotionGameState.currentScenario.emotion;
+    const isCorrect = draggedEmotion === correctEmotion;
+    
+    // Show result with enhanced mobile feedback
+    const resultEl = document.getElementById('scenario-result');
+    const emotionEmojis = {
+        happy: '😊', sad: '😢', angry: '😠', 
+        surprised: '😮', scared: '😨', neutral: '😐'
+    };
+    
+    resultEl.innerHTML = `
+        <div class="p-4 rounded-lg ${isCorrect ? 'bg-green-100 border border-green-300' : 'bg-orange-100 border border-orange-300'} transition-all duration-300">
+            <div class="text-3xl mb-2">${emotionEmojis[draggedEmotion]}</div>
+            <div class="font-medium ${isCorrect ? 'text-green-800' : 'text-orange-800'}">
+                You chose: ${draggedEmotion.charAt(0).toUpperCase() + draggedEmotion.slice(1)}
+            </div>
+            ${!isCorrect ? `<div class="text-sm text-orange-600 mt-1">Correct answer: ${correctEmotion.charAt(0).toUpperCase() + correctEmotion.slice(1)} ${emotionEmojis[correctEmotion]}</div>` : ''}
+            ${isCorrect ? '<div class="text-sm text-green-600 mt-1">🎉 Perfect! Great emotional understanding!</div>' : '<div class="text-sm text-orange-600 mt-1">💡 Keep practicing to get better!</div>'}
+        </div>
+    `;
+    
+    // Record the example
+    recordEmotionExample(draggedEmotion, correctEmotion, isCorrect);
+    
+    // Show feedback
+    if (isCorrect) {
+        showBuddyMessage(`Perfect! That person is indeed feeling ${correctEmotion}! I'm learning to understand emotions better! 🌟`);
+    } else {
+        showBuddyMessage(`I see! That person is actually feeling ${correctEmotion}, not ${draggedEmotion}. Thank you for teaching me the difference! 🤔`, false);
+    }
+    
+    emotionGameState.examplesGiven++;
+    updateProgress();
+    updateEmotionVisualization();
+    
+    // Show AI brain after 2 examples
+    if (emotionGameState.examplesGiven >= 2) {
+        document.getElementById('ai-visualization').style.display = 'block';
+    }
+    
+    // Load new scenario after delay
+    setTimeout(() => {
+        if (emotionGameState.examplesGiven < emotionGameState.maxExamples) {
+            loadNewScenario();
+            resultEl.innerHTML = '';
+        }
+    }, 3000);
+}
+
+// Enhanced drag and touch support
 function setupDragItems() {
     document.querySelectorAll('.draggable-item').forEach(item => {
+        // Traditional drag events
         item.addEventListener('dragstart', function(e) {
             console.log('Drag started for:', this.dataset.item);
             this.classList.add('opacity-50');
@@ -548,6 +612,44 @@ function setupDragItems() {
         
         item.addEventListener('dragend', function() {
             this.classList.remove('opacity-50');
+        });
+        
+        // Mobile tap-to-select support
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Clear previous selection
+            document.querySelectorAll('.draggable-item').forEach(el => {
+                el.classList.remove('ring-4', 'ring-purple-400', 'ring-opacity-50', 'selected-emotion');
+            });
+            
+            // Select this emotion
+            this.classList.add('ring-4', 'ring-purple-400', 'ring-opacity-50', 'selected-emotion');
+            emotionGameState.selectedEmotion = this.dataset.emotion;
+            
+            // Provide haptic feedback if available
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+            
+            // Visual feedback
+            updateBuddyMessage(`Great! You selected ${this.dataset.emotion}. Now tap the scenario box below to make your choice!`);
+            
+            // Highlight the drop zone
+            const dropZone = document.getElementById('scenario-zone');
+            dropZone.classList.add('border-purple-400', 'bg-purple-50');
+            dropZone.classList.remove('border-gray-300');
+        });
+        
+        // Touch events for better mobile experience
+        item.addEventListener('touchstart', function(e) {
+            // Add touch feedback
+            this.classList.add('scale-95');
+        });
+        
+        item.addEventListener('touchend', function(e) {
+            // Remove touch feedback
+            this.classList.remove('scale-95');
         });
     });
 }
