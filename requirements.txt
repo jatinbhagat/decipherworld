@@ -1,12 +1,19 @@
+# Core Django
 Django>=4.2
-django-cors-headers
-python-decouple
-psycopg2-binary
-whitenoise
 gunicorn
-requests
+
+# Database
+psycopg2-binary
 dj-database-url
 
-# Azure-specific packages
-django-storages[azure]
-applicationinsights
+# Configuration
+python-decouple
+
+# Static Files
+whitenoise
+
+# CORS (for API access if needed)
+django-cors-headers
+
+# HTTP Requests (if needed by games)
+requests

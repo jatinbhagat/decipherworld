@@ -12,7 +12,6 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['courses'] = Course.objects.all()[:4]
-        context['page_title'] = 'Transform Learning Into Adventure'
         return context
 
 class CoursesView(ListView):
@@ -24,11 +23,6 @@ class CoursesView(ListView):
 class TeachersView(TemplateView):
     """AI Training for Teachers & Administrators"""
     template_name = 'home/teachers.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'AI Training for Teachers - Boost Productivity 5X'
-        return context
 
 class SchoolsView(FormView):
     """Schools demo request page with product selection"""
@@ -36,35 +30,9 @@ class SchoolsView(FormView):
     form_class = SchoolDemoRequestForm
     success_url = reverse_lazy('core:schools')
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['page_title'] = 'School Implementation - Book Demo'
-        return context
-    
     def form_valid(self, form):
         try:
-            # Debug: Check database connection before saving
-            from django.db import connection
-            db_settings = connection.settings_dict
-            
-            # Log connection details for debugging
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.info(f"Database connection - HOST: {db_settings.get('HOST')}, PORT: {db_settings.get('PORT')}")
-            
-            # Verify connection works
-            try:
-                with connection.cursor() as cursor:
-                    cursor.execute("SELECT 1")
-                    cursor.fetchone()
-            except Exception as conn_error:
-                logger.error(f"Database connection test failed: {conn_error}")
-                logger.error(f"Connection settings: HOST={db_settings.get('HOST')}, PORT={db_settings.get('PORT')}")
-                raise conn_error
-            
-            # Save the form (this is where the original error occurred)
             school_demo = form.save()
-            
             products_display = ', '.join(school_demo.get_products_display())
             messages.success(self.request, 
                 f'🏫 School Demo Scheduled! Thank you {school_demo.contact_person}! '
@@ -73,20 +41,6 @@ class SchoolsView(FormView):
             )
             return super().form_valid(form)
         except Exception as e:
-            # Enhanced error reporting
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.error(f"Form save error: {str(e)}")
-            logger.error(f"Error type: {type(e).__name__}")
-            
-            # Check what database settings are being used during the error
-            try:
-                from django.db import connection
-                db_settings = connection.settings_dict
-                logger.error(f"Database settings during error: HOST={db_settings.get('HOST')}, PORT={db_settings.get('PORT')}")
-            except Exception as conn_check_error:
-                logger.error(f"Could not check connection during error: {conn_check_error}")
-            
             messages.error(self.request, f'Error saving your school demo request: {str(e)}')
             return self.form_invalid(form)
     

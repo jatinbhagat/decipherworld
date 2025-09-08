@@ -11,7 +11,9 @@
       "Bash(python manage.py makemigrations:*)",
       "Bash(python manage.py migrate:*)",
       "Bash(python manage.py check:*)",
-      "Bash(python manage.py:*)"
+      "Bash(python manage.py:*)",
+      "Bash(unzip:*)",
+      "WebFetch(domain:decipherworld-app.azurewebsites.net)"
     ],
     "deny": [],
     "ask": []

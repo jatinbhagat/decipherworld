@@ -1,56 +1,17 @@
 from django.http import HttpResponse
-from django.views.decorators.http import require_GET
 
-@require_GET
+
 def robots_txt(request):
-    lines = [
-        "User-agent: *",
-        "Allow: /",
-        "",
-        "# High-priority educational content",
-        "Allow: /courses/",
-        "Allow: /teachers/",
-        "Allow: /schools/",
-        "Allow: /learn/",
-        "Allow: /buddy/",
-        "",
-        "# Educational topics and resources",
-        "Allow: /topics/",
-        "Allow: /articles/",
-        "Allow: /solutions/",
-        "Allow: /help/",
-        "",
-        "# Public pages",
-        "Allow: /about/",
-        "Allow: /contact/",
-        "Allow: /gallery/",
-        "",
-        "# Block admin and internal pages",
-        "Disallow: /admin/",
-        "Disallow: /static/admin/",
-        "Disallow: /learn/session/",
-        "Disallow: /learn/play/",
-        "Disallow: /learn/api/",
-        "",
-        "# Allow static resources",
-        "Allow: /static/",
-        "",
-        "# Special instructions for major search engines",
-        "User-agent: Googlebot",
-        "Allow: /",
-        "Crawl-delay: 1",
-        "",
-        "User-agent: Bingbot", 
-        "Allow: /",
-        "Crawl-delay: 1",
-        "",
-        "# Sitemap location (important for discovery)",
-        f"Sitemap: {request.build_absolute_uri('/sitemap.xml')}",
-        "",
-        "# Additional sitemap for better crawling",
-        f"Sitemap: {request.build_absolute_uri('/sitemap.xml')}",
-        "",
-        "# Crawl-delay for respectful crawling",
-        "Crawl-delay: 1"
-    ]
-    return HttpResponse('\n'.join(lines), content_type='text/plain')
+    """Simple robots.txt"""
+    scheme = 'https' if request.is_secure() else 'http'
+    domain = request.get_host()
+    
+    content = f"""User-agent: *
+Allow: /
+
+Disallow: /admin/
+
+# Sitemaps
+Sitemap: {scheme}://{domain}/sitemap.xml"""
+    
+    return HttpResponse(content, content_type='text/plain')
