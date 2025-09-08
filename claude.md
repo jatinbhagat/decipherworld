@@ -83,6 +83,13 @@ gunicorn decipherworld.wsgi:application
    - Ensure templates extend correct base template (`base.html`)
    - Check template directory paths in settings
 
+4. **🔥 CRITICAL: 503 Service Unavailable Errors**
+   - **Root Cause**: Settings module mismatch in `startup.sh`
+   - **Solution**: Ensure `DJANGO_SETTINGS_MODULE=decipherworld.settings.production`
+   - **Check**: Both `startup.sh` script AND Azure App Service environment variables
+   - **Common After**: Code simplification that removes settings files
+   - **Fix Command**: `az webapp config appsettings set --name decipherworld-app --resource-group rg-decipherworld-prod --settings DJANGO_SETTINGS_MODULE=decipherworld.settings.production`
+
 ## Key Features Implementation
 
 ### Apps Architecture

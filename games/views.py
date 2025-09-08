@@ -13,7 +13,8 @@ class GamesHubView(TemplateView):
         context.update({
             'group_learning_count': Game.objects.filter(is_active=True).count(),
             'robotic_buddy_count': RoboticBuddy.objects.count(),
-            'ai_activities_count': GameActivity.objects.filter(is_active=True).count(),
+            # Include core AI games (Robotic Buddy, Simple Game, Emotion Game, Drag & Drop) + dynamic activities
+            'ai_activities_count': 4 + GameActivity.objects.filter(is_active=True).count(),
         })
         return context
 

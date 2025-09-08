@@ -13,7 +13,7 @@
                 🤖 AI Learning Games
             </h1>
             <p class="text-xl sm:text-2xl mb-8 max-w-4xl mx-auto opacity-90">
-                Create, customize, and train your own AI robotic buddy through interactive learning experiences
+                Create AI companions, teach emotion recognition with your camera, and master machine learning through hands-on games
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
                 <a href="{% url 'games:robotic_buddy_landing' %}" class="bg-white text-indigo-600 px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium">
@@ -59,7 +59,7 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8 mb-16">
             <!-- Robotic Buddy -->
             <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
                 <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white">
@@ -133,6 +133,45 @@
                         </a>
                         <a href="{% url 'robotic_buddy:simple_game' %}" class="border border-green-600 text-green-600 py-3 px-4 rounded-lg hover:bg-green-50 transition-colors text-center font-medium">
                             Play Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emotion Game -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="bg-gradient-to-r from-orange-500 to-red-600 p-6 text-white">
+                    <div class="text-4xl mb-4">🎭</div>
+                    <h3 class="text-2xl font-bold mb-2">Emotion Recognition Game</h3>
+                    <p class="opacity-90">Teach AI to understand human emotions with camera & scenarios</p>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Live Camera Mode
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Scenario-Based Training
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Face-API.js Integration
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <a href="{% url 'robotic_buddy:emotion_game' %}" class="bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors text-center font-medium">
+                            Play Now
+                        </a>
+                        <a href="{% url 'robotic_buddy:emotion_game' %}" class="border border-orange-600 text-orange-600 py-3 px-4 rounded-lg hover:bg-orange-50 transition-colors text-center font-medium">
+                            Learn More
                         </a>
                     </div>
                 </div>
