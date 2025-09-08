@@ -4,7 +4,7 @@
 echo "🚀 Starting Decipherworld Django application..."
 
 # Set Django settings module for Azure
-export DJANGO_SETTINGS_MODULE=decipherworld.settings.azure
+export DJANGO_SETTINGS_MODULE=decipherworld.settings.production
 
 # Install dependencies
 echo "📦 Installing dependencies..."
@@ -12,11 +12,11 @@ pip install -r requirements.txt
 
 # Run database migrations (essential for Django)
 echo "🗄️ Running database migrations..."
-python manage.py migrate --noinput --settings=decipherworld.settings.azure
+python manage.py migrate --noinput --settings=decipherworld.settings.production
 
 # Collect static files (needed for Django admin and CSS)
 echo "📁 Collecting static files..."
-python manage.py collectstatic --noinput --settings=decipherworld.settings.azure
+python manage.py collectstatic --noinput --settings=decipherworld.settings.production
 
 # Start Gunicorn server
 echo "🌐 Starting Gunicorn server..."
