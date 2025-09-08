@@ -1,0 +1,57 @@
+{% extends 'home/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block description %}{{ page_description }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-orange-50 to-red-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div class="text-center">
+            <div class="text-8xl mb-8">🔬</div>
+            <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+                STEM Challenges
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                Interactive science, technology, engineering, and mathematics games combining hands-on learning with collaborative problem-solving.
+            </p>
+            
+            <div class="bg-orange-100 text-orange-800 px-6 py-3 rounded-full text-lg font-medium mb-12 inline-block">
+                Coming Soon - In Development
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                <div class="bg-white rounded-lg p-6 shadow-lg">
+                    <div class="text-4xl mb-4">🧪</div>
+                    <h3 class="font-bold text-gray-900 mb-2">Chemistry Lab</h3>
+                    <p class="text-sm text-gray-600">Virtual experiments and molecular interactions</p>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow-lg">
+                    <div class="text-4xl mb-4">🚀</div>
+                    <h3 class="font-bold text-gray-900 mb-2">Space Missions</h3>
+                    <p class="text-sm text-gray-600">Design spacecraft and plan interplanetary journeys</p>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow-lg">
+                    <div class="text-4xl mb-4">⚙️</div>
+                    <h3 class="font-bold text-gray-900 mb-2">Engineering Challenges</h3>
+                    <p class="text-sm text-gray-600">Build bridges, design machines, solve real problems</p>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow-lg">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="font-bold text-gray-900 mb-2">Data Science</h3>
+                    <p class="text-sm text-gray-600">Analyze patterns, make predictions, visualize insights</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'games:hub' %}" class="bg-orange-600 text-white px-8 py-3 rounded-lg hover:bg-orange-700 transition-colors font-medium">
+                    ← Back to Games Hub
+                </a>
+                <a href="{% url 'core:contact' %}" class="border border-orange-600 text-orange-600 px-8 py-3 rounded-lg hover:bg-orange-50 transition-colors font-medium">
+                    Get Notified When Available
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

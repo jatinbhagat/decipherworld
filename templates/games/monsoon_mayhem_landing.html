@@ -1,0 +1,380 @@
+{% extends 'home/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block description %}{{ page_description }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-emerald-600 via-teal-700 to-cyan-800 text-white overflow-hidden relative">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="flex items-center mb-4">
+                    <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium mr-3">
+                        CLIMATE CRISIS
+                    </span>
+                    <span class="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        GROUP CHALLENGE
+                    </span>
+                </div>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+                    🌊 Monsoon Mayhem
+                </h1>
+                <p class="text-xl sm:text-2xl mb-8 opacity-90">
+                    Lead flood response efforts in rural West Bengal. Collaborate as district officials, farmers, engineers, and school principals to save communities from climate disasters.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                    {% if game %}
+                        <a href="{% url 'group_learning:game_detail' game.pk %}" class="bg-white text-emerald-600 px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors font-medium text-lg">
+                            View Game Details
+                        </a>
+                        <a href="{% url 'group_learning:create_session' game.pk %}" class="border border-white text-white px-8 py-4 rounded-lg hover:bg-white/10 transition-colors font-medium text-lg">
+                            Start New Session
+                        </a>
+                    {% else %}
+                        <a href="{% url 'group_learning:game_list' %}" class="bg-white text-emerald-600 px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors font-medium text-lg">
+                            Explore All Games
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="grid grid-cols-4 gap-4 text-center">
+                    <div>
+                        <div class="text-2xl font-bold">3-4</div>
+                        <div class="text-sm opacity-75">Players</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold">45</div>
+                        <div class="text-sm opacity-75">Minutes</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold">4</div>
+                        <div class="text-sm opacity-75">Roles</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold">12+</div>
+                        <div class="text-sm opacity-75">Age</div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                    <div class="text-8xl mb-4">🌊</div>
+                    <h3 class="text-2xl font-bold mb-2">Climate Crisis Response</h3>
+                    <p class="opacity-90 mb-6">Real-world emergency simulation in rural India</p>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div class="bg-red-500/20 rounded-lg p-3">
+                            <div class="font-semibold">🏛️ District Collector</div>
+                            <div class="opacity-75">Emergency coordination</div>
+                        </div>
+                        <div class="bg-green-500/20 rounded-lg p-3">
+                            <div class="font-semibold">🌾 Farmer Leader</div>
+                            <div class="opacity-75">Community needs</div>
+                        </div>
+                        <div class="bg-blue-500/20 rounded-lg p-3">
+                            <div class="font-semibold">🔧 Civil Engineer</div>
+                            <div class="opacity-75">Infrastructure solutions</div>
+                        </div>
+                        <div class="bg-purple-500/20 rounded-lg p-3">
+                            <div class="font-semibold">🎓 School Principal</div>
+                            <div class="opacity-75">Education continuity</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scenario Overview -->
+<div class="py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                The Crisis Scenario
+            </h2>
+            <p class="text-xl text-gray-600 max-w-4xl mx-auto">
+                Sudden floods have hit rural villages in West Bengal. Infrastructure is damaged, people are displaced, and critical decisions must be made quickly. Each role brings unique authority, resources, and perspectives to the emergency response.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+            <div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">The Emergency Situation</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="bg-red-100 text-red-600 p-2 rounded-full mr-4 flex-shrink-0">
+                            🌊
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-1">Severe Flooding</h4>
+                            <p class="text-gray-600 text-sm">Heavy monsoon rains have caused rivers to overflow, submerging homes and farmland</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-orange-100 text-orange-600 p-2 rounded-full mr-4 flex-shrink-0">
+                            🏠
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-1">Displaced Families</h4>
+                            <p class="text-gray-600 text-sm">Thousands of people have lost their homes and need immediate shelter and support</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-blue-100 text-blue-600 p-2 rounded-full mr-4 flex-shrink-0">
+                            🛣️
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-1">Infrastructure Damage</h4>
+                            <p class="text-gray-600 text-sm">Roads, bridges, and communication networks are severely compromised</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-green-100 text-green-600 p-2 rounded-full mr-4 flex-shrink-0">
+                            🌾
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-1">Agricultural Crisis</h4>
+                            <p class="text-gray-600 text-sm">Crops are destroyed, threatening food security and farmer livelihoods</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-teal-100 to-cyan-200 rounded-2xl p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Your Mission</h3>
+                <div class="text-center mb-6">
+                    <div class="text-4xl mb-3">🎯</div>
+                    <p class="text-gray-700 text-lg">
+                        Work together across roles to coordinate an effective emergency response that balances immediate needs with long-term recovery planning.
+                    </p>
+                </div>
+                <div class="bg-white rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-900 mb-2">Success Criteria</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Ensure immediate safety of all residents</li>
+                        <li>• Coordinate effective resource distribution</li>
+                        <li>• Balance competing priorities and limited budgets</li>
+                        <li>• Plan for sustainable long-term recovery</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role Breakdown -->
+        <div class="bg-gray-50 rounded-2xl p-8 sm:p-12">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-900 mb-4">
+                    Choose Your Role
+                </h3>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Each role has unique authority levels, resource control, and decision-making power in the crisis response
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- District Collector -->
+                <div class="bg-white rounded-lg p-6 shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-red-100 text-red-600 w-12 h-12 rounded-full flex items-center justify-center text-2xl mr-4">
+                            🏛️
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">District Collector</h4>
+                            <p class="text-red-600 font-medium">High Authority • Emergency Coordinator</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">
+                        Lead the overall emergency response with access to government resources, disaster relief funds, and coordination with state/national agencies.
+                    </p>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center text-gray-600">
+                            <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span>
+                            Control emergency budget allocation
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span>
+                            Coordinate rescue operations
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span>
+                            Make high-level policy decisions
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Farmer Leader -->
+                <div class="bg-white rounded-lg p-6 shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-green-100 text-green-600 w-12 h-12 rounded-full flex items-center justify-center text-2xl mr-4">
+                            🌾
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">Farmer Leader</h4>
+                            <p class="text-green-600 font-medium">Medium Authority • Community Voice</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">
+                        Represent rural community needs and agricultural concerns, with deep local knowledge and strong community connections.
+                    </p>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center text-gray-600">
+                            <span class="w-2 h-2 bg-green-600 rounded-full mr-2"></span>
+                            Organize community volunteers
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <span class="w-2 h-2 bg-green-600 rounded-full mr-2"></span>
+                            Provide local terrain knowledge
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <span class="w-2 h-2 bg-green-600 rounded-full mr-2"></span>
+                            Advocate for agricultural recovery
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Civil Engineer -->
+                <div class="bg-white rounded-lg p-6 shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-blue-100 text-blue-600 w-12 h-12 rounded-full flex items-center justify-center text-2xl mr-4">
+                            🔧
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">Civil Engineer</h4>
+                            <p class="text-blue-600 font-medium">Medium Authority • Technical Expert</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">
+                        Provide technical expertise for infrastructure assessment, emergency repairs, and long-term reconstruction planning.
+                    </p>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center text-gray-600">
+                            <span class="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                            Assess structural damage
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <span class="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                            Plan emergency infrastructure
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <span class="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                            Design flood prevention systems
+                        </div>
+                    </div>
+                </div>
+
+                <!-- School Principal -->
+                <div class="bg-white rounded-lg p-6 shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-purple-100 text-purple-600 w-12 h-12 rounded-full flex items-center justify-center text-2xl mr-4">
+                            🎓
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">School Principal</h4>
+                            <p class="text-purple-600 font-medium">Low Authority • Education Focus</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">
+                        Ensure educational continuity and child welfare during the crisis, with school facilities potentially serving as shelters.
+                    </p>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center text-gray-600">
+                            <span class="w-2 h-2 bg-purple-600 rounded-full mr-2"></span>
+                            Coordinate school as shelter
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <span class="w-2 h-2 bg-purple-600 rounded-full mr-2"></span>
+                            Ensure child safety
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <span class="w-2 h-2 bg-purple-600 rounded-full mr-2"></span>
+                            Plan education recovery
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Learning Outcomes -->
+<div class="py-16 bg-gradient-to-r from-emerald-50 to-teal-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                What Students Learn
+            </h2>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                Through collaborative crisis response, students develop critical skills for real-world problem-solving
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="bg-white rounded-lg p-6 text-center shadow-md">
+                <div class="bg-emerald-100 text-emerald-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                    🤝
+                </div>
+                <h3 class="font-bold text-gray-900 mb-2">Collaboration Skills</h3>
+                <p class="text-sm text-gray-600">Working effectively across different roles, perspectives, and authority levels</p>
+            </div>
+
+            <div class="bg-white rounded-lg p-6 text-center shadow-md">
+                <div class="bg-teal-100 text-teal-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                    🌍
+                </div>
+                <h3 class="font-bold text-gray-900 mb-2">Climate Awareness</h3>
+                <p class="text-sm text-gray-600">Understanding climate change impacts and community resilience strategies</p>
+            </div>
+
+            <div class="bg-white rounded-lg p-6 text-center shadow-md">
+                <div class="bg-cyan-100 text-cyan-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                    ⚖️
+                </div>
+                <h3 class="font-bold text-gray-900 mb-2">Decision Making</h3>
+                <p class="text-sm text-gray-600">Balancing competing priorities with limited resources under pressure</p>
+            </div>
+
+            <div class="bg-white rounded-lg p-6 text-center shadow-md">
+                <div class="bg-indigo-100 text-indigo-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                    💡
+                </div>
+                <h3 class="font-bold text-gray-900 mb-2">Systems Thinking</h3>
+                <p class="text-sm text-gray-600">Understanding interconnected social, economic, and environmental factors</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="bg-emerald-600 text-white py-16">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+            Ready to Lead the Response?
+        </h2>
+        <p class="text-xl mb-8 opacity-90">
+            Gather your team and experience the challenge of coordinating emergency response to climate disasters
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+            {% if game %}
+                <a href="{% url 'group_learning:create_session' game.pk %}" class="bg-white text-emerald-600 px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium">
+                    Start New Session
+                </a>
+                <a href="{% url 'group_learning:game_detail' game.pk %}" class="border border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 transition-colors font-medium">
+                    View Full Details
+                </a>
+            {% else %}
+                <a href="{% url 'group_learning:game_list' %}" class="bg-white text-emerald-600 px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium">
+                    Explore All Games
+                </a>
+                <a href="{% url 'core:contact' %}" class="border border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 transition-colors font-medium">
+                    Contact Us
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

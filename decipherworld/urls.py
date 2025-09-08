@@ -10,6 +10,7 @@ urlpatterns = [
     path('sitemap.xml', simple_sitemap, name='sitemap'),
     path('robots.txt', robots_txt, name='robots_txt'),
     path('', include('core.urls')),
+    path('games/', include('games.urls')),
     path('buddy/', include('robotic_buddy.urls')),
     path('learn/', include('group_learning.urls')),
 ]

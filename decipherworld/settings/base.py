@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',  # For XML sitemaps
     'corsheaders',
     'core',  # Your main app
+    'games',  # Main games hub
     'robotic_buddy',  # AI learning game for kids
     'group_learning',  # Group-based scenario learning platform
 ]

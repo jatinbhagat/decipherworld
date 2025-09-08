@@ -1,0 +1,240 @@
+{% extends 'home/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block description %}{{ page_description }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div class="text-center">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+                🤖 AI Learning Games
+            </h1>
+            <p class="text-xl sm:text-2xl mb-8 max-w-4xl mx-auto opacity-90">
+                Create, customize, and train your own AI robotic buddy through interactive learning experiences
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                <a href="{% url 'games:robotic_buddy_landing' %}" class="bg-white text-indigo-600 px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium">
+                    Create Your Buddy
+                </a>
+                <a href="#games" class="border border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 transition-colors font-medium">
+                    Explore Games
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
+            <div>
+                <div class="text-3xl sm:text-4xl font-bold text-indigo-600">{{ buddy_count }}+</div>
+                <div class="text-gray-600 mt-2">AI Buddies Created</div>
+            </div>
+            <div>
+                <div class="text-3xl sm:text-4xl font-bold text-indigo-600">{{ activities.count }}+</div>
+                <div class="text-gray-600 mt-2">Learning Activities</div>
+            </div>
+            <div>
+                <div class="text-3xl sm:text-4xl font-bold text-indigo-600">10+</div>
+                <div class="text-gray-600 mt-2">Skill Levels</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Available Games -->
+<div id="games" class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                Choose Your AI Learning Adventure
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Each game offers unique ways to learn about artificial intelligence and machine learning
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+            <!-- Robotic Buddy -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white">
+                    <div class="text-4xl mb-4">🤖</div>
+                    <h3 class="text-2xl font-bold mb-2">Create Your Robotic Buddy</h3>
+                    <p class="opacity-90">Design, customize, and train your personal AI companion</p>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Personality Customization
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            AI Training Sessions
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Level & Achievement System
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <a href="{% url 'games:robotic_buddy_landing' %}" class="bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium">
+                            Learn More
+                        </a>
+                        <a href="{% url 'robotic_buddy:create_buddy' %}" class="border border-blue-600 text-blue-600 py-3 px-4 rounded-lg hover:bg-blue-50 transition-colors text-center font-medium">
+                            Start Creating
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simple Game -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 text-white">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h3 class="text-2xl font-bold mb-2">Simple Learning Game</h3>
+                    <p class="opacity-90">Quick AI training through classification challenges</p>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Fast-Paced Learning
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Object Classification
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Beginner Friendly
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <a href="{% url 'games:simple_game_landing' %}" class="bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-center font-medium">
+                            Learn More
+                        </a>
+                        <a href="{% url 'robotic_buddy:simple_game' %}" class="border border-green-600 text-green-600 py-3 px-4 rounded-lg hover:bg-green-50 transition-colors text-center font-medium">
+                            Play Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drag & Drop Game -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="bg-gradient-to-r from-purple-500 to-pink-600 p-6 text-white">
+                    <div class="text-4xl mb-4">🎨</div>
+                    <h3 class="text-2xl font-bold mb-2">Drag & Drop Game</h3>
+                    <p class="opacity-90">Visual AI training with interactive interface</p>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Visual Learning Interface
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Interactive Drag & Drop
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Hands-On Learning
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <a href="{% url 'games:drag_drop_game_landing' %}" class="bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors text-center font-medium">
+                            Learn More
+                        </a>
+                        <a href="{% url 'robotic_buddy:drag_drop_game' %}" class="border border-purple-600 text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-colors text-center font-medium">
+                            Try It Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Benefits -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-100 rounded-2xl p-8 sm:p-12">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                    What Students Learn
+                </h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Our AI learning games introduce fundamental concepts of artificial intelligence and machine learning through engaging, hands-on experiences
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                        🧠
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Machine Learning Basics</h3>
+                    <p class="text-sm text-gray-600">Understanding how AI systems learn from examples and improve over time</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-indigo-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                        🎯
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Pattern Recognition</h3>
+                    <p class="text-sm text-gray-600">Teaching AI to identify and classify objects, sounds, and patterns</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-purple-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                        ⚙️
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Algorithm Thinking</h3>
+                    <p class="text-sm text-gray-600">Step-by-step problem solving and logical reasoning skills</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-pink-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                        🔬
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Data Science</h3>
+                    <p class="text-sm text-gray-600">Understanding how data powers AI and making predictions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="bg-gray-900 text-white py-16">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+            Ready to Start Your AI Journey?
+        </h2>
+        <p class="text-xl mb-8 opacity-90">
+            Create your first robotic buddy and begin exploring the fascinating world of artificial intelligence
+        </p>
+        <a href="{% url 'robotic_buddy:create_buddy' %}" class="bg-indigo-600 text-white px-8 py-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium text-lg">
+            Create Your AI Buddy Now
+        </a>
+    </div>
+</div>
+{% endblock %}

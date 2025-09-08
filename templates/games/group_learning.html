@@ -1,0 +1,271 @@
+{% extends 'home/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block description %}{{ page_description }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div class="text-center">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+                🌍 Group Learning Games
+            </h1>
+            <p class="text-xl sm:text-2xl mb-8 max-w-4xl mx-auto opacity-90">
+                Collaborative educational scenarios where students work together to solve real-world challenges
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                <a href="{% url 'group_learning:game_list' %}" class="bg-white text-green-600 px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium">
+                    Explore Games
+                </a>
+                <a href="#how-it-works" class="border border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 transition-colors font-medium">
+                    How It Works
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Available Games -->
+<div class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                Available Collaborative Scenarios
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Multi-player learning experiences that teach teamwork, problem-solving, and critical thinking
+            </p>
+        </div>
+
+        {% if games %}
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-16">
+                {% for game in games %}
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                        <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 text-white">
+                            <h3 class="text-2xl font-bold mb-2">{{ game.title }}</h3>
+                            {% if game.subtitle %}
+                                <p class="opacity-90">{{ game.subtitle }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-700 mb-4">{{ game.description|truncatewords:20 }}</p>
+                            
+                            <div class="space-y-2 mb-6">
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                    </svg>
+                                    {{ game.min_players }}-{{ game.max_players }} players
+                                </div>
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    ~{{ game.estimated_duration }} minutes
+                                </div>
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                    Ages {{ game.target_age_min }}-{{ game.target_age_max }}
+                                </div>
+                            </div>
+
+                            {% if game.learning_objectives.all %}
+                                <div class="mb-6">
+                                    <h4 class="font-semibold text-gray-700 mb-2">Learning Focus:</h4>
+                                    <div class="flex flex-wrap gap-1">
+                                        {% for objective in game.learning_objectives.all|slice:":3" %}
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                                                {{ objective.get_objective_type_display }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="flex flex-col gap-3">
+                                <a href="{% url 'group_learning:game_detail' game.pk %}" class="bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-center font-medium">
+                                    Learn More
+                                </a>
+                                <a href="{% url 'group_learning:create_session' game.pk %}" class="border border-green-600 text-green-600 py-3 px-4 rounded-lg hover:bg-green-50 transition-colors text-center font-medium">
+                                    Start Game
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-16 bg-gray-50 rounded-xl">
+                <div class="text-6xl mb-4">🎮</div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Games Coming Soon</h3>
+                <p class="text-gray-600">We're developing exciting collaborative learning scenarios.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- How It Works -->
+<div id="how-it-works" class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                How Group Learning Works
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                A step-by-step guide to collaborative scenario-based learning
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="text-center">
+                <div class="bg-green-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-6 relative">
+                    1️⃣
+                    <div class="absolute -bottom-2 -right-2 bg-white text-green-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
+                        1
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Choose Scenario</h3>
+                <p class="text-gray-600">Select from real-world challenges like climate crisis response, urban planning, or historical events</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-emerald-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-6 relative">
+                    2️⃣
+                    <div class="absolute -bottom-2 -right-2 bg-white text-emerald-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
+                        2
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Form Teams</h3>
+                <p class="text-gray-600">Students join sessions using session codes and are assigned or choose specific roles with unique perspectives</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-teal-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-6 relative">
+                    3️⃣
+                    <div class="absolute -bottom-2 -right-2 bg-white text-teal-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
+                        3
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Collaborate</h3>
+                <p class="text-gray-600">Work together to make decisions, solve problems, and navigate complex scenarios based on your roles</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-cyan-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-6 relative">
+                    4️⃣
+                    <div class="absolute -bottom-2 -right-2 bg-white text-cyan-600 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
+                        4
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Learn & Reflect</h3>
+                <p class="text-gray-600">See the outcomes of your collective decisions and reflect on lessons learned through guided questions</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Learning Benefits -->
+<div class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+                    Why Choose Group Learning?
+                </h2>
+                <div class="space-y-6">
+                    <div class="flex items-start">
+                        <div class="bg-green-100 text-green-600 p-3 rounded-full mr-4 flex-shrink-0">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Real-World Problem Solving</h3>
+                            <p class="text-gray-600">Students tackle authentic challenges that mirror real-world complexity and decision-making</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-emerald-100 text-emerald-600 p-3 rounded-full mr-4 flex-shrink-0">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Collaborative Skills</h3>
+                            <p class="text-gray-600">Develop teamwork, communication, and consensus-building skills essential for future success</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-teal-100 text-teal-600 p-3 rounded-full mr-4 flex-shrink-0">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Multiple Perspectives</h3>
+                            <p class="text-gray-600">Role-based learning exposes students to different viewpoints and stakeholder interests</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-cyan-100 text-cyan-600 p-3 rounded-full mr-4 flex-shrink-0">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Deep Learning</h3>
+                            <p class="text-gray-600">Reflection and assessment components ensure understanding goes beyond surface-level engagement</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-green-100 to-emerald-200 rounded-2xl p-8">
+                <div class="text-center">
+                    <div class="text-6xl mb-6">🌟</div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Featured Scenario</h3>
+                    {% if featured_game %}
+                        <h4 class="text-xl font-semibold text-green-600 mb-4">{{ featured_game.title }}</h4>
+                        <p class="text-gray-700 mb-6">{{ featured_game.description|truncatewords:15 }}</p>
+                        <a href="{% url 'group_learning:game_detail' featured_game.pk %}" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
+                            Explore This Game
+                        </a>
+                    {% else %}
+                        <p class="text-gray-700 mb-6">New scenarios are being developed to provide diverse learning opportunities.</p>
+                        <a href="{% url 'core:contact' %}" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
+                            Get Notified
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Join Session CTA -->
+<div class="bg-green-600 text-white py-16">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+            Ready to Collaborate and Learn?
+        </h2>
+        <p class="text-xl mb-8 opacity-90">
+            Join thousands of students already participating in group learning scenarios
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+            <a href="{% url 'group_learning:game_list' %}" class="bg-white text-green-600 px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium">
+                Explore All Games
+            </a>
+            <a href="{% url 'core:teachers' %}" class="border border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 transition-colors font-medium">
+                For Educators
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
