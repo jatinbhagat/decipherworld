@@ -5,7 +5,13 @@
       "WebFetch(domain:www.decipherworld.com)",
       "Bash(git rm:*)",
       "Bash(find:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(python manage.py shell:*)",
+      "Bash(python manage.py makemigrations:*)",
+      "Bash(python manage.py migrate:*)",
+      "Bash(python manage.py check:*)",
+      "Bash(python manage.py:*)"
     ],
     "deny": [],
     "ask": []

@@ -27,19 +27,19 @@ class Command(BaseCommand):
                 'title': 'Community Resilience Planning',
                 'objective_type': 'problem_solving',
                 'description': 'Develop skills to create community-level disaster preparedness plans',
-                'success_criteria': ['Identify key community roles', 'Prioritize emergency actions', 'Allocate resources effectively']
+                'success_criteria': '• Identify key community roles\n• Prioritize emergency actions\n• Allocate resources effectively'
             },
             {
                 'title': 'Environmental Impact Assessment', 
                 'objective_type': 'critical_thinking',
                 'description': 'Analyze how climate events affect different stakeholders differently',
-                'success_criteria': ['Compare impact on various groups', 'Identify root causes', 'Propose sustainable solutions']
+                'success_criteria': '• Compare impact on various groups\n• Identify root causes\n• Propose sustainable solutions'
             },
             {
                 'title': 'Collaborative Decision Making',
                 'objective_type': 'collaboration',
                 'description': 'Practice making decisions that balance multiple perspectives and constraints',
-                'success_criteria': ['Listen to all stakeholders', 'Find win-win solutions', 'Manage resource constraints']
+                'success_criteria': '• Listen to all stakeholders\n• Find win-win solutions\n• Manage resource constraints'
             }
         ]
         

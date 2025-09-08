@@ -86,10 +86,38 @@
                         🎯 Group Learning
                     </a>
                 </div>
-                <div class="flex items-center space-x-4">
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-4">
                     {% block nav_items %}
                     {% endblock %}
                 </div>
+                
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button type="button" 
+                            onclick="toggleMobileMenu()"
+                            class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 p-2 rounded-md"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation menu">
+                        <svg class="h-6 w-6" id="menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg class="h-6 w-6 hidden" id="close-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-4 pt-2 pb-3 border-t border-gray-200 bg-gray-50">
+                {% block mobile_nav_items %}
+                    {% block nav_items %}
+                    {% endblock %}
+                {% endblock %}
             </div>
         </div>
     </nav>
@@ -122,13 +150,106 @@
     
     <!-- JavaScript -->
     <script>
-        // Auto-refresh session status
+        // Mobile menu toggle function
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+            const closeIcon = document.getElementById('close-icon');
+            const button = event.currentTarget;
+            
+            if (mobileMenu.classList.contains('hidden')) {
+                // Show menu
+                mobileMenu.classList.remove('hidden');
+                menuIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+                button.setAttribute('aria-expanded', 'true');
+            } else {
+                // Hide menu
+                mobileMenu.classList.add('hidden');
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+                button.setAttribute('aria-expanded', 'false');
+            }
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuButton = event.target.closest('[onclick="toggleMobileMenu()"]');
+            
+            if (!menuButton && !mobileMenu.contains(event.target) && !mobileMenu.classList.contains('hidden')) {
+                toggleMobileMenu();
+            }
+        });
+        
+        // Show loading state
+        function showLoadingState(elementId, message = 'Loading...') {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.classList.add('opacity-50');
+                element.setAttribute('data-loading', 'true');
+                if (element.textContent) {
+                    element.setAttribute('data-original-text', element.textContent);
+                    element.textContent = message;
+                }
+            }
+        }
+        
+        // Hide loading state
+        function hideLoadingState(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.classList.remove('opacity-50');
+                element.removeAttribute('data-loading');
+                const originalText = element.getAttribute('data-original-text');
+                if (originalText) {
+                    element.textContent = originalText;
+                    element.removeAttribute('data-original-text');
+                }
+            }
+        }
+        
+        // Show error message
+        function showErrorMessage(message, duration = 5000) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg z-50 transform translate-x-0 transition-transform duration-300';
+            errorDiv.textContent = message;
+            
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.style.transform = 'translateX(100%)';
+                setTimeout(() => errorDiv.remove(), 300);
+            }, duration);
+        }
+        
+        // Show success message
+        function showSuccessMessage(message, duration = 3000) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50 transform translate-x-0 transition-transform duration-300';
+            successDiv.textContent = message;
+            
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.style.transform = 'translateX(100%)';
+                setTimeout(() => successDiv.remove(), 300);
+            }, duration);
+        }
+        
+        // Auto-refresh session status with improved error handling
         function updateSessionStatus(sessionCode) {
             if (!sessionCode) return;
             
             fetch(`/learn/api/session/${sessionCode}/status/`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    // Update desktop status indicator
                     const statusElement = document.getElementById('session-status');
                     if (statusElement) {
                         const statusClass = `status-${data.status}`;
@@ -136,12 +257,41 @@
                         statusElement.title = `Status: ${data.status}`;
                     }
                     
+                    // Update mobile status indicator
+                    const mobileStatusElement = document.getElementById('mobile-session-status');
+                    if (mobileStatusElement) {
+                        const statusClass = `status-${data.status}`;
+                        mobileStatusElement.className = `status-indicator ${statusClass}`;
+                        mobileStatusElement.title = `Status: ${data.status}`;
+                    }
+                    
+                    // Update player count
                     const playerCountElement = document.getElementById('player-count');
                     if (playerCountElement) {
                         playerCountElement.textContent = data.player_count;
                     }
+                    
+                    // Clear any previous connection errors
+                    const connectionError = document.getElementById('connection-error');
+                    if (connectionError) {
+                        connectionError.style.display = 'none';
+                    }
                 })
-                .catch(error => console.log('Status update failed:', error));
+                .catch(error => {
+                    console.log('Status update failed:', error);
+                    // Show connection error indicator
+                    const connectionError = document.getElementById('connection-error');
+                    if (connectionError) {
+                        connectionError.style.display = 'block';
+                    } else {
+                        // Create connection error indicator if it doesn't exist
+                        const errorIndicator = document.createElement('div');
+                        errorIndicator.id = 'connection-error';
+                        errorIndicator.className = 'fixed bottom-4 left-4 bg-yellow-500 text-white px-3 py-1 rounded text-sm z-40';
+                        errorIndicator.textContent = '⚠️ Connection issue';
+                        document.body.appendChild(errorIndicator);
+                    }
+                });
         }
         
         // Initialize session status updates

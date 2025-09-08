@@ -331,6 +331,14 @@ function loadRecentActions() {
 document.getElementById('actionForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    
+    // Show loading state
+    submitButton.textContent = 'Submitting...';
+    submitButton.disabled = true;
+    submitButton.classList.add('opacity-75');
+    
     const formData = new FormData(this);
     
     fetch(this.action, {
@@ -340,18 +348,30 @@ document.getElementById('actionForm').addEventListener('submit', function(e) {
             'X-Requested-With': 'XMLHttpRequest',
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             closeActionModal();
-            location.reload(); // Refresh to show updated state
+            showSuccessMessage('Action submitted successfully!');
+            setTimeout(() => location.reload(), 1000); // Small delay to show success message
         } else {
-            alert('Error: ' + (data.error || 'Action failed'));
+            throw new Error(data.error || 'Action failed');
         }
     })
     .catch(error => {
         console.error('Action submission failed:', error);
-        alert('Failed to submit action. Please try again.');
+        showErrorMessage('Failed to submit action: ' + error.message);
+    })
+    .finally(() => {
+        // Reset button state
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+        submitButton.classList.remove('opacity-75');
     });
 });
 

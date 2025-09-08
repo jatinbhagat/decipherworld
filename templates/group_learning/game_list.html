@@ -14,26 +14,26 @@
 </div>
 
 {% if games %}
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
         {% for game in games %}
             <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
                 <!-- Game Header -->
-                <div class="scenario-card text-white p-6">
+                <div class="scenario-card text-white p-4 sm:p-6">
                     <div class="flex items-start justify-between">
-                        <div>
-                            <h3 class="text-xl font-bold mb-2">{{ game.title }}</h3>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg sm:text-xl font-bold mb-2 truncate">{{ game.title }}</h3>
                             {% if game.subtitle %}
-                                <p class="text-blue-100 text-sm mb-3">{{ game.subtitle }}</p>
+                                <p class="text-blue-100 text-sm mb-3 line-clamp-2">{{ game.subtitle }}</p>
                             {% endif %}
                         </div>
-                        <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-xs font-medium">
+                        <span class="bg-white bg-opacity-20 px-2 sm:px-3 py-1 rounded-full text-xs font-medium ml-2 flex-shrink-0">
                             {{ game.get_game_type_display }}
                         </span>
                     </div>
                 </div>
                 
                 <!-- Game Details -->
-                <div class="p-6">
+                <div class="p-4 sm:p-6">
                     <p class="text-gray-600 mb-4">{{ game.description|truncatewords:20 }}</p>
                     
                     <div class="space-y-2 mb-6">
@@ -83,13 +83,13 @@
                     {% endif %}
                     
                     <!-- Action Buttons -->
-                    <div class="flex space-x-3">
+                    <div class="flex flex-col sm:flex-row gap-3">
                         <a href="{% url 'group_learning:game_detail' game.pk %}" 
-                           class="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors text-center font-medium">
+                           class="flex-1 bg-indigo-600 text-white py-3 sm:py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors text-center font-medium text-sm sm:text-base">
                             Learn More
                         </a>
                         <a href="{% url 'group_learning:create_session' game.pk %}" 
-                           class="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors text-center font-medium">
+                           class="flex-1 bg-green-600 text-white py-3 sm:py-2 px-4 rounded-md hover:bg-green-700 transition-colors text-center font-medium text-sm sm:text-base">
                             Start Game
                         </a>
                     </div>
@@ -116,20 +116,21 @@
         Have a session code? Join a game that's already in progress.
     </p>
     <form method="get" action="{% url 'group_learning:session_detail' session_code='JOIN' %}" class="max-w-md mx-auto">
-        <div class="flex">
+        <div class="space-y-3 sm:space-y-0 sm:flex">
             <input type="text" 
                    name="session_code" 
                    placeholder="Enter session code (e.g., ABC123)" 
-                   class="flex-1 border border-gray-300 rounded-l-md px-4 py-3 text-center text-lg font-mono tracking-wider focus:ring-indigo-500 focus:border-indigo-500"
+                   class="w-full sm:flex-1 border border-gray-300 rounded-md sm:rounded-l-md sm:rounded-r-none px-4 py-3 text-center text-base sm:text-lg font-mono tracking-wider focus:ring-indigo-500 focus:border-indigo-500 focus:z-10"
                    pattern="[A-Z0-9]{6}"
                    maxlength="6"
                    required>
             <button type="button" 
                     onclick="this.form.action = this.form.action.replace('JOIN', this.form.session_code.value.toUpperCase()); this.form.submit();"
-                    class="bg-indigo-600 text-white px-6 py-3 rounded-r-md hover:bg-indigo-700 transition-colors font-medium">
+                    class="w-full sm:w-auto bg-indigo-600 text-white px-6 py-3 rounded-md sm:rounded-l-none sm:rounded-r-md hover:bg-indigo-700 transition-colors font-medium border border-indigo-600">
                 Join Game
             </button>
         </div>
+        <p class="text-xs text-gray-500 mt-2 text-center">Session codes are 6 characters (letters and numbers)</p>
     </form>
 </div>
 {% endblock %}

@@ -451,7 +451,11 @@ class ReflectionView(TemplateView):
             player_session_id=player_session_id
         ).first()
         
-        role_played = player_action.role if player_action else None
+        if not player_action:
+            messages.error(request, 'You must participate in the game before reflecting.')
+            return redirect('group_learning:gameplay', session_code=session_code)
+        
+        role_played = player_action.role
         
         # Save reflection responses
         for key, value in request.POST.items():

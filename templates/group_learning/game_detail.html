@@ -9,13 +9,13 @@
 {% block content %}
 <div class="max-w-4xl mx-auto">
     <!-- Game Header -->
-    <div class="scenario-card text-white rounded-lg p-8 mb-8">
+    <div class="scenario-card text-white rounded-lg p-6 sm:p-8 mb-8">
         <div class="text-center">
-            <h1 class="text-4xl font-bold mb-3">{{ game.title }}</h1>
+            <h1 class="text-2xl sm:text-4xl font-bold mb-3">{{ game.title }}</h1>
             {% if game.subtitle %}
-                <p class="text-xl text-blue-100 mb-4">{{ game.subtitle }}</p>
+                <p class="text-lg sm:text-xl text-blue-100 mb-4">{{ game.subtitle }}</p>
             {% endif %}
-            <div class="flex justify-center space-x-6 text-sm">
+            <div class="flex flex-wrap justify-center gap-2 sm:gap-6 text-sm">
                 <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full">
                     {{ game.get_game_type_display }}
                 </span>
@@ -65,11 +65,9 @@
                                 {% if objective.success_criteria %}
                                     <div class="mt-2">
                                         <span class="text-xs text-gray-500 font-medium">Success Criteria:</span>
-                                        <ul class="text-xs text-gray-500 mt-1 ml-4">
-                                            {% for criteria in objective.success_criteria %}
-                                                <li class="list-disc">{{ criteria }}</li>
-                                            {% endfor %}
-                                        </ul>
+                                        <div class="text-xs text-gray-500 mt-1">
+                                            {{ objective.success_criteria|linebreaks }}
+                                        </div>
                                     </div>
                                 {% endif %}
                             </div>
@@ -188,16 +186,16 @@
             <div class="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300">
                 <h4 class="font-medium text-gray-700 mb-2">Join Existing Session</h4>
                 <form method="get" action="{% url 'group_learning:session_detail' session_code='JOIN' %}">
-                    <div class="flex">
+                    <div class="space-y-2 sm:space-y-0 sm:flex">
                         <input type="text" 
                                name="session_code" 
                                placeholder="SESSION CODE" 
-                               class="flex-1 border border-gray-300 rounded-l-md px-3 py-2 text-sm font-mono text-center focus:ring-indigo-500 focus:border-indigo-500"
+                               class="w-full sm:flex-1 border border-gray-300 rounded-md sm:rounded-l-md sm:rounded-r-none px-3 py-2 text-sm font-mono text-center focus:ring-indigo-500 focus:border-indigo-500 focus:z-10"
                                pattern="[A-Z0-9]{6}"
                                maxlength="6">
                         <button type="button" 
                                 onclick="this.form.action = this.form.action.replace('JOIN', this.form.session_code.value.toUpperCase()); this.form.submit();"
-                                class="bg-indigo-600 text-white px-3 py-2 rounded-r-md hover:bg-indigo-700 text-sm">
+                                class="w-full sm:w-auto bg-indigo-600 text-white px-3 py-2 rounded-md sm:rounded-l-none sm:rounded-r-md hover:bg-indigo-700 text-sm border border-indigo-600">
                             Join
                         </button>
                     </div>
