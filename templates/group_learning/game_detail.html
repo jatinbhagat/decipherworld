@@ -1,6 +1,45 @@
 {% extends 'group_learning/base.html' %}
 
-{% block title %}{{ game.title }}{% endblock %}
+{% block title %}{{ game.title }} - Collaborative Learning Game{% endblock %}
+
+{% block description %}{{ game.description|truncatewords:25 }} Learn through role-playing, teamwork, and problem-solving in this {{ game.estimated_duration }}-minute collaborative experience for {{ game.target_age_min }}-{{ game.target_age_max }} year olds.{% endblock %}
+
+{% block keywords %}{{ game.title }}, collaborative learning, {{ game.get_game_type_display }}, educational role-play, group learning game, {{ game.target_age_min }}-{{ game.target_age_max }} age group{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Game",
+    "name": "{{ game.title }}",
+    "description": "{{ game.description }}",
+    "url": "{{ request.build_absolute_uri }}",
+    "image": "{{ request.scheme }}://{{ request.get_host }}{% load static %}{% static 'images/group-learning-game.jpg' %}",
+    "genre": "Educational Game",
+    "gamePlatform": "Web Browser",
+    "numberOfPlayers": "{{ game.min_players }}-{{ game.max_players }}",
+    "timeRequired": "PT{{ game.estimated_duration }}M",
+    "typicalAgeRange": "{{ game.target_age_min }}-{{ game.target_age_max }}",
+    "learningResourceType": "Game",
+    "educationalLevel": "{{ game.target_age_min }}-{{ game.target_age_max }} years",
+    "interactivityType": "active",
+    "educationalUse": "group learning",
+    "teaches": [
+        {% for objective in game.learning_objectives.all %}
+        "{{ objective.title }}"{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ],
+    "applicationCategory": "Educational",
+    "applicationSubCategory": "Collaborative Learning",
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+    }
+}
+</script>
+{% endblock %}
 
 {% block nav_items %}
     <a href="{% url 'group_learning:game_list' %}" class="text-gray-600 hover:text-gray-900">← Back to Games</a>

@@ -17,7 +17,9 @@
       "WebFetch(domain:decipherworld.com)",
       "Bash(az webapp config appsettings set:*)",
       "Bash(unset:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(python test_urls.py:*)",
+      "Bash(python test:*)"
     ],
     "deny": [],
     "ask": []

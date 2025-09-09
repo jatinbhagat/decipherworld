@@ -1,6 +1,39 @@
 {% extends 'group_learning/base.html' %}
 
-{% block title %}Available Games{% endblock %}
+{% block title %}Group Learning Games - Collaborative Educational Scenarios{% endblock %}
+
+{% block description %}Explore collaborative learning games where students take on different roles to solve real-world challenges. Perfect for climate education, crisis management, and developing teamwork skills.{% endblock %}
+
+{% block keywords %}collaborative learning games, group learning scenarios, educational role-playing, climate change games, crisis management simulation, teamwork activities, multiplayer learning{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Group Learning Games",
+    "description": "Collaborative educational games and scenarios for group learning",
+    "url": "{{ request.build_absolute_uri }}",
+    "numberOfItems": {{ games|length }},
+    "itemListElement": [
+        {% for game in games %}
+        {
+            "@type": "Game",
+            "position": {{ forloop.counter }},
+            "name": "{{ game.title }}",
+            "description": "{{ game.description|truncatewords:20 }}",
+            "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'group_learning:game_detail' game.id %}",
+            "educationalLevel": "{{ game.target_age_min }}-{{ game.target_age_max }} years",
+            "learningResourceType": "Educational Game",
+            "interactivityType": "active",
+            "typicalAgeRange": "{{ game.target_age_min }}-{{ game.target_age_max }}",
+            "timeRequired": "PT{{ game.estimated_duration }}M"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+</script>
+{% endblock %}
 
 {% block nav_items %}
     <a href="{% url 'games:hub' %}" class="text-gray-600 hover:text-gray-900">← Games Hub</a>
