@@ -34,6 +34,8 @@ def test_urls():
         
         # Group Learning
         ('/learn/', 200, "Group Learning Home"),
+        ('/learn/game/1/', 200, "Game Detail Page (was 500)"),
+        ('/learn/session/create/1/', 200, "Start Session (was 500)"),
         ('/learn/session/0DWOO2/reflection/', 200, "Reflection page (was 500)"),
         
         # System URLs

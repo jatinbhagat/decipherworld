@@ -40,7 +40,7 @@ class GameDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         game = self.get_object()
         context['scenarios'] = game.scenarios.filter(is_active=True).order_by('order')
-        context['roles'] = Role.objects.filter(is_active=True, scenarios__game=game).distinct()
+        context['roles'] = Role.objects.filter(is_active=True, scenario__game=game).distinct()
         return context
 
 
