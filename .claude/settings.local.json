@@ -13,7 +13,11 @@
       "Bash(python manage.py check:*)",
       "Bash(python manage.py:*)",
       "Bash(unzip:*)",
-      "WebFetch(domain:decipherworld-app.azurewebsites.net)"
+      "WebFetch(domain:decipherworld-app.azurewebsites.net)",
+      "WebFetch(domain:decipherworld.com)",
+      "Bash(az webapp config appsettings set:*)",
+      "Bash(unset:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

@@ -99,8 +99,8 @@
                             </label>
                             <p class="text-xs text-gray-500 mb-3">How confident do you feel about this learning objective now?</p>
                             <div class="space-y-2">
-                                {% for value, label in "1,Not confident at all|2,Slightly confident|3,Moderately confident|4,Very confident|5,Extremely confident"|split:"|" %}
-                                    {% with parts=label|split:"," %}
+                                {% for option in "1,Not confident at all|2,Slightly confident|3,Moderately confident|4,Very confident|5,Extremely confident"|split:"|" %}
+                                    {% with parts=option|split:"," %}
                                         <label class="flex items-center">
                                             <input type="radio" 
                                                    name="confidence_{{ objective.id }}" 
@@ -121,8 +121,8 @@
                             </label>
                             <p class="text-xs text-gray-500 mb-3">How engaged were you with this aspect of the game?</p>
                             <div class="space-y-2">
-                                {% for value, label in "1,Not engaged at all|2,Slightly engaged|3,Moderately engaged|4,Very engaged|5,Extremely engaged"|split:"|" %}
-                                    {% with parts=label|split:"," %}
+                                {% for option in "1,Not engaged at all|2,Slightly engaged|3,Moderately engaged|4,Very engaged|5,Extremely engaged"|split:"|" %}
+                                    {% with parts=option|split:"," %}
                                         <label class="flex items-center">
                                             <input type="radio" 
                                                    name="engagement_{{ objective.id }}" 
