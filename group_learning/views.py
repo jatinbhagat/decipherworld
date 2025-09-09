@@ -30,7 +30,11 @@ class GameDetailView(DetailView):
     model = Game
     template_name = 'group_learning/game_detail.html'
     context_object_name = 'game'
-    queryset = Game.objects.filter(is_active=True)
+    queryset = Game.objects.filter(is_active=True).prefetch_related(
+        'learning_objectives',
+        'scenarios__learning_objectives',
+        'scenarios__required_roles'
+    )
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -129,6 +133,10 @@ class SessionDetailView(DetailView):
     context_object_name = 'session'
     slug_field = 'session_code'
     slug_url_kwarg = 'session_code'
+    queryset = GameSession.objects.select_related('game', 'current_scenario').prefetch_related(
+        'player_actions__role',
+        'game__scenarios__required_roles'
+    )
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -142,7 +150,7 @@ class SessionDetailView(DetailView):
         # Get available roles - handle case where session.game is None
         if session.game:
             context['available_roles'] = Role.objects.filter(
-                scenario__game=session.game,
+                scenarios__game=session.game,
                 is_active=True
             ).distinct()
         else:
@@ -213,7 +221,14 @@ class GameplayView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         session_code = kwargs['session_code']
-        session = get_object_or_404(GameSession, session_code=session_code)
+        session = get_object_or_404(
+            GameSession.objects.select_related('game', 'current_scenario').prefetch_related(
+                'game__scenarios__actions__role',
+                'player_actions__role',
+                'player_actions__action'
+            ),
+            session_code=session_code
+        )
         
         # Check if player is in session
         player_session_id = self.request.session.get('player_session_id')
@@ -247,14 +262,14 @@ class GameplayView(TemplateView):
             available_actions = current_scenario.actions.filter(
                 role=player_role,
                 is_active=True
-            )
+            ).select_related('role')
             context['available_actions'] = available_actions
         
         # Get previous actions by this player
         context['player_actions'] = PlayerAction.objects.filter(
             session=session,
             player_session_id=player_session_id
-        ).order_by('-decision_time')
+        ).select_related('role', 'action', 'scenario').order_by('-decision_time')
         
         return context
     
@@ -491,17 +506,46 @@ class SessionStatusAPI(View):
     """API endpoint for session status updates"""
     
     def get(self, request, session_code):
-        session = get_object_or_404(GameSession, session_code=session_code)
+        session = get_object_or_404(
+            GameSession.objects.select_related('game', 'current_scenario'),
+            session_code=session_code
+        )
         
-        # Get player count
-        players = session.player_actions.values('player_name', 'player_session_id').distinct()
+        # Get enhanced session status
+        active_players = session.get_active_players()
+        role_coverage = session.get_role_coverage()
         
         return JsonResponse({
             'status': session.status,
-            'player_count': len(players),
+            'player_count': session.get_player_count(),
             'current_scenario': session.current_scenario.title if session.current_scenario else None,
-            'game_title': session.game.title
+            'game_title': session.game.title,
+            'is_ready_to_start': session.is_ready_to_start(),
+            'active_players': list(active_players),
+            'role_coverage': role_coverage,
+            'min_players': session.game.min_players,
+            'max_players': session.game.max_players,
+            'last_activity': timezone.now().isoformat()  # For polling efficiency
         })
+
+
+class SessionDashboardView(TemplateView):
+    """Collaborative session dashboard for teachers and facilitators"""
+    template_name = 'group_learning/session_dashboard.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        session_code = kwargs['session_code']
+        session = get_object_or_404(
+            GameSession.objects.select_related('game', 'current_scenario'),
+            session_code=session_code
+        )
+        
+        context['session'] = session
+        context['player_count'] = session.get_player_count()
+        context['active_players'] = session.get_active_players()
+        
+        return context
 
 
 class SessionActionsAPI(View):

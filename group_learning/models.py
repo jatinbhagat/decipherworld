@@ -448,6 +448,38 @@ class GameSession(models.Model):
                 self.session_code = code
                 break
     
+    def get_player_count(self):
+        """Get current number of active players in session"""
+        return self.player_actions.values('player_session_id').distinct().count()
+    
+    def get_active_players(self):
+        """Get list of active players with their roles"""
+        from django.db.models import Max
+        latest_actions = self.player_actions.select_related('role').values(
+            'player_session_id', 'player_name'
+        ).annotate(
+            latest_action=Max('decision_time'),
+            role_name=Max('role__short_name')
+        ).order_by('player_name')
+        return latest_actions
+    
+    def is_ready_to_start(self):
+        """Check if session has minimum players to start"""
+        return self.get_player_count() >= self.game.min_players
+    
+    def get_role_coverage(self):
+        """Check which roles are filled in the session"""
+        filled_roles = self.player_actions.values_list('role_id', flat=True).distinct()
+        required_roles = []
+        if self.current_scenario:
+            required_roles = self.current_scenario.required_roles.values_list('id', flat=True)
+        
+        return {
+            'filled': filled_roles,
+            'required': list(required_roles),
+            'missing': [r for r in required_roles if r not in filled_roles]
+        }
+    
     def save(self, *args, **kwargs):
         if not self.session_code:
             self.generate_session_code()

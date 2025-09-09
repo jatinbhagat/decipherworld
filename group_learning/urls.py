@@ -11,6 +11,7 @@ urlpatterns = [
     # Session management
     path('session/create/<int:game_id>/', views.CreateSessionView.as_view(), name='create_session'),
     path('session/<str:session_code>/', views.SessionDetailView.as_view(), name='session_detail'),
+    path('session/<str:session_code>/dashboard/', views.SessionDashboardView.as_view(), name='session_dashboard'),
     path('session/<str:session_code>/join/', views.JoinSessionView.as_view(), name='join_session'),
     
     # Gameplay

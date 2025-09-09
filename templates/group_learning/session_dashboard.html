@@ -1,0 +1,246 @@
+{% extends 'group_learning/base.html' %}
+
+{% block title %}Session Dashboard - {{ session.game.title }}{% endblock %}
+
+{% block nav_items %}
+    <a href="{% url 'group_learning:game_list' %}" class="text-gray-600 hover:text-gray-900">← All Games</a>
+    <div class="flex items-center">
+        <span class="text-sm text-gray-600">Session: {{ session.session_code }}</span>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Session Header -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{{ session.game.title }}</h1>
+                <p class="text-gray-600">Session: {{ session.session_code }} • Status: {{ session.get_status_display }}</p>
+            </div>
+            <div class="text-right">
+                <div class="text-2xl font-bold text-indigo-600" data-player-count>{{ player_count }}</div>
+                <div class="text-sm text-gray-500">Active Players</div>
+                <div class="text-xs text-gray-400 mt-1">
+                    Min: {{ session.game.min_players }} • Max: {{ session.game.max_players }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Role Coverage Status -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">🎭 Role Coverage</h3>
+                <div id="role-coverage" class="space-y-3">
+                    <div class="text-gray-500 text-center">Loading role information...</div>
+                </div>
+            </div>
+            
+            <!-- Collaborative Action Feed -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">📋 Team Action Feed</h3>
+                    <button onclick="refreshActionFeed()" class="text-indigo-600 hover:text-indigo-800 text-sm">
+                        🔄 Refresh
+                    </button>
+                </div>
+                <div id="action-feed" class="space-y-3" style="max-height: 400px; overflow-y: auto;">
+                    <div class="text-gray-500 text-center py-4">Loading team actions...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Session Quick Actions -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                <div class="space-y-3">
+                    <a href="{% url 'group_learning:join_session' session.session_code %}" 
+                       class="block w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors text-center">
+                        👥 Join Game
+                    </a>
+                    <a href="{% url 'group_learning:gameplay' session.session_code %}" 
+                       class="block w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors text-center">
+                        🎮 Play Game
+                    </a>
+                    <a href="{% url 'group_learning:session_results' session.session_code %}" 
+                       class="block w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors text-center">
+                        📊 View Results
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Active Players List -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Active Players</h3>
+                <div id="players-list" class="space-y-2">
+                    <div class="text-gray-500 text-center">Loading players...</div>
+                </div>
+            </div>
+            
+            <!-- Session Information -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Session Info</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Duration:</span>
+                        <span class="font-medium">{{ session.game.estimated_duration }} min</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Difficulty:</span>
+                        <span class="font-medium">{{ session.game.get_difficulty_level_display }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Age Range:</span>
+                        <span class="font-medium">{{ session.game.target_age_min }}-{{ session.game.target_age_max }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Created:</span>
+                        <span class="font-medium">{{ session.created_at|timesince }} ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let sessionCode = '{{ session.session_code }}';
+let lastUpdate = new Date();
+
+// Update all dashboard components
+function updateDashboard() {
+    updateSessionStatus();
+    refreshActionFeed();
+    updatePlayersList();
+}
+
+function updateSessionStatus() {
+    fetch(`/learn/api/session/${sessionCode}/status/`)
+        .then(response => response.json())
+        .then(data => {
+            // Update player count
+            const playerCountElement = document.querySelector('[data-player-count]');
+            if (playerCountElement) {
+                playerCountElement.textContent = data.player_count;
+            }
+            
+            // Update role coverage
+            updateRoleCoverage(data.role_coverage, data.active_players);
+            
+            // Update players list
+            updatePlayersDisplay(data.active_players);
+        })
+        .catch(error => console.log('Status update failed:', error));
+}
+
+function updateRoleCoverage(roleCoverage, activePlayers) {
+    const container = document.getElementById('role-coverage');
+    if (!container) return;
+    
+    if (roleCoverage.required.length === 0) {
+        container.innerHTML = '<div class="text-gray-500">No specific roles required for this session.</div>';
+        return;
+    }
+    
+    let html = '';
+    const playerRoles = {};
+    activePlayers.forEach(player => {
+        if (player.role_name) {
+            playerRoles[player.role_name] = (playerRoles[player.role_name] || 0) + 1;
+        }
+    });
+    
+    // Show role coverage status
+    roleCoverage.required.forEach(roleId => {
+        const isFilled = roleCoverage.filled.includes(roleId);
+        const statusColor = isFilled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+        const statusText = isFilled ? '✓ Filled' : '⚠ Need Player';
+        
+        html += `
+            <div class="flex items-center justify-between p-3 border rounded-lg">
+                <div class="font-medium text-gray-700">Role ID: ${roleId}</div>
+                <span class="px-2 py-1 rounded text-sm ${statusColor}">
+                    ${statusText}
+                </span>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function refreshActionFeed() {
+    fetch(`/learn/api/session/${sessionCode}/actions/`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('action-feed');
+            if (!container) return;
+            
+            if (data.actions.length === 0) {
+                container.innerHTML = '<div class="text-gray-500 text-center py-4">No team actions yet. Be the first to take action!</div>';
+                return;
+            }
+            
+            const actionsHtml = data.actions.map(action => `
+                <div class="border-l-4 border-indigo-400 pl-4 py-3 bg-gray-50 rounded-r-lg">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="font-semibold text-gray-800">${action.player_name}</div>
+                            <div class="text-sm text-gray-600">as ${action.role} chose:</div>
+                            <div class="font-medium text-indigo-700 mt-1">${action.action_title}</div>
+                            ${action.reasoning ? `<div class="text-xs text-gray-500 mt-2 italic">"${action.reasoning}"</div>` : ''}
+                        </div>
+                        <div class="text-xs text-gray-500 text-right">
+                            ${action.decision_time}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = actionsHtml;
+            
+            // Auto-scroll to bottom for new actions
+            container.scrollTop = container.scrollHeight;
+        })
+        .catch(error => {
+            console.log('Failed to load action feed:', error);
+        });
+}
+
+function updatePlayersList() {
+    // This will be populated by the status API call
+}
+
+function updatePlayersDisplay(players) {
+    const container = document.getElementById('players-list');
+    if (!container) return;
+    
+    if (players.length === 0) {
+        container.innerHTML = '<div class="text-gray-500 text-center">No players joined yet.</div>';
+        return;
+    }
+    
+    const playersHtml = players.map(player => `
+        <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+            <div class="font-medium text-gray-800">${player.player_name}</div>
+            <div class="text-sm text-gray-600">${player.role_name || 'No Role'}</div>
+        </div>
+    `).join('');
+    
+    container.innerHTML = playersHtml;
+}
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    updateDashboard();
+    
+    // Auto-refresh every 5 seconds for MVP
+    setInterval(updateDashboard, 5000);
+});
+</script>
+{% endblock %}

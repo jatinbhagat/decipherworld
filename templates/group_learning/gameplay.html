@@ -378,6 +378,66 @@ document.getElementById('actionForm').addEventListener('submit', function(e) {
 // Load recent actions on page load
 document.addEventListener('DOMContentLoaded', function() {
     loadRecentActions();
+    
+    // Add basic real-time updates using AJAX polling
+    let lastUpdateTime = new Date();
+    const updateInterval = 5000; // 5 seconds
+    
+    function updateGameState() {
+        const sessionCode = '{{ session.session_code }}';
+        
+        // Update session status
+        fetch(`/learn/api/session/${sessionCode}/status/`)
+            .then(response => response.json())
+            .then(data => {
+                // Update player count if element exists
+                const playerCountElement = document.querySelector('[data-player-count]');
+                if (playerCountElement) {
+                    playerCountElement.textContent = data.player_count;
+                }
+                
+                // Update session status indicator
+                const statusElement = document.getElementById('session-status');
+                if (statusElement) {
+                    statusElement.className = `status-indicator status-${data.status}`;
+                    statusElement.title = `Status: ${data.status}`;
+                }
+            })
+            .catch(error => console.log('Status update failed:', error));
+        
+        // Auto-refresh recent actions
+        loadRecentActions();
+    }
+    
+    // Start periodic updates
+    setInterval(updateGameState, updateInterval);
 });
+
+// Utility functions for user feedback
+function showSuccessMessage(message) {
+    showMessage(message, 'success');
+}
+
+function showErrorMessage(message) {
+    showMessage(message, 'error');
+}
+
+function showMessage(message, type) {
+    // Create simple toast notification
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 px-4 py-2 rounded shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        if (document.body.contains(toast)) {
+            document.body.removeChild(toast);
+        }
+    }, 3000);
+}
 </script>
 {% endblock %}
