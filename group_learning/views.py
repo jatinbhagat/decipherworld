@@ -150,7 +150,7 @@ class SessionDetailView(DetailView):
         # Get available roles - handle case where session.game is None
         if session.game:
             context['available_roles'] = Role.objects.filter(
-                scenarios__game=session.game,
+                scenario__game=session.game,
                 is_active=True
             ).distinct()
         else:
@@ -303,7 +303,7 @@ class GameplayView(TemplateView):
             available_roles = session.current_scenario.required_roles.filter(is_active=True)
         else:
             available_roles = Role.objects.filter(
-                scenarios__game=session.game,
+                scenario__game=session.game,
                 is_active=True
             ).distinct()
         
