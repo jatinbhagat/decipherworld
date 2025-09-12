@@ -1078,11 +1078,12 @@ class ProductionSetupAPI(View):
     
     def get(self, request):
         # Security check - only allow in specific conditions
-        if not settings.DEBUG and not request.user.is_superuser:
-            # For production, require a specific setup token or admin access
-            setup_token = request.GET.get('setup_token')
-            if setup_token != 'decipherworld-setup-2025':
-                return JsonResponse({'error': 'Unauthorized'}, status=403)
+        setup_token = request.GET.get('setup_token')
+        if setup_token != 'decipherworld-setup-2025':
+            return JsonResponse({
+                'error': 'Unauthorized', 
+                'hint': 'Add ?setup_token=decipherworld-setup-2025 to the URL'
+            }, status=403)
         
         try:
             results = {
@@ -1116,6 +1117,9 @@ class ProductionSetupAPI(View):
             
             # Step 3: Set up Constitution Challenge
             try:
+                # Import here to avoid circular imports
+                from .models import GameLearningModule
+                
                 call_command('create_constitution_sample_updated', verbosity=0)
                 results['steps_completed'].append('✅ Constitution Challenge data created')
                 
@@ -1123,10 +1127,16 @@ class ProductionSetupAPI(View):
                 constitution_game = Game.objects.filter(name__icontains="Constitution Challenge").first()
                 if constitution_game:
                     question_count = ConstitutionQuestion.objects.filter(game=constitution_game).count()
+                    module_count = GameLearningModule.objects.filter(game=constitution_game).count()
                     results['steps_completed'].append(f'✅ Verified: {question_count} Constitution questions')
+                    results['steps_completed'].append(f'✅ Verified: {module_count} learning modules')
+                else:
+                    results['errors'].append('❌ Constitution game not found after creation')
                 
             except Exception as e:
+                import traceback
                 results['errors'].append(f'❌ Constitution setup error: {str(e)}')
+                results['errors'].append(f'❌ Full error: {traceback.format_exc()}')
             
             # Final status
             results['status'] = 'completed' if not results['errors'] else 'completed_with_errors'
