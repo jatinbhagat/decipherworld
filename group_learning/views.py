@@ -9,9 +9,13 @@ from django.forms import ModelForm, CharField, ChoiceField
 from django.core.exceptions import ValidationError
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from django.core.management import call_command
+from django.contrib.auth import get_user_model
+from django.conf import settings
 import random
 import string
 import json
+import logging
 
 from .models import (
     Game, GameSession, Role, Scenario, Action, Outcome, 
@@ -1067,3 +1071,77 @@ class ConstitutionTeamJoinView(TemplateView):
         })
         
         return context
+
+
+class ProductionSetupAPI(View):
+    """API endpoint to set up production database with Constitution Challenge data"""
+    
+    def get(self, request):
+        # Security check - only allow in specific conditions
+        if not settings.DEBUG and not request.user.is_superuser:
+            # For production, require a specific setup token or admin access
+            setup_token = request.GET.get('setup_token')
+            if setup_token != 'decipherworld-setup-2025':
+                return JsonResponse({'error': 'Unauthorized'}, status=403)
+        
+        try:
+            results = {
+                'status': 'starting',
+                'steps_completed': [],
+                'errors': []
+            }
+            
+            # Step 1: Run migrations
+            try:
+                call_command('migrate', verbosity=0, interactive=False)
+                results['steps_completed'].append('✅ Database migrations completed')
+            except Exception as e:
+                results['errors'].append(f'❌ Migration error: {str(e)}')
+                return JsonResponse(results, status=500)
+            
+            # Step 2: Create superuser if needed
+            try:
+                User = get_user_model()
+                if not User.objects.filter(username='admin').exists():
+                    User.objects.create_superuser(
+                        username='admin', 
+                        email='admin@decipherworld.com', 
+                        password='DecipherWorld2025!'
+                    )
+                    results['steps_completed'].append('✅ Superuser created (admin/DecipherWorld2025!)')
+                else:
+                    results['steps_completed'].append('✅ Superuser already exists')
+            except Exception as e:
+                results['errors'].append(f'❌ Superuser creation error: {str(e)}')
+            
+            # Step 3: Set up Constitution Challenge
+            try:
+                call_command('create_constitution_sample_updated', verbosity=0)
+                results['steps_completed'].append('✅ Constitution Challenge data created')
+                
+                # Verify setup
+                constitution_game = Game.objects.filter(name__icontains="Constitution Challenge").first()
+                if constitution_game:
+                    question_count = ConstitutionQuestion.objects.filter(game=constitution_game).count()
+                    results['steps_completed'].append(f'✅ Verified: {question_count} Constitution questions')
+                
+            except Exception as e:
+                results['errors'].append(f'❌ Constitution setup error: {str(e)}')
+            
+            # Final status
+            results['status'] = 'completed' if not results['errors'] else 'completed_with_errors'
+            results['next_steps'] = [
+                '🌐 Visit: https://decipherworld-app.azurewebsites.net/learn/',
+                '🏛️ Start Constitution Challenge game',
+                '👤 Admin panel: https://decipherworld-app.azurewebsites.net/admin/'
+            ]
+            
+            return JsonResponse(results)
+            
+        except Exception as e:
+            return JsonResponse({
+                'status': 'failed',
+                'error': str(e),
+                'steps_completed': results.get('steps_completed', []),
+                'errors': results.get('errors', []) + [f'❌ Setup failed: {str(e)}']
+            }, status=500)
