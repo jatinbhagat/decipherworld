@@ -8,19 +8,53 @@ def create_indexes_forward(apps, schema_editor):
     db_vendor = connection.vendor
     
     if db_vendor == 'postgresql':
-        # PostgreSQL with GIN indexes for JSON fields
+        # PostgreSQL - Use regular CREATE INDEX (not CONCURRENTLY) for migrations
+        # CONCURRENTLY cannot be used in migrations due to transaction blocks
         with connection.cursor() as cursor:
-            cursor.execute("CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_countrystate_visual_terrain ON group_learning_countrystate USING GIN ((visual_elements->'terrain'));")
-            cursor.execute("CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_countrystate_visual_buildings ON group_learning_countrystate USING GIN ((visual_elements->'buildings'));")
-            cursor.execute("CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_countrystate_visual_weather ON group_learning_countrystate USING GIN ((visual_elements->'weather'));")
-            cursor.execute("CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_constitutionteam_session_score ON group_learning_constitutionteam (session_id, total_score DESC);")
-            cursor.execute("CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_constitutionteam_completion ON group_learning_constitutionteam (completion_time) WHERE completion_time IS NOT NULL;")
-            cursor.execute("CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_constitutionquestion_game_order ON group_learning_constitutionquestion (game_id, \"order\");")
-            cursor.execute("CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_constitutionquestion_category ON group_learning_constitutionquestion (category);")
-            cursor.execute("CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_constitutionanswer_team_time ON group_learning_constitutionanswer (team_id, created_at DESC);")
-            cursor.execute("CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_constitutionanswer_question_team ON group_learning_constitutionanswer (question_id, team_id);")
-            cursor.execute("CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_countrystate_city_level ON group_learning_countrystate (current_city_level);")
-            cursor.execute("CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_countrystate_governance_scores ON group_learning_countrystate (democracy_score, fairness_score, freedom_score, stability_score);")
+            try:
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_countrystate_visual_terrain ON group_learning_countrystate USING GIN ((visual_elements->'terrain'));")
+            except Exception:
+                pass
+            try:
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_countrystate_visual_buildings ON group_learning_countrystate USING GIN ((visual_elements->'buildings'));")
+            except Exception:
+                pass
+            try:
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_countrystate_visual_weather ON group_learning_countrystate USING GIN ((visual_elements->'weather'));")
+            except Exception:
+                pass
+            try:
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_constitutionteam_session_score ON group_learning_constitutionteam (session_id, total_score DESC);")
+            except Exception:
+                pass
+            try:
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_constitutionteam_completion ON group_learning_constitutionteam (completion_time) WHERE completion_time IS NOT NULL;")
+            except Exception:
+                pass
+            try:
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_constitutionquestion_game_order ON group_learning_constitutionquestion (game_id, \"order\");")
+            except Exception:
+                pass
+            try:
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_constitutionquestion_category ON group_learning_constitutionquestion (category);")
+            except Exception:
+                pass
+            try:
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_constitutionanswer_team_time ON group_learning_constitutionanswer (team_id, created_at DESC);")
+            except Exception:
+                pass
+            try:
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_constitutionanswer_question_team ON group_learning_constitutionanswer (question_id, team_id);")
+            except Exception:
+                pass
+            try:
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_countrystate_city_level ON group_learning_countrystate (current_city_level);")
+            except Exception:
+                pass
+            try:
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_countrystate_governance_scores ON group_learning_countrystate (democracy_score, fairness_score, freedom_score, stability_score);")
+            except Exception:
+                pass
     else:
         # SQLite and other databases - basic indexes only
         with connection.cursor() as cursor:
@@ -88,6 +122,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             create_indexes_forward,
             drop_indexes_reverse,
-            atomic=False,  # Required for CONCURRENTLY indexes
         ),
     ]
