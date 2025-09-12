@@ -25,4 +25,14 @@ urlpatterns = [
     # AJAX endpoints
     path('api/session/<str:session_code>/status/', views.SessionStatusAPI.as_view(), name='session_status_api'),
     path('api/session/<str:session_code>/actions/', views.SessionActionsAPI.as_view(), name='session_actions_api'),
+    
+    # Constitution Challenge URLs
+    path('constitution/<str:session_code>/', views.ConstitutionTeamJoinView.as_view(), name='constitution_join'),
+    path('constitution/<str:session_code>/play/', views.ConstitutionGameView.as_view(), name='constitution_game'),
+    path('constitution/<str:session_code>/create-team/', views.ConstitutionTeamCreateView.as_view(), name='constitution_create_team'),
+    
+    # Constitution Challenge API endpoints
+    path('api/constitution/<str:session_code>/question/', views.ConstitutionQuestionAPI.as_view(), name='constitution_question_api'),
+    path('api/constitution/<str:session_code>/answer/', views.ConstitutionAnswerAPI.as_view(), name='constitution_answer_api'),
+    path('api/constitution/<str:session_code>/leaderboard/', views.ConstitutionLeaderboardAPI.as_view(), name='constitution_leaderboard_api'),
 ]

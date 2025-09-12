@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ team.team_name|default:"Constitution Challenge" }} - Build Your Country</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Build your country by answering constitution questions about governance, leadership, and citizen rights. Collaborative team-based learning game.">
+    <meta name="keywords" content="constitution game, governance education, civics learning, team building, democracy, citizenship, educational games">
+    <meta name="author" content="DecipherWorld">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:text/plain;base64,8J+PvzwvdGV4dD4=" type="image/x-icon">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load static files -->
+    {% load static %}
+    {% load group_learning_extras %}
+</head>
+<body class="overflow-hidden">
+    <!-- Full-screen immersive constitution game -->
+{% csrf_token %}
+<!-- Skip link for accessibility -->
+<a href="#main-game" class="skip-link sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50">Skip to main game</a>
+
+<!-- Full-screen immersive game container -->
+<div class="constitution-game h-screen overflow-hidden" 
+     data-session-code="{{ session.session_code }}" 
+     data-team-id="{{ team.id|default:'' }}" 
+     data-csrf="{{ csrf_token }}">
+
+    {% if not team %}
+        <!-- Team Setup Required -->
+        <div class="flex items-center justify-center h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+            <div class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-4">
+                <div class="text-6xl mb-4 animate-bounce">🏛️</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Team Setup Required</h2>
+                <p class="text-gray-600 mb-6">You need to join or create a team to start building your constitutional democracy.</p>
+                <a href="{% url 'group_learning:constitution_join' session.session_code %}" 
+                   class="inline-block bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 font-medium">
+                    Join Team →
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <!-- Immersive Full-Screen Game Layout -->
+        <div class="relative h-screen bg-gradient-to-b from-blue-400 via-blue-200 to-green-100 overflow-hidden" id="main-game">
+            
+            <!-- Floating Top Bar -->
+            <div class="absolute top-0 left-0 right-0 z-40">
+                <div class="flex items-center justify-between p-3">
+                    <!-- Population Counter (Top Left) -->
+                    <div class="bg-black bg-opacity-50 text-white rounded-full px-4 py-2 text-sm font-medium">
+                        🏙️ {{ team.total_score|mul:100|default:"1100" }}.0
+                    </div>
+                    
+                    <!-- Action Buttons (Top Right) -->
+                    <div class="flex items-center space-x-2">
+                        <!-- Build Nation Button -->
+                        <button class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200"
+                                title="Build Nation">
+                            ⚡ Build Nation
+                        </button>
+                        
+                        <!-- Leaderboard Button -->
+                        <button onclick="toggleLeaderboard()" 
+                                class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200"
+                                title="View Leaderboard">
+                            🏆 Leaderboard
+                        </button>
+                        
+                        <!-- Help Button -->
+                        <button onclick="toggleHelp()" 
+                                class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200"
+                                title="Get Help">
+                            ❓ Help
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Team Score Card (Left Side) -->
+            <div class="absolute top-16 left-4 z-30">
+                <div class="bg-white bg-opacity-90 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl">{{ team.flag_emoji }}</span>
+                        <div class="text-lg font-bold text-gray-800">{{ team.total_score }}</div>
+                        <div class="text-sm text-gray-600">{{ team.questions_completed }}/{{ session.game.constitution_questions.count }}</div>
+                    </div>
+                </div>
+            </div>
+                
+            
+            <!-- Immersive City Background -->
+            <div class="absolute inset-0 overflow-hidden">
+                {% include 'group_learning/components/city_canvas.html' %}
+            </div>
+            
+            <!-- Compact Floating Question Panel -->
+            <div class="absolute inset-x-2 lg:inset-x-8 bottom-4 lg:bottom-8 top-20 lg:top-24 flex items-start justify-center">
+                <div class="w-full max-w-3xl max-h-[calc(100vh-7rem)] lg:max-h-[calc(100vh-8rem)]">
+                    <!-- Compact Question Card -->
+                    <div id="question-card" class="bg-white bg-opacity-95 backdrop-blur-lg rounded-xl shadow-xl border border-white border-opacity-20 overflow-hidden overflow-y-auto transform transition-all duration-300 hover:scale-[1.01] max-h-full">
+                        {% include 'group_learning/components/question_overlay.html' %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Floating Governance Meters (Bottom Left) -->
+            <div class="hidden lg:block absolute bottom-8 left-8 pointer-events-auto">
+                {% include 'group_learning/components/governance_meters.html' %}
+            </div>
+            
+            <!-- Mobile Slide-up Menu -->
+            <div id="mobile-menu" class="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white border-t border-gray-200 shadow-xl transform translate-y-full transition-transform duration-300">
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-800">Game Stats</h3>
+                        <button onclick="toggleMobileMenu()" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Governance Meters -->
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        {% for metric, score in governance_scores.items %}
+                        <div>
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span class="text-gray-600 capitalize">{{ metric }}</span>
+                                <span class="font-medium text-gray-800">{{ score }}/10</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r
+                                    {% if metric == 'democracy' %}from-blue-400 to-blue-600
+                                    {% elif metric == 'fairness' %}from-green-400 to-green-600  
+                                    {% elif metric == 'freedom' %}from-purple-400 to-purple-600
+                                    {% elif metric == 'stability' %}from-orange-400 to-orange-600
+                                    {% endif %}" 
+                                    style="width: {{ score|mul:10 }}%"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+            
+            <!-- Slide-out Leaderboard Panel -->
+            <div id="leaderboard-panel" class="fixed inset-y-0 right-0 z-50 w-80 max-w-full sm:max-w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-500 overflow-y-auto border-l-4 border-yellow-500">
+                {% include 'group_learning/components/leaderboard.html' %}
+            </div>
+            
+            <!-- Leaderboard Backdrop -->
+            <div id="leaderboard-backdrop" class="hidden fixed inset-0 z-40 bg-black bg-opacity-30 transition-opacity duration-500" onclick="toggleLeaderboard()"></div>
+            
+            <!-- Help Modal -->
+            <div id="help-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+                <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">How to Play</h3>
+                        <button onclick="toggleHelp()" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="text-sm text-gray-600 space-y-3">
+                        <p>🏛️ <strong>Build Your Democracy:</strong> Answer questions about constitutional principles to shape your virtual country.</p>
+                        <p>📈 <strong>Earn Points:</strong> Each decision affects your governance scores and population growth.</p>
+                        <p>🏡 <strong>Watch Your City Grow:</strong> Your choices are reflected in the city visualization.</p>
+                        <p>🎓 <strong>Learn & Improve:</strong> Educational modules will help you understand constitutional concepts.</p>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+    {% endif %}
+</div>
+
+<!-- Learning Module Modal -->
+{% include 'group_learning/components/learning_modal.html' %}
+
+<!-- Immersive Game Styles -->
+<style>
+/* Enhanced Immersive City Canvas Styles */
+.city-canvas-wrapper {
+    min-height: 500px;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 1.5rem;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+}
+
+/* Enhanced Governance Meters */
+.governance-meter-fill {
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    background: linear-gradient(90deg, #10b981, #059669, #047857);
+}
+
+.governance-meter-increase {
+    animation: meter-celebrate 0.8s ease-out;
+}
+
+@keyframes meter-celebrate {
+    0% { transform: scale(1); filter: brightness(1); }
+    30% { transform: scale(1.05); filter: brightness(1.2) hue-rotate(10deg); }
+    60% { transform: scale(1.02); filter: brightness(1.1) hue-rotate(-5deg); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* Standardized Button States */
+.btn-base {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-base:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.btn-base:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Primary Action Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.35);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px 0 rgba(59, 130, 246, 0.2);
+}
+
+/* Secondary Buttons */
+.btn-secondary {
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Interactive Answer Buttons */
+.interactive-answer-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    background: white;
+    border-width: 2px;
+}
+
+.interactive-answer-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.6s;
+    z-index: 1;
+}
+
+.interactive-answer-btn:hover:not(:disabled)::before {
+    left: 100%;
+}
+
+.interactive-answer-btn:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.interactive-answer-btn:active:not(:disabled) {
+    transform: translateY(-1px) scale(0.99);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Loading States */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #ffffff30;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Button Success State */
+.btn-success {
+    background: linear-gradient(135deg, #10b981, #047857) !important;
+    border-color: #059669 !important;
+}
+
+.btn-success::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+}
+
+/* Button Error State */
+.btn-error {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    border-color: #f87171 !important;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+/* City Animation Effects */
+@keyframes animate-float-slow {
+    0%, 100% { transform: translateX(0px) translateY(0px); }
+    33% { transform: translateX(10px) translateY(-5px); }
+    66% { transform: translateX(-5px) translateY(-3px); }
+}
+
+@keyframes animate-float-slow-reverse {
+    0%, 100% { transform: translateX(0px) translateY(0px); }
+    33% { transform: translateX(-8px) translateY(-3px); }
+    66% { transform: translateX(12px) translateY(-7px); }
+}
+
+@keyframes animate-float-medium {
+    0%, 100% { transform: translateX(0px) translateY(0px); }
+    50% { transform: translateX(15px) translateY(-8px); }
+}
+
+.animate-float-slow {
+    animation: animate-float-slow 8s ease-in-out infinite;
+}
+
+.animate-float-slow-reverse {
+    animation: animate-float-slow-reverse 10s ease-in-out infinite;
+}
+
+.animate-float-medium {
+    animation: animate-float-medium 6s ease-in-out infinite;
+}
+
+@keyframes animate-twinkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.8); }
+}
+
+@keyframes animate-twinkle-delayed {
+    0%, 100% { opacity: 0.7; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+.animate-twinkle {
+    animation: animate-twinkle 2s ease-in-out infinite;
+}
+
+.animate-twinkle-delayed {
+    animation: animate-twinkle-delayed 2.5s ease-in-out infinite;
+}
+
+@keyframes animate-pulse-delayed {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.animate-pulse-delayed {
+    animation: animate-pulse-delayed 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Enhanced Border Utilities */
+.border-l-16 { border-left-width: 16px; }
+.border-r-16 { border-right-width: 16px; }
+.border-b-24 { border-bottom-width: 24px; }
+.border-l-20 { border-left-width: 20px; }
+.border-r-20 { border-right-width: 20px; }
+.border-b-32 { border-bottom-width: 32px; }
+.border-l-24 { border-left-width: 24px; }
+.border-r-24 { border-right-width: 24px; }
+.border-b-20 { border-bottom-width: 20px; }
+
+/* Enhanced Spacing */
+.w-18 { width: 4.5rem; }
+.h-18 { height: 4.5rem; }
+.bottom-18 { bottom: 4.5rem; }
+
+/* Mobile-First Responsive Design */
+
+/* Mobile Base Styles (320px+) */
+@media (min-width: 320px) {
+    .city-canvas-wrapper {
+        min-height: 300px;
+    }
+    
+    /* Ensure touch targets are at least 44px */
+    button, .interactive-answer-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Mobile typography scaling */
+    .text-xs { font-size: 0.75rem; }
+    .text-sm { font-size: 0.875rem; }
+    .text-base { font-size: 1rem; }
+}
+
+/* Small Mobile (375px+) */
+@media (min-width: 375px) {
+    .city-canvas-wrapper {
+        min-height: 350px;
+    }
+}
+
+/* Large Mobile / Small Tablet (480px+) */
+@media (min-width: 480px) {
+    .city-canvas-wrapper {
+        min-height: 400px;
+    }
+    
+    /* Scale up city elements slightly */
+    .absolute.bottom-32 > div {
+        transform: scale(0.9);
+    }
+}
+
+/* Tablet Portrait (640px+) */
+@media (min-width: 640px) {
+    .city-canvas-wrapper {
+        min-height: 450px;
+    }
+    
+    /* Allow side-by-side layout for stats */
+    #mobile-menu .grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* Tablet Landscape (768px+) */
+@media (min-width: 768px) {
+    .city-canvas-wrapper {
+        min-height: 500px;
+    }
+    
+    /* Larger mobile menu for tablets */
+    #mobile-menu {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    /* Scale city elements to normal */
+    .absolute.bottom-32 > div {
+        transform: scale(1);
+    }
+}
+
+/* Small Desktop (1024px+) */
+@media (min-width: 1024px) {
+    .city-canvas-wrapper {
+        min-height: 600px;
+    }
+    
+    /* Desktop-specific enhancements */
+    .interactive-answer-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+    }
+}
+
+/* Large Desktop (1280px+) */
+@media (min-width: 1280px) {
+    .city-canvas-wrapper {
+        min-height: 700px;
+    }
+    
+    /* Enhanced city details for large screens */
+    .absolute.bottom-32 > div {
+        transform: scale(1.1);
+    }
+}
+
+/* Ultra-wide / 4K (1536px+) */
+@media (min-width: 1536px) {
+    .city-canvas-wrapper {
+        min-height: 800px;
+    }
+    
+    .absolute.bottom-32 > div {
+        transform: scale(1.2);
+    }
+}
+
+/* Orientation-specific styles */
+@media (orientation: landscape) and (max-height: 600px) {
+    /* Landscape mobile phones */
+    .city-canvas-wrapper {
+        min-height: 250px;
+    }
+    
+    #mobile-menu {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+}
+
+/* High DPI / Retina displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Sharper borders and shadows for high DPI */
+    .border {
+        border-width: 0.5px;
+    }
+    
+    .shadow-lg {
+        box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.1), 0 2px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .animate-pulse,
+    .animate-float-slow,
+    .animate-float-slow-reverse,
+    .animate-float-medium,
+    .animate-twinkle,
+    .animate-twinkle-delayed {
+        animation: none !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .bg-white.bg-opacity-95 {
+        background-color: white;
+        backdrop-filter: none;
+    }
+    
+    .border {
+        border-width: 2px;
+    }
+    
+    button {
+        border: 2px solid currentColor;
+    }
+    
+    /* Ensure sufficient contrast for text */
+    .text-gray-600 {
+        color: #374151;
+    }
+    
+    .text-gray-500 {
+        color: #4b5563;
+    }
+}
+
+/* Screen Reader Only Content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus Styles for Accessibility */
+.interactive-answer-btn:focus,
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 0 0 4px 4px;
+    z-index: 100;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Enhanced focus indicators */
+*:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+/* Better focus for interactive elements */
+.interactive-answer-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+    transform: translateY(-1px) scale(1.01);
+}
+
+/* ARIA live region styling */
+[aria-live] {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Full-screen immersion mode */
+.immersive-mode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+}
+
+.immersive-mode .city-canvas-wrapper {
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+}
+
+/* Enhanced Loading and Transition Effects */
+.fade-in-up {
+    animation: fade-in-up 0.8s ease-out;
+}
+
+@keyframes fade-in-up {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-in-right {
+    animation: slide-in-right 0.6s ease-out;
+}
+
+@keyframes slide-in-right {
+    0% {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Staggered Animation Entrance */
+.animate-slide-in-up {
+    animation: slide-in-up 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes slide-in-up {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Bounce attention animation */
+.animate-bounce-subtle {
+    animation: bounce-subtle 0.6s ease-in-out;
+}
+
+@keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+/* Progress bar fill animation */
+.progress-fill {
+    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: progress-shine 2s infinite;
+}
+
+@keyframes progress-shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Modal entrance animations */
+.modal-enter {
+    animation: modal-enter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modal-enter {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-exit {
+    animation: modal-exit 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modal-exit {
+    0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+}
+
+/* Notification slide animations */
+.notification-enter {
+    animation: notification-enter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes notification-enter {
+    0% {
+        opacity: 0;
+        transform: translateX(100%) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+.notification-exit {
+    animation: notification-exit 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes notification-exit {
+    0% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(100%) scale(0.9);
+    }
+}
+
+/* Success particle effect */
+.success-particles {
+    position: relative;
+    overflow: visible;
+}
+
+.success-particles::after {
+    content: '✨';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 1.2rem;
+    animation: success-float 1.5s ease-out;
+    pointer-events: none;
+}
+
+@keyframes success-float {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-20px) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.8);
+    }
+}
+
+/* Micro-interactions for UI elements */
+.interactive-scale:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interactive-scale:active {
+    transform: scale(0.95);
+}
+
+/* Smooth state transitions */
+.state-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Loading skeleton shimmer */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+</style>
+
+<!-- Session-specific initialization -->
+<script>
+// Essential functions for game functionality
+
+// CSRF Token utility
+function getCsrfToken() {
+    let token = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                document.querySelector('input[name="csrfmiddlewaretoken"]')?.value ||
+                document.querySelector('[data-csrf]')?.getAttribute('data-csrf') ||
+                '';
+    console.log('🔍 CSRF Token found:', token ? 'Yes' : 'No');
+    return token;
+}
+
+// Game notification system  
+function showGameNotification(message, type = 'info', duration = 2000) {
+    if (message.includes('updated') || (type === 'info' && !message.includes('⚠️'))) return;
+    
+    const existing = document.querySelectorAll('.game-notification');
+    existing.forEach(el => el.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `game-notification fixed bottom-4 right-4 z-50 opacity-0 transition-opacity duration-300`;
+    
+    const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-gray-800';
+    
+    notification.innerHTML = `
+        <div class="${bgColor} text-white px-4 py-2 rounded-lg shadow-lg text-sm">
+            ${message}
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => notification.classList.remove('opacity-0'), 100);
+    setTimeout(() => {
+        notification.classList.add('opacity-0');
+        setTimeout(() => notification.remove(), 300);
+    }, duration);
+}
+
+// Answer submission function
+async function submitAnswerDirectly(optionId, optionLetter) {
+    const sessionCode = document.querySelector('[data-session-code]')?.getAttribute('data-session-code');
+    const teamId = document.querySelector('[data-team-id]')?.getAttribute('data-team-id');
+    
+    console.log('🎯 Submitting Answer - Session:', sessionCode, 'Team:', teamId, 'Option:', optionId);
+    
+    if (!sessionCode || !teamId) {
+        showGameNotification('⚠️ Session or team data missing. Please refresh the page.', 'error', 3000);
+        return;
+    }
+    
+    if (!optionId) {
+        showGameNotification('⚠️ Option ID missing. Please try again.', 'error', 3000);
+        return;
+    }
+
+    try {
+        const response = await fetch(`/learn/api/constitution/${sessionCode}/answer/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCsrfToken(),
+            },
+            body: `team_id=${teamId}&option_id=${optionId}`
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        if (result.success) {
+            showGameNotification(`✅ Answer ${optionLetter} submitted!`, 'success', 2000);
+            console.log('🔍 Answer submission successful');
+            
+            // Check for learning module data
+            if (result.learning_module) {
+                console.log('📚 Learning module found:', result.learning_module);
+                showLearningModule(result.learning_module);
+            } else {
+                console.log('🔍 No learning module, reloading page...');
+                // Refresh page to show next question
+                setTimeout(() => window.location.reload(), 800);
+            }
+        } else {
+            throw new Error(result.error || 'Unknown error');
+        }
+    } catch (error) {
+        console.error('Answer submission error:', error);
+        showGameNotification('❌ Failed to submit answer. Please try again.', 'error', 3000);
+    }
+}
+
+// Main answer selection function - THIS IS WHAT THE BUTTONS CALL
+function selectAnswer(optionId, optionLetter) {
+    console.log(`🎯 Answer selected: ${optionLetter} (ID: ${optionId})`);
+    submitAnswerDirectly(optionId, optionLetter);
+}
+
+// Initialize Constitution Challenge when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Make functions globally available
+    window.selectAnswer = selectAnswer;
+    window.showGameNotification = showGameNotification;
+    
+    // Learning Module Functions
+    window.showLearningModule = function(moduleData) {
+        const modal = document.getElementById('learning-module-modal');
+        
+        if (!modal) {
+            console.error('❌ Learning modal not found in DOM');
+            return;
+        }
+        
+        if (!moduleData) {
+            console.error('❌ Learning module data not provided');
+            return;
+        }
+        
+        console.log('📚 Showing learning module:', moduleData.title || 'Constitution Learning');
+        
+        // Show modal
+        modal.classList.remove('hidden');
+        
+        // Update content
+        const titleEl = modal.querySelector('#learning-title');
+        const contentEl = modal.querySelector('#learning-explanation');
+        const impactEl = modal.querySelector('#learning-impact');
+        
+        if (titleEl) titleEl.textContent = moduleData.title || 'Constitution Learning';
+        if (contentEl) contentEl.textContent = moduleData.explanation || 'Learn about this constitutional principle.';
+        if (impactEl) impactEl.textContent = moduleData.impact || 'This decision affects your nation\'s governance.';
+        
+        // Hide loading, show content
+        const loadingDiv = modal.querySelector('#learning-loading');
+        const contentDiv = modal.querySelector('#learning-content');
+        if (loadingDiv) loadingDiv.classList.add('hidden');
+        if (contentDiv) contentDiv.classList.remove('hidden');
+    };
+    
+    window.closeLearningModule = function() {
+        const modal = document.getElementById('learning-module-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            console.log('📚 Learning module closed, reloading page...');
+            setTimeout(() => window.location.reload(), 500);
+        }
+    };
+    
+    window.skipLearningModule = function() {
+        console.log('📚 Learning module skipped');
+        closeLearningModule();
+    };
+    
+    console.log('✅ Game functions loaded:');
+    console.log('  - selectAnswer:', typeof window.selectAnswer);
+    console.log('  - showLearningModule:', typeof window.showLearningModule);
+    console.log('  - toggleLeaderboard:', typeof window.toggleLeaderboard);
+    console.log('  - toggleHelp:', typeof window.toggleHelp);
+    
+    // Test that elements exist
+    const leaderboardPanel = document.getElementById('leaderboard-panel');
+    const helpModal = document.getElementById('help-modal');
+    console.log('🔍 DEBUG: Leaderboard panel found:', leaderboardPanel ? 'Yes' : 'No');
+    console.log('🔍 DEBUG: Help modal found:', helpModal ? 'Yes' : 'No');
+    
+    // Create reliable, simple toggle functions that override any issues
+    window.toggleHelp = function() {
+        console.log('✅ HELP: toggleHelp() called');
+        const modal = document.getElementById('help-modal');
+        if (modal) {
+            console.log('✅ HELP: Modal found, current classes:', modal.className);
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                console.log('✅ HELP: Modal opened');
+            } else {
+                modal.classList.add('hidden');
+                console.log('✅ HELP: Modal closed');
+            }
+        } else {
+            console.error('❌ HELP: Modal not found!');
+            alert('Help modal not found!'); // Visible error for debugging
+        }
+    };
+    
+    window.toggleLeaderboard = function() {
+        console.log('🏆 LEADERBOARD: Toggle function called');
+        
+        const panel = document.getElementById('leaderboard-panel');
+        const backdrop = document.getElementById('leaderboard-backdrop');
+        
+        if (!panel) {
+            console.error('❌ LEADERBOARD: Panel element not found!');
+            alert('Error: Leaderboard panel not found');
+            return;
+        }
+        
+        console.log('✅ LEADERBOARD: Panel found, current classes:', panel.className);
+        
+        const isHidden = panel.classList.contains('translate-x-full');
+        console.log('🔍 LEADERBOARD: Currently hidden?', isHidden);
+        
+        if (isHidden) {
+            // Open leaderboard
+            panel.classList.remove('translate-x-full');
+            panel.classList.add('translate-x-0');
+            if (backdrop) {
+                backdrop.classList.remove('hidden');
+            }
+            console.log('📂 LEADERBOARD: Panel opened - sliding in from right');
+            
+            // FORCE the transform with inline styles to override any conflicts
+            panel.style.transform = 'translateX(0)';
+            panel.style.visibility = 'visible';
+            
+            // Add temporary visual debug border - make it very obvious
+            panel.style.borderLeft = '8px solid #EF4444';
+            panel.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.5)';
+            
+            setTimeout(() => {
+                panel.style.borderLeft = '4px solid #EAB308'; // Yellow border
+                panel.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
+            }, 800);
+            
+            console.log('🔍 LEADERBOARD: Final panel transform:', panel.style.transform);
+            console.log('🔍 LEADERBOARD: Panel computed style:', window.getComputedStyle(panel).transform);
+            
+            // Load fresh leaderboard data
+            fetch('/learn/api/constitution/{{ session.session_code }}/leaderboard/')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('📊 LEADERBOARD: Fresh data loaded:', data);
+                })
+                .catch(error => console.error('⚠️ LEADERBOARD: Data load failed:', error));
+                
+        } else {
+            // Close leaderboard  
+            panel.classList.remove('translate-x-0');
+            panel.classList.add('translate-x-full');
+            panel.style.transform = 'translateX(100%)';
+            if (backdrop) {
+                backdrop.classList.add('hidden');
+            }
+            console.log('📁 LEADERBOARD: Panel closed - sliding out to right');
+        }
+    };
+    
+    console.log('✅ Direct toggle functions created and ready!');
+});
+</script>
+
+</body>
+</html>

@@ -17,3 +17,10 @@ django-cors-headers
 
 # HTTP Requests (if needed by games)
 requests
+
+# Caching
+redis>=4.5.0
+django-redis>=5.2.0
+
+# Performance monitoring (optional)
+# django-debug-toolbar  # For development only

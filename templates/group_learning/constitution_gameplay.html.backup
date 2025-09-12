@@ -1,0 +1,2025 @@
+{% extends 'group_learning/base.html' %}
+{% load group_learning_extras %}
+
+{% block title %}{{ team.team_name|default:"Constitution Challenge" }} - Build Your Country{% endblock %}
+
+{% block description %}Build your country by answering constitution questions about governance, leadership, and citizen rights. Collaborative team-based learning game.{% endblock %}
+
+{% block keywords %}constitution game, governance education, civics learning, team building, democracy, citizenship, educational games{% endblock %}
+
+{% block nav_items %}
+    <a href="{% url 'group_learning:session_detail' session.session_code %}" class="text-gray-600 hover:text-gray-900">← Session {{ session.session_code }}</a>
+    {% if team %}
+        <div class="flex items-center">
+            <span class="mr-2">{{ team.flag_emoji }}</span>
+            <span class="font-medium">{{ team.team_name }}</span>
+            <span class="ml-2 text-sm text-gray-600">Score: {{ team.total_score }}</span>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<!-- Skip link for accessibility -->
+<a href="#main-game" class="skip-link sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50">Skip to main game</a>
+
+<!-- Full-screen immersive game container -->
+<div class="constitution-game h-screen overflow-hidden" 
+     data-session-code="{{ session.session_code }}" 
+     data-team-id="{{ team.id|default:'' }}" 
+     data-csrf="{{ csrf_token }}">
+
+    {% if not team %}
+        <!-- Team Setup Required -->
+        <div class="flex items-center justify-center h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+            <div class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-4">
+                <div class="text-6xl mb-4 animate-bounce">🏛️</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Team Setup Required</h2>
+                <p class="text-gray-600 mb-6">You need to join or create a team to start building your constitutional democracy.</p>
+                <a href="{% url 'group_learning:constitution_join' session.session_code %}" 
+                   class="inline-block bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 font-medium">
+                    Join Team →
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <!-- Immersive Full-Screen Game Layout -->
+        <div class="relative h-screen bg-gradient-to-b from-blue-400 via-blue-200 to-green-100 overflow-hidden" id="main-game">
+            
+            <!-- Floating Top Bar -->
+            <div class="absolute top-0 left-0 right-0 z-40">
+                <div class="flex items-center justify-between p-4">
+                    <!-- Progress & Score -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Team Flag & Score -->
+                        <div class="bg-white bg-opacity-90 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-lg">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xl">{{ team.flag_emoji }}</span>
+                                <div class="text-sm font-bold text-gray-800">{{ team.team_name }}</div>
+                                <div class="text-lg font-bold text-blue-600">{{ team.total_score }}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="bg-white bg-opacity-90 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-lg">
+                            <div class="flex items-center space-x-2">
+                                <div class="text-sm font-medium text-gray-700">{{ team.questions_completed|add:1 }}/{{ session.game.constitution_questions.count }}</div>
+                                <div class="w-20 h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-green-500 to-blue-600 transition-all duration-700 ease-out" 
+                                         style="width: {{ progress_percentage }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex items-center space-x-2">
+                        <button onclick="toggleLeaderboard()" 
+                                class="bg-white bg-opacity-90 backdrop-blur-sm p-3 rounded-2xl shadow-lg hover:bg-opacity-100 transition-all duration-300 transform hover:scale-105"
+                                title="Show leaderboard">
+                            <svg class="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </button>
+                        
+                        <button onclick="toggleHelp()" 
+                                class="bg-white bg-opacity-90 backdrop-blur-sm p-3 rounded-2xl shadow-lg hover:bg-opacity-100 transition-all duration-300 transform hover:scale-105"
+                                title="Show help">
+                                title="Show game info">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+                
+                <!-- Collapsible Info Panel -->
+                <div id="info-panel" class="hidden border-t border-gray-200 bg-gray-50 px-4 py-3 transition-all duration-300">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                        <div>
+                            <span class="text-gray-500">Team:</span>
+                            <div class="font-medium">{{ team.team_name }}</div>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Rank:</span>
+                            <div class="font-medium">#{{ team_rank }}</div>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Level:</span>
+                            <div class="font-medium">{{ governance_level.description }}</div>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Population:</span>
+                            <div class="font-medium">{{ team.total_score|mul:100|default:"2000" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Immersive City Background -->
+            <div class="absolute inset-0 overflow-hidden">
+                {% include 'group_learning/components/city_canvas.html' %}
+            </div>
+            
+            <!-- Floating Question Panel -->
+            <div class="absolute inset-x-4 bottom-4 top-20 lg:inset-x-8 lg:bottom-8 lg:top-24 flex items-end justify-center">
+                <div class="w-full max-w-2xl">
+                    <!-- Mobile-First Question Card -->
+                    <div id="question-card" class="bg-white bg-opacity-95 backdrop-blur-lg rounded-2xl shadow-2xl border border-white border-opacity-20 overflow-hidden transform transition-all duration-500 hover:scale-[1.02]">
+                        {% include 'group_learning/components/question_overlay.html' %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Floating Governance Meters (Bottom Left) -->
+            <div class="hidden lg:block absolute bottom-8 left-8 pointer-events-auto">
+                {% include 'group_learning/components/governance_meters.html' %}
+            </div>
+            
+            <!-- Mobile Slide-up Menu -->
+            <div id="mobile-menu" class="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white border-t border-gray-200 shadow-xl transform translate-y-full transition-transform duration-300">
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-800">Game Stats</h3>
+                        <button onclick="toggleMobileMenu()" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Governance Meters -->
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        {% for metric, score in governance_scores.items %}
+                        <div>
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span class="text-gray-600 capitalize">{{ metric }}</span>
+                                <span class="font-medium text-gray-800">{{ score }}/10</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r
+                                    {% if metric == 'democracy' %}from-blue-400 to-blue-600
+                                    {% elif metric == 'fairness' %}from-green-400 to-green-600  
+                                    {% elif metric == 'freedom' %}from-purple-400 to-purple-600
+                                    {% elif metric == 'stability' %}from-orange-400 to-orange-600
+                                    {% endif %}" 
+                                    style="width: {{ score|mul:10 }}%"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+            
+            <!-- Slide-out Leaderboard Panel -->
+            <div id="leaderboard-panel" class="fixed inset-y-0 right-0 z-50 w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-300">
+                {% include 'group_learning/components/leaderboard.html' %}
+            </div>
+            
+            <!-- Help Modal -->
+            <div id="help-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+                <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">How to Play</h3>
+                        <button onclick="toggleHelp()" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="text-sm text-gray-600 space-y-3">
+                        <p>🏛️ <strong>Build Your Democracy:</strong> Answer questions about constitutional principles to shape your virtual country.</p>
+                        <p>📈 <strong>Earn Points:</strong> Each decision affects your governance scores and population growth.</p>
+                        <p>🏆 <strong>Compare Progress:</strong> Check the leaderboard to see how your nation compares to others.</p>
+                        <p>🏡 <strong>Watch Your City Grow:</strong> Your choices are reflected in the city visualization.</p>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+    {% endif %}
+</div>
+
+<!-- Learning Module Modal -->
+{% include 'group_learning/components/learning_modal.html' %}
+
+{% endblock %}
+
+{% block styles %}
+<style>
+/* Enhanced Immersive City Canvas Styles */
+.city-canvas-wrapper {
+    min-height: 500px;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 1.5rem;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+}
+
+/* Enhanced Governance Meters */
+.governance-meter-fill {
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    background: linear-gradient(90deg, #10b981, #059669, #047857);
+}
+
+.governance-meter-increase {
+    animation: meter-celebrate 0.8s ease-out;
+}
+
+@keyframes meter-celebrate {
+    0% { transform: scale(1); filter: brightness(1); }
+    30% { transform: scale(1.05); filter: brightness(1.2) hue-rotate(10deg); }
+    60% { transform: scale(1.02); filter: brightness(1.1) hue-rotate(-5deg); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* Standardized Button States */
+.btn-base {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-base:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.btn-base:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Primary Action Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.35);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px 0 rgba(59, 130, 246, 0.2);
+}
+
+/* Secondary Buttons */
+.btn-secondary {
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Interactive Answer Buttons */
+.interactive-answer-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    background: white;
+    border-width: 2px;
+}
+
+.interactive-answer-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.6s;
+    z-index: 1;
+}
+
+.interactive-answer-btn:hover:not(:disabled)::before {
+    left: 100%;
+}
+
+.interactive-answer-btn:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.interactive-answer-btn:active:not(:disabled) {
+    transform: translateY(-1px) scale(0.99);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Loading States */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #ffffff30;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Button Success State */
+.btn-success {
+    background: linear-gradient(135deg, #10b981, #047857) !important;
+    border-color: #059669 !important;
+}
+
+.btn-success::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+}
+
+/* Button Error State */
+.btn-error {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    border-color: #f87171 !important;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+/* City Animation Effects */
+@keyframes animate-float-slow {
+    0%, 100% { transform: translateX(0px) translateY(0px); }
+    33% { transform: translateX(10px) translateY(-5px); }
+    66% { transform: translateX(-5px) translateY(-3px); }
+}
+
+@keyframes animate-float-slow-reverse {
+    0%, 100% { transform: translateX(0px) translateY(0px); }
+    33% { transform: translateX(-8px) translateY(-3px); }
+    66% { transform: translateX(12px) translateY(-7px); }
+}
+
+@keyframes animate-float-medium {
+    0%, 100% { transform: translateX(0px) translateY(0px); }
+    50% { transform: translateX(15px) translateY(-8px); }
+}
+
+.animate-float-slow {
+    animation: animate-float-slow 8s ease-in-out infinite;
+}
+
+.animate-float-slow-reverse {
+    animation: animate-float-slow-reverse 10s ease-in-out infinite;
+}
+
+.animate-float-medium {
+    animation: animate-float-medium 6s ease-in-out infinite;
+}
+
+@keyframes animate-twinkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.8); }
+}
+
+@keyframes animate-twinkle-delayed {
+    0%, 100% { opacity: 0.7; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+.animate-twinkle {
+    animation: animate-twinkle 2s ease-in-out infinite;
+}
+
+.animate-twinkle-delayed {
+    animation: animate-twinkle-delayed 2.5s ease-in-out infinite;
+}
+
+@keyframes animate-pulse-delayed {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.animate-pulse-delayed {
+    animation: animate-pulse-delayed 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Enhanced Border Utilities */
+.border-l-16 { border-left-width: 16px; }
+.border-r-16 { border-right-width: 16px; }
+.border-b-24 { border-bottom-width: 24px; }
+.border-l-20 { border-left-width: 20px; }
+.border-r-20 { border-right-width: 20px; }
+.border-b-32 { border-bottom-width: 32px; }
+.border-l-24 { border-left-width: 24px; }
+.border-r-24 { border-right-width: 24px; }
+.border-b-20 { border-bottom-width: 20px; }
+
+/* Enhanced Spacing */
+.w-18 { width: 4.5rem; }
+.h-18 { height: 4.5rem; }
+.bottom-18 { bottom: 4.5rem; }
+
+/* Mobile-First Responsive Design */
+
+/* Mobile Base Styles (320px+) */
+@media (min-width: 320px) {
+    .city-canvas-wrapper {
+        min-height: 300px;
+    }
+    
+    /* Ensure touch targets are at least 44px */
+    button, .interactive-answer-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Mobile typography scaling */
+    .text-xs { font-size: 0.75rem; }
+    .text-sm { font-size: 0.875rem; }
+    .text-base { font-size: 1rem; }
+}
+
+/* Small Mobile (375px+) */
+@media (min-width: 375px) {
+    .city-canvas-wrapper {
+        min-height: 350px;
+    }
+}
+
+/* Large Mobile / Small Tablet (480px+) */
+@media (min-width: 480px) {
+    .city-canvas-wrapper {
+        min-height: 400px;
+    }
+    
+    /* Scale up city elements slightly */
+    .absolute.bottom-32 > div {
+        transform: scale(0.9);
+    }
+}
+
+/* Tablet Portrait (640px+) */
+@media (min-width: 640px) {
+    .city-canvas-wrapper {
+        min-height: 450px;
+    }
+    
+    /* Allow side-by-side layout for stats */
+    #mobile-menu .grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* Tablet Landscape (768px+) */
+@media (min-width: 768px) {
+    .city-canvas-wrapper {
+        min-height: 500px;
+    }
+    
+    /* Larger mobile menu for tablets */
+    #mobile-menu {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    /* Scale city elements to normal */
+    .absolute.bottom-32 > div {
+        transform: scale(1);
+    }
+}
+
+/* Small Desktop (1024px+) */
+@media (min-width: 1024px) {
+    .city-canvas-wrapper {
+        min-height: 600px;
+    }
+    
+    /* Desktop-specific enhancements */
+    .interactive-answer-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+    }
+}
+
+/* Large Desktop (1280px+) */
+@media (min-width: 1280px) {
+    .city-canvas-wrapper {
+        min-height: 700px;
+    }
+    
+    /* Enhanced city details for large screens */
+    .absolute.bottom-32 > div {
+        transform: scale(1.1);
+    }
+}
+
+/* Ultra-wide / 4K (1536px+) */
+@media (min-width: 1536px) {
+    .city-canvas-wrapper {
+        min-height: 800px;
+    }
+    
+    .absolute.bottom-32 > div {
+        transform: scale(1.2);
+    }
+}
+
+/* Orientation-specific styles */
+@media (orientation: landscape) and (max-height: 600px) {
+    /* Landscape mobile phones */
+    .city-canvas-wrapper {
+        min-height: 250px;
+    }
+    
+    #mobile-menu {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+}
+
+/* High DPI / Retina displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Sharper borders and shadows for high DPI */
+    .border {
+        border-width: 0.5px;
+    }
+    
+    .shadow-lg {
+        box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.1), 0 2px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .animate-pulse,
+    .animate-float-slow,
+    .animate-float-slow-reverse,
+    .animate-float-medium,
+    .animate-twinkle,
+    .animate-twinkle-delayed {
+        animation: none !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .bg-white.bg-opacity-95 {
+        background-color: white;
+        backdrop-filter: none;
+    }
+    
+    .border {
+        border-width: 2px;
+    }
+    
+    button {
+        border: 2px solid currentColor;
+    }
+    
+    /* Ensure sufficient contrast for text */
+    .text-gray-600 {
+        color: #374151;
+    }
+    
+    .text-gray-500 {
+        color: #4b5563;
+    }
+}
+
+/* Screen Reader Only Content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus Styles for Accessibility */
+.interactive-answer-btn:focus,
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 0 0 4px 4px;
+    z-index: 100;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Enhanced focus indicators */
+*:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+/* Better focus for interactive elements */
+.interactive-answer-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+    transform: translateY(-1px) scale(1.01);
+}
+
+/* ARIA live region styling */
+[aria-live] {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Full-screen immersion mode */
+.immersive-mode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+}
+
+.immersive-mode .city-canvas-wrapper {
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+}
+
+/* Enhanced Loading and Transition Effects */
+.fade-in-up {
+    animation: fade-in-up 0.8s ease-out;
+}
+
+@keyframes fade-in-up {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-in-right {
+    animation: slide-in-right 0.6s ease-out;
+}
+
+@keyframes slide-in-right {
+    0% {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Staggered Animation Entrance */
+.animate-slide-in-up {
+    animation: slide-in-up 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes slide-in-up {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Bounce attention animation */
+.animate-bounce-subtle {
+    animation: bounce-subtle 0.6s ease-in-out;
+}
+
+@keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+/* Progress bar fill animation */
+.progress-fill {
+    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: progress-shine 2s infinite;
+}
+
+@keyframes progress-shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Modal entrance animations */
+.modal-enter {
+    animation: modal-enter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modal-enter {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-exit {
+    animation: modal-exit 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modal-exit {
+    0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+}
+
+/* Notification slide animations */
+.notification-enter {
+    animation: notification-enter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes notification-enter {
+    0% {
+        opacity: 0;
+        transform: translateX(100%) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+.notification-exit {
+    animation: notification-exit 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes notification-exit {
+    0% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(100%) scale(0.9);
+    }
+}
+
+/* Success particle effect */
+.success-particles {
+    position: relative;
+    overflow: visible;
+}
+
+.success-particles::after {
+    content: '✨';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 1.2rem;
+    animation: success-float 1.5s ease-out;
+    pointer-events: none;
+}
+
+@keyframes success-float {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-20px) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.8);
+    }
+}
+
+/* Micro-interactions for UI elements */
+.interactive-scale:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interactive-scale:active {
+    transform: scale(0.95);
+}
+
+/* Smooth state transitions */
+.state-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Loading skeleton shimmer */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+{% load static %}
+<!-- Constitution Challenge JavaScript -->
+<script src="{% static 'js/constitution_challenge.js' %}"></script>
+
+<!-- Session-specific initialization -->
+<script>
+// Initialize Constitution Challenge when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // All game logic is now in the external JS file
+    if (typeof window.initializeConstitutionChallenge === 'function') {
+        window.initializeConstitutionChallenge();
+    } else {
+        console.error('Constitution Challenge JavaScript not loaded');
+    }
+});
+    
+    // Use Intersection Observer to load resources when city canvas becomes visible
+    const cityCanvas = document.getElementById('city-canvas');
+    if (!cityCanvas) {
+        console.log('⚠️ City canvas not found, skipping initialization');
+        return;
+    }
+    
+    const observer = new IntersectionObserver(async (entries) => {
+        const [entry] = entries;
+        
+        if (entry.isIntersecting) {
+            // Disconnect observer after first load
+            observer.disconnect();
+            
+            try {
+                // Show loading state
+                showLoadingState();
+                
+                console.log('🔄 Loading critical modules...');
+                await loadCriticalModules();
+                console.log('✅ Critical modules loaded');
+                
+                console.log('🔄 Loading enhanced modules...');
+                await loadEnhancedModules();
+                console.log('✅ Enhanced modules loaded');
+                
+                console.log('🎮 Initializing game controller...');
+                window.gameController = new ConstitutionGameController(sessionCode, teamId);
+                console.log('✅ Game controller initialized');
+                
+                hideLoadingState();
+                console.log('✅ All modules loaded and game initialized');
+                
+            } catch (error) {
+                console.error('❌ Failed to initialize game:', error);
+                showErrorState(`Initialization failed: ${error.message}`);
+            }
+        }
+    }, {
+        root: null,
+        rootMargin: '50px',
+        threshold: 0.1
+    });
+    
+    observer.observe(cityCanvas);
+});
+
+// Enhanced module loading with robust fallbacks
+const ModuleLoader = {
+    loaded: new Set(),
+    failed: new Set(),
+    maxRetries: 3,
+    retryDelay: 1000,
+    
+    async loadScript(src, retries = 0) {
+        if (this.loaded.has(src)) {
+            return Promise.resolve();
+        }
+        
+        if (this.failed.has(src) && retries >= this.maxRetries) {
+            throw new Error(`Failed to load ${src} after ${this.maxRetries} retries`);
+        }
+        
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.async = true;
+            
+            const timeout = setTimeout(() => {
+                cleanup();
+                console.warn(`⏱️ Timeout loading ${src}, attempt ${retries + 1}`);
+                if (retries < this.maxRetries) {
+                    setTimeout(() => {
+                        this.loadScript(src, retries + 1).then(resolve).catch(reject);
+                    }, this.retryDelay * (retries + 1));
+                } else {
+                    this.failed.add(src);
+                    reject(new Error(`Timeout loading ${src}`));
+                }
+            }, 10000); // 10 second timeout
+            
+            const cleanup = () => {
+                clearTimeout(timeout);
+                script.removeEventListener('load', onLoad);
+                script.removeEventListener('error', onError);
+            };
+            
+            const onLoad = () => {
+                cleanup();
+                this.loaded.add(src);
+                console.log(`✅ Loaded: ${src}`);
+                resolve();
+            };
+            
+            const onError = () => {
+                cleanup();
+                console.warn(`❌ Failed to load ${src}, attempt ${retries + 1}`);
+                if (retries < this.maxRetries) {
+                    setTimeout(() => {
+                        this.loadScript(src, retries + 1).then(resolve).catch(reject);
+                    }, this.retryDelay * (retries + 1));
+                } else {
+                    this.failed.add(src);
+                    reject(new Error(`Failed to load ${src}`));
+                }
+            };
+            
+            script.addEventListener('load', onLoad);
+            script.addEventListener('error', onError);
+            document.head.appendChild(script);
+        });
+    },
+    
+    async loadMultipleWithFallback(scripts, fallbackFn) {
+        const results = await Promise.allSettled(
+            scripts.map(src => this.loadScript(src))
+        );
+        
+        const failed = results
+            .map((result, index) => ({ result, src: scripts[index] }))
+            .filter(({ result }) => result.status === 'rejected')
+            .map(({ src }) => src);
+        
+        if (failed.length > 0) {
+            console.warn(`⚠️ Failed to load: ${failed.join(', ')}`);
+            if (fallbackFn) {
+                console.log('🔄 Executing fallback...');
+                await fallbackFn(failed);
+            }
+        }
+        
+        return results;
+    }
+};
+
+// Load critical modules with graceful degradation
+async function loadCriticalModules() {
+    const scripts = [
+        '/static/js/modules/audio-system.js',
+        '/static/js/modules/game-controller.js'
+    ];
+    
+    try {
+        await ModuleLoader.loadMultipleWithFallback(scripts, async (failed) => {
+            // Fallback for audio system
+            if (failed.includes('/static/js/modules/audio-system.js')) {
+                console.log('🔊 Using fallback audio system');
+                window.AudioSystem = {
+                    play: (sound) => console.log(`🔊 Would play: ${sound}`),
+                    stop: () => console.log('🔊 Audio stopped'),
+                    toggle: () => console.log('🔊 Audio toggled')
+                };
+            }
+            
+            // Fallback for game controller
+            if (failed.includes('/static/js/modules/game-controller.js')) {
+                console.log('🎮 Using fallback game controller');
+                window.ConstitutionGameController = class {
+                    constructor(sessionCode, teamId) {
+                        this.sessionCode = sessionCode;
+                        this.teamId = teamId;
+                        console.log('🎮 Fallback controller initialized');
+                    }
+                    
+                    selectAnswer(optionId, optionLetter) {
+                        console.log('🎮 Fallback answer submission');
+                        submitAnswerDirectly(optionId, optionLetter);
+                    }
+                    
+                    destroy() {
+                        console.log('🎮 Fallback controller destroyed');
+                    }
+                };
+            }
+        });
+        
+        console.log('🔧 Critical modules processing completed');
+    } catch (error) {
+        console.error('❌ Critical module loading failed:', error);
+        // Even if all critical modules fail, we have fallbacks
+        showNotification('⚠️ Running in basic mode', 'info', 3000);
+    }
+}
+
+// Load enhanced modules with graceful fallbacks
+async function loadEnhancedModules() {
+    const scripts = [
+        '/static/js/city-assets.js',
+        '/static/js/city-renderer.js'
+    ];
+    
+    try {
+        console.log('📦 Loading enhanced modules...');
+        
+        await ModuleLoader.loadMultipleWithFallback(scripts, async (failed) => {
+            if (failed.length > 0) {
+                console.log('🎨 Using static city rendering');
+                showNotification('🎨 City running in compatibility mode', 'info', 2000);
+                
+                // Keep the existing CSS-based city canvas
+                const cityCanvas = document.getElementById('city-canvas');
+                if (cityCanvas && !cityCanvas.querySelector('.absolute')) {
+                    cityCanvas.innerHTML = `
+                        <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-blue-300 to-green-300">
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">🏙️</div>
+                                <div class="text-white font-bold">Your City</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        });
+        
+        // Try to load GSAP with fallback
+        try {
+            console.log('🎬 Loading GSAP...');
+            await loadGSAP();
+            console.log('✅ GSAP loaded');
+        } catch (error) {
+            console.log('🎬 GSAP failed, using CSS animations');
+        }
+        
+        // Try enhanced renderer
+        try {
+            console.log('🏗️ Loading enhanced renderer...');
+            await ModuleLoader.loadScript('/static/js/city-renderer-enhanced.js');
+            console.log('✅ Enhanced renderer loaded');
+        } catch (error) {
+            console.log('🏗️ Enhanced renderer failed, using basic rendering');
+        }
+        
+    } catch (error) {
+        console.error('❌ Enhanced module loading failed:', error);
+        showNotification('🎨 Running in basic graphics mode', 'info', 3000);
+    }
+}
+
+function showLoadingState() {
+    const cityCanvas = document.getElementById('city-canvas');
+    if (cityCanvas) {
+        cityCanvas.innerHTML = `
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="text-center">
+                    <div class="animate-spin text-4xl mb-2">🏗️</div>
+                    <div class="text-sm text-gray-600">Loading immersive experience...</div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function hideLoadingState() {
+    // Loading state will be replaced by city renderer
+    console.log('🎮 Loading complete');
+}
+
+function showErrorState(message) {
+    const cityCanvas = document.getElementById('city-canvas');
+    if (cityCanvas) {
+        cityCanvas.innerHTML = `
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="text-center text-red-600">
+                    <div class="text-4xl mb-2">⚠️</div>
+                    <div class="text-sm">Failed to load: ${message}</div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Global functions for template compatibility
+function selectAnswer(optionId, optionLetter) {
+    console.log(`🎯 Answer selected: ${optionLetter} (ID: ${optionId})`);
+    
+    if (window.gameController) {
+        console.log('✅ Using advanced game controller');
+        window.gameController.selectAnswer(optionId, optionLetter);
+    } else {
+        console.log('⚡ Using fallback answer submission');
+        submitAnswerDirectly(optionId, optionLetter);
+    }
+}
+
+// Enhanced answer submission with detailed feedback states
+async function submitAnswerDirectly(optionId, optionLetter) {
+    const sessionCode = document.querySelector('[data-session-code]')?.getAttribute('data-session-code');
+    const teamId = document.querySelector('[data-team-id]')?.getAttribute('data-team-id');
+    
+    // Detailed validation with specific error messages
+    if (!sessionCode) {
+        showContextualError('Session Error', 'Unable to find session information. Please refresh the page.', 'refresh');
+        return;
+    }
+    
+    if (!teamId) {
+        showContextualError('Team Error', 'You are not assigned to a team. Please return to the session page.', 'return');
+        return;
+    }
+    
+    console.log(`📤 Submitting answer ${optionLetter} (ID: ${optionId}) for team ${teamId}`);
+    
+    // Get all buttons and selected button
+    const buttons = document.querySelectorAll('.interactive-answer-btn');
+    const selectedBtn = document.querySelector(`[data-option-id="${optionId}"]`);
+    
+    // Set loading states
+    setButtonsLoadingState(buttons, selectedBtn, optionLetter);
+    
+    try {
+        // Network timeout handling
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+        
+        const response = await fetch(`/learn/api/constitution/${sessionCode}/answer/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCsrfToken(),
+            },
+            body: `team_id=${teamId}&option_id=${optionId}`,
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        console.log(`📊 Response status: ${response.status}`);
+        
+        // Handle different HTTP status codes
+        if (response.status === 429) {
+            throw new Error('Too many requests. Please wait a moment before trying again.');
+        }
+        
+        if (response.status === 403) {
+            throw new Error('You do not have permission to submit answers for this team.');
+        }
+        
+        if (response.status === 404) {
+            throw new Error('Question not found. The session may have ended.');
+        }
+        
+        if (!response.ok) {
+            throw new Error(`Server error (${response.status}). Please try again.`);
+        }
+        
+        const result = await response.json();
+        console.log('📊 Response data:', result);
+        
+        hideNotifications();
+        
+        if (result.success) {
+            // Show success state
+            setButtonSuccessState(selectedBtn, optionLetter);
+            showSuccessNotification('Answer submitted successfully! Loading next question...', result);
+            
+            // Reload page after success animation
+            setTimeout(() => {
+                console.log('🔄 Reloading page for next question...');
+                window.location.reload();
+            }, 2500);
+            
+        } else {
+            throw new Error(result.error || result.message || 'Submission was not accepted');
+        }
+        
+    } catch (error) {
+        console.error('❌ Failed to submit answer:', error);
+        hideNotifications();
+        
+        // Handle specific error types
+        if (error.name === 'AbortError') {
+            showContextualError('Timeout Error', 'The request took too long. Please check your connection and try again.', 'retry');
+        } else if (error.message.includes('Failed to fetch')) {
+            showContextualError('Connection Error', 'Unable to connect to the server. Please check your internet connection.', 'retry');
+        } else {
+            showContextualError('Submission Error', error.message, 'retry');
+        }
+        
+        // Reset to normal state
+        resetButtonsState(buttons, selectedBtn);
+    }
+}
+
+// Enhanced button state management
+function setButtonsLoadingState(buttons, selectedBtn, optionLetter) {
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('opacity-60');
+        btn.style.pointerEvents = 'none';
+    });
+    
+    if (selectedBtn) {
+        selectedBtn.classList.add('btn-loading', 'ring-4', 'ring-blue-500');
+        updateAnswerStatus(`Submitting option ${optionLetter}...`, 'assertive');
+    }
+}
+
+function setButtonSuccessState(selectedBtn, optionLetter) {
+    if (selectedBtn) {
+        selectedBtn.classList.remove('btn-loading');
+        selectedBtn.classList.add('btn-success');
+        updateAnswerStatus(`Successfully submitted option ${optionLetter}`, 'polite');
+    }
+}
+
+function resetButtonsState(buttons, selectedBtn) {
+    buttons.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('opacity-60');
+        btn.style.pointerEvents = 'auto';
+    });
+    
+    if (selectedBtn) {
+        selectedBtn.classList.remove('btn-loading', 'btn-error', 'ring-4', 'ring-blue-500', 'ring-red-500');
+    }
+    
+    updateAnswerStatus('Ready to select an answer', 'polite');
+}
+
+function setButtonErrorState(selectedBtn) {
+    if (selectedBtn) {
+        selectedBtn.classList.remove('btn-loading');
+        selectedBtn.classList.add('btn-error', 'ring-4', 'ring-red-500');
+    }
+}
+
+// Contextual error display
+function showContextualError(title, message, actionType) {
+    const actions = {
+        'refresh': '<button onclick="window.location.reload()" class="btn-primary btn-base mt-3">Refresh Page</button>',
+        'return': '<button onclick="window.history.back()" class="btn-secondary btn-base mt-3">Return to Session</button>',
+        'retry': '<button onclick="closeErrorModal()" class="btn-primary btn-base mt-3">Try Again</button>'
+    };
+    
+    const errorModal = document.createElement('div');
+    errorModal.id = 'error-modal';
+    errorModal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50';
+    errorModal.innerHTML = `
+        <div class="bg-white rounded-xl p-6 max-w-md mx-4 text-center">
+            <div class="text-red-500 text-4xl mb-4">⚠️</div>
+            <h3 class="text-lg font-bold text-gray-800 mb-2">${title}</h3>
+            <p class="text-gray-600 mb-4">${message}</p>
+            ${actions[actionType] || actions.retry}
+        </div>
+    `;
+    
+    document.body.appendChild(errorModal);
+}
+
+function closeErrorModal() {
+    const modal = document.getElementById('error-modal');
+    if (modal) {
+        document.body.removeChild(modal);
+    }
+}
+
+// Success notification with details
+function showSuccessNotification(message, result) {
+    let details = '';
+    if (result.score_change) {
+        details = `<div class="text-sm text-green-700 mt-1">+${result.score_change} points earned!</div>`;
+    }
+    
+    showNotification(`✅ ${message}${details}`, 'success', 3000);
+}
+
+// Update screen reader status
+function updateAnswerStatus(message, priority = 'polite') {
+    const statusElement = document.getElementById('answer-status');
+    if (statusElement) {
+        statusElement.setAttribute('aria-live', priority);
+        statusElement.textContent = message;
+    }
+}
+
+// Get CSRF token
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+           document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+}
+
+// Notification system for better UX
+let activeNotifications = [];
+
+function showNotification(message, type = 'info', duration = 3000) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg backdrop-blur-sm transition-all duration-300 transform translate-x-full ${
+        type === 'success' ? 'bg-green-500 text-white' :
+        type === 'error' ? 'bg-red-500 text-white' :
+        type === 'info' ? 'bg-blue-500 text-white' : 'bg-gray-700 text-white'
+    }`;
+    notification.textContent = message;
+    notification.dataset.notificationType = type;
+    
+    document.body.appendChild(notification);
+    activeNotifications.push(notification);
+    
+    // Animate in
+    requestAnimationFrame(() => {
+        notification.style.transform = 'translateX(0)';
+    });
+    
+    // Auto-remove after duration (if duration > 0)
+    if (duration > 0) {
+        setTimeout(() => {
+            removeNotification(notification);
+        }, duration);
+    }
+}
+
+function removeNotification(notification) {
+    if (notification && document.body.contains(notification)) {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+                activeNotifications = activeNotifications.filter(n => n !== notification);
+            }
+        }, 300);
+    }
+}
+
+function hideNotifications() {
+    activeNotifications.forEach(notification => {
+        removeNotification(notification);
+    });
+}
+
+function toggleAudio() {
+    if (window.gameController) {
+        window.gameController.toggleAudio();
+    }
+}
+
+function testAudio(soundName) {
+    if (window.gameController) {
+        window.gameController.testAudio(soundName);
+    }
+}
+
+// UI state management
+let isMobileMenuOpen = false;
+let isLeaderboardOpen = false;
+let isFullScreen = false;
+let isInfoPanelOpen = false;
+let isActionsMenuOpen = false;
+
+// Mobile menu toggle
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const overlay = document.getElementById('modal-overlay');
+    
+    if (!mobileMenu) return;
+    
+    isMobileMenuOpen = !isMobileMenuOpen;
+    
+    if (isMobileMenuOpen) {
+        mobileMenu.style.transform = 'translateY(0)';
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    } else {
+        mobileMenu.style.transform = 'translateY(100%)';
+        overlay.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Leaderboard panel toggle
+function toggleLeaderboard() {
+    const leaderboardPanel = document.getElementById('leaderboard-panel');
+    const overlay = document.getElementById('modal-overlay');
+    
+    if (!leaderboardPanel) return;
+    
+    isLeaderboardOpen = !isLeaderboardOpen;
+    
+    if (isLeaderboardOpen) {
+        leaderboardPanel.style.transform = 'translateX(0)';
+        overlay.classList.remove('hidden');
+        if (window.innerWidth < 1024) { // Only lock scroll on mobile
+            document.body.style.overflow = 'hidden';
+        }
+        // Load leaderboard data
+        refreshLeaderboard();
+    } else {
+        leaderboardPanel.style.transform = 'translateX(100%)';
+        overlay.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Progressive disclosure functions
+function toggleInfoPanel() {
+    const infoPanel = document.getElementById('info-panel');
+    if (!infoPanel) return;
+    
+    isInfoPanelOpen = !isInfoPanelOpen;
+    
+    if (isInfoPanelOpen) {
+        infoPanel.classList.remove('hidden');
+        infoPanel.style.maxHeight = infoPanel.scrollHeight + 'px';
+    } else {
+        infoPanel.style.maxHeight = '0';
+        setTimeout(() => infoPanel.classList.add('hidden'), 300);
+    }
+}
+
+function toggleActionsMenu() {
+    const actionsMenu = document.getElementById('actions-menu');
+    if (!actionsMenu) return;
+    
+    isActionsMenuOpen = !isActionsMenuOpen;
+    
+    if (isActionsMenuOpen) {
+        actionsMenu.classList.remove('hidden');
+        // Close other menus
+        if (isInfoPanelOpen) toggleInfoPanel();
+    } else {
+        actionsMenu.classList.add('hidden');
+    }
+}
+
+// Close all modals and menus
+function closeAllModals() {
+    if (isMobileMenuOpen) toggleMobileMenu();
+    if (isLeaderboardOpen) toggleLeaderboard();
+    if (isActionsMenuOpen) toggleActionsMenu();
+    if (isInfoPanelOpen) toggleInfoPanel();
+}
+
+// Help/onboarding function
+function showHelp() {
+    showNotification('💡 Keyboard shortcuts: 1-9 to select answers, Ctrl+L for leaderboard, ESC to close', 'info', 8000);
+}
+
+// Full-screen immersive mode toggle (desktop only)
+function toggleFullScreen() {
+    const gameContainer = document.getElementById('game-container');
+    const fullscreenText = document.getElementById('fullscreen-text');
+    
+    if (!gameContainer || !fullscreenText) {
+        console.warn('Game container or fullscreen text not found');
+        return;
+    }
+    
+    if (!isFullScreen) {
+        // Enter full screen
+        gameContainer.classList.add('immersive-mode');
+        document.body.style.overflow = 'hidden';
+        fullscreenText.textContent = '🚪';
+        isFullScreen = true;
+        
+        // Add fade-in animation
+        gameContainer.classList.add('fade-in-up');
+        
+        showNotification('🎮 Entered immersive mode! Press ESC to exit', 'success', 4000);
+        
+    } else {
+        // Exit full screen
+        gameContainer.classList.remove('immersive-mode', 'fade-in-up');
+        document.body.style.overflow = 'auto';
+        fullscreenText.textContent = '🔍';
+        isFullScreen = false;
+        
+        showNotification('🎮 Exited immersive mode', 'info', 2000);
+    }
+}
+
+// Placeholder function for leaderboard refresh
+function refreshLeaderboard() {
+    console.log('📊 Refreshing leaderboard...');
+    // This will be implemented with actual leaderboard logic
+    showNotification('📊 Leaderboard updated', 'info', 1500);
+}
+
+// Comprehensive keyboard navigation and accessibility
+document.addEventListener('keydown', (e) => {
+    // ESC key handling
+    if (e.key === 'Escape') {
+        if (isFullScreen) {
+            toggleFullScreen();
+        } else if (isMobileMenuOpen || isLeaderboardOpen) {
+            closeAllModals();
+        }
+        return;
+    }
+    
+    // Number keys for answer selection (1-4)
+    const numberKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    if (numberKeys.includes(e.key)) {
+        const optionIndex = parseInt(e.key) - 1;
+        const answerButtons = document.querySelectorAll('.interactive-answer-btn');
+        if (answerButtons[optionIndex]) {
+            e.preventDefault();
+            answerButtons[optionIndex].click();
+            announceToScreenReader(`Selected option ${e.key}`);
+        }
+        return;
+    }
+    
+    // Spacebar and Enter for focused answer buttons
+    if ((e.key === ' ' || e.key === 'Enter') && e.target.classList.contains('interactive-answer-btn')) {
+        e.preventDefault();
+        e.target.click();
+        const optionLetter = e.target.getAttribute('data-option-letter');
+        announceToScreenReader(`Selected option ${optionLetter}`);
+        return;
+    }
+    
+    // Tab navigation enhancement for answer options
+    if (e.key === 'Tab') {
+        const answerOptions = document.getElementById('answer-options');
+        if (answerOptions && answerOptions.contains(e.target)) {
+            // Focus management within answer options
+            const buttons = Array.from(answerOptions.querySelectorAll('.interactive-answer-btn'));
+            const currentIndex = buttons.indexOf(e.target);
+            
+            if (e.shiftKey) {
+                // Shift+Tab (backwards)
+                if (currentIndex === 0) {
+                    // Let it bubble up to previous focusable element
+                    return;
+                }
+            } else {
+                // Tab (forwards)
+                if (currentIndex === buttons.length - 1) {
+                    // Let it bubble up to next focusable element
+                    return;
+                }
+            }
+        }
+    }
+    
+    // Arrow key navigation within answer options
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        const answerButtons = Array.from(document.querySelectorAll('.interactive-answer-btn'));
+        const currentIndex = answerButtons.indexOf(e.target);
+        
+        if (currentIndex !== -1) {
+            e.preventDefault();
+            let nextIndex;
+            
+            switch (e.key) {
+                case 'ArrowUp':
+                case 'ArrowLeft':
+                    nextIndex = currentIndex > 0 ? currentIndex - 1 : answerButtons.length - 1;
+                    break;
+                case 'ArrowDown':
+                case 'ArrowRight':
+                    nextIndex = currentIndex < answerButtons.length - 1 ? currentIndex + 1 : 0;
+                    break;
+            }
+            
+            answerButtons[nextIndex].focus();
+            const optionLetter = answerButtons[nextIndex].getAttribute('data-option-letter');
+            announceToScreenReader(`Focused on option ${optionLetter}`);
+        }
+    }
+    
+    // Quick shortcuts
+    switch (e.key.toLowerCase()) {
+        case 'l':
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                toggleLeaderboard();
+                announceToScreenReader('Toggled leaderboard');
+            }
+            break;
+        case 'm':
+            if ((e.ctrlKey || e.metaKey) && window.innerWidth < 1024) {
+                e.preventDefault();
+                toggleMobileMenu();
+                announceToScreenReader('Toggled mobile menu');
+            }
+            break;
+        case 'f':
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                toggleFullScreen();
+                announceToScreenReader(isFullScreen ? 'Entered fullscreen' : 'Exited fullscreen');
+            }
+            break;
+    }
+});
+
+// Screen reader announcement helper
+function announceToScreenReader(message, priority = 'polite') {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', priority);
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.className = 'sr-only';
+    announcement.textContent = message;
+    
+    document.body.appendChild(announcement);
+    
+    // Remove after announcement
+    setTimeout(() => {
+        if (document.body.contains(announcement)) {
+            document.body.removeChild(announcement);
+        }
+    }, 1000);
+}
+
+// Focus management utilities
+const FocusManager = {
+    previousFocus: null,
+    
+    trapFocus(container) {
+        const focusableElements = container.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstFocusable = focusableElements[0];
+        const lastFocusable = focusableElements[focusableElements.length - 1];
+        
+        container.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                if (e.shiftKey) {
+                    if (document.activeElement === firstFocusable) {
+                        e.preventDefault();
+                        lastFocusable.focus();
+                    }
+                } else {
+                    if (document.activeElement === lastFocusable) {
+                        e.preventDefault();
+                        firstFocusable.focus();
+                    }
+                }
+            }
+        });
+        
+        // Focus first element
+        if (firstFocusable) {
+            firstFocusable.focus();
+        }
+    },
+    
+    saveFocus() {
+        this.previousFocus = document.activeElement;
+    },
+    
+    restoreFocus() {
+        if (this.previousFocus && this.previousFocus.focus) {
+            this.previousFocus.focus();
+        }
+    }
+};
+
+// Enhance existing modal functions with focus management
+const originalToggleMobileMenu = toggleMobileMenu;
+toggleMobileMenu = function() {
+    if (!isMobileMenuOpen) {
+        FocusManager.saveFocus();
+    }
+    
+    originalToggleMobileMenu();
+    
+    if (isMobileMenuOpen) {
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenu) {
+            FocusManager.trapFocus(mobileMenu);
+        }
+    } else {
+        FocusManager.restoreFocus();
+    }
+};
+
+const originalToggleLeaderboard = toggleLeaderboard;
+toggleLeaderboard = function() {
+    if (!isLeaderboardOpen) {
+        FocusManager.saveFocus();
+    }
+    
+    originalToggleLeaderboard();
+    
+    if (isLeaderboardOpen) {
+        const leaderboardPanel = document.getElementById('leaderboard-panel');
+        if (leaderboardPanel) {
+            FocusManager.trapFocus(leaderboardPanel);
+        }
+    } else {
+        FocusManager.restoreFocus();
+    }
+};
+
+// Enhanced Click Event Handling and Outside Click Management
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎯 Setting up answer button event listeners...');
+    
+    // Fallback event listeners for answer buttons
+    function setupAnswerButtons() {
+        const answerButtons = document.querySelectorAll('.interactive-answer-btn');
+        console.log(`🔍 Found ${answerButtons.length} answer buttons`);
+        
+        answerButtons.forEach((button, index) => {
+            const optionId = button.getAttribute('data-option-id');
+            const optionText = button.querySelector('.font-semibold')?.textContent;
+            const optionLetter = button.querySelector('.w-8.h-8')?.textContent || String.fromCharCode(65 + index);
+            
+            console.log(`🎯 Setting up button ${index + 1}: ${optionLetter} (ID: ${optionId})`);
+            
+            // Remove any existing listeners
+            button.removeEventListener('click', handleAnswerClick);
+            
+            // Add click event listener
+            button.addEventListener('click', function(e) {
+                console.log(`🖱️ Button clicked: ${optionLetter} (ID: ${optionId})`);
+                e.preventDefault();
+                e.stopPropagation();
+                handleAnswerClick(optionId, optionLetter);
+            });
+            
+            // Enhanced hover effects
+            button.addEventListener('mouseenter', function() {
+                if (!button.disabled) {
+                    button.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                    button.style.transform = 'translateY(-2px) scale(1.01)';
+                    button.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                }
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                if (!button.disabled) {
+                    button.style.transform = 'translateY(0) scale(1)';
+                    button.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                }
+            });
+        });
+    }
+    
+    function handleAnswerClick(optionId, optionLetter) {
+        console.log(`🎯 Handling answer click: ${optionLetter} (ID: ${optionId})`);
+        selectAnswer(optionId, optionLetter);
+    }
+    
+    // Setup buttons immediately
+    setupAnswerButtons();
+    
+    // Re-setup buttons if DOM changes (for dynamic content)
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                const hasAnswerButtons = Array.from(mutation.addedNodes).some(node => 
+                    node.nodeType === 1 && 
+                    (node.classList?.contains('interactive-answer-btn') || 
+                     node.querySelector?.('.interactive-answer-btn'))
+                );
+                if (hasAnswerButtons) {
+                    console.log('🔄 DOM changed, re-setting up answer buttons...');
+                    setTimeout(setupAnswerButtons, 100);
+                }
+            }
+        });
+    });
+    
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    
+    // Click outside handlers for all menus
+    document.addEventListener('click', function(event) {
+        // Actions menu click outside
+        const actionsMenu = document.getElementById('actions-menu');
+        const actionsButton = event.target.closest('[onclick*="toggleActionsMenu"]');
+        
+        if (actionsMenu && !actionsMenu.contains(event.target) && !actionsButton && isActionsMenuOpen) {
+            toggleActionsMenu();
+        }
+        
+        // Info panel click outside (only if clicked outside the toggle button area)
+        const infoPanel = document.getElementById('info-panel');
+        const infoButton = event.target.closest('[onclick*="toggleInfoPanel"]');
+        const controlBar = document.querySelector('.sticky.top-0');
+        
+        if (infoPanel && !controlBar?.contains(event.target) && isInfoPanelOpen) {
+            toggleInfoPanel();
+        }
+        
+        // Close error modals when clicking outside
+        const errorModal = document.getElementById('error-modal');
+        const errorContent = errorModal?.querySelector('.bg-white');
+        
+        if (errorModal && !errorContent?.contains(event.target)) {
+            closeErrorModal();
+        }
+    });
+    
+    // Smooth scroll behavior for focus changes
+    document.addEventListener('focusin', function(event) {
+        if (event.target.classList.contains('interactive-answer-btn')) {
+            event.target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'nearest'
+            });
+        }
+    });
+    
+    // Enhanced loading states with staggered animations
+    function animateLoadingSequence() {
+        const elements = document.querySelectorAll('[data-animate-in]');
+        elements.forEach((el, index) => {
+            setTimeout(() => {
+                el.classList.add('animate-slide-in-up');
+            }, index * 100);
+        });
+    }
+    
+    // Call on page load
+    setTimeout(animateLoadingSequence, 300);
+});
+
+// Test function to verify JavaScript is working
+function testJavaScript() {
+    console.log('✅ JavaScript is working!');
+    showNotification('✅ JavaScript is working!', 'success', 2000);
+    return true;
+}
+
+// Debug function to check button states
+function debugButtons() {
+    const buttons = document.querySelectorAll('.interactive-answer-btn');
+    console.log(`🔍 Debug: Found ${buttons.length} answer buttons`);
+    buttons.forEach((btn, i) => {
+        console.log(`Button ${i + 1}:`, {
+            disabled: btn.disabled,
+            onclick: btn.onclick,
+            optionId: btn.getAttribute('data-option-id'),
+            visible: btn.offsetWidth > 0 && btn.offsetHeight > 0,
+            clickable: !btn.disabled && btn.style.pointerEvents !== 'none'
+        });
+    });
+}
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (window.gameController) {
+        window.gameController.destroy();
+    }
+});
+
+// New UI Functions for Redesigned Layout
+function toggleLeaderboard() {
+    const panel = document.getElementById('leaderboard-panel');
+    if (!panel) return;
+    
+    if (panel.classList.contains('translate-x-full')) {
+        panel.classList.remove('translate-x-full');
+    } else {
+        panel.classList.add('translate-x-full');
+    }
+}
+
+function toggleHelp() {
+    const modal = document.getElementById('help-modal');
+    if (!modal) return;
+    
+    if (modal.classList.contains('hidden')) {
+        modal.classList.remove('hidden');
+    } else {
+        modal.classList.add('hidden');
+    }
+}
+
+// Enhanced notification system with animations
+function showGameNotification(message, type = 'info', duration = 3000) {
+    // Remove existing notifications
+    const existing = document.querySelectorAll('.game-notification');
+    existing.forEach(el => el.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `game-notification fixed top-20 right-4 z-50 transform translate-x-full transition-transform duration-300`;
+    
+    const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+    
+    notification.innerHTML = `
+        <div class="${bgColor} text-white px-6 py-3 rounded-2xl shadow-xl flex items-center space-x-2">
+            <span class="text-sm font-medium">${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Animate out
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => notification.remove(), 300);
+    }, duration);
+}
+
+// Make debug functions globally available
+window.testJavaScript = testJavaScript;
+window.debugButtons = debugButtons;\nwindow.toggleLeaderboard = toggleLeaderboard;\nwindow.toggleHelp = toggleHelp;\nwindow.showGameNotification = showGameNotification;
+</script>
+{% endblock %}

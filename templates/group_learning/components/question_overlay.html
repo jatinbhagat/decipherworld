@@ -1,0 +1,83 @@
+<!-- Interactive Question Overlay Component -->
+<div class="question-card-container" role="main" aria-label="Constitution Challenge Question">
+    
+    {% if current_question %}
+        <!-- Compact Question Header -->
+        <header class="bg-gradient-to-r from-indigo-600 to-purple-700 text-white p-3 rounded-t-xl">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="text-xl" aria-hidden="true">🏛️</div>
+                    <div>
+                        <h1 class="text-lg font-bold" id="question-category">{{ current_question.get_category_display }}</h1>
+                        <p class="text-indigo-100 text-xs">Question #{{ current_question.order }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm" role="status" aria-label="Game mode">
+                        <span aria-hidden="true">🎯</span> Build Nation
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Compact Question Content -->
+        <div class="flex-1 p-3 overflow-y-auto min-h-0" role="region" aria-labelledby="question-category">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 mb-4" role="article">
+                <h2 class="text-base font-bold text-gray-800 mb-2" id="question-text">{{ current_question.question_text }}</h2>
+                {% if current_question.scenario_description %}
+                    <div class="text-gray-600 leading-snug text-sm" id="scenario-description" aria-describedby="question-text">
+                        {{ current_question.scenario_description }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            {% if current_question.options.exists %}
+                <!-- Interactive Answer Options -->
+                <div class="space-y-2" id="answer-options" role="group" aria-labelledby="question-text" aria-describedby="answer-instructions">
+                    <div id="answer-instructions" class="sr-only">
+                        Choose one of the following {{ current_question.options.count }} options. You can navigate with Tab and Enter keys, or use number keys 1-{{ current_question.options.count }}.
+                    </div>
+                    
+                    {% for option in current_question.options.all %}
+                        <button onclick="selectAnswer({{ option.id }}, '{{ option.option_letter }}')" 
+                                class="interactive-answer-btn w-full text-left p-3 rounded-lg border-2 border-{{ option.color_class }}-200 hover:border-{{ option.color_class }}-400 hover:bg-{{ option.color_class }}-50 focus:ring-2 focus:ring-{{ option.color_class }}-500 focus:ring-opacity-50 focus:outline-none transition-all duration-200 answer-option transform hover:scale-[1.01] hover:shadow-md cursor-pointer"
+                                data-option-id="{{ option.id }}"
+                                data-color="{{ option.color_class }}"
+                                data-option-letter="{{ option.option_letter }}"
+                                type="button"
+                                role="button"
+                                tabindex="{{ forloop.counter0 }}"
+                                aria-describedby="option-{{ option.id }}-description"
+                                aria-label="Option {{ option.option_letter }}: {{ option.option_text }}">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-{{ option.color_class }}-500 text-white flex items-center justify-center font-bold text-xs mr-3" aria-hidden="true">
+                                    {{ option.option_letter }}
+                                </div>
+                                <div class="flex-grow">
+                                    <div class="font-medium text-gray-800 text-sm">{{ option.option_text }}</div>
+                                    {% if option.explanation %}
+                                        <div class="text-xs text-gray-500 mt-1" id="option-{{ option.id }}-description">{{ option.explanation }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </button>
+                    {% endfor %}
+                </div>
+                
+                <!-- Screen Reader Help -->
+                <div class="sr-only" aria-live="polite" id="answer-status">
+                    Ready to select an answer. Use Tab to navigate options, Enter or Space to select.
+                </div>
+                
+            {% endif %}
+        </div>
+        
+    {% else %}
+        <!-- Game Setup or Completion -->
+        <div class="p-8 text-center">
+            <div class="text-6xl mb-4" id="game-status-emoji">🏛️</div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2" id="game-status-title">Setting up your constitutional challenge...</h3>
+            <p class="text-gray-600" id="game-status-message">Loading questions and preparing your nation-building journey.</p>
+        </div>
+    {% endif %}
+</div>

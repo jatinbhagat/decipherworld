@@ -1,0 +1,67 @@
+<!-- Clean Question Section Component -->
+{% if current_question %}
+    <!-- Question Header -->
+    <header class="bg-gradient-to-r from-indigo-600 to-purple-700 text-white p-4 rounded-t-2xl">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="text-3xl" aria-hidden="true">🏛️</div>
+                <div>
+                    <h1 class="text-xl font-bold">{{ current_question.get_category_display }}</h1>
+                    <p class="text-indigo-100 text-sm">Constitutional Decision #{{ current_question.order }}</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
+                    <span aria-hidden="true">🎯</span> Build Your Nation
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Question Content -->
+    <div class="flex-1 p-4 lg:p-6 overflow-y-auto min-h-0">
+        <!-- Question Text -->
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 mb-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-3">{{ current_question.question_text }}</h2>
+            {% if current_question.scenario_description %}
+                <div class="text-gray-700 leading-relaxed text-sm">
+                    {{ current_question.scenario_description }}
+                </div>
+            {% endif %}
+        </div>
+        
+        {% if current_question.options.exists %}
+            <!-- Answer Options -->
+            <div class="space-y-3">
+                {% for option in current_question.options.all %}
+                    <button onclick="selectAnswer({{ option.id }}, '{{ option.option_letter }}')" 
+                            class="interactive-answer-btn w-full text-left p-4 rounded-xl border-2 border-{{ option.color_class }}-200 hover:border-{{ option.color_class }}-400 hover:bg-{{ option.color_class }}-50 focus:ring-4 focus:ring-{{ option.color_class }}-500 focus:ring-opacity-50 focus:outline-none transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg cursor-pointer"
+                            data-option-id="{{ option.id }}"
+                            data-color="{{ option.color_class }}"
+                            data-option-letter="{{ option.option_letter }}"
+                            type="button">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-{{ option.color_class }}-500 text-white flex items-center justify-center font-bold text-sm mr-4">
+                                {{ option.option_letter }}
+                            </div>
+                            <div class="flex-grow">
+                                <div class="font-semibold text-gray-800 mb-1 text-sm">{{ option.option_text }}</div>
+                                {% if option.explanation %}
+                                    <div class="text-xs text-gray-600">{{ option.explanation }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </button>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    
+{% else %}
+    <!-- Game Setup or Completion -->
+    <div class="p-8 text-center">
+        <div class="text-6xl mb-4">🏛️</div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Setting up your constitutional challenge...</h3>
+        <p class="text-gray-600">Loading questions and preparing your nation-building journey.</p>
+    </div>
+{% endif %}

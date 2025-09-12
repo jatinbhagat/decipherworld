@@ -19,7 +19,8 @@
       "Bash(unset:*)",
       "Bash(curl:*)",
       "Bash(python test_urls.py:*)",
-      "Bash(python test:*)"
+      "Bash(python test:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

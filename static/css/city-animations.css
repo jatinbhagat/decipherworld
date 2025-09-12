@@ -1,0 +1,411 @@
+/**
+ * City Animation Styles
+ * CSS animations for immersive Constitution Challenge cityscape
+ */
+
+/* ==== CITY LAYER ANIMATIONS ==== */
+
+.city-layer {
+    transition: all 0.5s ease-in-out;
+}
+
+/* Animated terrain features */
+.animated-feature {
+    animation: gentle-sway 4s ease-in-out infinite alternate;
+}
+
+@keyframes gentle-sway {
+    0% { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-2px) rotate(1deg); }
+}
+
+/* River flow animation */
+.feature-river path {
+    animation: river-flow 3s linear infinite;
+    stroke-dasharray: 10, 5;
+}
+
+@keyframes river-flow {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 15; }
+}
+
+/* Fountain water animation */
+.feature-fountains circle {
+    animation: fountain-bubble 2s ease-in-out infinite;
+}
+
+@keyframes fountain-bubble {
+    0%, 100% { r: 1.5; opacity: 0.8; }
+    50% { r: 2.5; opacity: 0.4; }
+}
+
+/* ==== BUILDING ANIMATIONS ==== */
+
+/* Building construction animation */
+.under-construction {
+    opacity: 0.6;
+    animation: construction-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes construction-pulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.02); }
+}
+
+.construction-animate {
+    animation: building-grow 2s ease-out forwards;
+}
+
+@keyframes building-grow {
+    0% { 
+        transform: scale(0.5) translateY(20px); 
+        opacity: 0.3; 
+    }
+    70% { 
+        transform: scale(1.1) translateY(0px); 
+        opacity: 0.9; 
+    }
+    100% { 
+        transform: scale(1) translateY(0px); 
+        opacity: 1; 
+    }
+}
+
+.construction-complete {
+    animation: completion-celebrate 1s ease-out;
+}
+
+@keyframes completion-celebrate {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.1); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+/* Clickable building hover effects */
+.clickable-building {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.clickable-building:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+.building:hover {
+    animation: building-highlight 0.5s ease-in-out;
+}
+
+@keyframes building-highlight {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.2) drop-shadow(0 0 5px rgba(255, 193, 7, 0.6)); }
+}
+
+/* ==== WEATHER ANIMATIONS ==== */
+
+.animated-weather {
+    animation: weather-drift 8s linear infinite;
+}
+
+@keyframes weather-drift {
+    0% { transform: translateX(0px); }
+    100% { transform: translateX(20px); }
+}
+
+/* Lightning flash effect */
+.lightning-flash {
+    animation: lightning-strike 0.5s ease-in-out;
+}
+
+@keyframes lightning-strike {
+    0%, 100% { opacity: 0; }
+    10%, 90% { opacity: 1; }
+    50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+/* Storm clouds */
+.weather-effects circle[fill*='#757575'] {
+    animation: storm-clouds 3s ease-in-out infinite alternate;
+}
+
+@keyframes storm-clouds {
+    0% { transform: translateX(-2px); }
+    100% { transform: translateX(2px); }
+}
+
+/* Rainbow fade-in */
+.weather-effects path[stroke*='rainbowGradient'] {
+    animation: rainbow-appear 3s ease-in-out;
+}
+
+@keyframes rainbow-appear {
+    0% { opacity: 0; stroke-dashoffset: 200; }
+    50% { opacity: 0.4; }
+    100% { opacity: 0.8; stroke-dashoffset: 0; }
+}
+
+/* ==== CITIZEN ANIMATIONS ==== */
+
+.citizens {
+    animation: citizen-activity 3s ease-in-out infinite;
+}
+
+@keyframes citizen-activity {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-2px); }
+}
+
+.citizens-celebration {
+    animation: celebration-dance 1s ease-in-out infinite;
+}
+
+@keyframes celebration-dance {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-3px) rotate(2deg); }
+    75% { transform: translateY(-1px) rotate(-2deg); }
+}
+
+.citizens-protest {
+    animation: protest-march 2s ease-in-out infinite;
+    filter: hue-rotate(20deg);
+}
+
+@keyframes protest-march {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(4px); }
+}
+
+.parade-group {
+    animation: parade-march 4s linear;
+}
+
+/* ==== EFFECT ANIMATIONS ==== */
+
+/* Fireworks */
+.firework-burst {
+    animation: firework-explosion 1.5s ease-out;
+}
+
+@keyframes firework-explosion {
+    0% { 
+        r: 0; 
+        opacity: 0.8; 
+        stroke-width: 0;
+    }
+    50% { 
+        r: 15; 
+        opacity: 0.6;
+        stroke-width: 2;
+        stroke: currentColor;
+    }
+    100% { 
+        r: 25; 
+        opacity: 0;
+        stroke-width: 1;
+    }
+}
+
+/* Score change effects */
+.score-change-effect {
+    animation: score-float 2s ease-out;
+    pointer-events: none;
+}
+
+@keyframes score-float {
+    0% { 
+        transform: translateY(0px) scale(0.8); 
+        opacity: 1; 
+    }
+    70% { 
+        transform: translateY(-25px) scale(1.1); 
+        opacity: 0.8; 
+    }
+    100% { 
+        transform: translateY(-35px) scale(1); 
+        opacity: 0; 
+    }
+}
+
+/* General effect animations */
+.effect {
+    animation: effect-pop 0.5s ease-out, effect-fade 3s ease-out 0.5s;
+}
+
+@keyframes effect-pop {
+    0% { transform: scale(0); }
+    70% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes effect-fade {
+    0% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ==== GOVERNANCE METER ANIMATIONS ==== */
+
+/* Juice bar animation for governance meters */
+.governance-meter-fill {
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.governance-meter-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.3) 25%, transparent 25%);
+    background-size: 10px 10px;
+    animation: juice-flow 1s linear infinite;
+}
+
+@keyframes juice-flow {
+    0% { transform: translateX(-10px); }
+    100% { transform: translateX(0px); }
+}
+
+/* Meter score increase animation */
+.governance-meter-increase {
+    animation: meter-celebrate 0.6s ease-out;
+}
+
+@keyframes meter-celebrate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); filter: brightness(1.1); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* ==== INTERACTIVE ELEMENTS ==== */
+
+/* Clickable city elements */
+.interactive-element {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.interactive-element:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}
+
+.interactive-element:active {
+    transform: scale(0.98);
+}
+
+/* Glowing effect for important buildings */
+.building-important {
+    animation: importance-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes importance-glow {
+    0% { filter: drop-shadow(0 0 3px rgba(255, 193, 7, 0.4)); }
+    100% { filter: drop-shadow(0 0 8px rgba(255, 193, 7, 0.8)); }
+}
+
+/* ==== PARTICLE EFFECTS ==== */
+
+/* Confetti particles for celebrations */
+.confetti-particle {
+    animation: confetti-fall 3s linear;
+}
+
+@keyframes confetti-fall {
+    0% { 
+        transform: translateY(-20px) rotate(0deg); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translateY(100px) rotate(360deg); 
+        opacity: 0; 
+    }
+}
+
+/* Construction dust particles */
+.construction-particle {
+    animation: dust-settle 2s ease-out;
+}
+
+@keyframes dust-settle {
+    0% { 
+        transform: translateY(0px) scale(1); 
+        opacity: 0.6; 
+    }
+    100% { 
+        transform: translateY(20px) scale(0.5); 
+        opacity: 0; 
+    }
+}
+
+/* ==== RESPONSIVE ANIMATIONS ==== */
+
+@media (prefers-reduced-motion: reduce) {
+    .animated-feature,
+    .citizens,
+    .weather-effects,
+    .firework-burst {
+        animation: none;
+    }
+    
+    .governance-meter-fill {
+        transition: width 0.3s ease;
+    }
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+    .animated-feature {
+        animation-duration: 6s;
+    }
+    
+    .building:hover {
+        animation: none;
+        transform: scale(1.02);
+    }
+    
+    .clickable-building:hover {
+        transform: scale(1.02);
+    }
+}
+
+/* ==== LOADING STATES ==== */
+
+.city-loading {
+    opacity: 0.7;
+}
+
+.city-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #4CAF50;
+    border-radius: 50%;
+    animation: city-spinner 1s linear infinite;
+}
+
+@keyframes city-spinner {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ==== GAME STATE TRANSITIONS ==== */
+
+.city-state-transition {
+    animation: state-change 1s ease-in-out;
+}
+
+@keyframes state-change {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.02); opacity: 0.9; }
+    100% { transform: scale(1); opacity: 1; }
+}

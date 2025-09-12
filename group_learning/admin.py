@@ -4,7 +4,9 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from .models import (
     LearningModule, LearningObjective, Game, Role, Scenario, 
-    Action, Outcome, GameSession, PlayerAction, ReflectionResponse
+    Action, Outcome, GameSession, PlayerAction, ReflectionResponse,
+    GameLearningModule, ConstitutionQuestion, ConstitutionOption,
+    ConstitutionTeam, ConstitutionAnswer
 )
 
 
@@ -345,6 +347,170 @@ class ReflectionResponseAdmin(admin.ModelAdmin):
             'fields': ('confidence_level', 'engagement_level', 'created_at')
         }),
     )
+
+
+# Learning Module System Admin
+
+@admin.register(GameLearningModule)
+class GameLearningModuleAdmin(admin.ModelAdmin):
+    list_display = [
+        'title', 'game_type', 'trigger_condition', 'is_enabled', 
+        'view_count', 'skip_rate', 'created_at'
+    ]
+    list_filter = [
+        'game_type', 'trigger_condition', 'display_timing', 
+        'is_enabled', 'is_skippable', 'created_at'
+    ]
+    search_fields = ['title', 'principle_explanation', 'key_takeaways']
+    readonly_fields = ['view_count', 'skip_count', 'created_at', 'updated_at']
+    filter_horizontal = []
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('title', 'game_type'),
+            'description': 'Basic module identification and game type assignment'
+        }),
+        ('Content', {
+            'fields': ('principle_explanation', 'key_takeaways'),
+            'description': 'Main educational content that students will see'
+        }),
+        ('Additional Content', {
+            'fields': ('historical_context', 'real_world_example'),
+            'classes': ('collapse',),
+            'description': 'Optional enrichment content for deeper learning'
+        }),
+        ('Trigger Configuration', {
+            'fields': ('trigger_condition', 'trigger_question', 'trigger_option', 'trigger_topic'),
+            'description': 'Define when this module should appear to students'
+        }),
+        ('Score-Based Triggers', {
+            'fields': ('min_score', 'max_score'),
+            'classes': ('collapse',),
+            'description': 'Use only if trigger_condition is "score_based"'
+        }),
+        ('Display Settings', {
+            'fields': ('display_timing', 'is_skippable', 'is_enabled'),
+            'description': 'Control how and when the module appears'
+        }),
+        ('Performance-Based Content', {
+            'fields': ('low_performance_content', 'high_performance_content'),
+            'classes': ('collapse',),
+            'description': 'Alternative content based on team performance (optional)'
+        }),
+        ('Analytics & Metadata', {
+            'fields': ('view_count', 'skip_count', 'created_by', 'created_at', 'updated_at'),
+            'classes': ('collapse',),
+            'description': 'Usage statistics and metadata'
+        }),
+    )
+    
+    def save_model(self, request, obj, form, change):
+        # Set created_by to current user when creating new modules
+        if not change and not obj.created_by:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+    
+    def skip_rate(self, obj):
+        if obj.view_count > 0:
+            rate = (obj.skip_count / obj.view_count) * 100
+            return f"{rate:.1f}%"
+        return "0%"
+    skip_rate.short_description = 'Skip Rate'
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('trigger_question', 'trigger_option', 'created_by')
+
+    class Media:
+        css = {
+            'all': ('admin/css/learning_module_admin.css',)
+        }
+        js = ('admin/js/learning_module_admin.js',)
+
+
+# Constitution Game Admin
+
+class ConstitutionOptionInline(admin.TabularInline):
+    model = ConstitutionOption
+    extra = 0
+    fields = ['option_letter', 'option_text', 'score_value', 'feedback_message']
+
+
+@admin.register(ConstitutionQuestion)
+class ConstitutionQuestionAdmin(admin.ModelAdmin):
+    list_display = ['question_text_preview', 'category', 'order', 'game']
+    list_filter = ['game', 'category']
+    search_fields = ['question_text', 'constitutional_context']
+    ordering = ['game', 'order']
+    inlines = [ConstitutionOptionInline]
+    
+    fieldsets = (
+        ('Question Information', {
+            'fields': ('game', 'order', 'category')
+        }),
+        ('Question Content', {
+            'fields': ('question_text', 'constitutional_context')
+        }),
+        ('Educational Content', {
+            'fields': ('learning_module_title', 'learning_module_content', 'learning_module_comic_url'),
+            'classes': ('collapse',),
+            'description': 'Legacy learning module fields (use new GameLearningModule instead)'
+        }),
+    )
+    
+    def question_text_preview(self, obj):
+        return obj.question_text[:100] + "..." if len(obj.question_text) > 100 else obj.question_text
+    question_text_preview.short_description = 'Question'
+
+
+@admin.register(ConstitutionOption)
+class ConstitutionOptionAdmin(admin.ModelAdmin):
+    list_display = ['option_letter', 'option_preview', 'question_preview', 'score_value']
+    list_filter = ['question__game', 'question__category', 'option_letter', 'score_value']
+    search_fields = ['option_text', 'feedback_message']
+    
+    def option_preview(self, obj):
+        return obj.option_text[:80] + "..." if len(obj.option_text) > 80 else obj.option_text
+    option_preview.short_description = 'Option Text'
+    
+    def question_preview(self, obj):
+        return obj.question.question_text[:60] + "..." if len(obj.question.question_text) > 60 else obj.question.question_text
+    question_preview.short_description = 'Question'
+
+
+@admin.register(ConstitutionTeam)
+class ConstitutionTeamAdmin(admin.ModelAdmin):
+    list_display = ['team_name', 'session', 'total_score', 'questions_completed', 'is_completed', 'completion_time']
+    list_filter = ['session', 'is_completed', 'created_at']
+    search_fields = ['team_name', 'session__session_code']
+    readonly_fields = ['created_at', 'total_score', 'questions_completed']
+    
+    fieldsets = (
+        ('Team Information', {
+            'fields': ('session', 'team_name', 'team_avatar', 'flag_emoji')
+        }),
+        ('Game Progress', {
+            'fields': ('current_question', 'total_score', 'questions_completed', 'is_completed', 'completion_time')
+        }),
+        ('Team Data', {
+            'fields': ('team_data',),
+            'classes': ('collapse',)
+        }),
+        ('Metadata', {
+            'fields': ('created_at',)
+        }),
+    )
+
+
+@admin.register(ConstitutionAnswer)
+class ConstitutionAnswerAdmin(admin.ModelAdmin):
+    list_display = ['team', 'question_order', 'chosen_option', 'points_earned', 'answer_time']
+    list_filter = ['team__session', 'chosen_option__option_letter', 'question__category']
+    search_fields = ['team__team_name', 'question__question_text']
+    readonly_fields = ['answer_time', 'points_earned', 'score_before', 'score_after']
+    
+    def question_order(self, obj):
+        return f"Q{obj.question.order}"
+    question_order.short_description = 'Question'
 
 
 # Custom Admin Site Configuration

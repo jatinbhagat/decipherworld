@@ -1,0 +1,299 @@
+{% load group_learning_extras %}
+<!-- Floating Governance Meters Panel -->
+<div class="governance-meters-panel bg-white bg-opacity-90 backdrop-blur-sm rounded-2xl p-4 shadow-xl border border-white border-opacity-20">
+    <div class="space-y-3">
+        <!-- Panel Header -->
+        <div class="flex items-center space-x-2 mb-3">
+            <div class="text-lg">⚖️</div>
+            <h3 class="text-sm font-bold text-gray-800">Governance</h3>
+        </div>
+        
+        <!-- Democracy Meter -->
+        <div class="governance-metric">
+            <div class="flex items-center justify-between text-xs mb-1">
+                <div class="flex items-center space-x-1">
+                    <span class="text-blue-600">🗳️</span>
+                    <span class="text-gray-700 font-medium">Democracy</span>
+                </div>
+                <span class="font-bold text-blue-600">{{ governance_scores.democracy|default:5 }}/10</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
+                <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r from-blue-400 to-blue-600" 
+                     data-score="{{ governance_scores.democracy|default:5 }}"
+                     style="width: {{ governance_scores.democracy|default:5|mul:10 }}%">
+                </div>
+                <!-- Shine effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transform -skew-x-12 animate-shine"></div>
+            </div>
+        </div>
+        
+        <!-- Fairness Meter -->
+        <div class="governance-metric">
+            <div class="flex items-center justify-between text-xs mb-1">
+                <div class="flex items-center space-x-1">
+                    <span class="text-green-600">⚖️</span>
+                    <span class="text-gray-700 font-medium">Fairness</span>
+                </div>
+                <span class="font-bold text-green-600">{{ governance_scores.fairness|default:5 }}/10</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
+                <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r from-green-400 to-green-600" 
+                     data-score="{{ governance_scores.fairness|default:5 }}"
+                     style="width: {{ governance_scores.fairness|default:5|mul:10 }}%">
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transform -skew-x-12 animate-shine"></div>
+            </div>
+        </div>
+        
+        <!-- Freedom Meter -->
+        <div class="governance-metric">
+            <div class="flex items-center justify-between text-xs mb-1">
+                <div class="flex items-center space-x-1">
+                    <span class="text-purple-600">🕊️</span>
+                    <span class="text-gray-700 font-medium">Freedom</span>
+                </div>
+                <span class="font-bold text-purple-600">{{ governance_scores.freedom|default:5 }}/10</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
+                <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r from-purple-400 to-purple-600" 
+                     data-score="{{ governance_scores.freedom|default:5 }}"
+                     style="width: {{ governance_scores.freedom|default:5|mul:10 }}%">
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transform -skew-x-12 animate-shine"></div>
+            </div>
+        </div>
+        
+        <!-- Stability Meter -->
+        <div class="governance-metric">
+            <div class="flex items-center justify-between text-xs mb-1">
+                <div class="flex items-center space-x-1">
+                    <span class="text-orange-600">🏛️</span>
+                    <span class="text-gray-700 font-medium">Stability</span>
+                </div>
+                <span class="font-bold text-orange-600">{{ governance_scores.stability|default:5 }}/10</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
+                <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r from-orange-400 to-orange-600" 
+                     data-score="{{ governance_scores.stability|default:5 }}"
+                     style="width: {{ governance_scores.stability|default:5|mul:10 }}%">
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transform -skew-x-12 animate-shine"></div>
+            </div>
+        </div>
+        
+        <!-- Overall Score -->
+        <div class="border-t border-gray-200 pt-3 mt-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm">🏆</span>
+                    <span class="text-xs font-medium text-gray-600">Overall</span>
+                </div>
+                {% with avg_score=governance_scores.democracy|add:governance_scores.fairness|add:governance_scores.freedom|add:governance_scores.stability|div:4 %}
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold 
+                        {% if avg_score >= 8 %}text-green-600
+                        {% elif avg_score >= 6 %}text-blue-600  
+                        {% elif avg_score >= 4 %}text-yellow-600
+                        {% else %}text-red-600
+                        {% endif %}">
+                        {{ avg_score|floatformat:1 }}/10
+                    </span>
+                    <div class="text-xs">
+                        {% if avg_score >= 8 %}🌟
+                        {% elif avg_score >= 6 %}⭐
+                        {% elif avg_score >= 4 %}📈
+                        {% else %}⚠️
+                        {% endif %}
+                    </div>
+                </div>
+                {% endwith %}
+            </div>
+        </div>
+        
+        <!-- Governance Level Indicator -->
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-2 border border-indigo-200">
+            <div class="text-center">
+                <div class="text-lg mb-1">{{ governance_level.emoji|default:"🏛️" }}</div>
+                <div class="text-xs font-medium text-gray-800">{{ governance_level.description|default:"Building Democracy" }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Governance Meters Styles -->
+<style>
+/* Governance meters enhancement */
+.governance-meters-panel {
+    min-width: 200px;
+    max-width: 220px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.governance-meters-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+}
+
+.governance-metric {
+    position: relative;
+}
+
+.governance-meter-fill {
+    position: relative;
+    background: linear-gradient(90deg, #10b981, #059669, #047857);
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animated shine effect */
+@keyframes animate-shine {
+    0% { transform: translateX(-100%) skewX(-12deg); }
+    100% { transform: translateX(200%) skewX(-12deg); }
+}
+
+.animate-shine {
+    animation: animate-shine 2s infinite;
+    animation-delay: 2s;
+}
+
+/* Meter improvement animations */
+.governance-meter-increase {
+    animation: meter-celebrate 0.8s ease-out;
+}
+
+@keyframes meter-celebrate {
+    0% { transform: scale(1); filter: brightness(1); }
+    30% { transform: scale(1.05); filter: brightness(1.2) hue-rotate(10deg); }
+    60% { transform: scale(1.02); filter: brightness(1.1) hue-rotate(-5deg); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* Democracy meter specific styling */
+.governance-metric:nth-child(2) .governance-meter-fill {
+    background: linear-gradient(90deg, #3b82f6, #2563eb, #1d4ed8);
+}
+
+/* Fairness meter specific styling */
+.governance-metric:nth-child(3) .governance-meter-fill {
+    background: linear-gradient(90deg, #10b981, #059669, #047857);
+}
+
+/* Freedom meter specific styling */
+.governance-metric:nth-child(4) .governance-meter-fill {
+    background: linear-gradient(90deg, #8b5cf6, #7c3aed, #6d28d9);
+}
+
+/* Stability meter specific styling */
+.governance-metric:nth-child(5) .governance-meter-fill {
+    background: linear-gradient(90deg, #f59e0b, #d97706, #b45309);
+}
+
+/* Hover effects for individual meters */
+.governance-metric:hover .governance-meter-fill {
+    filter: brightness(1.1);
+    transform: scale(1.02);
+}
+
+/* Pulsing effect for low scores */
+.governance-meter-fill[data-score="1"],
+.governance-meter-fill[data-score="2"],
+.governance-meter-fill[data-score="3"] {
+    animation: meter-warning 2s infinite;
+}
+
+@keyframes meter-warning {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Excellence effect for high scores */
+.governance-meter-fill[data-score="9"],
+.governance-meter-fill[data-score="10"] {
+    position: relative;
+    overflow: hidden;
+}
+
+.governance-meter-fill[data-score="9"]::after,
+.governance-meter-fill[data-score="10"]::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    animation: excellence-shine 3s infinite;
+}
+
+@keyframes excellence-shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 1024px) {
+    .governance-meters-panel {
+        display: none; /* Hidden on mobile, shown in mobile menu instead */
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .governance-meter-fill,
+    .governance-meters-panel {
+        transition: none;
+    }
+    
+    .animate-shine,
+    .governance-meter-increase,
+    .meter-warning,
+    .excellence-shine {
+        animation: none;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .governance-meters-panel {
+        background-color: white;
+        border: 2px solid #000;
+        backdrop-filter: none;
+    }
+    
+    .governance-meter-fill {
+        background: #000 !important;
+    }
+    
+    .bg-gray-200 {
+        background-color: #e5e5e5;
+        border: 1px solid #666;
+    }
+}
+
+/* Dark mode support (if implemented) */
+@media (prefers-color-scheme: dark) {
+    .governance-meters-panel {
+        background: rgba(31, 41, 55, 0.9);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .text-gray-800 {
+        color: #f9fafb;
+    }
+    
+    .text-gray-700 {
+        color: #e5e7eb;
+    }
+    
+    .text-gray-600 {
+        color: #d1d5db;
+    }
+    
+    .bg-gray-200 {
+        background-color: #374151;
+    }
+    
+    .border-gray-200 {
+        border-color: #4b5563;
+    }
+}
+</style>

@@ -7,14 +7,19 @@ from django.utils import timezone
 from django.db.models import Q
 from django.forms import ModelForm, CharField, ChoiceField
 from django.core.exceptions import ValidationError
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 import random
 import string
 import json
 
 from .models import (
     Game, GameSession, Role, Scenario, Action, Outcome, 
-    PlayerAction, ReflectionResponse, LearningObjective
+    PlayerAction, ReflectionResponse, LearningObjective,
+    ConstitutionQuestion, ConstitutionOption, ConstitutionTeam, 
+    CountryState, ConstitutionAnswer
 )
+from .cache_utils import ConstitutionCache, cache_view_response
 
 
 class GameListView(ListView):
@@ -218,6 +223,17 @@ class GameplayView(TemplateView):
     """Main gameplay interface"""
     template_name = 'group_learning/gameplay.html'
     
+    def get(self, request, *args, **kwargs):
+        session_code = kwargs['session_code']
+        
+        # Check if player is in session
+        player_session_id = request.session.get('player_session_id')
+        if not player_session_id:
+            messages.error(request, 'You must join the session first.')
+            return redirect('group_learning:session_detail', session_code=session_code)
+            
+        return super().get(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         session_code = kwargs['session_code']
@@ -230,11 +246,8 @@ class GameplayView(TemplateView):
             session_code=session_code
         )
         
-        # Check if player is in session
+        # Player session ID is guaranteed to exist from get method
         player_session_id = self.request.session.get('player_session_id')
-        if not player_session_id:
-            messages.error(self.request, 'You must join the session first.')
-            return redirect('group_learning:session_detail', session_code=session_code)
         
         context['session'] = session
         context['player_name'] = self.request.session.get('player_name')
@@ -515,14 +528,41 @@ class SessionStatusAPI(View):
         active_players = session.get_active_players()
         role_coverage = session.get_role_coverage()
         
+        # Serialize active players properly
+        active_players_data = []
+        if active_players:
+            # Convert QuerySet to list first
+            players_list = list(active_players)
+            for player in players_list:
+                active_players_data.append({
+                    'id': player.get('player_session_id', ''),
+                    'name': player.get('player_name', ''),
+                    'role': player.get('role_name', None),
+                    'last_activity': player.get('latest_action').isoformat() if player.get('latest_action') else None
+                })
+        
+        # Serialize role coverage properly  
+        role_coverage_data = {}
+        if role_coverage:
+            # Convert QuerySet to list for JSON serialization
+            filled_roles = role_coverage.get('filled', [])
+            if hasattr(filled_roles, 'all'):  # It's a QuerySet
+                filled_roles = list(filled_roles)
+            
+            role_coverage_data = {
+                'filled': filled_roles,
+                'required': role_coverage.get('required', []),
+                'missing': role_coverage.get('missing', [])
+            }
+        
         return JsonResponse({
             'status': session.status,
             'player_count': session.get_player_count(),
             'current_scenario': session.current_scenario.title if session.current_scenario else None,
             'game_title': session.game.title,
             'is_ready_to_start': session.is_ready_to_start(),
-            'active_players': list(active_players),
-            'role_coverage': role_coverage,
+            'active_players': active_players_data,
+            'role_coverage': role_coverage_data,
             'min_players': session.game.min_players,
             'max_players': session.game.max_players,
             'last_activity': timezone.now().isoformat()  # For polling efficiency
@@ -568,3 +608,462 @@ class SessionActionsAPI(View):
             })
         
         return JsonResponse({'actions': actions_data})
+
+
+# Constitution Challenge Game Views
+
+class ConstitutionGameView(TemplateView):
+    """Main gameplay view for Constitution Challenge"""
+    template_name = 'group_learning/constitution_gameplay.html'
+    
+    def get(self, request, *args, **kwargs):
+        session_code = kwargs.get('session_code')
+        team_id = request.GET.get('team_id') or request.session.get('team_id')
+        
+        # Get session and validate
+        session = get_object_or_404(GameSession, session_code=session_code)
+        if session.game.game_type != 'constitution_challenge':
+            messages.error(request, 'This session is not a Constitution Challenge game.')
+            return redirect('group_learning:session_detail', session_code=session_code)
+        
+        # Get or create team
+        team = None
+        if team_id:
+            try:
+                team = ConstitutionTeam.objects.get(id=team_id, session=session)
+                # Store team in session for future requests
+                request.session['team_id'] = team.id
+            except ConstitutionTeam.DoesNotExist:
+                pass
+        
+        # If no team found, redirect to team creation page
+        if not team:
+            return redirect('group_learning:constitution_join', session_code=session_code)
+        
+        return super().get(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        session_code = kwargs.get('session_code')
+        team_id = self.request.GET.get('team_id') or self.request.session.get('team_id')
+        
+        # Get session and team (we know they exist from get method)
+        session = get_object_or_404(GameSession, session_code=session_code)
+        team = ConstitutionTeam.objects.get(id=team_id, session=session)
+        
+        context.update({
+            'session': session,
+            'team': team,
+            'game': session.game,
+        })
+        
+        if team:
+            # Get current question
+            current_question = team.current_question
+            if not current_question:
+                # Get first unanswered question
+                answered_question_ids = team.answers.values_list('question_id', flat=True)
+                current_question = session.game.constitution_questions.filter(
+                    is_active=True
+                ).exclude(id__in=answered_question_ids).order_by('order').first()
+                
+                if current_question:
+                    team.current_question = current_question
+                    team.save()
+            
+            # Get country state
+            country_state, created = CountryState.objects.get_or_create(team=team)
+            if created:
+                country_state.update_from_score(team.total_score)
+            
+            # Prepare governance scores for template
+            governance_scores = {
+                'democracy': country_state.democracy_score,
+                'fairness': country_state.fairness_score, 
+                'freedom': country_state.freedom_score,
+                'stability': country_state.stability_score,
+            }
+            
+            context.update({
+                'current_question': current_question,
+                'country_state': country_state,
+                'governance_scores': governance_scores,
+                'governance_level': team.get_governance_level(),
+                'team_rank': team.get_rank_in_session(),
+                'progress_percentage': (team.questions_completed / 
+                                      session.game.constitution_questions.count() * 100) 
+                                     if session.game.constitution_questions.count() > 0 else 0,
+            })
+        
+        return context
+
+
+class ConstitutionTeamCreateView(View):
+    """Handle team creation for Constitution Challenge"""
+    
+    def post(self, request, session_code):
+        session = get_object_or_404(GameSession, session_code=session_code)
+        
+        if session.game.game_type != 'constitution_challenge':
+            return JsonResponse({'error': 'Not a Constitution Challenge game'}, status=400)
+        
+        # Get form data
+        team_name = request.POST.get('team_name', '').strip()
+        team_avatar = request.POST.get('team_avatar', '🏛️')
+        country_color = request.POST.get('country_color', '#3B82F6')
+        flag_emoji = request.POST.get('flag_emoji', '🏴')
+        
+        if not team_name:
+            return JsonResponse({'error': 'Team name is required'}, status=400)
+        
+        # Check if team name already exists in this session
+        if ConstitutionTeam.objects.filter(session=session, team_name=team_name).exists():
+            return JsonResponse({'error': 'Team name already exists'}, status=400)
+        
+        # Create team
+        team = ConstitutionTeam.objects.create(
+            session=session,
+            team_name=team_name,
+            team_avatar=team_avatar,
+            country_color=country_color,
+            flag_emoji=flag_emoji
+        )
+        
+        # Create initial country state
+        CountryState.objects.create(team=team)
+        
+        # Store team in session
+        request.session['team_id'] = team.id
+        
+        return JsonResponse({
+            'success': True,
+            'team_id': team.id,
+            'redirect_url': reverse('group_learning:constitution_game', 
+                                  kwargs={'session_code': session_code}) + f'?team_id={team.id}'
+        })
+
+
+class ConstitutionQuestionAPI(View):
+    """API endpoint for getting current question data"""
+    
+    def get(self, request, session_code):
+        # Optimize query with select_related to avoid N+1 queries
+        session = get_object_or_404(
+            GameSession.objects.select_related('game'),
+            session_code=session_code
+        )
+        team_id = request.GET.get('team_id') or request.session.get('team_id')
+        
+        if not team_id:
+            return JsonResponse({'error': 'Team ID required'}, status=400)
+        
+        try:
+            # Optimize team query with select_related and prefetch_related
+            team = ConstitutionTeam.objects.select_related(
+                'session__game',
+                'country_state'
+            ).prefetch_related(
+                'answers__question',
+                'answers__chosen_option'
+            ).get(id=team_id, session=session)
+        except ConstitutionTeam.DoesNotExist:
+            return JsonResponse({'error': 'Team not found'}, status=404)
+        
+        current_question = team.current_question
+        if not current_question:
+            # Check if game is complete
+            total_questions = session.game.constitution_questions.count()
+            if team.questions_completed >= total_questions:
+                return JsonResponse({
+                    'game_completed': True,
+                    'final_score': team.total_score,
+                    'governance_level': team.get_governance_level(),
+                    'rank': team.get_rank_in_session()
+                })
+            
+            return JsonResponse({'error': 'No current question'}, status=404)
+        
+        # Get options for current question
+        options = []
+        for option in current_question.options.filter(is_active=True).order_by('option_letter'):
+            options.append({
+                'id': option.id,
+                'letter': option.option_letter,
+                'text': option.option_text,
+                'color_class': option.color_class,
+            })
+        
+        # Get country state with caching
+        cached_visual_state = ConstitutionCache.get_team_visual_state(team.id)
+        if not cached_visual_state:
+            country_state = CountryState.objects.get(team=team)
+            cached_visual_state = {
+                'level': country_state.current_city_level,
+                'level_display': country_state.get_current_city_level_display(),
+                'democracy_score': country_state.democracy_score,
+                'fairness_score': country_state.fairness_score,
+                'freedom_score': country_state.freedom_score,
+                'stability_score': country_state.stability_score,
+                'unlocked_features': getattr(country_state, 'unlocked_features', []),
+                'visual_elements': country_state.visual_elements,
+            }
+        
+        return JsonResponse({
+            'question': {
+                'id': current_question.id,
+                'text': current_question.question_text,
+                'category': current_question.get_category_display(),
+                'scenario_context': current_question.scenario_context,
+                'time_limit': current_question.time_limit,
+                'order': current_question.order,
+            },
+            'options': options,
+            'team': {
+                'id': team.id,
+                'name': team.team_name,
+                'score': team.total_score,
+                'avatar': team.team_avatar,
+                'color': team.country_color,
+                'flag': team.flag_emoji,
+                'questions_completed': team.questions_completed,
+            },
+            'country_state': cached_visual_state,
+            'progress': {
+                'current': team.questions_completed + 1,
+                'total': session.game.constitution_questions.count(),
+                'percentage': ((team.questions_completed + 1) / 
+                             session.game.constitution_questions.count() * 100) 
+                            if session.game.constitution_questions.count() > 0 else 0,
+            },
+            'leaderboard': ConstitutionCache.get_session_leaderboard(session.id)[:5]  # Top 5 for API
+        })
+
+
+class ConstitutionAnswerAPI(View):
+    """API endpoint for submitting answers"""
+    
+    def post(self, request, session_code):
+        # Optimize session query
+        session = get_object_or_404(
+            GameSession.objects.select_related('game'),
+            session_code=session_code
+        )
+        team_id = request.POST.get('team_id') or request.session.get('team_id')
+        option_id = request.POST.get('option_id')
+        
+        if not team_id or not option_id:
+            return JsonResponse({'error': 'Team ID and option ID required'}, status=400)
+        
+        try:
+            # Optimize queries with select_related and prefetch_related
+            team = ConstitutionTeam.objects.select_related(
+                'session__game',
+                'country_state'
+            ).prefetch_related(
+                'answers__question'
+            ).get(id=team_id, session=session)
+            
+            option = ConstitutionOption.objects.select_related(
+                'question__game'
+            ).get(id=option_id)
+        except (ConstitutionTeam.DoesNotExist, ConstitutionOption.DoesNotExist):
+            return JsonResponse({'error': 'Team or option not found'}, status=404)
+        
+        question = option.question
+        
+        # Check if already answered
+        if ConstitutionAnswer.objects.filter(team=team, question=question).exists():
+            return JsonResponse({'error': 'Question already answered'}, status=400)
+        
+        # Calculate time taken (mock for now - would be tracked in frontend)
+        time_taken = 30  # Default time
+        
+        # Record answer
+        score_before = team.total_score
+        points_earned = option.score_value
+        score_after = score_before + points_earned
+        
+        answer = ConstitutionAnswer.objects.create(
+            team=team,
+            question=question,
+            chosen_option=option,
+            time_taken=time_taken,
+            points_earned=points_earned,
+            score_before=score_before,
+            score_after=score_after,
+        )
+        
+        # Update team score and progress
+        team.total_score = score_after
+        team.questions_completed += 1
+        
+        # Move to next question
+        next_question = session.game.constitution_questions.filter(
+            is_active=True,
+            order__gt=question.order
+        ).order_by('order').first()
+        
+        team.current_question = next_question
+        
+        # Check if game is complete
+        if not next_question:
+            team.is_completed = True
+            team.completion_time = timezone.now()
+        
+        team.save()
+        
+        # Update country state
+        country_state = CountryState.objects.get(team=team)
+        country_state.update_from_score(team.total_score)
+        
+        # Get learning module content for response (NEW ENHANCED SYSTEM)
+        learning_content = self.get_learning_module_for_answer(
+            question, option, team.total_score
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'feedback': {
+                'message': option.feedback_message,
+                'points_earned': points_earned,
+                'governance_principle': option.governance_principle,
+            },
+            'team_update': {
+                'new_score': team.total_score,
+                'questions_completed': team.questions_completed,
+                'governance_level': team.get_governance_level(),
+                'rank': team.get_rank_in_session(),
+            },
+            'country_state': {
+                'level': country_state.current_city_level,
+                'level_display': country_state.get_current_city_level_display(),
+                'democracy_score': country_state.democracy_score,
+                'fairness_score': country_state.fairness_score,
+                'freedom_score': country_state.freedom_score,
+                'stability_score': country_state.stability_score,
+                'unlocked_features': country_state.unlocked_features,
+                'new_features': [f for f in country_state.unlocked_features 
+                               if f not in (country_state.unlocked_features or [])],
+                'visual_elements': country_state.visual_elements,
+            },
+            'learning_module': learning_content,
+            'game_completed': team.is_completed,
+            'next_question': next_question is not None,
+        })
+
+    def get_learning_module_for_answer(self, question, option, team_score):
+        """
+        Get appropriate learning module based on question, option, and team performance
+        """
+        from .models import GameLearningModule
+        
+        # Try to find a learning module that should trigger
+        modules = GameLearningModule.objects.filter(
+            game_type='constitution_challenge',
+            is_enabled=True
+        )
+        
+        for module in modules:
+            if module.should_trigger(
+                question=question,
+                option=option,
+                topic=question.category,
+                team_score=team_score
+            ):
+                # Record that this module is being shown
+                module.record_view()
+                
+                # Get content adapted for team performance
+                content = module.get_content_for_team(team_score)
+                
+                # Add additional metadata for frontend
+                content.update({
+                    'id': module.id,
+                    'display_timing': module.display_timing,
+                    'is_skippable': module.is_skippable,
+                    'game_type': module.get_game_type_display(),
+                })
+                
+                return content
+        
+        # Fallback to legacy system if no new modules match
+        if question.learning_module_title:
+            return {
+                'title': question.learning_module_title,
+                'principle_explanation': question.learning_module_content or '',
+                'key_takeaways': '',
+                'historical_context': '',
+                'real_world_example': '',
+                'id': None,
+                'display_timing': 'instant',
+                'is_skippable': True,
+                'game_type': 'Constitution Challenge',
+            }
+        
+        return None
+
+
+class ConstitutionLeaderboardAPI(View):
+    """API endpoint for getting leaderboard data"""
+    
+    def get(self, request, session_code):
+        session = get_object_or_404(GameSession, session_code=session_code)
+        
+        # Get all teams for this session, ordered by score
+        teams = ConstitutionTeam.objects.filter(session=session).order_by(
+            '-total_score', 'completion_time', 'created_at'
+        )
+        
+        leaderboard = []
+        for rank, team in enumerate(teams, 1):
+            governance_level = team.get_governance_level()
+            leaderboard.append({
+                'rank': rank,
+                'team_id': team.id,
+                'team_name': team.team_name,
+                'avatar': team.team_avatar,
+                'flag': team.flag_emoji,
+                'color': team.country_color,
+                'score': team.total_score,
+                'questions_completed': team.questions_completed,
+                'governance_level': governance_level['description'],
+                'governance_emoji': governance_level['emoji'],
+                'is_completed': team.is_completed,
+                'completion_time': team.completion_time.isoformat() if team.completion_time else None,
+            })
+        
+        return JsonResponse({
+            'leaderboard': leaderboard,
+            'total_teams': len(leaderboard),
+            'session_info': {
+                'code': session.session_code,
+                'game_title': session.game.title,
+                'total_questions': session.game.constitution_questions.count(),
+            }
+        })
+
+
+class ConstitutionTeamJoinView(TemplateView):
+    """Landing page for teams to join or create for Constitution Challenge"""
+    template_name = 'group_learning/constitution_team_setup.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        session_code = kwargs.get('session_code')
+        session = get_object_or_404(GameSession, session_code=session_code)
+        
+        if session.game.game_type != 'constitution_challenge':
+            messages.error(self.request, 'This session is not a Constitution Challenge game.')
+            return redirect('group_learning:session_detail', session_code=session_code)
+        
+        # Get existing teams for this session
+        existing_teams = ConstitutionTeam.objects.filter(session=session).order_by('-total_score')
+        
+        context.update({
+            'session': session,
+            'game': session.game,
+            'existing_teams': existing_teams,
+            'team_count': existing_teams.count(),
+        })
+        
+        return context
