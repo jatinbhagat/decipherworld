@@ -355,7 +355,7 @@ class ReflectionResponseAdmin(admin.ModelAdmin):
 class GameLearningModuleAdmin(admin.ModelAdmin):
     list_display = [
         'title', 'game_type', 'trigger_condition', 'is_enabled', 
-        'view_count', 'skip_rate', 'created_at'
+        'view_count', 'skip_count', 'created_at'
     ]
     list_filter = [
         'game_type', 'trigger_condition', 'display_timing', 
