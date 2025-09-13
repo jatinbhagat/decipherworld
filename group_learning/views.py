@@ -1147,20 +1147,21 @@ class ProductionSetupAPI(View):
                     ]
                     return JsonResponse(results, status=500)
                 
-                # Create Constitution game manually
+                # Create Constitution game manually (using only existing fields)
                 constitution_game, created = Game.objects.get_or_create(
                     title='Build Your Country: The Constitution Challenge',
                     defaults={
                         'subtitle': 'Learn Indian Constitution by building your virtual country',
                         'game_type': 'constitution_challenge',
                         'description': 'A comprehensive team-based educational game where students learn about the Indian Constitution, fundamental rights, duties, governance structures, and democratic principles by making decisions that build and evolve their virtual country.',
+                        'context': 'Students explore the Indian Constitution through interactive gameplay, making decisions that affect their virtual nation while learning about democratic principles, governance structures, fundamental rights and duties.',
                         'min_players': 2,
                         'max_players': 6,
                         'estimated_duration': 45,
                         'target_age_min': 14,
                         'target_age_max': 18,
-                        'difficulty_level': 'intermediate',
-                        'learning_outcomes': 'Students will understand democratic governance, fundamental rights and duties, constitutional structures, and decision-making in complex scenarios.',
+                        'difficulty_level': 2,  # 2 = Intermediate
+                        'introduction_text': 'Welcome to the Constitution Challenge! You will build and govern your own country by making important decisions about constitutional principles, governance, and citizen rights. Work with your team to create a thriving democracy.',
                         'is_active': True
                     }
                 )
