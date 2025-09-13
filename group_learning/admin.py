@@ -370,7 +370,7 @@ class GameLearningModuleAdmin(admin.ModelAdmin):
             'fields': ('title', 'game_type'),
             'description': 'Basic module identification and game type assignment'
         }),
-        ('Content', {
+        ('Core Learning Content', {
             'fields': ('principle_explanation', 'key_takeaways'),
             'description': 'Main educational content that students will see'
         }),
@@ -378,6 +378,16 @@ class GameLearningModuleAdmin(admin.ModelAdmin):
             'fields': ('historical_context', 'real_world_example'),
             'classes': ('collapse',),
             'description': 'Optional enrichment content for deeper learning'
+        }),
+        ('🎯 Action Reasoning (Part 1)', {
+            'fields': ('action_impact_title', 'governance_impact', 'score_reasoning', 'country_state_changes', 'societal_impact'),
+            'classes': ('collapse',),
+            'description': 'Explain how user choices affect governance, scores, and country development'
+        }),
+        ('🏛️ Constitution Teaching (Part 2)', {
+            'fields': ('constitution_topic_title', 'constitution_chapter', 'constitution_principle', 'constitution_explanation', 'constitution_article_reference', 'historical_constitutional_context'),
+            'classes': ('collapse',),
+            'description': 'Teach Indian Constitution principles related to this question'
         }),
         ('Trigger Configuration', {
             'fields': ('trigger_condition', 'trigger_question', 'trigger_option', 'trigger_topic'),

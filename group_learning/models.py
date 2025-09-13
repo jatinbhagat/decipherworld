@@ -642,6 +642,24 @@ class ConstitutionOption(models.Model):
         help_text="The governance principle this choice represents (e.g., 'Democracy', 'Checks & Balances')"
     )
     
+    # Dynamic Impact Content (Choice-Specific)
+    governance_impact = models.TextField(
+        blank=True,
+        help_text="How this specific choice affects the country's governance and democratic institutions"
+    )
+    score_reasoning = models.TextField(
+        blank=True,
+        help_text="Why this specific choice increases/decreases the governance score"
+    )
+    country_state_changes = models.TextField(
+        blank=True,
+        help_text="How this choice affects city growth, population, economic prosperity, etc."
+    )
+    societal_impact = models.TextField(
+        blank=True,
+        help_text="Impact of this choice on citizens, rights, freedoms, and social harmony"
+    )
+    
     # Visual Styling
     color_class = models.CharField(
         max_length=20,
@@ -1073,6 +1091,67 @@ class GameLearningModule(models.Model):
     real_world_example = models.TextField(
         blank=True,
         help_text="Optional contemporary example or case study"
+    )
+    
+    # Enhanced Learning Module - Part 1: Action Reasoning
+    action_impact_title = models.CharField(
+        max_length=200,
+        default="Impact of Your Decision",
+        help_text="Title for the action reasoning section"
+    )
+    governance_impact = models.TextField(
+        blank=True,
+        help_text="How this choice affects the country's governance and democratic institutions"
+    )
+    score_reasoning = models.TextField(
+        blank=True,
+        help_text="Why the governance score increased/decreased with this choice"
+    )
+    country_state_changes = models.TextField(
+        blank=True,
+        help_text="How this choice affects city growth, population, economic prosperity, etc."
+    )
+    societal_impact = models.TextField(
+        blank=True,
+        help_text="Impact on citizens, rights, freedoms, and social harmony"
+    )
+    
+    # Enhanced Learning Module - Part 2: Constitution Teaching
+    constitution_topic_title = models.CharField(
+        max_length=200,
+        default="Learn from the Indian Constitution",
+        help_text="Title for the constitution teaching section"
+    )
+    constitution_chapter = models.CharField(
+        max_length=100,
+        blank=True,
+        choices=[
+            ('introduction', 'Introduction to Constitutions'),
+            ('making', 'Making of the Indian Constitution'),
+            ('features', 'Key Features and Values'),
+            ('government_branches', 'Branches of Government'),
+            ('rights_duties', 'Citizens\' Rights and Duties'),
+            ('inclusivity', 'Inclusivity and Pluralism'),
+            ('living_document', 'Constitution as a Living Document'),
+        ],
+        help_text="Main constitutional topic this question relates to"
+    )
+    constitution_principle = models.TextField(
+        blank=True,
+        help_text="Core constitutional principle illustrated by this question (e.g., 'Separation of Powers', 'Fundamental Rights')"
+    )
+    constitution_explanation = models.TextField(
+        blank=True,
+        help_text="Detailed explanation of how this constitutional principle works in India"
+    )
+    constitution_article_reference = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Specific Indian Constitution articles related to this topic (e.g., 'Article 14-18: Right to Equality')"
+    )
+    historical_constitutional_context = models.TextField(
+        blank=True,
+        help_text="Historical context of how this principle was included in the Indian Constitution"
     )
     
     # Trigger Configuration

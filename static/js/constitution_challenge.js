@@ -397,65 +397,118 @@ function populateLearningContent(moduleData) {
     const modal = document.getElementById('learning-module-modal');
     if (!modal) return;
     
-    // Find the content elements within the modal using different possible IDs
-    const explanationEl = modal.querySelector('#learning-explanation') || 
-                         modal.querySelector('#principle-explanation') ||
-                         modal.querySelector('.prose');
-    
-    const conceptTitleEl = modal.querySelector('#learning-concept-title');
-    const conceptContentEl = modal.querySelector('#learning-concept-content');
-    const impactEl = modal.querySelector('#learning-impact');
-    
-    // Populate main explanation
-    if (explanationEl) {
-        const content = moduleData.principle_explanation || 
-                       moduleData.key_takeaways || 
-                       'This constitutional decision helps shape your nation\'s governance framework and affects how citizens experience their rights and freedoms.';
-        explanationEl.innerHTML = formatContentWithParagraphs(content);
-    }
-    
-    // Populate key concept section
-    if (conceptTitleEl && conceptContentEl) {
-        conceptTitleEl.textContent = 'Key Constitutional Principle';
-        const conceptContent = moduleData.key_takeaways || 
-                              moduleData.principle_explanation || 
-                              'Every constitutional decision has far-reaching consequences for your nation\'s future.';
-        conceptContentEl.innerHTML = formatContentWithParagraphs(conceptContent);
-    }
-    
-    // Populate impact section
-    if (impactEl) {
-        const impactText = moduleData.real_world_example || 
-                          `Your choice affects various aspects of governance: citizen satisfaction, political stability, and long-term prosperity of your nation.`;
-        impactEl.innerHTML = formatContentWithParagraphs(impactText);
-    }
-    
-    // Handle optional historical context
-    const historicalSection = modal.querySelector('#learning-historical-context');
-    const historicalContent = modal.querySelector('#learning-historical-content');
-    if (historicalSection && historicalContent && moduleData.historical_context && moduleData.historical_context.trim()) {
-        historicalContent.innerHTML = formatContentWithParagraphs(moduleData.historical_context);
-        historicalSection.classList.remove('hidden');
-    } else if (historicalSection) {
-        historicalSection.classList.add('hidden');
-    }
-    
-    // Handle examples section
-    const examplesSection = modal.querySelector('#learning-examples');
-    const examplesContent = modal.querySelector('#learning-examples-content');
-    if (examplesSection && examplesContent && moduleData.real_world_example && moduleData.real_world_example.trim()) {
-        examplesContent.innerHTML = formatContentWithParagraphs(moduleData.real_world_example);
-        examplesSection.classList.remove('hidden');
-    } else if (examplesSection) {
-        examplesSection.classList.add('hidden');
-    }
-    
-    console.log('📚 Learning content populated with:', {
-        explanation: explanationEl ? 'Found' : 'Not found',
-        concept: conceptContentEl ? 'Found' : 'Not found',
-        impact: impactEl ? 'Found' : 'Not found',
-        moduleData: Object.keys(moduleData)
+    console.log('🚀 ENHANCED LEARNING MODULE - Populating content:', moduleData);
+    console.log('🔍 Has enhanced fields?', {
+        governance_impact: !!moduleData.governance_impact,
+        constitution_principle: !!moduleData.constitution_principle,
+        action_impact_title: moduleData.action_impact_title
     });
+    
+    // Clear previous content
+    const contentDiv = modal.querySelector('#learning-content');
+    if (contentDiv) {
+        contentDiv.innerHTML = '';
+        
+        // Create the enhanced two-part learning module
+        contentDiv.innerHTML = `
+            <!-- Part 1: Action Reasoning (Dynamic Choice-Specific Content) -->
+            <div class="mb-8 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
+                <h3 class="text-xl font-bold text-blue-800 mb-4 flex items-center">
+                    <span class="text-2xl mr-2">🎯</span>
+                    ${moduleData.action_impact_title || 'Impact of Your Decision'}
+                </h3>
+                
+                ${moduleData.selected_option ? `
+                    <div class="mb-4 p-3 bg-blue-100 rounded-lg border-l-4 border-blue-500">
+                        <h4 class="font-semibold text-blue-800 mb-1">✅ Your Choice: Option ${moduleData.selected_option}</h4>
+                        <p class="text-blue-700 text-sm">"${moduleData.option_text}"</p>
+                        ${moduleData.score_change ? `
+                            <p class="text-xs text-blue-600 mt-1">
+                                <span class="font-medium">Score Impact:</span> 
+                                <span class="${moduleData.score_change > 0 ? 'text-green-600' : 'text-red-600'}">
+                                    ${moduleData.score_change > 0 ? '+' : ''}${moduleData.score_change} points
+                                </span>
+                            </p>
+                        ` : ''}
+                    </div>
+                ` : ''}
+                
+                ${moduleData.governance_impact ? `
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-blue-700 mb-2">🏛️ Governance Impact</h4>
+                        <div class="text-gray-700">${formatContentWithParagraphs(moduleData.governance_impact)}</div>
+                    </div>
+                ` : ''}
+                
+                ${moduleData.score_reasoning ? `
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-blue-700 mb-2">📊 Score Changes</h4>
+                        <div class="text-gray-700">${formatContentWithParagraphs(moduleData.score_reasoning)}</div>
+                    </div>
+                ` : ''}
+                
+                ${moduleData.country_state_changes ? `
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-blue-700 mb-2">🌆 Country Development</h4>
+                        <div class="text-gray-700">${formatContentWithParagraphs(moduleData.country_state_changes)}</div>
+                    </div>
+                ` : ''}
+                
+                ${moduleData.societal_impact ? `
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-blue-700 mb-2">👥 Social Impact</h4>
+                        <div class="text-gray-700">${formatContentWithParagraphs(moduleData.societal_impact)}</div>
+                    </div>
+                ` : ''}
+            </div>
+            
+            <!-- Part 2: Constitution Teaching -->
+            <div class="p-6 bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl border-2 border-orange-200">
+                <h3 class="text-xl font-bold text-orange-800 mb-4 flex items-center">
+                    <span class="text-2xl mr-2">🏛️</span>
+                    ${moduleData.constitution_topic_title || 'Learn from the Indian Constitution'}
+                </h3>
+                
+                ${moduleData.constitution_principle ? `
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-orange-700 mb-2">⚖️ Constitutional Principle</h4>
+                        <div class="text-gray-700 font-medium">${formatContentWithParagraphs(moduleData.constitution_principle)}</div>
+                    </div>
+                ` : ''}
+                
+                ${moduleData.constitution_explanation ? `
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-orange-700 mb-2">📖 How It Works in India</h4>
+                        <div class="text-gray-700">${formatContentWithParagraphs(moduleData.constitution_explanation)}</div>
+                    </div>
+                ` : ''}
+                
+                ${moduleData.constitution_article_reference ? `
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-orange-700 mb-2">📜 Constitutional Reference</h4>
+                        <div class="text-gray-700 bg-orange-100 p-3 rounded-lg font-mono text-sm">${moduleData.constitution_article_reference}</div>
+                    </div>
+                ` : ''}
+                
+                ${moduleData.historical_constitutional_context ? `
+                    <div class="mb-4">
+                        <h4 class="font-semibold text-orange-700 mb-2">📚 Historical Context</h4>
+                        <div class="text-gray-700">${formatContentWithParagraphs(moduleData.historical_constitutional_context)}</div>
+                    </div>
+                ` : ''}
+            </div>
+            
+            <!-- Fallback to original content if enhanced fields are empty -->
+            ${(!moduleData.governance_impact && !moduleData.constitution_principle) ? `
+                <div class="p-6 bg-gray-50 rounded-xl">
+                    <h4 class="font-semibold text-gray-700 mb-2">Key Learning</h4>
+                    <div class="text-gray-700">${formatContentWithParagraphs(moduleData.principle_explanation || moduleData.key_takeaways || 'This constitutional decision helps shape your nation\'s governance framework.')}</div>
+                </div>
+            ` : ''}
+        `;
+    }
+    
+    console.log('✅ Enhanced learning content populated successfully');
 }
 
 function formatContentWithParagraphs(content) {
@@ -552,6 +605,7 @@ async function recordLearningModuleSkip(moduleId) {
 }
 
 // Global exports
+console.log('🎮 Constitution Challenge JS loaded - assigning functions to window');
 window.selectAnswer = selectAnswer;
 window.toggleLeaderboard = toggleLeaderboard;
 window.toggleHelp = toggleHelp;

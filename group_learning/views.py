@@ -957,11 +957,112 @@ class ConstitutionAnswerAPI(View):
 
     def get_learning_module_for_answer(self, question, option, team_score):
         """
-        Get appropriate learning module based on question, option, and team performance
+        Get appropriate enhanced learning module based on question, option, and team performance
         """
-        # Use the legacy system built into the questions for now
-        # This avoids the GameLearningModule methods that don't exist yet
+        from .models import GameLearningModule
         
+        # Try to find a GameLearningModule for this specific context
+        learning_module = None
+        
+        # Priority 1: Option-based trigger (most specific)
+        if not learning_module:
+            learning_module = GameLearningModule.objects.filter(
+                game_type='constitution_challenge',
+                trigger_condition='option_based',
+                trigger_option=option,
+                is_enabled=True
+            ).first()
+        
+        # Priority 2: Question-based trigger
+        if not learning_module:
+            learning_module = GameLearningModule.objects.filter(
+                game_type='constitution_challenge',
+                trigger_condition='question_based',
+                trigger_question=question,
+                is_enabled=True
+            ).first()
+        
+        # Priority 3: Topic-based trigger
+        if not learning_module:
+            learning_module = GameLearningModule.objects.filter(
+                game_type='constitution_challenge',
+                trigger_condition='topic_based',
+                trigger_topic=question.category,
+                is_enabled=True
+            ).first()
+        
+        # Priority 4: Score-based trigger
+        if not learning_module:
+            learning_module = GameLearningModule.objects.filter(
+                game_type='constitution_challenge',
+                trigger_condition='score_based',
+                min_score__lte=team_score,
+                max_score__gte=team_score,
+                is_enabled=True
+            ).first()
+        
+        # Priority 5: Always show trigger (fallback)
+        if not learning_module:
+            learning_module = GameLearningModule.objects.filter(
+                game_type='constitution_challenge',
+                trigger_condition='always',
+                is_enabled=True
+            ).first()
+        
+        # Convert GameLearningModule to dictionary format expected by frontend
+        if learning_module:
+            # Increment view count
+            learning_module.view_count = (learning_module.view_count or 0) + 1
+            learning_module.save(update_fields=['view_count'])
+            
+            print(f"🚀 BACKEND: Found learning module '{learning_module.title}'")
+            print(f"   Has governance_impact: {bool(learning_module.governance_impact)}")
+            print(f"   Has constitution_principle: {bool(learning_module.constitution_principle)}")
+            print(f"🎯 CHOICE: User selected option '{option.option_letter}': {option.option_text[:50]}...")
+            
+            # **DYNAMIC CONTENT**: Prioritize choice-specific impact over generic module content
+            choice_governance_impact = option.governance_impact or learning_module.governance_impact or ''
+            choice_score_reasoning = option.score_reasoning or learning_module.score_reasoning or ''
+            choice_country_changes = option.country_state_changes or learning_module.country_state_changes or ''
+            choice_societal_impact = option.societal_impact or learning_module.societal_impact or ''
+            
+            print(f"   Using choice-specific content: {bool(option.governance_impact or option.score_reasoning)}")
+            
+            return {
+                'title': learning_module.title,
+                'principle_explanation': learning_module.principle_explanation or '',
+                'key_takeaways': learning_module.key_takeaways or '',
+                'historical_context': learning_module.historical_context or '',
+                'real_world_example': learning_module.real_world_example or '',
+                
+                # Enhanced Part 1: Action Reasoning (DYNAMIC - Choice-Specific)
+                'action_impact_title': f"Impact of Your Choice: Option {option.option_letter}",
+                'governance_impact': choice_governance_impact,
+                'score_reasoning': choice_score_reasoning,
+                'country_state_changes': choice_country_changes,
+                'societal_impact': choice_societal_impact,
+                
+                # Enhanced Part 2: Constitution Teaching (from learning module)
+                'constitution_topic_title': learning_module.constitution_topic_title or 'Learn from the Indian Constitution',
+                'constitution_principle': learning_module.constitution_principle or '',
+                'constitution_explanation': learning_module.constitution_explanation or '',
+                'constitution_article_reference': learning_module.constitution_article_reference or '',
+                'historical_constitutional_context': learning_module.historical_constitutional_context or '',
+                
+                # Choice-specific metadata
+                'selected_option': option.option_letter,
+                'option_text': option.option_text,
+                'score_change': option.score_value,
+                'governance_principle': option.governance_principle or '',
+                
+                # Metadata
+                'id': learning_module.id,
+                'display_timing': learning_module.display_timing,
+                'is_skippable': learning_module.is_skippable,
+                'game_type': learning_module.get_game_type_display(),
+            }
+        
+        # Fallback to legacy system if no GameLearningModule found
         if question.learning_module_title:
             return {
                 'title': question.learning_module_title,
@@ -969,6 +1070,19 @@ class ConstitutionAnswerAPI(View):
                 'key_takeaways': '',
                 'historical_context': '',
                 'real_world_example': '',
+                
+                # Empty enhanced fields for legacy content
+                'action_impact_title': 'Impact of Your Decision',
+                'governance_impact': '',
+                'score_reasoning': '',
+                'country_state_changes': '',
+                'societal_impact': '',
+                'constitution_topic_title': 'Learn from the Indian Constitution',
+                'constitution_principle': '',
+                'constitution_explanation': '',
+                'constitution_article_reference': '',
+                'historical_constitutional_context': '',
+                
                 'id': None,
                 'display_timing': 'instant',
                 'is_skippable': True,

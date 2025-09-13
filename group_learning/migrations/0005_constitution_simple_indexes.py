@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             -- Basic indexes for Constitution Challenge performance
             CREATE INDEX IF NOT EXISTS idx_constitution_team_session ON group_learning_constitutionteam (session_id, total_score DESC);
             CREATE INDEX IF NOT EXISTS idx_constitution_question_game ON group_learning_constitutionquestion (game_id, "order");
-            CREATE INDEX IF NOT EXISTS idx_constitution_answer_team ON group_learning_constitutionanswer (team_id, created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_constitution_answer_team ON group_learning_constitutionanswer (team_id, answer_time DESC);
             """,
             reverse_sql="""
             DROP INDEX IF EXISTS idx_constitution_team_session;

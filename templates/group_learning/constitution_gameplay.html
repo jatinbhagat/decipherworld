@@ -71,7 +71,7 @@
                         </button>
                         
                         <!-- Leaderboard Button -->
-                        <button onclick="toggleLeaderboard()" 
+                        <button onclick="console.log('🏆 LEADERBOARD CLICKED'); if(typeof toggleLeaderboard === 'function') { toggleLeaderboard(); } else { console.error('toggleLeaderboard not found!'); alert('Leaderboard function not available'); }" 
                                 class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200"
                                 title="View Leaderboard">
                             🏆 Leaderboard
@@ -992,54 +992,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Make functions globally available
     window.showGameNotification = showGameNotification;
     
-    // Learning Module Functions
-    window.showLearningModule = function(moduleData) {
-        const modal = document.getElementById('learning-module-modal');
-        
-        if (!modal) {
-            console.error('❌ Learning modal not found in DOM');
-            return;
-        }
-        
-        if (!moduleData) {
-            console.error('❌ Learning module data not provided');
-            return;
-        }
-        
-        console.log('📚 Showing learning module:', moduleData.title || 'Constitution Learning');
-        
-        // Show modal
-        modal.classList.remove('hidden');
-        
-        // Update content
-        const titleEl = modal.querySelector('#learning-title');
-        const contentEl = modal.querySelector('#learning-explanation');
-        const impactEl = modal.querySelector('#learning-impact');
-        
-        if (titleEl) titleEl.textContent = moduleData.title || 'Constitution Learning';
-        if (contentEl) contentEl.textContent = moduleData.explanation || 'Learn about this constitutional principle.';
-        if (impactEl) impactEl.textContent = moduleData.impact || 'This decision affects your nation\'s governance.';
-        
-        // Hide loading, show content
-        const loadingDiv = modal.querySelector('#learning-loading');
-        const contentDiv = modal.querySelector('#learning-content');
-        if (loadingDiv) loadingDiv.classList.add('hidden');
-        if (contentDiv) contentDiv.classList.remove('hidden');
-    };
-    
-    window.closeLearningModule = function() {
-        const modal = document.getElementById('learning-module-modal');
-        if (modal) {
-            modal.classList.add('hidden');
-            console.log('📚 Learning module closed, reloading page...');
-            setTimeout(() => window.location.reload(), 500);
-        }
-    };
-    
-    window.skipLearningModule = function() {
-        console.log('📚 Learning module skipped');
-        closeLearningModule();
-    };
+    // Learning Module Functions are now handled by external JS file
     
     console.log('✅ Game functions loaded:');
     console.log('  - selectAnswer:', typeof window.selectAnswer);
