@@ -120,49 +120,13 @@ CORS_ALLOWED_ORIGINS = config(
 # Redis/Caching Configuration (fallback to dummy cache for development)
 REDIS_URL = config('REDIS_URL', default='redis://localhost:6379/0')
 
-# Always use dummy cache for development to avoid Redis dependency
-if DEBUG:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        }
+# Temporarily use dummy cache for both development and production
+# This avoids Redis dependency until we set up Redis in Azure
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
-else:
-    # Production Redis configuration
-    CACHES = {
-        'default': {
-            'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': REDIS_URL,
-            'OPTIONS': {
-                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-                'CONNECTION_POOL_KWARGS': {
-                    'max_connections': 50,
-                    'retry_on_timeout': True,
-                },
-                'SERIALIZER': 'django_redis.serializers.json.JSONSerializer',
-                'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
-            },
-            'KEY_PREFIX': 'decipherworld',
-            'VERSION': 1,
-            'TIMEOUT': 300,  # 5 minutes default timeout
-        },
-        'sessions': {
-            'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': REDIS_URL,
-            'OPTIONS': {
-                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-                'CONNECTION_POOL_KWARGS': {
-                    'max_connections': 20,
-                },
-            },
-            'KEY_PREFIX': 'decipherworld_session',
-            'TIMEOUT': 3600,  # 1 hour for sessions
-        }
-    }
-    
-    # Use Redis for session storage in production
-    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-    SESSION_CACHE_ALIAS = 'sessions'
+}
 
 # Cache time settings
 CACHE_MIDDLEWARE_ALIAS = 'default'
