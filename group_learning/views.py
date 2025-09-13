@@ -1171,6 +1171,62 @@ class ProductionTestAPI(View):
         })
 
 
+class ProductionMigrateAPI(View):
+    """API to run Django migrations on production"""
+    
+    def get(self, request):
+        """Run migrations programmatically"""
+        # Security check - only allow with specific token
+        migrate_token = request.GET.get('migrate_token')
+        if migrate_token != 'MIGRATE_PROD_2024_SECURE':
+            return JsonResponse({'error': 'Invalid or missing migrate_token'}, status=403)
+        
+        results = {
+            'status': 'success',
+            'migration_results': [],
+            'errors': []
+        }
+        
+        try:
+            from django.core.management import call_command
+            from io import StringIO
+            import sys
+            
+            # Capture migration output
+            old_stdout = sys.stdout
+            old_stderr = sys.stderr
+            stdout_capture = StringIO()
+            stderr_capture = StringIO()
+            
+            try:
+                sys.stdout = stdout_capture
+                sys.stderr = stderr_capture
+                
+                # Run migrations
+                call_command('migrate', verbosity=2, interactive=False)
+                
+                migration_output = stdout_capture.getvalue()
+                migration_errors = stderr_capture.getvalue()
+                
+                results['migration_results'].append('✅ Migrations completed successfully')
+                results['migration_output'] = migration_output
+                if migration_errors:
+                    results['migration_errors'] = migration_errors
+                    
+            finally:
+                sys.stdout = old_stdout
+                sys.stderr = old_stderr
+            
+        except Exception as e:
+            import traceback
+            results['status'] = 'error'
+            results['errors'].append(f'Migration failed: {str(e)}')
+            results['errors'].append(f'Traceback: {traceback.format_exc()}')
+            return JsonResponse(results, status=500)
+        
+        return JsonResponse(results)
+
+
 class ProductionSetupAPI(View):
     """API endpoint to set up production database with Constitution Challenge data"""
     

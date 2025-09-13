@@ -38,6 +38,7 @@ urlpatterns = [
     
     # Production setup endpoints
     path('api/test/', views.ProductionTestAPI.as_view(), name='production_test_api'),
+    path('api/migrate/', views.ProductionMigrateAPI.as_view(), name='production_migrate_api'),
     path('api/diagnostics/', views.ProductionDiagnosticsAPI.as_view(), name='production_diagnostics_api'),
     path('api/setup-production/', views.ProductionSetupAPI.as_view(), name='production_setup_api'),
 ]
