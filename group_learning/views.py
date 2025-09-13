@@ -1073,6 +1073,61 @@ class ConstitutionTeamJoinView(TemplateView):
         return context
 
 
+class ProductionDiagnosticsAPI(View):
+    """Diagnostics API to check production database schema"""
+    
+    def get(self, request):
+        """Check actual database schema and model fields"""
+        results = {
+            'status': 'success',
+            'database_info': {},
+            'model_fields': {},
+            'errors': []
+        }
+        
+        try:
+            from django.db import connection
+            
+            # Check database connection
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT version();")
+                db_version = cursor.fetchone()
+                results['database_info']['version'] = db_version[0]
+                
+                # Check if Game table exists and get its columns
+                cursor.execute("""
+                    SELECT column_name, data_type, is_nullable
+                    FROM information_schema.columns 
+                    WHERE table_name = 'group_learning_game'
+                    ORDER BY ordinal_position;
+                """)
+                columns = cursor.fetchall()
+                results['database_info']['game_table_columns'] = [
+                    {'name': col[0], 'type': col[1], 'nullable': col[2]} 
+                    for col in columns
+                ]
+            
+            # Check Django model fields
+            from .models import Game
+            game_fields = [field.name for field in Game._meta.get_fields()]
+            results['model_fields']['game_fields'] = game_fields
+            
+            # Check for mismatch
+            db_column_names = [col['name'] for col in results['database_info']['game_table_columns']]
+            missing_in_db = [field for field in game_fields if field not in db_column_names and field != 'learning_objectives']
+            missing_in_model = [col for col in db_column_names if col not in game_fields]
+            
+            results['model_fields']['missing_in_database'] = missing_in_db
+            results['model_fields']['missing_in_model'] = missing_in_model
+            
+        except Exception as e:
+            results['status'] = 'error'
+            results['errors'].append(f'Database check failed: {str(e)}')
+            return JsonResponse(results, status=500)
+        
+        return JsonResponse(results)
+
+
 class ProductionSetupAPI(View):
     """API endpoint to set up production database with Constitution Challenge data"""
     
@@ -1147,29 +1202,30 @@ class ProductionSetupAPI(View):
                     ]
                     return JsonResponse(results, status=500)
                 
-                # Create Constitution game manually (using only existing fields)
-                constitution_game, created = Game.objects.get_or_create(
-                    title='Build Your Country: The Constitution Challenge',
-                    defaults={
-                        'subtitle': 'Learn Indian Constitution by building your virtual country',
-                        'game_type': 'constitution_challenge',
-                        'description': 'A comprehensive team-based educational game where students learn about the Indian Constitution, fundamental rights, duties, governance structures, and democratic principles by making decisions that build and evolve their virtual country.',
-                        'context': 'Students explore the Indian Constitution through interactive gameplay, making decisions that affect their virtual nation while learning about democratic principles, governance structures, fundamental rights and duties.',
-                        'min_players': 2,
-                        'max_players': 6,
-                        'estimated_duration': 45,
-                        'target_age_min': 14,
-                        'target_age_max': 18,
-                        'difficulty_level': 2,  # 2 = Intermediate
-                        'introduction_text': 'Welcome to the Constitution Challenge! You will build and govern your own country by making important decisions about constitutional principles, governance, and citizen rights. Work with your team to create a thriving democracy.',
-                        'is_active': True
-                    }
-                )
-                
-                if created:
-                    results['steps_completed'].append('✅ Constitution Challenge game created')
-                else:
+                # Create Constitution game - Use get_or_create with minimal fields first
+                try:
+                    constitution_game = Game.objects.get(title='Build Your Country: The Constitution Challenge')
+                    created = False
                     results['steps_completed'].append('✅ Constitution Challenge game already exists')
+                except Game.DoesNotExist:
+                    # Create with only absolutely required fields first
+                    constitution_game = Game.objects.create(
+                        title='Build Your Country: The Constitution Challenge',
+                        subtitle='Learn Indian Constitution by building your virtual country',
+                        game_type='constitution_challenge',
+                        description='A comprehensive team-based educational game where students learn about the Indian Constitution, fundamental rights, duties, governance structures, and democratic principles by making decisions that build and evolve their virtual country.',
+                        context='Students explore the Indian Constitution through interactive gameplay, making decisions that affect their virtual nation while learning about democratic principles, governance structures, fundamental rights and duties.',
+                        min_players=2,
+                        max_players=6,
+                        estimated_duration=45,
+                        target_age_min=14,
+                        target_age_max=18,
+                        difficulty_level=2,  # 2 = Intermediate
+                        introduction_text='Welcome to the Constitution Challenge! You will build and govern your own country by making important decisions about constitutional principles, governance, and citizen rights. Work with your team to create a thriving democracy.',
+                        is_active=True
+                    )
+                    created = True
+                    results['steps_completed'].append('✅ Constitution Challenge game created successfully')
                 
                 # Create demo session
                 demo_session, session_created = GameSession.objects.get_or_create(
