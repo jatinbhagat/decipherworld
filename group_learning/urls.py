@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/session/<str:session_code>/actions/', views.SessionActionsAPI.as_view(), name='session_actions_api'),
     
     # Constitution Challenge URLs
+    path('constitution/start/', views.ConstitutionQuickStartView.as_view(), name='constitution_quick_start'),
     path('constitution/<str:session_code>/', views.ConstitutionTeamJoinView.as_view(), name='constitution_join'),
     path('constitution/<str:session_code>/play/', views.ConstitutionGameView.as_view(), name='constitution_game'),
     path('constitution/<str:session_code>/create-team/', views.ConstitutionTeamCreateView.as_view(), name='constitution_create_team'),

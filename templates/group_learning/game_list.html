@@ -131,10 +131,17 @@
                            class="flex-1 bg-indigo-600 text-white py-3 sm:py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors text-center font-medium text-sm sm:text-base">
                             Learn More
                         </a>
-                        <a href="{% url 'group_learning:create_session' game.pk %}" 
-                           class="flex-1 bg-green-600 text-white py-3 sm:py-2 px-4 rounded-md hover:bg-green-700 transition-colors text-center font-medium text-sm sm:text-base">
-                            Start Game
-                        </a>
+                        {% if game.game_type == 'constitution_challenge' %}
+                            <a href="{% url 'group_learning:constitution_quick_start' %}" 
+                               class="flex-1 bg-blue-600 text-white py-3 sm:py-2 px-4 rounded-md hover:bg-blue-700 transition-colors text-center font-medium text-sm sm:text-base">
+                                Start Game
+                            </a>
+                        {% else %}
+                            <a href="{% url 'group_learning:create_session' game.pk %}" 
+                               class="flex-1 bg-green-600 text-white py-3 sm:py-2 px-4 rounded-md hover:bg-green-700 transition-colors text-center font-medium text-sm sm:text-base">
+                                Start Game
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

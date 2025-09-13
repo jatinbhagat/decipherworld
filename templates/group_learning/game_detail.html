@@ -212,10 +212,19 @@
             <!-- Action Button -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Ready to Play?</h3>
-                <a href="{% url 'group_learning:create_session' game.pk %}" 
-                   class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors text-center font-medium block mb-3">
-                    🎮 Start New Session
-                </a>
+                {% if game.game_type == 'constitution_challenge' %}
+                    <!-- Simplified Constitution Challenge Start -->
+                    <a href="{% url 'group_learning:constitution_quick_start' %}" 
+                       class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors text-center font-medium block mb-3">
+                        🚀 Start Building Your Country
+                    </a>
+                {% else %}
+                    <!-- Regular game session creation -->
+                    <a href="{% url 'group_learning:create_session' game.pk %}" 
+                       class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors text-center font-medium block mb-3">
+                        🎮 Start New Session
+                    </a>
+                {% endif %}
                 <p class="text-xs text-gray-500 text-center">
                     You'll get a session code to share with other players
                 </p>

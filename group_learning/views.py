@@ -1018,6 +1018,107 @@ class ConstitutionLeaderboardAPI(View):
         })
 
 
+class ConstitutionQuickStartView(TemplateView):
+    """Simplified Constitution Challenge start page - team name, optional session code, start playing"""
+    template_name = 'group_learning/constitution_quick_start.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get the Constitution Challenge game
+        try:
+            game = Game.objects.get(game_type='constitution_challenge', is_active=True)
+            context['game'] = game
+        except Game.DoesNotExist:
+            context['error'] = 'Constitution Challenge game not found'
+        
+        # Available flag emojis
+        context['flag_options'] = [
+            '🇮🇳', '🏴', '🏳️', '🚩', '🏁', '🇺🇳', '🌈', '⚡', '🔥', '⭐'
+        ]
+        
+        # Available colors
+        context['color_options'] = [
+            {'value': '#3B82F6', 'name': 'Blue', 'class': 'bg-blue-500'},
+            {'value': '#EF4444', 'name': 'Red', 'class': 'bg-red-500'},
+            {'value': '#10B981', 'name': 'Green', 'class': 'bg-green-500'},
+            {'value': '#F59E0B', 'name': 'Orange', 'class': 'bg-orange-500'},
+            {'value': '#8B5CF6', 'name': 'Purple', 'class': 'bg-purple-500'},
+            {'value': '#EC4899', 'name': 'Pink', 'class': 'bg-pink-500'},
+        ]
+        
+        return context
+    
+    def post(self, request):
+        """Handle the simplified team creation and session joining/creation"""
+        try:
+            # Get form data
+            team_name = request.POST.get('team_name', '').strip()
+            country_flag = request.POST.get('country_flag', '🏴')
+            country_color = request.POST.get('country_color', '#3B82F6')
+            session_code = request.POST.get('session_code', '').strip().upper()
+            
+            # Validation
+            if not team_name:
+                messages.error(request, 'Team name is required')
+                return redirect('group_learning:constitution_quick_start')
+            
+            # Get the Constitution Challenge game
+            game = get_object_or_404(Game, game_type='constitution_challenge', is_active=True)
+            
+            # Handle session - either join existing or create new
+            if session_code:
+                # Try to join existing session
+                try:
+                    session = GameSession.objects.get(session_code=session_code)
+                    if session.game != game:
+                        messages.error(request, 'This session code is not for the Constitution Challenge')
+                        return redirect('group_learning:constitution_quick_start')
+                except GameSession.DoesNotExist:
+                    messages.error(request, f'Session code {session_code} not found')
+                    return redirect('group_learning:constitution_quick_start')
+            else:
+                # Create new session
+                session = GameSession.objects.create(
+                    game=game,
+                    session_code=self.generate_session_code(),
+                    status='waiting',
+                    allow_spectators=True,
+                    auto_assign_roles=True
+                )
+            
+            # Create the team
+            team = ConstitutionTeam.objects.create(
+                session=session,
+                team_name=team_name,
+                flag_emoji=country_flag,
+                country_color=country_color,
+                team_avatar='🏛️',  # Default avatar for Constitution Challenge
+                total_score=0,
+                questions_completed=0,
+            )
+            
+            # Start the session if it's new
+            if session.status == 'waiting':
+                session.status = 'active'
+                session.started_at = timezone.now()
+                session.save()
+            
+            # Redirect to gameplay
+            return redirect('group_learning:constitution_game', session_code=session.session_code)
+            
+        except Exception as e:
+            messages.error(request, f'Error creating team: {str(e)}')
+            return redirect('group_learning:constitution_quick_start')
+    
+    def generate_session_code(self):
+        """Generate a unique 6-character session code"""
+        while True:
+            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            if not GameSession.objects.filter(session_code=code).exists():
+                return code
+
+
 class ConstitutionTeamJoinView(TemplateView):
     """Landing page for teams to join or create for Constitution Challenge"""
     template_name = 'group_learning/constitution_team_setup.html'
