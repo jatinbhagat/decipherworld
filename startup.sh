@@ -18,6 +18,10 @@ python manage.py migrate --noinput --settings=decipherworld.settings.production
 echo "🔧 Fixing Constitution game columns..."
 python manage.py fix_constitution_columns --settings=decipherworld.settings.production
 
+# Sync learning modules data to production
+echo "📚 Syncing learning modules..."
+python manage.py sync_learning_modules --import --file gamelearningmodule_complete.json --settings=decipherworld.settings.production
+
 # Collect static files (needed for Django admin and CSS)
 echo "📁 Collecting static files..."
 python manage.py collectstatic --noinput --settings=decipherworld.settings.production
