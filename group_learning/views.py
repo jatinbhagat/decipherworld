@@ -1469,6 +1469,8 @@ class ProductionSetupAPI(View):
             return self.update_advanced_questions()
         elif action == 'create_advanced_game':
             return self.create_advanced_game()
+        elif action == 'create_learning_modules':
+            return self.create_learning_modules()
         
         try:
             results = {
@@ -1703,4 +1705,70 @@ class ProductionSetupAPI(View):
             return JsonResponse({
                 'status': 'failed',
                 'error': f'Advanced game creation failed: {str(e)}'
+            }, status=500)
+    
+    def create_learning_modules(self):
+        """Create learning modules for both Basic and Advanced Constitution games"""
+        try:
+            from django.core.management import call_command
+            from io import StringIO
+            import sys
+            
+            results = {
+                'status': 'success',
+                'steps_completed': [],
+                'errors': []
+            }
+            
+            # Create basic learning modules first
+            try:
+                old_stdout = sys.stdout
+                stdout_capture = StringIO()
+                sys.stdout = stdout_capture
+                
+                call_command('populate_learning_modules')
+                command_output = stdout_capture.getvalue()
+                
+                sys.stdout = old_stdout
+                
+                results['steps_completed'].append('✅ Created basic learning modules for Constitution Challenge')
+                results['steps_completed'].append(f'📊 Basic modules output: {command_output[:200]}...')
+                
+            except Exception as e:
+                results['errors'].append(f'⚠️ Basic learning modules error: {str(e)}')
+            
+            # Create advanced learning modules
+            try:
+                old_stdout = sys.stdout
+                stdout_capture = StringIO()
+                sys.stdout = stdout_capture
+                
+                call_command('create_advanced_learning_modules')
+                command_output = stdout_capture.getvalue()
+                
+                sys.stdout = old_stdout
+                
+                results['steps_completed'].append('✅ Created advanced learning modules for Advanced Constitution Challenge')
+                results['steps_completed'].append(f'📚 Advanced modules: 64 choice-specific modules created')
+                
+            except Exception as e:
+                results['errors'].append(f'⚠️ Advanced learning modules error: {str(e)}')
+            
+            # Verify modules were created
+            try:
+                from .models import GameLearningModule
+                basic_count = GameLearningModule.objects.filter(game_type='constitution_challenge', trigger_condition='topic_based').count()
+                advanced_count = GameLearningModule.objects.filter(game_type='constitution_challenge', trigger_condition='option_based').count()
+                
+                results['steps_completed'].append(f'✅ Verification: {basic_count} basic + {advanced_count} advanced learning modules')
+                
+            except Exception as e:
+                results['errors'].append(f'⚠️ Verification error: {str(e)}')
+            
+            return JsonResponse(results)
+                    
+        except Exception as e:
+            return JsonResponse({
+                'status': 'failed',
+                'error': f'Learning modules creation failed: {str(e)}'
             }, status=500)
