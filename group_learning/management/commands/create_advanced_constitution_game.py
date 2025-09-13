@@ -35,6 +35,11 @@ class Command(BaseCommand):
                     self.stdout.write(f"✅ Created Advanced Constitution Game (ID: {game.id})")
                 else:
                     self.stdout.write(f"✅ Advanced Constitution Game already exists (ID: {game.id})")
+                    # Clear existing questions to avoid UNIQUE constraint errors on re-run
+                    existing_questions = ConstitutionQuestion.objects.filter(game=game).count()
+                    if existing_questions > 0:
+                        self.stdout.write(f"🔄 Clearing {existing_questions} existing questions for clean setup...")
+                        ConstitutionQuestion.objects.filter(game=game).delete()
                 
                 # Create 16 Advanced Questions with 4 difficult options each
                 questions_data = [
