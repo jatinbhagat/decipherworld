@@ -1281,81 +1281,67 @@ class ProductionSetupAPI(View):
             except Exception as e:
                 results['errors'].append(f'❌ Superuser creation error: {str(e)}')
             
-            # Step 3: Set up Constitution Challenge manually (safer approach)
+            # Step 3: Set up Constitution Challenge using management command (safer approach)  
             try:
-                # Import here to avoid circular imports  
-                from .models import GameLearningModule, GameSession
-                
                 # Check if tables exist first
                 try:
                     Game.objects.exists()
                     results['steps_completed'].append('✅ Database tables are accessible')
                 except Exception as table_error:
                     results['errors'].append(f'❌ Database tables not ready: {str(table_error)}')
-                    results['errors'].append('🔧 Solution: Run migrations manually in Azure Console')
-                    results['next_steps'] = [
-                        '🔧 Manual fix needed:',
-                        '1. Go to Azure App Service Console',
-                        '2. Run: python manage.py migrate --settings=decipherworld.settings.production',
-                        '3. Then retry this setup URL'
-                    ]
                     return JsonResponse(results, status=500)
                 
-                # Create Constitution game - Use get_or_create with minimal fields first
+                # Use management command to create Constitution game (much safer)
                 try:
-                    constitution_game = Game.objects.get(title='Build Your Country: The Constitution Challenge')
-                    created = False
-                    results['steps_completed'].append('✅ Constitution Challenge game already exists')
-                except Game.DoesNotExist:
-                    # Create with only absolutely required fields first
-                    constitution_game = Game.objects.create(
-                        title='Build Your Country: The Constitution Challenge',
-                        subtitle='Learn Indian Constitution by building your virtual country',
-                        game_type='constitution_challenge',
-                        description='A comprehensive team-based educational game where students learn about the Indian Constitution, fundamental rights, duties, governance structures, and democratic principles by making decisions that build and evolve their virtual country.',
-                        context='Students explore the Indian Constitution through interactive gameplay, making decisions that affect their virtual nation while learning about democratic principles, governance structures, fundamental rights and duties.',
-                        min_players=2,
-                        max_players=6,
-                        estimated_duration=45,
-                        target_age_min=14,
-                        target_age_max=18,
-                        difficulty_level=2,  # 2 = Intermediate
-                        introduction_text='Welcome to the Constitution Challenge! You will build and govern your own country by making important decisions about constitutional principles, governance, and citizen rights. Work with your team to create a thriving democracy.',
-                        is_active=True
-                    )
-                    created = True
-                    results['steps_completed'].append('✅ Constitution Challenge game created successfully')
-                
-                # Create demo session
-                demo_session, session_created = GameSession.objects.get_or_create(
-                    session_code='CONST2024',
-                    defaults={
-                        'game': constitution_game,
-                        'status': 'waiting'
-                    }
-                )
-                
-                if session_created:
-                    results['steps_completed'].append('✅ Demo session CONST2024 created')
-                else:
-                    results['steps_completed'].append('✅ Demo session CONST2024 already exists')
-                
-                # Check if questions exist, if not run the management command
-                question_count = ConstitutionQuestion.objects.filter(game=constitution_game).count()
-                if question_count == 0:
+                    from io import StringIO
+                    import sys
+                    
+                    # Check if game already exists
                     try:
-                        call_command('create_constitution_sample_updated', verbosity=0)
-                        results['steps_completed'].append('✅ Constitution questions created via management command')
-                    except Exception as cmd_error:
-                        results['errors'].append(f'⚠️ Management command failed: {str(cmd_error)}')
-                        results['steps_completed'].append('⚠️ Questions not created - will need manual creation')
-                else:
-                    results['steps_completed'].append(f'✅ Constitution questions already exist ({question_count} questions)')
+                        existing_game = Game.objects.get(title='Build Your Country: The Constitution Challenge')
+                        results['steps_completed'].append('✅ Constitution Challenge game already exists')
+                        constitution_game = existing_game
+                    except Game.DoesNotExist:
+                        # Capture management command output
+                        old_stdout = sys.stdout
+                        stdout_capture = StringIO()
+                        sys.stdout = stdout_capture
+                        
+                        try:
+                            # Run the constitution setup management command
+                            call_command('create_constitution_sample')
+                            command_output = stdout_capture.getvalue()
+                            results['steps_completed'].append('✅ Constitution Challenge created via management command')
+                            results['command_output'] = command_output[:1000]  # Limit output size
+                            
+                            # Get the created game
+                            constitution_game = Game.objects.get(title='Build Your Country: The Constitution Challenge')
+                            
+                        finally:
+                            sys.stdout = old_stdout
                 
-                # Final verification
-                question_count = ConstitutionQuestion.objects.filter(game=constitution_game).count()
-                module_count = GameLearningModule.objects.filter(game=constitution_game).count()
-                results['steps_completed'].append(f'✅ Final verification: {question_count} questions, {module_count} modules')
+                    # Create demo session  
+                    from .models import GameSession
+                    demo_session, session_created = GameSession.objects.get_or_create(
+                        session_code='CONST2024',
+                        defaults={
+                            'game': constitution_game,
+                            'status': 'waiting'
+                        }
+                    )
+                    
+                    if session_created:
+                        results['steps_completed'].append('✅ Demo session CONST2024 created')
+                    else:
+                        results['steps_completed'].append('✅ Demo session CONST2024 already exists')
+                        
+                    # Verify questions exist
+                    question_count = ConstitutionQuestion.objects.filter(game=constitution_game).count()
+                    results['steps_completed'].append(f'✅ Final verification: Game "{constitution_game.title}" with {question_count} questions')
+                    
+                except Exception as create_error:
+                    results['errors'].append(f'⚠️ Game creation failed: {str(create_error)}')
+                    return JsonResponse(results, status=500)
                 
             except Exception as e:
                 import traceback
