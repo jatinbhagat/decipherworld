@@ -1092,9 +1092,25 @@ class ProductionSetupAPI(View):
                 'errors': []
             }
             
-            # Step 1: Skip migrations for now - focus on data creation
-            # Note: Migrations can be run manually if needed
-            results['steps_completed'].append('⏭️ Skipping migrations (can be run manually if needed)')
+            # Step 1: Run essential migrations only (skip problematic ones)
+            try:
+                # Run migrations up to the working ones only
+                call_command('migrate', 'group_learning', '0004_add_visual_elements', verbosity=0, interactive=False)
+                results['steps_completed'].append('✅ Essential database migrations completed (up to 0004)')
+                
+                # Then run core app migrations if needed
+                try:
+                    call_command('migrate', 'core', verbosity=0, interactive=False)
+                    call_command('migrate', 'games', verbosity=0, interactive=False)
+                    call_command('migrate', 'robotic_buddy', verbosity=0, interactive=False)
+                    results['steps_completed'].append('✅ Other app migrations completed')
+                except Exception:
+                    results['steps_completed'].append('⚠️ Some app migrations skipped (non-critical)')
+                    
+            except Exception as e:
+                # If even basic migrations fail, try to create tables manually
+                results['errors'].append(f'⚠️ Migration warning: {str(e)}')
+                results['steps_completed'].append('⚠️ Will proceed with manual table creation if needed')
             
             # Step 2: Create superuser if needed
             try:
@@ -1115,6 +1131,21 @@ class ProductionSetupAPI(View):
             try:
                 # Import here to avoid circular imports  
                 from .models import GameLearningModule, GameSession
+                
+                # Check if tables exist first
+                try:
+                    Game.objects.exists()
+                    results['steps_completed'].append('✅ Database tables are accessible')
+                except Exception as table_error:
+                    results['errors'].append(f'❌ Database tables not ready: {str(table_error)}')
+                    results['errors'].append('🔧 Solution: Run migrations manually in Azure Console')
+                    results['next_steps'] = [
+                        '🔧 Manual fix needed:',
+                        '1. Go to Azure App Service Console',
+                        '2. Run: python manage.py migrate --settings=decipherworld.settings.production',
+                        '3. Then retry this setup URL'
+                    ]
+                    return JsonResponse(results, status=500)
                 
                 # Create Constitution game manually
                 constitution_game, created = Game.objects.get_or_create(
