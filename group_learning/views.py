@@ -1463,10 +1463,12 @@ class ProductionSetupAPI(View):
                 'hint': 'Add ?setup_token=decipherworld-setup-2025 to the URL'
             }, status=403)
         
-        # Check if this is a request to update advanced questions
+        # Check if this is a request for specific actions
         action = request.GET.get('action')
         if action == 'update_advanced_questions':
             return self.update_advanced_questions()
+        elif action == 'create_advanced_game':
+            return self.create_advanced_game()
         
         try:
             results = {
@@ -1653,4 +1655,52 @@ class ProductionSetupAPI(View):
             return JsonResponse({
                 'status': 'failed',
                 'error': f'Advanced questions update failed: {str(e)}'
+            }, status=500)
+    
+    def create_advanced_game(self):
+        """Create Advanced Constitution Challenge game"""
+        try:
+            from django.db import transaction
+            
+            results = {
+                'status': 'success',
+                'steps_completed': [],
+                'errors': []
+            }
+            
+            with transaction.atomic():
+                # Create Advanced Constitution Game
+                game, created = Game.objects.get_or_create(
+                    title="Advanced Constitution Challenge",
+                    defaults={
+                        'subtitle': 'Advanced Governance and Constitutional Analysis (Grades 9-12)',
+                        'game_type': 'constitution_challenge',
+                        'description': 'Test your advanced understanding of constitutional principles, governance systems, and democratic institutions through complex scenarios and comparative analysis.',
+                        'context': 'Dive deep into advanced constitutional concepts including federalism, judicial review, electoral systems, and emergency powers. Compare Indian constitutional provisions with other major democracies.',
+                        'min_players': 2,
+                        'max_players': 8,
+                        'estimated_duration': 45,
+                        'target_age_min': 14,
+                        'target_age_max': 18,
+                        'difficulty_level': 3,  # Advanced
+                        'introduction_text': 'Welcome to the Advanced Constitution Challenge! You will face complex governance scenarios that test your understanding of constitutional principles, democratic institutions, and comparative government systems. Each decision will shape your nation\'s development and democratic health.',
+                        'is_active': True
+                    }
+                )
+                
+                if created:
+                    results['steps_completed'].append(f'✅ Created Advanced Constitution Game (ID: {game.id})')
+                else:
+                    results['steps_completed'].append(f'✅ Advanced Constitution Game already exists (ID: {game.id})')
+                    
+                results['steps_completed'].append(f'🎉 Advanced Constitution Challenge ready!')
+                results['steps_completed'].append(f'📊 Game ID: {game.id}')
+                results['steps_completed'].append(f'🎯 Target: Grades 9-12 (Advanced)')
+                
+                return JsonResponse(results)
+                    
+        except Exception as e:
+            return JsonResponse({
+                'status': 'failed',
+                'error': f'Advanced game creation failed: {str(e)}'
             }, status=500)
