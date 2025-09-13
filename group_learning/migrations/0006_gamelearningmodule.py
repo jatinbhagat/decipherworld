@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("group_learning", "0005_constitution_performance_indexes"),
+        ("group_learning", "0005_constitution_simple_indexes"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
