@@ -959,38 +959,9 @@ class ConstitutionAnswerAPI(View):
         """
         Get appropriate learning module based on question, option, and team performance
         """
-        from .models import GameLearningModule
+        # Use the legacy system built into the questions for now
+        # This avoids the GameLearningModule methods that don't exist yet
         
-        # Try to find a learning module that should trigger
-        modules = GameLearningModule.objects.filter(
-            game_type='constitution_challenge',
-            is_enabled=True
-        )
-        
-        for module in modules:
-            if module.should_trigger(
-                question=question,
-                option=option,
-                topic=question.category,
-                team_score=team_score
-            ):
-                # Record that this module is being shown
-                module.record_view()
-                
-                # Get content adapted for team performance
-                content = module.get_content_for_team(team_score)
-                
-                # Add additional metadata for frontend
-                content.update({
-                    'id': module.id,
-                    'display_timing': module.display_timing,
-                    'is_skippable': module.is_skippable,
-                    'game_type': module.get_game_type_display(),
-                })
-                
-                return content
-        
-        # Fallback to legacy system if no new modules match
         if question.learning_module_title:
             return {
                 'title': question.learning_module_title,
