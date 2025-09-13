@@ -6,6 +6,19 @@
 
 {% block keywords %}collaborative learning games, group learning scenarios, educational role-playing, climate change games, crisis management simulation, teamwork activities, multiplayer learning{% endblock %}
 
+{% block extra_head %}
+<!-- Override robots meta tag to prevent indexing (use /games/group-learning/ for SEO) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove existing robots meta tag and add noindex
+    const existingRobots = document.querySelector('meta[name="robots"]');
+    if (existingRobots) {
+        existingRobots.content = 'noindex, nofollow';
+    }
+});
+</script>
+{% endblock %}
+
 {% block structured_data %}
 <script type="application/ld+json">
 {
