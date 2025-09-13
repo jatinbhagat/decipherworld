@@ -20,7 +20,9 @@
       "Bash(curl:*)",
       "Bash(python test_urls.py:*)",
       "Bash(python test:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(az webapp log tail:*)",
+      "Bash(az webapp ssh:*)"
     ],
     "deny": [],
     "ask": []

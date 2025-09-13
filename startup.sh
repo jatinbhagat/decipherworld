@@ -14,6 +14,10 @@ pip install -r requirements.txt
 echo "🗄️ Running database migrations..."
 python manage.py migrate --noinput --settings=decipherworld.settings.production
 
+# Fix missing ConstitutionOption columns (production fix)
+echo "🔧 Fixing Constitution game columns..."
+python manage.py fix_constitution_columns --settings=decipherworld.settings.production
+
 # Collect static files (needed for Django admin and CSS)
 echo "📁 Collecting static files..."
 python manage.py collectstatic --noinput --settings=decipherworld.settings.production
