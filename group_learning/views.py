@@ -1308,10 +1308,10 @@ class ProductionSetupAPI(View):
                         sys.stdout = stdout_capture
                         
                         try:
-                            # Run the constitution setup management command
-                            call_command('create_constitution_sample')
+                            # Run the simple constitution setup management command
+                            call_command('create_constitution_simple')
                             command_output = stdout_capture.getvalue()
-                            results['steps_completed'].append('✅ Constitution Challenge created via management command')
+                            results['steps_completed'].append('✅ Constitution Challenge created via simple management command')
                             results['command_output'] = command_output[:1000]  # Limit output size
                             
                             # Get the created game
