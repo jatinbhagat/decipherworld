@@ -28,6 +28,7 @@ urlpatterns = [
     
     # Constitution Challenge URLs
     path('constitution/start/', views.ConstitutionQuickStartView.as_view(), name='constitution_quick_start'),
+    path('constitution/start/<str:level>/', views.ConstitutionQuickStartView.as_view(), name='constitution_quick_start_level'),
     path('constitution/<str:session_code>/', views.ConstitutionTeamJoinView.as_view(), name='constitution_join'),
     path('constitution/<str:session_code>/play/', views.ConstitutionGameView.as_view(), name='constitution_game'),
     path('constitution/<str:session_code>/create-team/', views.ConstitutionTeamCreateView.as_view(), name='constitution_create_team'),

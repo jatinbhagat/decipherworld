@@ -102,7 +102,7 @@
                                 </a>
                                 {% if game.game_type == 'constitution_challenge' %}
                                     {% if 'Advanced' in game.title %}
-                                        <a href="{% url 'group_learning:create_session' game.pk %}" class="border border-green-600 text-green-600 py-3 px-4 rounded-lg hover:bg-green-50 transition-colors text-center font-medium">
+                                        <a href="{% url 'group_learning:constitution_quick_start_level' 'advanced' %}" class="border border-green-600 text-green-600 py-3 px-4 rounded-lg hover:bg-green-50 transition-colors text-center font-medium">
                                             Start Advanced Game
                                         </a>
                                     {% else %}
