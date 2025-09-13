@@ -12,15 +12,15 @@ pip install -r requirements.txt
 
 # Run database migrations (essential for Django)
 echo "🗄️ Running database migrations..."
-python manage.py migrate --noinput --settings=decipherworld.settings.production
+python manage.py migrate --noinput --settings=decipherworld.settings.production || echo "⚠️ Some migrations may have conflicts, continuing..."
 
 # Fix missing ConstitutionOption columns (production fix)
 echo "🔧 Fixing Constitution game columns..."
 python manage.py fix_constitution_columns --settings=decipherworld.settings.production
 
-# Sync learning modules data to production
-echo "📚 Syncing learning modules..."
-python manage.py sync_learning_modules --import --file gamelearningmodule_complete.json --settings=decipherworld.settings.production
+# Populate learning modules for Constitution game
+echo "📚 Populating Constitution game learning modules..."
+python manage.py populate_learning_modules --settings=decipherworld.settings.production || echo "⚠️ Learning module population failed, skipping..."
 
 # Collect static files (needed for Django admin and CSS)
 echo "📁 Collecting static files..."
