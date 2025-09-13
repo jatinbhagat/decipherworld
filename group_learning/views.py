@@ -1139,12 +1139,19 @@ class ConstitutionQuickStartView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Get the Constitution Challenge game
+        # Get the basic Constitution Challenge game (not the Advanced one)
         try:
-            game = Game.objects.get(game_type='constitution_challenge', is_active=True)
-            context['game'] = game
-        except Game.DoesNotExist:
-            context['error'] = 'Constitution Challenge game not found'
+            game = Game.objects.filter(
+                game_type='constitution_challenge', 
+                is_active=True
+            ).exclude(title__icontains='Advanced').first()
+            
+            if game:
+                context['game'] = game
+            else:
+                context['error'] = 'Basic Constitution Challenge game not found'
+        except Exception as e:
+            context['error'] = f'Error loading Constitution Challenge: {str(e)}'
         
         # Available flag emojis
         context['flag_options'] = [
