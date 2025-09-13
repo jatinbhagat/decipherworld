@@ -149,12 +149,13 @@
 <input type="hidden" id="current-animal" value="">
 <input type="hidden" id="examples-given" value="0">
 <input type="hidden" id="predictions-made" value="0">
+{% csrf_token %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Game State
-let gameState = {
+// Game State for Classification Game
+let classificationGameState = {
     sessionId: null,
     currentAnimal: null,
     examplesGiven: 0,
@@ -175,18 +176,60 @@ const animalEmojis = {
     'goldfish': '🐠', 'shark': '🦈', 'tuna': '🐟', 'salmon': '🐟', 'clownfish': '🐠', 'whale': '🐋'
 };
 
+// Initialize drag and drop functionality for a single element
+function initializeDragAndDrop(element) {
+    if (!element.classList.contains('draggable-item')) return;
+    
+    element.draggable = true;
+    
+    // Remove existing listeners to prevent duplicates
+    element.removeEventListener('dragstart', handleDragStart);
+    element.removeEventListener('dragend', handleDragEnd);
+    
+    // Add drag event listeners
+    element.addEventListener('dragstart', handleDragStart);
+    element.addEventListener('dragend', handleDragEnd);
+}
+
+// Drag event handlers
+function handleDragStart(e) {
+    this.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', this.dataset.item || this.textContent.trim());
+    console.log('Drag started:', this.dataset.item);
+}
+
+function handleDragEnd() {
+    this.classList.remove('dragging');
+    console.log('Drag ended');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     initializeGame();
 });
 
-function initializeGame() {
+function initializeGame(retryCount = 0) {
+    // Ensure GameUtils is available
+    if (!window.GameUtils) {
+        if (retryCount < 50) { // Max 5 seconds of retries
+            console.error(`GameUtils not available, retrying in 100ms... (attempt ${retryCount + 1}/50)`);
+            setTimeout(() => initializeGame(retryCount + 1), 100);
+            return;
+        } else {
+            console.error('❌ CRITICAL: GameUtils never loaded after 50 attempts. Check base template.');
+            alert('Game initialization failed. Please refresh the page.');
+            return;
+        }
+    }
+    
+    console.log('✅ GameUtils loaded successfully, initializing game...');
+    
     // Create a new training session
     window.GameUtils.gameAjax('{% url "robotic_buddy:submit_example" %}', {
         'action': 'create_session',
         'activity_id': {{ activity.id }}
     }, function(response) {
         if (response.session_id) {
-            gameState.sessionId = response.session_id;
+            classificationGameState.sessionId = response.session_id;
             document.getElementById('session-id').value = response.session_id;
             addNewAnimal();
         }
@@ -197,9 +240,9 @@ function addNewAnimal() {
     // Get random animal that hasn't been used recently
     const availableAnimals = [];
     
-    Object.entries(gameState.animals).forEach(([category, animals]) => {
+    Object.entries(classificationGameState.animals).forEach(([category, animals]) => {
         animals.forEach(animal => {
-            if (!gameState.usedAnimals.includes(animal)) {
+            if (!classificationGameState.usedAnimals.includes(animal)) {
                 availableAnimals.push({name: animal, category: category});
             }
         });
@@ -207,8 +250,8 @@ function addNewAnimal() {
     
     if (availableAnimals.length === 0) {
         // Reset used animals if we've used them all
-        gameState.usedAnimals = [];
-        Object.entries(gameState.animals).forEach(([category, animals]) => {
+        classificationGameState.usedAnimals = [];
+        Object.entries(classificationGameState.animals).forEach(([category, animals]) => {
             animals.forEach(animal => {
                 availableAnimals.push({name: animal, category: category});
             });
@@ -216,8 +259,8 @@ function addNewAnimal() {
     }
     
     const randomAnimal = availableAnimals[Math.floor(Math.random() * availableAnimals.length)];
-    gameState.currentAnimal = randomAnimal;
-    gameState.usedAnimals.push(randomAnimal.name);
+    classificationGameState.currentAnimal = randomAnimal;
+    classificationGameState.usedAnimals.push(randomAnimal.name);
     
     // Add animal to the pool
     const animalPool = document.getElementById('animal-pool');
@@ -233,6 +276,9 @@ function addNewAnimal() {
     
     animalPool.appendChild(animalElement);
     
+    // Initialize drag and drop for the new element
+    initializeDragAndDrop(animalElement);
+    
     // Update instructions
     updateBuddyMessage(`I see a ${randomAnimal.name}! Can you show me which category it belongs to?`);
 }
@@ -242,17 +288,17 @@ function updateBuddyMessage(message) {
 }
 
 function updateProgress() {
-    const progress = (gameState.examplesGiven / {{ activity.max_examples }}) * 100;
+    const progress = (classificationGameState.examplesGiven / {{ activity.max_examples }}) * 100;
     document.getElementById('progress-bar').style.width = progress + '%';
-    document.getElementById('examples-count').textContent = gameState.examplesGiven;
+    document.getElementById('examples-count').textContent = classificationGameState.examplesGiven;
     
     // Show test button after minimum examples
-    if (gameState.examplesGiven >= {{ activity.min_examples_needed }}) {
+    if (classificationGameState.examplesGiven >= {{ activity.min_examples_needed }}) {
         document.getElementById('test-buddy-btn').style.display = 'block';
     }
     
     // Show complete button after max examples
-    if (gameState.examplesGiven >= {{ activity.max_examples }}) {
+    if (classificationGameState.examplesGiven >= {{ activity.max_examples }}) {
         document.getElementById('complete-session-btn').style.display = 'block';
         document.getElementById('new-animal-btn').style.display = 'none';
         updateBuddyMessage("Wow! I think I've learned a lot! You can test my knowledge or complete our session.");
@@ -261,8 +307,13 @@ function updateProgress() {
 
 // Enhanced drop handling
 window.handleDrop = function(dropZone, animalName) {
+    console.log('Drop detected:', animalName, 'into', dropZone.dataset.category);
+    
     const category = dropZone.dataset.category;
-    const animalData = gameState.currentAnimal;
+    const animalData = classificationGameState.currentAnimal;
+    
+    console.log('Current animal data:', animalData);
+    console.log('Dropped animal name:', animalName);
     
     if (animalData && animalData.name === animalName) {
         const isCorrect = animalData.category === category;
@@ -281,7 +332,7 @@ window.handleDrop = function(dropZone, animalName) {
             
             // Submit training example
             window.GameUtils.gameAjax('{% url "robotic_buddy:submit_example" %}', {
-                'session_id': gameState.sessionId,
+                'session_id': classificationGameState.sessionId,
                 'example_type': 'classification_item',
                 'label': animalName,
                 'data': {
@@ -292,7 +343,7 @@ window.handleDrop = function(dropZone, animalName) {
                 'confidence': 1.0
             }, function(response) {
                 if (response.success) {
-                    gameState.examplesGiven++;
+                    classificationGameState.examplesGiven++;
                     updateProgress();
                     
                     // Show feedback
@@ -304,7 +355,7 @@ window.handleDrop = function(dropZone, animalName) {
                     
                     // Add new animal after a delay
                     setTimeout(() => {
-                        if (gameState.examplesGiven < {{ activity.max_examples }}) {
+                        if (classificationGameState.examplesGiven < {{ activity.max_examples }}) {
                             addNewAnimal();
                         }
                     }, 2000);
@@ -332,7 +383,7 @@ document.getElementById('test-buddy-btn').addEventListener('click', function() {
 function testBuddyKnowledge() {
     // Get a random animal for testing
     const allAnimals = [];
-    Object.entries(gameState.animals).forEach(([category, animals]) => {
+    Object.entries(classificationGameState.animals).forEach(([category, animals]) => {
         animals.forEach(animal => {
             allAnimals.push({name: animal, category: category});
         });
@@ -380,14 +431,14 @@ function showPredictionInterface(animal, prediction) {
 }
 
 function handlePredictionFeedback(animal, prediction, wasCorrect) {
-    gameState.totalPredictions++;
+    classificationGameState.totalPredictions++;
     if (wasCorrect) {
-        gameState.correctPredictions++;
+        classificationGameState.correctPredictions++;
     }
     
     // Submit the prediction result
     window.GameUtils.gameAjax('{% url "robotic_buddy:submit_example" %}', {
-        'session_id': gameState.sessionId,
+        'session_id': classificationGameState.sessionId,
         'example_type': 'classification_item',
         'label': animal.name,
         'data': {
@@ -411,10 +462,10 @@ function handlePredictionFeedback(animal, prediction, wasCorrect) {
         
         // Continue testing or allow completion
         setTimeout(() => {
-            if (gameState.totalPredictions < 3) {
+            if (classificationGameState.totalPredictions < 3) {
                 testBuddyKnowledge();
             } else {
-                updateBuddyMessage(`I've made ${gameState.totalPredictions} predictions and got ${gameState.correctPredictions} right! Ready to complete our session?`);
+                updateBuddyMessage(`I've made ${classificationGameState.totalPredictions} predictions and got ${classificationGameState.correctPredictions} right! Ready to complete our session?`);
                 document.getElementById('complete-session-btn').style.display = 'block';
             }
         }, 2000);
@@ -424,25 +475,24 @@ function handlePredictionFeedback(animal, prediction, wasCorrect) {
 // Complete session handler
 document.getElementById('complete-session-btn').addEventListener('click', function() {
     window.GameUtils.gameAjax('{% url "robotic_buddy:complete_session" %}', {
-        'session_id': gameState.sessionId
+        'session_id': classificationGameState.sessionId
     }, function(response) {
         if (response.success) {
-            // Show completion celebration
-            const accuracy = gameState.totalPredictions > 0 ? Math.round((gameState.correctPredictions / gameState.totalPredictions) * 100) : 0;
-            
+            // Show brief completion message
             window.GameUtils.showBuddyMessage(
-                `Amazing training session! You taught me ${gameState.examplesGiven} examples and I got ${accuracy}% accuracy on my tests! I earned ${response.experience_earned} XP! 🌟`,
+                `Training complete! Let's see how I learned! 🧠`,
                 'success'
             );
             
-            // Redirect after celebration
+            // Redirect to result page immediately
             setTimeout(() => {
-                let redirectUrl = '{% url "robotic_buddy:my_buddy" %}';
-                if (response.buddy_level > {{ buddy.current_level }}) {
-                    redirectUrl += `?level_up=true&new_level=${response.buddy_level}`;
+                if (response.redirect_url) {
+                    window.location.href = response.redirect_url;
+                } else {
+                    // Fallback to buddy dashboard
+                    window.location.href = '{% url "robotic_buddy:my_buddy" %}';
                 }
-                window.location.href = redirectUrl;
-            }, 3000);
+            }, 1500);
         }
     });
 });

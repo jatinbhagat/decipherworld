@@ -9,7 +9,7 @@ import json
 import uuid
 import random
 
-from .models import RoboticBuddy, GameActivity, TrainingSession, TrainingExample, BuddyAchievement
+from .models import RoboticBuddy, GameActivity, TrainingSession, TrainingExample, BuddyAchievement, AIReasoningExplanation
 
 
 class GameHomeView(TemplateView):
@@ -275,8 +275,8 @@ class ClassificationGameView(TemplateView):
             defaults={
                 'description': 'Teach your buddy to recognize different animals!',
                 'instructions': 'Show your buddy examples by dragging animals into the correct categories. Watch as your buddy learns to classify them!',
-                'min_examples_needed': 3,
-                'max_examples': 8,
+                'min_examples_needed': 5,
+                'max_examples': 16,
                 'experience_reward': 15,
                 'required_level': 1
             }
@@ -354,6 +354,100 @@ class AchievementsView(ListView):
             except RoboticBuddy.DoesNotExist:
                 pass
         return BuddyAchievement.objects.none()
+
+
+class SessionResultView(TemplateView):
+    """
+    Dedicated result page showing detailed AI reasoning and training analysis
+    """
+    template_name = 'robotic_buddy/session_result.html'
+    
+    def get(self, request, session_id, *args, **kwargs):
+        # Ensure user has a buddy
+        buddy_session_id = request.session.get('buddy_session_id')
+        if not buddy_session_id:
+            return redirect('robotic_buddy:create_buddy')
+        
+        try:
+            self.buddy = RoboticBuddy.objects.get(session_id=buddy_session_id)
+            self.training_session = get_object_or_404(
+                TrainingSession, 
+                id=session_id, 
+                buddy=self.buddy
+            )
+        except RoboticBuddy.DoesNotExist:
+            return redirect('robotic_buddy:create_buddy')
+            
+        return super().get(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get all examples from this session
+        examples = TrainingExample.objects.filter(
+            session=self.training_session
+        ).order_by('created_at')
+        
+        # Analyze training quality
+        animal_categories = {
+            'mammals': ['dog', 'cat', 'elephant', 'lion', 'bear', 'monkey', 'whale'],
+            'birds': ['eagle', 'parrot', 'penguin', 'owl', 'robin', 'flamingo'],
+            'fish': ['goldfish', 'shark', 'tuna', 'salmon', 'clownfish']
+        }
+        
+        training_quality = analyze_training_quality(examples, animal_categories)
+        
+        # Get detailed reasoning for each prediction example
+        prediction_examples = examples.filter(
+            data__test_mode=True
+        ) if examples.filter(data__test_mode=True).exists() else examples.filter(buddy_prediction__isnull=False)
+        
+        detailed_reasoning = []
+        for example in prediction_examples:
+            if example.buddy_prediction:
+                # Generate reasoning for this specific example
+                reasoning = generate_detailed_reasoning(
+                    example.label,
+                    example.data.get('correct_category') if example.data else None,
+                    examples,
+                    training_quality,
+                    animal_categories
+                )
+                
+                # Create reasoning explanation record
+                reasoning_explanation, created = AIReasoningExplanation.objects.get_or_create(
+                    session=self.training_session,
+                    example=example,
+                    defaults={
+                        'reasoning_type': 'example_based',
+                        'confidence_score': reasoning['confidence'],
+                        'confidence_explanation': reasoning['confidence_explanation'],
+                        'reasoning_steps': reasoning['reasoning_steps'],
+                        'supporting_examples': reasoning['supporting_examples'],
+                        'visual_patterns': reasoning['visual_patterns'],
+                        'training_quality_score': reasoning['training_quality_score'],
+                        'quality_explanation': f"Training quality was {training_quality['overall_score']:.1%} - this directly impacted my prediction accuracy."
+                    }
+                )
+                
+                detailed_reasoning.append({
+                    'example': example,
+                    'reasoning': reasoning_explanation
+                })
+        
+        # Determine if retrain is recommended
+        retrain_recommended = training_quality['overall_score'] < 0.6
+        
+        context.update({
+            'buddy': self.buddy,
+            'session': self.training_session,
+            'examples': examples,
+            'training_quality': training_quality,
+            'detailed_reasoning': detailed_reasoning,
+            'retrain_recommended': retrain_recommended,
+            'page_title': f'{self.buddy.name} - Training Results'
+        })
+        return context
 
 
 # AJAX API Views
@@ -483,71 +577,250 @@ def complete_training_session(request):
         # Complete the session
         session.complete_session()
         
+        # Generate URL for the dedicated result page
+        from django.urls import reverse
+        result_url = reverse('robotic_buddy:session_result', kwargs={'session_id': session.id})
+        
         return JsonResponse({
             'success': True,
             'experience_earned': session.experience_earned,
             'buddy_level': buddy.current_level,
-            'total_xp': buddy.experience_points
+            'total_xp': buddy.experience_points,
+            'redirect_url': result_url
         })
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
 
-def simulate_buddy_prediction(buddy, example_data):
+def simulate_buddy_prediction(buddy, example_data, session=None):
     """
-    Simulate buddy making a prediction based on its current knowledge
+    Advanced AI buddy prediction based on training quality and detailed reasoning
     """
     example_type = example_data.get('type', 'classification')
-    item = example_data.get('item', '')
+    item = example_data.get('item', '').replace(' animal', '')
     
-    if example_type == 'classification' and 'animal' in item.lower():
-        # Simple animal classification simulation
+    if example_type == 'classification':
+        # Animal classification with detailed reasoning
         animal_categories = {
             'mammals': ['dog', 'cat', 'elephant', 'lion', 'bear', 'monkey', 'whale'],
             'birds': ['eagle', 'parrot', 'penguin', 'owl', 'robin', 'flamingo'],
             'fish': ['goldfish', 'shark', 'tuna', 'salmon', 'clownfish']
         }
         
-        # Check buddy's knowledge base
-        knowledge = buddy.knowledge_base.get('animal_classification', {})
-        examples_seen = sum(len(animals) for animals in knowledge.values())
+        # Get training history for this buddy
+        if session:
+            training_examples = TrainingExample.objects.filter(
+                session__buddy=buddy,
+                example_type='classification_item'
+            ).order_by('-created_at')
+        else:
+            training_examples = TrainingExample.objects.filter(
+                session__buddy=buddy,
+                example_type='classification_item'
+            ).order_by('-created_at')[:20]  # Last 20 examples
         
-        # Simulate learning: more examples = better accuracy
-        base_accuracy = min(0.9, 0.3 + (examples_seen * 0.1))
+        # Analyze training quality
+        training_quality = analyze_training_quality(training_examples, animal_categories)
         
-        # Find correct category
+        # Find correct category for the item
         correct_category = None
         for category, animals in animal_categories.items():
             if item.lower() in animals:
                 correct_category = category
                 break
         
-        # Buddy's prediction logic
-        if correct_category and random.random() < base_accuracy:
-            prediction = correct_category
-            confidence = min(0.95, base_accuracy + random.uniform(0.0, 0.1))
-            is_correct = True
-        else:
-            # Make incorrect guess
-            categories = list(animal_categories.keys())
-            if correct_category:
-                categories.remove(correct_category)
-            prediction = random.choice(categories)
-            confidence = random.uniform(0.3, 0.6)
-            is_correct = False
+        # Generate detailed reasoning based on training
+        reasoning_result = generate_detailed_reasoning(
+            item, correct_category, training_examples, training_quality, animal_categories
+        )
         
-        return {
-            'prediction': prediction,
-            'confidence': round(confidence, 2),
-            'is_correct': is_correct,
-            'explanation': f"I think this {item} is a {prediction} because I've learned about {examples_seen} animals so far!"
-        }
+        return reasoning_result
     
-    # Default response
+    # Default response for non-classification
     return {
         'prediction': 'unknown',
         'confidence': 0.5,
         'is_correct': False,
-        'explanation': "I'm still learning about this type of thing!"
+        'explanation': "I'm still learning about this type of thing!",
+        'reasoning_steps': [],
+        'supporting_examples': [],
+        'visual_patterns': {},
+        'training_quality_score': 1.0
+    }
+
+
+def analyze_training_quality(training_examples, animal_categories):
+    """
+    Analyze the quality of training data provided by the user
+    """
+    if not training_examples:
+        return {
+            'overall_score': 0.5,
+            'correct_examples': 0,
+            'total_examples': 0,
+            'category_accuracy': {},
+            'consistency_score': 1.0
+        }
+    
+    total_examples = len(training_examples)
+    correct_examples = 0
+    category_stats = {category: {'correct': 0, 'total': 0} for category in animal_categories.keys()}
+    
+    for example in training_examples:
+        # Check if the user's label was correct
+        animal_name = example.label.lower()
+        user_category = None
+        correct_category = None
+        
+        # Find what category the user put it in (from session data)
+        if hasattr(example, 'data') and example.data:
+            user_category = example.data.get('category')
+        
+        # Find the actual correct category
+        for category, animals in animal_categories.items():
+            if animal_name in animals:
+                correct_category = category
+                break
+        
+        if user_category and correct_category:
+            category_stats[user_category]['total'] += 1
+            if user_category == correct_category:
+                correct_examples += 1
+                category_stats[user_category]['correct'] += 1
+    
+    # Calculate category-wise accuracy
+    category_accuracy = {}
+    for category, stats in category_stats.items():
+        if stats['total'] > 0:
+            category_accuracy[category] = stats['correct'] / stats['total']
+        else:
+            category_accuracy[category] = 1.0
+    
+    # Overall training quality score
+    overall_score = correct_examples / total_examples if total_examples > 0 else 0.5
+    
+    # Consistency score (how consistent the user was)
+    consistency_score = min(category_accuracy.values()) if category_accuracy else 1.0
+    
+    return {
+        'overall_score': overall_score,
+        'correct_examples': correct_examples,
+        'total_examples': total_examples,
+        'category_accuracy': category_accuracy,
+        'consistency_score': consistency_score
+    }
+
+
+def generate_detailed_reasoning(item, correct_category, training_examples, training_quality, animal_categories):
+    """
+    Generate step-by-step reasoning for AI buddy's prediction
+    """
+    # Base prediction accuracy heavily influenced by training quality
+    base_accuracy = 0.3 + (training_quality['overall_score'] * 0.6)  # 30% to 90% based on training quality
+    
+    # Find similar animals from training
+    similar_examples = []
+    for example in training_examples:
+        if hasattr(example, 'data') and example.data:
+            user_category = example.data.get('category')
+            if user_category:
+                similar_examples.append({
+                    'animal': example.label,
+                    'category': user_category,
+                    'was_correct': example.was_correct
+                })
+    
+    # Generate reasoning steps
+    reasoning_steps = []
+    supporting_examples = []
+    
+    # Step 1: Analyze what I've learned
+    if training_examples:
+        step1 = f"I've been trained on {training_quality['total_examples']} animals, and my trainer got {training_quality['correct_examples']} of them right ({training_quality['overall_score']:.1%} accuracy)."
+        reasoning_steps.append({
+            'step': 1,
+            'title': 'Analyzing my training data',
+            'description': step1,
+            'confidence_impact': training_quality['overall_score']
+        })
+    
+    # Step 2: Look for similar animals
+    category_examples = {}
+    for example in similar_examples[:10]:  # Recent 10 examples
+        category = example['category']
+        if category not in category_examples:
+            category_examples[category] = []
+        category_examples[category].append(example)
+        supporting_examples.append(example)
+    
+    if category_examples:
+        most_common_category = max(category_examples.keys(), key=lambda k: len(category_examples[k]))
+        step2 = f"Looking at animals I've learned, I see {len(category_examples.get(most_common_category, []))} examples in the '{most_common_category}' category."
+        reasoning_steps.append({
+            'step': 2,
+            'title': 'Finding similar patterns',
+            'description': step2,
+            'examples': category_examples.get(most_common_category, [])[:3]
+        })
+    
+    # Step 3: Make prediction based on training quality
+    if correct_category and random.random() < base_accuracy:
+        # Correct prediction
+        prediction = correct_category
+        confidence = min(0.95, base_accuracy + random.uniform(0.0, 0.1))
+        is_correct = True
+        
+        step3 = f"Based on my training, I'm {confidence:.1%} confident that {item} belongs in the '{prediction}' category."
+        if training_quality['overall_score'] < 0.5:
+            step3 += " However, my training data had some inconsistencies, so I might be wrong."
+    else:
+        # Incorrect prediction (due to poor training)
+        categories = list(animal_categories.keys())
+        if correct_category and correct_category in categories:
+            categories.remove(correct_category)
+        prediction = random.choice(categories) if categories else 'unknown'
+        confidence = random.uniform(0.3, 0.6)
+        is_correct = False
+        
+        step3 = f"My training data was inconsistent ({training_quality['overall_score']:.1%} accuracy), so I'm making my best guess: {item} is a '{prediction}', but I'm only {confidence:.1%} confident."
+    
+    reasoning_steps.append({
+        'step': 3,
+        'title': 'Making my prediction',
+        'description': step3,
+        'prediction': prediction,
+        'confidence': confidence
+    })
+    
+    # Confidence explanation
+    confidence_explanation = f"My confidence is {confidence:.1%} because my training data was {training_quality['overall_score']:.1%} accurate. "
+    if training_quality['overall_score'] > 0.8:
+        confidence_explanation += "My trainer did an excellent job teaching me!"
+    elif training_quality['overall_score'] > 0.6:
+        confidence_explanation += "My trainer did a good job, but there were some mistakes in my training."
+    else:
+        confidence_explanation += "My training had many errors, so I'm not very confident in my predictions."
+    
+    # Visual patterns (simulated)
+    visual_patterns = {
+        'size': 'medium' if 'elephant' not in item else 'large',
+        'habitat': 'land' if prediction == 'mammals' else ('air' if prediction == 'birds' else 'water'),
+        'features': {
+            'mammals': ['fur', 'warm-blooded', 'live birth'],
+            'birds': ['feathers', 'wings', 'lay eggs'],
+            'fish': ['scales', 'gills', 'swim']
+        }.get(prediction, [])
+    }
+    
+    return {
+        'prediction': prediction,
+        'confidence': round(confidence, 2),
+        'is_correct': is_correct,
+        'explanation': f"Based on my training, I think {item} is a {prediction}!",
+        'reasoning_steps': reasoning_steps,
+        'supporting_examples': supporting_examples,
+        'visual_patterns': visual_patterns,
+        'training_quality_score': training_quality['overall_score'],
+        'confidence_explanation': confidence_explanation
     }

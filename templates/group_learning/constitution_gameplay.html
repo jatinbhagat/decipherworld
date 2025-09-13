@@ -21,6 +21,9 @@
     <!-- Load static files -->
     {% load static %}
     {% load group_learning_extras %}
+    
+    <!-- Constitution Challenge JavaScript -->
+    <script src="{% static 'js/constitution_challenge.js' %}"></script>
 </head>
 <body class="overflow-hidden">
     <!-- Full-screen immersive constitution game -->
@@ -982,16 +985,11 @@ async function submitAnswerDirectly(optionId, optionLetter) {
     }
 }
 
-// Main answer selection function - THIS IS WHAT THE BUTTONS CALL
-function selectAnswer(optionId, optionLetter) {
-    console.log(`🎯 Answer selected: ${optionLetter} (ID: ${optionId})`);
-    submitAnswerDirectly(optionId, optionLetter);
-}
+// Answer selection is now handled by external JS file with audio cues
 
 // Initialize Constitution Challenge when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     // Make functions globally available
-    window.selectAnswer = selectAnswer;
     window.showGameNotification = showGameNotification;
     
     // Learning Module Functions
@@ -1074,67 +1072,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    window.toggleLeaderboard = function() {
-        console.log('🏆 LEADERBOARD: Toggle function called');
-        
-        const panel = document.getElementById('leaderboard-panel');
-        const backdrop = document.getElementById('leaderboard-backdrop');
-        
-        if (!panel) {
-            console.error('❌ LEADERBOARD: Panel element not found!');
-            alert('Error: Leaderboard panel not found');
-            return;
-        }
-        
-        console.log('✅ LEADERBOARD: Panel found, current classes:', panel.className);
-        
-        const isHidden = panel.classList.contains('translate-x-full');
-        console.log('🔍 LEADERBOARD: Currently hidden?', isHidden);
-        
-        if (isHidden) {
-            // Open leaderboard
-            panel.classList.remove('translate-x-full');
-            panel.classList.add('translate-x-0');
-            if (backdrop) {
-                backdrop.classList.remove('hidden');
-            }
-            console.log('📂 LEADERBOARD: Panel opened - sliding in from right');
-            
-            // FORCE the transform with inline styles to override any conflicts
-            panel.style.transform = 'translateX(0)';
-            panel.style.visibility = 'visible';
-            
-            // Add temporary visual debug border - make it very obvious
-            panel.style.borderLeft = '8px solid #EF4444';
-            panel.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.5)';
-            
-            setTimeout(() => {
-                panel.style.borderLeft = '4px solid #EAB308'; // Yellow border
-                panel.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
-            }, 800);
-            
-            console.log('🔍 LEADERBOARD: Final panel transform:', panel.style.transform);
-            console.log('🔍 LEADERBOARD: Panel computed style:', window.getComputedStyle(panel).transform);
-            
-            // Load fresh leaderboard data
-            fetch('/learn/api/constitution/{{ session.session_code }}/leaderboard/')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('📊 LEADERBOARD: Fresh data loaded:', data);
-                })
-                .catch(error => console.error('⚠️ LEADERBOARD: Data load failed:', error));
-                
-        } else {
-            // Close leaderboard  
-            panel.classList.remove('translate-x-0');
-            panel.classList.add('translate-x-full');
-            panel.style.transform = 'translateX(100%)';
-            if (backdrop) {
-                backdrop.classList.add('hidden');
-            }
-            console.log('📁 LEADERBOARD: Panel closed - sliding out to right');
-        }
-    };
+    // Leaderboard toggle is now handled by external JS file
     
     console.log('✅ Direct toggle functions created and ready!');
 });

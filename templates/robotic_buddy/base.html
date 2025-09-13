@@ -179,6 +179,7 @@
 <!-- Game JavaScript utilities -->
 <script>
     // Global game utilities
+    console.log('🎮 Base template script running, creating GameUtils...');
     window.GameUtils = {
         // Show buddy message with animation
         showBuddyMessage: function(message, type = 'info') {
@@ -230,6 +231,7 @@
             });
         }
     };
+    console.log('✅ GameUtils created successfully:', window.GameUtils);
     
     // Initialize drag and drop functionality
     document.addEventListener('DOMContentLoaded', function() {

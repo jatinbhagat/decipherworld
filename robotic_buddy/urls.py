@@ -28,4 +28,5 @@ urlpatterns = [
     # Progress and Stats
     path('buddy-stats/', views.BuddyStatsView.as_view(), name='buddy_stats'),
     path('achievements/', views.AchievementsView.as_view(), name='achievements'),
+    path('session-result/<int:session_id>/', views.SessionResultView.as_view(), name='session_result'),
 ]

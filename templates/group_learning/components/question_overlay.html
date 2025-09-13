@@ -40,7 +40,7 @@
                     
                     {% for option in current_question.options.all %}
                         <button onclick="selectAnswer({{ option.id }}, '{{ option.option_letter }}')" 
-                                class="interactive-answer-btn w-full text-left p-3 rounded-lg border-2 border-{{ option.color_class }}-200 hover:border-{{ option.color_class }}-400 hover:bg-{{ option.color_class }}-50 focus:ring-2 focus:ring-{{ option.color_class }}-500 focus:ring-opacity-50 focus:outline-none transition-all duration-200 answer-option transform hover:scale-[1.01] hover:shadow-md cursor-pointer"
+                                class="interactive-answer-btn w-full text-left p-3 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 focus:outline-none transition-all duration-200 answer-option transform hover:scale-[1.01] hover:shadow-md cursor-pointer"
                                 data-option-id="{{ option.id }}"
                                 data-color="{{ option.color_class }}"
                                 data-option-letter="{{ option.option_letter }}"
@@ -50,7 +50,7 @@
                                 aria-describedby="option-{{ option.id }}-description"
                                 aria-label="Option {{ option.option_letter }}: {{ option.option_text }}">
                             <div class="flex items-start">
-                                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-{{ option.color_class }}-500 text-white flex items-center justify-center font-bold text-xs mr-3" aria-hidden="true">
+                                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-gray-500 text-white flex items-center justify-center font-bold text-xs mr-3" aria-hidden="true">
                                     {{ option.option_letter }}
                                 </div>
                                 <div class="flex-grow">

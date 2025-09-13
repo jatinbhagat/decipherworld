@@ -101,8 +101,8 @@ class GameActivity(models.Model):
     instructions = models.TextField(help_text="How to play instructions")
     
     # Game Configuration
-    min_examples_needed = models.IntegerField(default=3, help_text="Minimum examples needed to 'train' buddy")
-    max_examples = models.IntegerField(default=10, help_text="Maximum examples in one session")
+    min_examples_needed = models.IntegerField(default=5, help_text="Minimum examples needed to 'train' buddy")
+    max_examples = models.IntegerField(default=16, help_text="Maximum examples in one session")
     experience_reward = models.IntegerField(default=10, help_text="XP awarded for completing activity")
     
     # Prerequisites
@@ -262,3 +262,55 @@ class BuddyAchievement(models.Model):
     
     def __str__(self):
         return f"{self.buddy.name} - {self.name}"
+
+
+class AIReasoningExplanation(models.Model):
+    """
+    Detailed explanations of how the AI buddy made predictions
+    """
+    REASONING_TYPES = [
+        ('pattern_matching', 'Pattern Matching'),
+        ('similarity_comparison', 'Similarity Comparison'),
+        ('feature_analysis', 'Feature Analysis'),
+        ('example_based', 'Example-Based Learning'),
+    ]
+    
+    session = models.ForeignKey(TrainingSession, on_delete=models.CASCADE, related_name='explanations')
+    example = models.ForeignKey(TrainingExample, on_delete=models.CASCADE, related_name='reasoning')
+    
+    # Reasoning Details
+    reasoning_type = models.CharField(max_length=30, choices=REASONING_TYPES, default='example_based')
+    confidence_score = models.FloatField(help_text="AI confidence level (0.0-1.0)")
+    confidence_explanation = models.TextField(help_text="Why this confidence level")
+    
+    # Step-by-step reasoning
+    reasoning_steps = models.JSONField(
+        default=list,
+        help_text="Array of reasoning steps with descriptions and supporting examples"
+    )
+    
+    # Supporting evidence
+    supporting_examples = models.JSONField(
+        default=list,
+        help_text="Training examples that influenced this prediction"
+    )
+    
+    # Visual patterns identified
+    visual_patterns = models.JSONField(
+        default=dict,
+        help_text="Visual features or patterns the AI identified"
+    )
+    
+    # Training quality impact
+    training_quality_score = models.FloatField(default=1.0, help_text="Quality of training data that led to this prediction")
+    quality_explanation = models.TextField(blank=True, help_text="How training quality affected this prediction")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "AI Reasoning Explanation"
+        verbose_name_plural = "AI Reasoning Explanations"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Reasoning for {self.example.label} - {self.confidence_score:.1%} confidence"

@@ -256,6 +256,78 @@ If deployment fails:
 - [ ] Phase 3: No 500 errors in production logs
 - [ ] Phase 3: All critical pages indexed by Google
 
+## AI Games Troubleshooting
+
+### 🔥 CRITICAL: Drag and Drop Not Working (Recurring Issue)
+
+**Problem**: Animals can be dragged but not dropped in classification games
+**Symptoms**: 
+- Drag starts correctly (animal follows cursor)
+- Drop zones don't respond to drops
+- No feedback when dropping on categories
+
+**Root Causes**: 
+1. Dynamically created animals don't get drag event listeners attached
+2. JavaScript variable conflicts (`gameState` declared in multiple templates)
+3. Missing CSRF token causing AJAX failures
+4. Race condition where GameUtils loads after game initialization
+
+**Solution**: Complete JavaScript fix
+```javascript
+// 1. Fix variable conflicts - Use unique gameState names
+let classificationGameState = {  // Change from 'gameState' to avoid conflicts
+    sessionId: null,
+    currentAnimal: null,
+    // ... rest of state
+};
+
+// 2. Add CSRF token to template
+{% csrf_token %}
+
+// 3. Add GameUtils availability check
+function initializeGame() {
+    if (!window.GameUtils) {
+        console.error('GameUtils not available, retrying in 100ms...');
+        setTimeout(initializeGame, 100);
+        return;
+    }
+    // ... rest of initialization
+}
+
+// 4. Add drag/drop initialization for dynamic elements
+function initializeDragAndDrop(element) {
+    if (!element.classList.contains('draggable-item')) return;
+    
+    element.draggable = true;
+    element.removeEventListener('dragstart', handleDragStart);
+    element.removeEventListener('dragend', handleDragEnd);
+    element.addEventListener('dragstart', handleDragStart);
+    element.addEventListener('dragend', handleDragEnd);
+}
+
+function handleDragStart(e) {
+    this.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', this.dataset.item || this.textContent.trim());
+}
+
+function handleDragEnd() {
+    this.classList.remove('dragging');
+}
+
+// 5. Call after creating new animals
+animalPool.appendChild(animalElement);
+initializeDragAndDrop(animalElement); // CRITICAL: Add this line
+```
+
+**Prevention**: 
+- Base template in `robotic_buddy/base.html` has drag/drop utilities
+- Always call `initializeDragAndDrop()` for dynamically created elements
+- Check console for drag events: "Drag started: [animal]"
+
+**Files Involved**:
+- `templates/robotic_buddy/base.html` (lines 234-273: Global drag/drop handlers)
+- `templates/robotic_buddy/classification_game.html` (animal creation logic)
+
 ## Monitoring
 - Django logging configured for Azure
 - Sitemap available at `/sitemap.xml`
