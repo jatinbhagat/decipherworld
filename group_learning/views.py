@@ -1186,7 +1186,7 @@ class ConstitutionQuickStartView(TemplateView):
         
         return context
     
-    def post(self, request):
+    def post(self, request, level=None):
         """Handle the simplified team creation and session joining/creation"""
         try:
             # Get form data
@@ -1201,7 +1201,7 @@ class ConstitutionQuickStartView(TemplateView):
                 return redirect('group_learning:constitution_quick_start')
             
             # Get the Constitution Challenge game (avoid MultipleObjectsReturned error)
-            level = self.kwargs.get('level', 'basic')
+            level = level or 'basic'
             if level == 'advanced':
                 game = Game.objects.filter(
                     game_type='constitution_challenge', 
