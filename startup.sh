@@ -22,6 +22,14 @@ python manage.py fix_constitution_columns --settings=decipherworld.settings.prod
 echo "📚 Populating Constitution game learning modules..."
 python manage.py populate_learning_modules --settings=decipherworld.settings.production || echo "⚠️ Learning module population failed, skipping..."
 
+# Create Advanced Constitution Challenge game
+echo "🎓 Creating Advanced Constitution Challenge game..."
+python manage.py create_advanced_constitution_game --settings=decipherworld.settings.production || echo "⚠️ Advanced game creation failed, skipping..."
+
+# Create Advanced Constitution learning modules
+echo "📖 Creating Advanced Constitution learning modules..."
+python manage.py create_advanced_learning_modules --settings=decipherworld.settings.production || echo "⚠️ Advanced learning modules creation failed, skipping..."
+
 # Collect static files (needed for Django admin and CSS)
 echo "📁 Collecting static files..."
 python manage.py collectstatic --noinput --settings=decipherworld.settings.production
