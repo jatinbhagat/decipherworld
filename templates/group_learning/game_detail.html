@@ -169,8 +169,16 @@
                         <span class="font-medium">{{ game.get_difficulty_level_display }}</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-600">Age Range:</span>
-                        <span class="font-medium">{{ game.target_age_min }}-{{ game.target_age_max }} years</span>
+                        <span class="text-gray-600">Grade Range:</span>
+                        <span class="font-medium">
+                            {% if game.game_type == 'constitution_challenge' %}
+                                Grades 5-9
+                            {% elif game.game_type == 'crisis_management' or game.game_type == 'environmental' %}
+                                Grades 6-10
+                            {% else %}
+                                Ages {{ game.target_age_min }}-{{ game.target_age_max }}
+                            {% endif %}
+                        </span>
                     </div>
                     {% if scenarios %}
                     <div class="flex justify-between">
