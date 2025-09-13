@@ -37,6 +37,7 @@ urlpatterns = [
     path('api/constitution/<str:session_code>/leaderboard/', views.ConstitutionLeaderboardAPI.as_view(), name='constitution_leaderboard_api'),
     
     # Production setup endpoints
+    path('api/test/', views.ProductionTestAPI.as_view(), name='production_test_api'),
     path('api/diagnostics/', views.ProductionDiagnosticsAPI.as_view(), name='production_diagnostics_api'),
     path('api/setup-production/', views.ProductionSetupAPI.as_view(), name='production_setup_api'),
 ]

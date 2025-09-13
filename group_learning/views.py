@@ -1082,11 +1082,21 @@ class ProductionDiagnosticsAPI(View):
             'status': 'success',
             'database_info': {},
             'model_fields': {},
+            'migration_info': {},
             'errors': []
         }
         
         try:
             from django.db import connection
+            from django.db.migrations.executor import MigrationExecutor
+            
+            # Check migration status
+            executor = MigrationExecutor(connection)
+            plan = executor.migration_plan(executor.loader.graph.leaf_nodes())
+            results['migration_info']['pending_migrations'] = [
+                f"{migration.app_label}.{migration.name}" for migration, _ in plan
+            ]
+            results['migration_info']['pending_count'] = len(plan)
             
             # Check database connection
             with connection.cursor() as cursor:
@@ -1094,38 +1104,71 @@ class ProductionDiagnosticsAPI(View):
                 db_version = cursor.fetchone()
                 results['database_info']['version'] = db_version[0]
                 
-                # Check if Game table exists and get its columns
+                # Check if Game table exists
                 cursor.execute("""
-                    SELECT column_name, data_type, is_nullable
-                    FROM information_schema.columns 
-                    WHERE table_name = 'group_learning_game'
-                    ORDER BY ordinal_position;
+                    SELECT EXISTS (
+                        SELECT FROM information_schema.tables 
+                        WHERE table_name = 'group_learning_game'
+                    );
                 """)
-                columns = cursor.fetchall()
-                results['database_info']['game_table_columns'] = [
-                    {'name': col[0], 'type': col[1], 'nullable': col[2]} 
-                    for col in columns
-                ]
+                table_exists = cursor.fetchone()[0]
+                results['database_info']['game_table_exists'] = table_exists
+                
+                if table_exists:
+                    # Get columns
+                    cursor.execute("""
+                        SELECT column_name, data_type, is_nullable
+                        FROM information_schema.columns 
+                        WHERE table_name = 'group_learning_game'
+                        ORDER BY ordinal_position;
+                    """)
+                    columns = cursor.fetchall()
+                    results['database_info']['game_table_columns'] = [
+                        {'name': col[0], 'type': col[1], 'nullable': col[2]} 
+                        for col in columns
+                    ]
+                else:
+                    results['database_info']['game_table_columns'] = []
             
             # Check Django model fields
             from .models import Game
             game_fields = [field.name for field in Game._meta.get_fields()]
             results['model_fields']['game_fields'] = game_fields
             
-            # Check for mismatch
-            db_column_names = [col['name'] for col in results['database_info']['game_table_columns']]
-            missing_in_db = [field for field in game_fields if field not in db_column_names and field != 'learning_objectives']
-            missing_in_model = [col for col in db_column_names if col not in game_fields]
-            
-            results['model_fields']['missing_in_database'] = missing_in_db
-            results['model_fields']['missing_in_model'] = missing_in_model
+            # Check for mismatch if table exists
+            if table_exists:
+                db_column_names = [col['name'] for col in results['database_info']['game_table_columns']]
+                missing_in_db = [field for field in game_fields if field not in db_column_names and not field.endswith('_set') and field not in ['learning_objectives', 'scenarios', 'sessions', 'constitution_questions']]
+                missing_in_model = [col for col in db_column_names if col not in game_fields]
+                
+                results['model_fields']['missing_in_database'] = missing_in_db
+                results['model_fields']['missing_in_model'] = missing_in_model
             
         except Exception as e:
+            import traceback
             results['status'] = 'error'
             results['errors'].append(f'Database check failed: {str(e)}')
+            results['errors'].append(f'Traceback: {traceback.format_exc()}')
             return JsonResponse(results, status=500)
         
         return JsonResponse(results)
+
+
+class ProductionTestAPI(View):
+    """Simple test API to check if deployment is working"""
+    
+    def get(self, request):
+        """Simple test endpoint"""
+        import os
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Production API is working!',
+            'deployment_info': {
+                'django_settings_module': os.environ.get('DJANGO_SETTINGS_MODULE', 'not set'),
+                'debug': os.environ.get('DEBUG', 'not set'),
+                'database_url_set': 'DATABASE_URL' in os.environ
+            }
+        })
 
 
 class ProductionSetupAPI(View):
