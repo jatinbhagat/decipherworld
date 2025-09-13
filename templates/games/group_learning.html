@@ -70,7 +70,11 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
                                     {% if game.game_type == 'constitution_challenge' %}
-                                        Grades 5-9
+                                        {% if 'Advanced' in game.title %}
+                                            Grades 9-12
+                                        {% else %}
+                                            Grades 6-9
+                                        {% endif %}
                                     {% elif game.game_type == 'crisis_management' or game.game_type == 'environmental' %}
                                         Grades 6-10
                                     {% else %}
@@ -97,9 +101,15 @@
                                     Learn More
                                 </a>
                                 {% if game.game_type == 'constitution_challenge' %}
-                                    <a href="{% url 'group_learning:constitution_quick_start' %}" class="border border-green-600 text-green-600 py-3 px-4 rounded-lg hover:bg-green-50 transition-colors text-center font-medium">
-                                        Start Game
-                                    </a>
+                                    {% if 'Advanced' in game.title %}
+                                        <a href="{% url 'group_learning:create_session' game.pk %}" class="border border-green-600 text-green-600 py-3 px-4 rounded-lg hover:bg-green-50 transition-colors text-center font-medium">
+                                            Start Advanced Game
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'group_learning:constitution_quick_start' %}" class="border border-green-600 text-green-600 py-3 px-4 rounded-lg hover:bg-green-50 transition-colors text-center font-medium">
+                                            Start Game
+                                        </a>
+                                    {% endif %}
                                 {% else %}
                                     <a href="{% url 'group_learning:create_session' game.pk %}" class="border border-green-600 text-green-600 py-3 px-4 rounded-lg hover:bg-green-50 transition-colors text-center font-medium">
                                         Start Game
