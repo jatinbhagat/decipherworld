@@ -1507,9 +1507,14 @@ class ProductionSetupAPI(View):
                     
                     # Check if game already exists
                     try:
-                        existing_game = Game.objects.get(title='Build Your Country: The Constitution Challenge')
-                        results['steps_completed'].append('✅ Constitution Challenge game already exists')
-                        constitution_game = existing_game
+                        existing_game = Game.objects.filter(
+                            title='Build Your Country: The Constitution Challenge'
+                        ).first()
+                        if existing_game:
+                            results['steps_completed'].append('✅ Constitution Challenge game already exists')
+                            constitution_game = existing_game
+                        else:
+                            raise Game.DoesNotExist()
                     except Game.DoesNotExist:
                         # Capture management command output
                         old_stdout = sys.stdout
@@ -1524,7 +1529,9 @@ class ProductionSetupAPI(View):
                             results['command_output'] = command_output[:1000]  # Limit output size
                             
                             # Get the created game
-                            constitution_game = Game.objects.get(title='Build Your Country: The Constitution Challenge')
+                            constitution_game = Game.objects.filter(
+                                title='Build Your Country: The Constitution Challenge'
+                            ).first()
                             
                         finally:
                             sys.stdout = old_stdout
