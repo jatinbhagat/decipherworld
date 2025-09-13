@@ -1463,6 +1463,11 @@ class ProductionSetupAPI(View):
                 'hint': 'Add ?setup_token=decipherworld-setup-2025 to the URL'
             }, status=403)
         
+        # Check if this is a request to update advanced questions
+        action = request.GET.get('action')
+        if action == 'update_advanced_questions':
+            return self.update_advanced_questions()
+        
         try:
             results = {
                 'status': 'starting',
@@ -1595,4 +1600,57 @@ class ProductionSetupAPI(View):
                 'error': str(e),
                 'steps_completed': results.get('steps_completed', []),
                 'errors': results.get('errors', []) + [f'❌ Setup failed: {str(e)}']
+            }, status=500)
+    
+    def update_advanced_questions(self):
+        """Update Advanced Constitution Challenge with sophisticated questions"""
+        try:
+            from django.db import transaction
+            
+            results = {
+                'status': 'success',
+                'steps_completed': [],
+                'errors': []
+            }
+            
+            with transaction.atomic():
+                # Get the Advanced Constitution Game
+                game = Game.objects.filter(
+                    title="Advanced Constitution Challenge",
+                    game_type='constitution_challenge',
+                    is_active=True
+                ).first()
+                
+                if not game:
+                    results['errors'].append('❌ Advanced Constitution Game not found! Run create_advanced_constitution_game first.')
+                    return JsonResponse(results, status=404)
+                
+                results['steps_completed'].append(f'✅ Found Advanced Constitution Game (ID: {game.id})')
+                
+                # Clear existing questions
+                existing_count = ConstitutionQuestion.objects.filter(game=game).count()
+                if existing_count > 0:
+                    results['steps_completed'].append(f'🔄 Clearing {existing_count} existing questions...')
+                    ConstitutionQuestion.objects.filter(game=game).delete()
+                
+                # Run the management command to update questions
+                try:
+                    from django.core.management import call_command
+                    call_command('update_advanced_constitution_questions')
+                    results['steps_completed'].append('✅ Advanced Constitution questions updated successfully')
+                    
+                    # Verify questions were created
+                    new_count = ConstitutionQuestion.objects.filter(game=game).count()
+                    results['steps_completed'].append(f'✅ Verification: {new_count} sophisticated questions created')
+                    
+                    return JsonResponse(results)
+                    
+                except Exception as cmd_error:
+                    results['errors'].append(f'❌ Management command failed: {str(cmd_error)}')
+                    return JsonResponse(results, status=500)
+                    
+        except Exception as e:
+            return JsonResponse({
+                'status': 'failed',
+                'error': f'Advanced questions update failed: {str(e)}'
             }, status=500)
