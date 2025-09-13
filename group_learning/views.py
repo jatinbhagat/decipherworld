@@ -1477,11 +1477,11 @@ class ProductionSetupAPI(View):
                 'errors': []
             }
             
-            # Step 1: Run essential migrations only (skip problematic ones)
+            # Step 1: Run all available migrations
             try:
-                # Run migrations up to the working ones only
-                call_command('migrate', 'group_learning', '0004_add_visual_elements', verbosity=0, interactive=False)
-                results['steps_completed'].append('✅ Essential database migrations completed (up to 0004)')
+                # Run all group_learning migrations to ensure schema is complete
+                call_command('migrate', 'group_learning', verbosity=0, interactive=False)
+                results['steps_completed'].append('✅ All database migrations completed')
                 
                 # Then run core app migrations if needed
                 try:
