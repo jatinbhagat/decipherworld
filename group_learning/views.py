@@ -1200,8 +1200,23 @@ class ConstitutionQuickStartView(TemplateView):
                 messages.error(request, 'Team name is required')
                 return redirect('group_learning:constitution_quick_start')
             
-            # Get the Constitution Challenge game
-            game = get_object_or_404(Game, game_type='constitution_challenge', is_active=True)
+            # Get the Constitution Challenge game (avoid MultipleObjectsReturned error)
+            level = self.kwargs.get('level', 'basic')
+            if level == 'advanced':
+                game = Game.objects.filter(
+                    game_type='constitution_challenge', 
+                    is_active=True,
+                    title__icontains='Advanced'
+                ).first()
+            else:
+                game = Game.objects.filter(
+                    game_type='constitution_challenge', 
+                    is_active=True
+                ).exclude(title__icontains='Advanced').first()
+            
+            if not game:
+                messages.error(request, f'{level.title()} Constitution Challenge game not found')
+                return redirect('group_learning:constitution_quick_start')
             
             # Handle session - either join existing or create new
             if session_code:
