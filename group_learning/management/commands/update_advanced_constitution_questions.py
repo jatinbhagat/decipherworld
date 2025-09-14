@@ -34,7 +34,7 @@ class Command(BaseCommand):
                 questions_data = [
                     {
                         'order': 1,
-                        'category': 'governance',
+                        'category': 'leadership',
                         'question_text': 'Your emerging nation faces a constitutional crisis: the legislature passes a popular but constitutionally questionable emergency powers bill. As the constitutional architect, how should authority be structured to prevent such dilemmas?',
                         'scenario_context': 'A natural disaster has struck, and public sentiment supports bypassing normal constitutional procedures for faster relief distribution.',
                         'options': [
@@ -46,7 +46,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 2,
-                        'category': 'democracy',
+                        'category': 'participation',
                         'question_text': 'Your nation must design its electoral system. Recent global experiences show different democratic outcomes based on electoral design. Which approach best ensures both legitimacy and effective governance?',
                         'scenario_context': 'Neighboring countries have experienced political instability due to electoral system flaws, and international observers are watching your constitutional choices.',
                         'options': [
@@ -70,7 +70,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 4,
-                        'category': 'freedom',
+                        'category': 'rights',
                         'question_text': 'Digital age challenges require constitutional adaptation. How should your nation balance freedom of expression with responsibilities in the era of social media and misinformation?',
                         'scenario_context': 'Fake news and hate speech online have led to real-world violence, while citizens demand both safety and free expression.',
                         'options': [
@@ -82,7 +82,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 5,
-                        'category': 'dissent',
+                        'category': 'rights',
                         'question_text': 'Your government faces sustained public criticism over economic policies. Constitutional provisions must address how democratic systems should handle persistent opposition and criticism.',
                         'scenario_context': 'Opposition groups organize continuous protests and criticism campaigns that some argue destabilize governance and investor confidence.',
                         'options': [
@@ -94,7 +94,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 6,
-                        'category': 'minority_rights',
+                        'category': 'rights',
                         'question_text': 'Your diverse nation must constitutionally address competing group demands. How should the constitution handle situations where majority democratic decisions conflict with minority group rights?',
                         'scenario_context': 'A religious minority seeks constitutional protection for their practices, while the majority supports laws that would restrict these practices.',
                         'options': [
@@ -106,7 +106,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 7,
-                        'category': 'civic_duty',
+                        'category': 'participation',
                         'question_text': 'Your constitution must define the relationship between citizen rights and responsibilities in a modern democratic state. How should constitutional obligations be structured?',
                         'scenario_context': 'Citizens enjoy extensive rights but civic participation is declining, and some argue this threatens democratic sustainability.',
                         'options': [
@@ -118,7 +118,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 8,
-                        'category': 'national_symbols',
+                        'category': 'participation',
                         'question_text': 'National symbols and heritage require constitutional treatment in your pluralistic society. How should the constitution address respect for national symbols while accommodating diverse beliefs?',
                         'scenario_context': 'Some citizens view flag burning as legitimate protest, while others see it as unpatriotic disrespect requiring constitutional prohibition.',
                         'options': [
@@ -130,7 +130,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 9,
-                        'category': 'separation_of_powers',
+                        'category': 'checks',
                         'question_text': 'Your constitutional design must address modern governance complexity. How should powers be separated to ensure both effectiveness and accountability in contemporary government?',
                         'scenario_context': 'Traditional separation faces challenges from complex policy issues requiring expertise, speed, and coordination across branches.',
                         'options': [
@@ -142,7 +142,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 10,
-                        'category': 'judicial_review',
+                        'category': 'justice',
                         'question_text': 'Constitutional interpretation requires institutional design. How should your nation structure judicial authority to balance legal expertise with democratic legitimacy?',
                         'scenario_context': 'Courts must interpret constitutional meaning, but critics argue unelected judges shouldn\'t override democratic decisions.',
                         'options': [
@@ -154,7 +154,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 11,
-                        'category': 'constitutional_amendment',
+                        'category': 'rules',
                         'question_text': 'Constitutional adaptation requires amendment procedures. How should your constitution balance stability with necessary evolution in changing circumstances?',
                         'scenario_context': 'Society faces new challenges like climate change and artificial intelligence that weren\'t anticipated by constitutional framers.',
                         'options': [
@@ -166,7 +166,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 12,
-                        'category': 'federalism',
+                        'category': 'leadership',
                         'question_text': 'Your large, diverse nation requires governance structure. How should constitutional federalism address the tension between national unity and local autonomy?',
                         'scenario_context': 'Different regions have varying economic development, cultural practices, and political preferences, creating demands for both unity and autonomy.',
                         'options': [
@@ -178,7 +178,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 13,
-                        'category': 'social_justice',
+                        'category': 'rights',
                         'question_text': 'Your constitution must address societal inequalities. How should constitutional provisions balance individual merit with collective social justice imperatives?',
                         'scenario_context': 'Historical discrimination has created persistent inequalities, but preferential policies face criticism for potentially undermining merit-based opportunities.',
                         'options': [
@@ -190,7 +190,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 14,
-                        'category': 'preamble',
+                        'category': 'rules',
                         'question_text': 'Your constitutional preamble must articulate national values and aspirations. Which formulation best captures the balance between idealism and practical governance?',
                         'scenario_context': 'The preamble will guide constitutional interpretation and national identity, requiring careful balance between inspiring vision and achievable goals.',
                         'options': [
@@ -202,7 +202,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 15,
-                        'category': 'secularism',
+                        'category': 'rights',
                         'question_text': 'Religious diversity requires constitutional accommodation. How should your secular state navigate the complex relationship between religion and governance in a pluralistic society?',
                         'scenario_context': 'Multiple religious communities seek both protection for their practices and influence in public policy, while secular citizens want religion-free governance.',
                         'options': [
@@ -214,7 +214,7 @@ class Command(BaseCommand):
                     },
                     {
                         'order': 16,
-                        'category': 'economic_justice',
+                        'category': 'rights',
                         'question_text': 'Constitutional approaches to economic inequality require careful balance. How should your constitution address wealth disparities while maintaining economic dynamism?',
                         'scenario_context': 'Growing inequality threatens social cohesion, but heavy redistribution might discourage investment and economic growth necessary for overall prosperity.',
                         'options': [
