@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ team.team_name }} Results</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% load static %}
+    {% load group_learning_extras %}
+    
+    <style>
+        {% with governance=team.get_governance_level %}
+        .result-bg {
+            {% if governance.level == "struggling_settlement" %}
+            background: linear-gradient(135deg, #dc2626, #fca5a5);
+            {% elif governance.level == "simple_village" %}
+            background: linear-gradient(135deg, #16a34a, #86efac);
+            {% elif governance.level == "growing_town" %}
+            background: linear-gradient(135deg, #2563eb, #93c5fd);
+            {% elif governance.level == "thriving_city" %}
+            background: linear-gradient(135deg, #7c3aed, #c4b5fd);
+            {% elif governance.level == "great_capital" %}
+            background: linear-gradient(135deg, #ea580c, #fed7aa);
+            {% else %}
+            background: linear-gradient(135deg, #f59e0b, #fde68a);
+            {% endif %}
+        }
+        {% endwith %}
+        
+        .star-rating { display: flex; flex-direction: row-reverse; justify-content: center; }
+        .star-rating input { display: none; }
+        .star-rating label { color: #ddd; font-size: 1.5rem; cursor: pointer; transition: all 0.2s ease; }
+        .star-rating input:checked ~ label, .star-rating label:hover { color: #fbbf24; }
+        
+        /* Mobile-specific adjustments */
+        @media (max-width: 1024px) {
+            body { padding: 0.5rem; }
+            .grid { gap: 0.5rem; }
+            .rounded-2xl { border-radius: 1rem; }
+            .text-6xl { font-size: 3rem; }
+            .animate-bounce { animation-duration: 3s; }
+        }
+        
+        /* Single viewport constraint */
+        @media (min-width: 1024px) {
+            .grid.lg\:grid-cols-2 { height: calc(100vh - 3rem); }
+        }
+        
+        /* Ensure content fits in mobile viewport */
+        @media (max-width: 1023px) {
+            .grid { grid-template-rows: auto auto; max-height: calc(100vh - 1rem); }
+            .grid > div { max-height: calc(50vh - 0.5rem); }
+        }
+    </style>
+</head>
+<body class="result-bg min-h-screen">
+    <div class="min-h-screen w-full flex flex-col p-2 sm:p-4 lg:p-6">
+        <!-- Full Screen Results Container -->
+        <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 max-w-7xl mx-auto w-full h-full">
+            
+            <!-- Left Side: Results & Narrative -->
+            <div class="bg-white/95 backdrop-blur rounded-2xl shadow-xl p-4 lg:p-6 flex flex-col justify-between overflow-y-auto max-h-[calc(100vh-2rem)] lg:max-h-[calc(100vh-3rem)]">
+            
+                <!-- Header -->
+                <div class="text-center mb-4 lg:mb-6">
+                    <div class="text-6xl lg:text-8xl mb-3 lg:mb-4 animate-bounce">{{ team.get_governance_level.emoji }}</div>
+                    <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">{{ team.team_name }}</h1>
+                    <p class="text-lg lg:text-xl text-gray-700 mb-2">{{ team.get_governance_level.description }}</p>
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full inline-block">
+                        <span class="text-xl lg:text-2xl font-bold">{{ team.total_score }}</span> points
+                    </div>
+                </div>
+
+                <!-- Narrative Summary -->
+                <div class="mb-4 lg:mb-6">
+                    <h3 class="text-lg lg:text-xl font-bold text-gray-900 mb-3 text-center">📖 Your Constitutional Journey</h3>
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 text-sm lg:text-base leading-relaxed">
+                        {% with governance=team.get_governance_level %}
+                        {% if governance.level == "struggling_settlement" %}
+                        <p class="text-gray-700 mb-3">Your nation faced significant challenges in establishing stable governance. While {{ team.team_name }} encountered difficulties, remember that even the strongest democracies have overcome early struggles.</p>
+                        <p class="text-gray-600">💡 <strong>Key Learning:</strong> Constitutional frameworks require careful balance between democratic principles and effective governance. This experience highlights the complexities of nation-building.</p>
+                        {% elif governance.level == "simple_village" %}
+                        <p class="text-gray-700 mb-3">{{ team.team_name }} has taken its first steps toward democratic governance. Your constitutional choices laid the groundwork for a peaceful community where basic democratic principles are beginning to flourish.</p>
+                        <p class="text-gray-600">💡 <strong>Key Learning:</strong> You've established a foundation for constitutional governance with room to grow and strengthen democratic institutions further.</p>
+                        {% elif governance.level == "growing_town" %}
+                        <p class="text-gray-700 mb-3">Your constitutional decisions fostered steady growth in {{ team.team_name }}. The democratic institutions you've established are creating stability and prosperity for your citizens.</p>
+                        <p class="text-gray-600">💡 <strong>Key Learning:</strong> Your balanced approach shows good understanding of constitutional principles, resulting in thriving civic engagement and development.</p>
+                        {% elif governance.level == "thriving_city" %}
+                        <p class="text-gray-700 mb-3">Excellent constitutional leadership transformed {{ team.team_name }} into a thriving democracy! Your thoughtful decisions created strong institutions that serve all citizens effectively.</p>
+                        <p class="text-gray-600">💡 <strong>Key Learning:</strong> You've successfully balanced individual rights with collective welfare, creating harmony between freedom and responsibility.</p>
+                        {% elif governance.level == "great_capital" %}
+                        <p class="text-gray-700 mb-3">Outstanding! {{ team.team_name }} became a beacon of democratic excellence. Your sophisticated understanding of constitutional principles created a model democracy others look up to.</p>
+                        <p class="text-gray-600">💡 <strong>Key Learning:</strong> You've mastered the art of governance, creating robust institutions that protect rights while enabling effective leadership.</p>
+                        {% else %}
+                        <p class="text-gray-700 mb-3">Extraordinary! {{ team.team_name }} achieved the pinnacle of constitutional governance - an Ideal Nation. Your mastery of democratic principles created a society that perfectly balances all aspects of governance.</p>
+                        <p class="text-gray-600">💡 <strong>Key Learning:</strong> You've created institutions that protect rights, ensure justice, promote participation, and maintain accountability - a true inspiration for democracies worldwide!</p>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+
+                <!-- Score Breakdown -->
+                <div class="grid grid-cols-2 gap-2 lg:gap-4">
+                    {% for category, details in category_breakdown.items %}
+                    <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-3 lg:p-4 hover:scale-105 transition-transform">
+                        <div class="text-2xl lg:text-3xl mb-1 lg:mb-2">{{ details.emoji }}</div>
+                        <div class="text-lg lg:text-xl font-bold text-gray-900">{{ details.score }}</div>
+                        <div class="text-xs lg:text-sm text-gray-600">{{ details.display_name }}</div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5 lg:h-2 mt-2">
+                            <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-1.5 lg:h-2 rounded-full transition-all duration-1000" 
+                                 style="width: {{ details.percentage }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Right Side: Review & Actions -->
+            <div class="bg-white/95 backdrop-blur rounded-2xl shadow-xl p-4 lg:p-6 flex flex-col justify-between overflow-y-auto max-h-[calc(100vh-2rem)] lg:max-h-[calc(100vh-3rem)]">
+            
+                <!-- Review Section -->
+                <div id="review-section" class="flex-1">
+                    <div class="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl p-4 lg:p-6 border-2 border-yellow-400 h-full flex flex-col">
+                        <h3 class="text-lg lg:text-xl font-bold text-gray-900 mb-3 lg:mb-4 flex items-center">
+                            ⭐ Quick Review <span class="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">Required</span>
+                        </h3>
+                        
+                        <form id="feedback-form" action="{% url 'group_learning:submit_constitution_feedback' team.session.session_code %}" method="post" class="space-y-4">
+                            {% csrf_token %}
+                            <input type="hidden" name="team_id" value="{{ team.id }}">
+                            <input type="hidden" name="game_level" value="{% if 'Advanced' in team.session.game.title %}advanced{% else %}basic{% endif %}">
+                            
+                            <!-- Rating -->
+                            <div class="text-center mb-3 lg:mb-4">
+                                <label class="block text-sm lg:text-base font-semibold text-gray-800 mb-2">How was your experience?</label>
+                                <div class="star-rating mb-2">
+                                    {% for i in "12345"|make_list %}
+                                    <input type="radio" id="overall-{{ i }}" name="overall_rating" value="{{ i }}" required>
+                                    <label for="overall-{{ i }}" class="text-2xl lg:text-3xl">⭐</label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Options -->
+                            <div class="grid grid-cols-2 gap-2 lg:gap-3 mb-3 lg:mb-4">
+                                <div>
+                                    <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Recommend?</label>
+                                    <select name="recommend" required class="w-full p-2 lg:p-3 border-2 rounded-xl text-center font-semibold text-sm lg:text-base">
+                                        <option value="">👆 Choose</option>
+                                        <option value="definitely">🌟 Yes!</option>
+                                        <option value="probably">👍 Probably</option>
+                                        <option value="maybe">🤔 Maybe</option>
+                                        <option value="no">👎 No</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Difficulty?</label>
+                                    <select name="difficulty" required class="w-full p-2 lg:p-3 border-2 rounded-xl text-center font-semibold text-sm lg:text-base">
+                                        <option value="">👆 Choose</option>
+                                        <option value="too_easy">😴 Easy</option>
+                                        <option value="just_right">✅ Right</option>
+                                        <option value="challenging">💪 Hard</option>
+                                        <option value="too_hard">😅 Too hard</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Learning -->
+                            <div class="mb-3 lg:mb-4">
+                                <label for="learned" class="block text-xs lg:text-sm font-medium text-gray-700 mb-1">What did you learn?</label>
+                                <textarea id="learned" name="what_learned" rows="2" required
+                                        class="w-full p-2 lg:p-3 border-2 rounded-xl text-sm lg:text-base" placeholder="Key insights about democracy..."></textarea>
+                            </div>
+                            
+                            <!-- Comments -->
+                            <div class="mb-3 lg:mb-4">
+                                <label for="comments" class="block text-xs lg:text-sm font-medium text-gray-700 mb-1">Other feedback? (Optional)</label>
+                                <textarea id="comments" name="additional_comments" rows="2" 
+                                        class="w-full p-2 lg:p-3 border-2 rounded-xl text-sm lg:text-base" placeholder="Suggestions..."></textarea>
+                            </div>
+                        </form>
+                        
+                        <!-- Submit Review Button -->
+                        <div class="mt-auto">
+                            <button onclick="submitReview()" 
+                                    class="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white py-3 lg:py-4 rounded-xl font-bold text-sm lg:text-lg transform hover:scale-105 transition-all">
+                                📝 Submit Review & Continue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Actions (Hidden until review submitted) -->
+                <div id="actions-section" class="hidden h-full flex flex-col justify-center">
+                    <h3 class="text-lg lg:text-xl font-semibold text-gray-900 mb-4 text-center">🎉 Thank you! What's next?</h3>
+                    <div class="grid grid-cols-2 gap-3 lg:gap-4">
+                        <button id="view-leaderboard-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white py-3 lg:py-4 rounded-xl font-semibold text-sm lg:text-lg transform hover:scale-105 transition-all">
+                            🏆 Leaderboard
+                        </button>
+                        <button onclick="goHome()" class="bg-blue-600 hover:bg-blue-700 text-white py-3 lg:py-4 rounded-xl font-semibold text-sm lg:text-lg transform hover:scale-105 transition-all">
+                            🏠 Home
+                        </button>
+                        <a href="{% url 'group_learning:constitution_quick_start' %}" class="bg-green-600 hover:bg-green-700 text-white py-3 lg:py-4 rounded-xl font-semibold text-sm lg:text-lg text-center transform hover:scale-105 transition-all">
+                            🔄 Play Again
+                        </a>
+                        {% if 'Advanced' not in team.session.game.title %}
+                        <a href="{% url 'group_learning:constitution_quick_start_level' 'advanced' %}" class="bg-purple-600 hover:bg-purple-700 text-white py-3 lg:py-4 rounded-xl font-semibold text-sm lg:text-lg text-center transform hover:scale-105 transition-all">
+                            🎓 Try Advanced
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+    </div>
+    
+    <script>
+        // Submit Review Function
+        function submitReview() {
+            const form = document.getElementById('feedback-form');
+            const requiredFields = form.querySelectorAll('[required]');
+            let allFilled = true;
+            
+            // Check if all required fields are filled
+            for (let field of requiredFields) {
+                if (field.type === 'radio') {
+                    const radioGroup = form.querySelectorAll(`[name="${field.name}"]`);
+                    const checked = Array.from(radioGroup).some(radio => radio.checked);
+                    if (!checked) {
+                        allFilled = false;
+                        break;
+                    }
+                } else if (!field.value.trim()) {
+                    allFilled = false;
+                    break;
+                }
+            }
+            
+            if (!allFilled) {
+                alert('Please complete all required fields before submitting your review.');
+                return;
+            }
+            
+            // Show loading state
+            const button = event.target;
+            button.innerHTML = '🔄 Submitting...';
+            button.disabled = true;
+            
+            // Submit form data
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hide review section and show actions with animation
+                    document.getElementById('review-section').style.opacity = '0';
+                    document.getElementById('review-section').style.transform = 'translateY(-20px)';
+                    
+                    setTimeout(() => {
+                        document.getElementById('review-section').style.display = 'none';
+                        document.getElementById('actions-section').classList.remove('hidden');
+                        document.getElementById('actions-section').innerHTML = `
+                            <div class="text-center mb-6 animate-bounce">
+                                <div class="text-6xl mb-2">🎉</div>
+                                <h3 class="text-2xl font-bold text-green-600 mb-2">Thank you for your feedback!</h3>
+                                <p class="text-gray-600">Your review helps us improve the experience for everyone.</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button id="view-leaderboard-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white py-4 rounded-xl font-semibold text-lg transform hover:scale-105 transition-all">
+                                    🏆 Leaderboard
+                                </button>
+                                <button onclick="goHome()" class="bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-semibold text-lg transform hover:scale-105 transition-all">
+                                    🏠 Home
+                                </button>
+                                <a href="{% url 'group_learning:constitution_quick_start' %}" class="bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold text-lg text-center transform hover:scale-105 transition-all">
+                                    🔄 Play Again
+                                </a>
+                                {% if 'Advanced' not in team.session.game.title %}
+                                <a href="{% url 'group_learning:constitution_quick_start_level' 'advanced' %}" class="bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-semibold text-lg text-center transform hover:scale-105 transition-all">
+                                    🎓 Try Advanced
+                                </a>
+                                {% endif %}
+                            </div>
+                        `;
+                        
+                        // Re-attach leaderboard event listener
+                        document.getElementById('view-leaderboard-btn').addEventListener('click', showLeaderboardModal);
+                        
+                        // Show with animation
+                        document.getElementById('actions-section').style.opacity = '0';
+                        document.getElementById('actions-section').style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            document.getElementById('actions-section').style.opacity = '1';
+                            document.getElementById('actions-section').style.transform = 'translateY(0)';
+                        }, 100);
+                        
+                    }, 300);
+                    
+                } else {
+                    alert('There was an error submitting your review. Please try again.');
+                    button.innerHTML = '📝 Submit Review & Continue';
+                    button.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an error submitting your review. Please try again.');
+                button.innerHTML = '📝 Submit Review & Continue';
+                button.disabled = false;
+            });
+        }
+        
+        // Go Home Function
+        function goHome() {
+            window.location.href = '/';
+        }
+        
+        // Enhanced Leaderboard Modal (shows even with one team)
+        function showLeaderboardModal() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-3xl p-8 max-w-3xl w-full max-h-[80vh] overflow-y-auto shadow-2xl">
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-4xl">🏆</span>
+                            <h2 class="text-3xl font-bold text-gray-800">Championship Leaderboard</h2>
+                        </div>
+                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700 text-3xl font-bold bg-gray-100 hover:bg-gray-200 rounded-full w-12 h-12 flex items-center justify-center">×</button>
+                    </div>
+                    <div id="leaderboard-content" class="text-center py-8">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto"></div>
+                        <p class="text-gray-600 mt-4 text-lg">Loading championship results...</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Load leaderboard data with enhanced display
+            fetch(`/learn/api/constitution/{{ session.session_code }}/leaderboard/`)
+                .then(response => response.json())
+                .then(data => {
+                    const content = document.getElementById('leaderboard-content');
+                    // Show leaderboard even with just one team
+                    if (data.teams && data.teams.length >= 1) {
+                        const header = `
+                            <div class="mb-6">
+                                <div class="text-lg text-gray-600 mb-2">🏆 Hall of Constitutional Champions 🏆</div>
+                                <div class="text-sm text-gray-500">${data.teams.length} team${data.teams.length > 1 ? 's' : ''} completed the challenge</div>
+                            </div>
+                        `;
+                        
+                        const teamsList = data.teams.map((team, index) => {
+                            const isCurrentTeam = team.team_name === '{{ team.team_name }}';
+                            return `
+                                <div class="flex items-center justify-between p-6 ${
+                                    isCurrentTeam ? 'bg-gradient-to-r from-blue-100 to-purple-100 border-2 border-blue-300' :
+                                    index < 3 ? 'bg-gradient-to-r from-yellow-100 to-orange-100 border border-yellow-300' : 'bg-gray-50 border border-gray-200'
+                                } rounded-xl mb-4 hover:scale-105 transition-transform">
+                                    <div class="flex items-center space-x-4">
+                                        <span class="text-4xl">${
+                                            index === 0 ? '🥇' : 
+                                            index === 1 ? '🥈' : 
+                                            index === 2 ? '🥉' : '🏅'
+                                        }</span>
+                                        <div>
+                                            <div class="font-bold text-xl text-gray-800 ${isCurrentTeam ? 'text-blue-700' : ''}">
+                                                ${team.team_name} ${isCurrentTeam ? '(You!)' : ''}
+                                            </div>
+                                            <div class="text-md text-gray-600">${team.governance_level || 'Building Democracy'}</div>
+                                            <div class="text-sm text-gray-500">Rank #${index + 1}</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-bold text-2xl ${isCurrentTeam ? 'text-blue-600' : 'text-purple-600'}">${team.total_score}</div>
+                                        <div class="text-sm text-gray-500">points</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        content.innerHTML = header + teamsList;
+                    } else {
+                        content.innerHTML = `
+                            <div class="text-center py-8">
+                                <div class="text-6xl mb-4">🏆</div>
+                                <p class="text-xl text-gray-700 mb-2">You're the first champion!</p>
+                                <p class="text-gray-500">Be the first to complete this constitutional challenge.</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading leaderboard:', error);
+                    document.getElementById('leaderboard-content').innerHTML = 
+                        '<div class="text-center py-8"><p class="text-red-600 text-lg">Error loading leaderboard. Please try again later.</p></div>';
+                });
+        }
+        
+        // Enhanced star rating interaction
+        document.querySelectorAll('.star-rating').forEach(rating => {
+            const stars = rating.querySelectorAll('label');
+            stars.forEach(star => {
+                star.addEventListener('mouseover', () => {
+                    const value = parseInt(star.getAttribute('for').split('-')[1]);
+                    stars.forEach((s, index) => {
+                        if (index >= stars.length - value) {
+                            s.style.color = '#fbbf24';
+                            s.style.transform = 'scale(1.2)';
+                        } else {
+                            s.style.color = '#ddd';
+                            s.style.transform = 'scale(1)';
+                        }
+                    });
+                });
+                
+                star.addEventListener('mouseout', () => {
+                    const checked = rating.querySelector('input[type="radio"]:checked');
+                    if (checked) {
+                        const value = parseInt(checked.value);
+                        stars.forEach((s, index) => {
+                            if (index >= stars.length - value) {
+                                s.style.color = '#fbbf24';
+                                s.style.transform = 'scale(1.1)';
+                            } else {
+                                s.style.color = '#ddd';
+                                s.style.transform = 'scale(1)';
+                            }
+                        });
+                    } else {
+                        stars.forEach(s => {
+                            s.style.color = '#ddd';
+                            s.style.transform = 'scale(1)';
+                        });
+                    }
+                });
+                
+                star.addEventListener('click', () => {
+                    // Add click animation
+                    star.style.transform = 'scale(1.3)';
+                    setTimeout(() => {
+                        star.style.transform = 'scale(1.1)';
+                    }, 150);
+                });
+            });
+        });
+        
+        // Add dynamic animations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth transitions
+            document.getElementById('review-section').style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            document.getElementById('actions-section').style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            
+            // Animate progress bars
+            setTimeout(() => {
+                document.querySelectorAll('.bg-gradient-to-r.from-blue-500.to-purple-600.h-2').forEach(bar => {
+                    const targetWidth = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.width = targetWidth;
+                    }, 200);
+                });
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

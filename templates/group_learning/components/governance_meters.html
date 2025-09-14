@@ -15,7 +15,7 @@
                     <span class="text-blue-600">🗳️</span>
                     <span class="text-gray-700 font-medium">Democracy</span>
                 </div>
-                <span class="font-bold text-blue-600">{{ governance_scores.democracy|default:5 }}/10</span>
+                <span id="democracy-score" class="font-bold text-blue-600">{{ governance_scores.democracy|default:5 }}/10</span>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
                 <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r from-blue-400 to-blue-600" 
@@ -34,7 +34,7 @@
                     <span class="text-green-600">⚖️</span>
                     <span class="text-gray-700 font-medium">Fairness</span>
                 </div>
-                <span class="font-bold text-green-600">{{ governance_scores.fairness|default:5 }}/10</span>
+                <span id="fairness-score" class="font-bold text-green-600">{{ governance_scores.fairness|default:5 }}/10</span>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
                 <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r from-green-400 to-green-600" 
@@ -52,7 +52,7 @@
                     <span class="text-purple-600">🕊️</span>
                     <span class="text-gray-700 font-medium">Freedom</span>
                 </div>
-                <span class="font-bold text-purple-600">{{ governance_scores.freedom|default:5 }}/10</span>
+                <span id="freedom-score" class="font-bold text-purple-600">{{ governance_scores.freedom|default:5 }}/10</span>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
                 <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r from-purple-400 to-purple-600" 
@@ -70,7 +70,7 @@
                     <span class="text-orange-600">🏛️</span>
                     <span class="text-gray-700 font-medium">Stability</span>
                 </div>
-                <span class="font-bold text-orange-600">{{ governance_scores.stability|default:5 }}/10</span>
+                <span id="stability-score" class="font-bold text-orange-600">{{ governance_scores.stability|default:5 }}/10</span>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
                 <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r from-orange-400 to-orange-600" 

@@ -70,12 +70,6 @@
                             ⚡ Build Nation
                         </button>
                         
-                        <!-- Leaderboard Button -->
-                        <button id="leaderboard-btn" 
-                                class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200"
-                                title="View Leaderboard">
-                            🏆 Leaderboard
-                        </button>
                         
                         <!-- Help Button -->
                         <button onclick="toggleHelp()" 
@@ -153,13 +147,6 @@
                     </div>
                     
             
-            <!-- Slide-out Leaderboard Panel -->
-            <div id="leaderboard-panel" class="fixed inset-y-0 right-0 z-50 w-80 max-w-full sm:max-w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-500 overflow-y-auto border-l-4 border-yellow-500">
-                {% include 'group_learning/components/leaderboard.html' %}
-            </div>
-            
-            <!-- Leaderboard Backdrop -->
-            <div id="leaderboard-backdrop" class="hidden fixed inset-0 z-40 bg-black bg-opacity-30 transition-opacity duration-500" onclick="toggleLeaderboard()"></div>
             
             <!-- Help Modal -->
             <div id="help-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
@@ -217,6 +204,17 @@
     30% { transform: scale(1.05); filter: brightness(1.2) hue-rotate(10deg); }
     60% { transform: scale(1.02); filter: brightness(1.1) hue-rotate(-5deg); }
     100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* City background update animation */
+.city-update-animation {
+    animation: city-update 1s ease-in-out;
+}
+
+@keyframes city-update {
+    0% { filter: brightness(1); transform: scale(1); }
+    50% { filter: brightness(1.1) saturate(1.2); transform: scale(1.01); }
+    100% { filter: brightness(1); transform: scale(1); }
 }
 
 /* Standardized Button States */
@@ -997,13 +995,10 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Game functions loaded:');
     console.log('  - selectAnswer:', typeof window.selectAnswer);
     console.log('  - showLearningModule:', typeof window.showLearningModule);
-    console.log('  - toggleLeaderboard:', typeof window.toggleLeaderboard);
     console.log('  - toggleHelp:', typeof window.toggleHelp);
     
     // Test that elements exist
-    const leaderboardPanel = document.getElementById('leaderboard-panel');
     const helpModal = document.getElementById('help-modal');
-    console.log('🔍 DEBUG: Leaderboard panel found:', leaderboardPanel ? 'Yes' : 'No');
     console.log('🔍 DEBUG: Help modal found:', helpModal ? 'Yes' : 'No');
     
     // Create reliable, simple toggle functions that override any issues
@@ -1024,24 +1019,6 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Help modal not found!'); // Visible error for debugging
         }
     };
-    
-    // Attach leaderboard button event listener
-    const leaderboardBtn = document.getElementById('leaderboard-btn');
-    if (leaderboardBtn) {
-        leaderboardBtn.addEventListener('click', function() {
-            console.log('🏆 LEADERBOARD: Button clicked');
-            if (typeof window.toggleLeaderboard === 'function') {
-                console.log('🏆 LEADERBOARD: Calling toggleLeaderboard()');
-                window.toggleLeaderboard();
-            } else {
-                console.error('❌ LEADERBOARD: toggleLeaderboard function not found!');
-                alert('Leaderboard function not available!');
-            }
-        });
-        console.log('✅ LEADERBOARD: Event listener attached to button');
-    } else {
-        console.error('❌ LEADERBOARD: Button #leaderboard-btn not found!');
-    }
     
     console.log('✅ Direct toggle functions created and ready!');
 });

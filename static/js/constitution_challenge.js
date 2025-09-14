@@ -214,20 +214,32 @@ async function submitAnswerDirectly(optionId, optionLetter) {
             // DEBUG: Log the full response to see learning module data
             console.log('🔍 FULL API RESPONSE:', result);
             
+            // Update the page dynamically instead of reloading
+            updateGameUI(result);
+            
             // Check for learning module data
             if (result.learning_module) {
                 console.log('🔍 LEARNING MODULE FOUND:', result.learning_module);
                 
-                // Show learning module BEFORE page reload
-                showLearningModule(result.learning_module);
-                
-                // Don't auto-reload - let user close modal manually
-                // The modal close function will handle reloading
-            } else {
-                console.log('🔍 NO LEARNING MODULE in response');
-                // Refresh page immediately to show next question
-                setTimeout(() => window.location.reload(), 800);
+                // Show learning module after UI update
+                setTimeout(() => showLearningModule(result.learning_module), 1500);
             }
+            
+            // Handle next question or completion
+            if (result.game_completed) {
+                // Game completed - redirect to final results
+                setTimeout(() => {
+                    showGameNotification('🎉 Constitution Challenge Complete! Redirecting to results...', 'success', 2000);
+                    setTimeout(() => {
+                        const resultsUrl = `/learn/constitution/${sessionCode}/final-results/?team_id=${teamId}`;
+                        window.location.href = resultsUrl;
+                    }, 2000);
+                }, 3000);
+            } else if (!result.next_question) {
+                // No more questions but not marked complete - reload to check
+                setTimeout(() => window.location.reload(), 5000);
+            }
+            // If there are more questions, the UI update will show the next question
         } else {
             throw new Error(result.error || 'Unknown error');
         }
@@ -313,6 +325,161 @@ function updateLeaderboardDisplay(leaderboardData) {
             </div>
         </div>
     `).join('');
+}
+
+// Update game UI after answer submission
+function updateGameUI(result) {
+    console.log('🎨 Updating game UI with result:', result);
+    
+    try {
+        // Update governance meters
+        if (result.country_state) {
+            updateGovernanceMeters(result.country_state);
+            updateCityBackground(result.country_state);
+        }
+        
+        // Update team stats
+        if (result.team_update) {
+            updateTeamStats(result.team_update);
+        }
+        
+        // Show answer feedback
+        if (result.feedback) {
+            showAnswerFeedback(result.feedback);
+        }
+        
+        // Load next question if available
+        if (result.next_question) {
+            setTimeout(() => loadNextQuestion(), 3000);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error updating game UI:', error);
+    }
+}
+
+function updateGovernanceMeters(countryState) {
+    const metrics = ['democracy', 'fairness', 'freedom', 'stability'];
+    
+    metrics.forEach(metric => {
+        const score = countryState[`${metric}_score`];
+        const scoreEl = document.getElementById(`${metric}-score`);
+        const barEl = document.querySelector(`#${metric}-score`)?.parentElement?.nextElementSibling?.firstElementChild;
+        
+        if (scoreEl && barEl && score !== undefined) {
+            const oldScore = parseInt(scoreEl.textContent.split('/')[0]) || 0;
+            
+            // Animate score change
+            animateValue(scoreEl, oldScore, score, 600, (value) => {
+                scoreEl.textContent = `${Math.round(value)}/10`;
+            });
+            
+            // Animate bar width
+            barEl.style.width = `${score * 10}%`;
+            barEl.parentElement.classList.add('governance-meter-increase');
+            setTimeout(() => {
+                barEl.parentElement.classList.remove('governance-meter-increase');
+            }, 600);
+        }
+    });
+}
+
+function updateCityBackground(countryState) {
+    // Update the city visualization based on the current governance level
+    const cityWrapper = document.querySelector('.city-canvas-wrapper');
+    if (cityWrapper && countryState.visual_elements) {
+        // Add visual transition effects
+        cityWrapper.style.transition = 'all 1s ease-in-out';
+        
+        // You can add more sophisticated background updates here based on visual_elements
+        console.log('🏙️ City background updated for level:', countryState.level_display);
+        
+        // Add a subtle animation to indicate change
+        cityWrapper.classList.add('city-update-animation');
+        setTimeout(() => {
+            cityWrapper.classList.remove('city-update-animation');
+        }, 1000);
+    }
+}
+
+function updateTeamStats(teamUpdate) {
+    // Update total score
+    const totalScoreEl = document.getElementById('total-score');
+    if (totalScoreEl && teamUpdate.new_score !== undefined) {
+        const oldScore = parseInt(totalScoreEl.textContent) || 0;
+        animateValue(totalScoreEl, oldScore, teamUpdate.new_score, 800);
+    }
+    
+    // Update rank
+    const rankEl = document.getElementById('team-rank-display');
+    if (rankEl && teamUpdate.rank) {
+        rankEl.textContent = teamUpdate.rank;
+    }
+}
+
+function showAnswerFeedback(feedback) {
+    const points = feedback.points_earned;
+    const pointsText = points > 0 ? `+${points}` : `${points}`;
+    const pointsColor = points > 0 ? 'text-green-600' : points < 0 ? 'text-red-600' : 'text-gray-600';
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-30 z-40 flex items-center justify-center p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform scale-95">
+            <div class="text-center mb-4">
+                <div class="text-4xl mb-2">${points > 0 ? '🎉' : points < 0 ? '😟' : '🤔'}</div>
+                <h3 class="text-xl font-bold text-gray-800">${feedback.governance_principle || 'Your Choice'}</h3>
+                <div class="text-2xl font-bold ${pointsColor} mt-2">${pointsText} points</div>
+            </div>
+            <p class="text-gray-700 leading-relaxed mb-4">${feedback.message || ''}</p>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        modal.style.opacity = '0';
+        modal.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            if (document.body.contains(modal)) {
+                document.body.removeChild(modal);
+            }
+        }, 300);
+    }, 3000);
+}
+
+function loadNextQuestion() {
+    // For now, we'll still reload to get the next question
+    // In the future, this could be an AJAX call to get the next question
+    window.location.reload();
+}
+
+function animateValue(element, start, end, duration, callback = null) {
+    const startTime = performance.now();
+    const difference = end - start;
+    
+    const animate = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const value = start + difference * easeOutQuad(progress);
+        
+        if (callback) {
+            callback(value);
+        } else if (element) {
+            element.textContent = Math.round(value);
+        }
+        
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        }
+    };
+    
+    requestAnimationFrame(animate);
+}
+
+function easeOutQuad(t) {
+    return t * (2 - t);
 }
 
 // Main answer selection function
