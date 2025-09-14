@@ -1471,6 +1471,8 @@ class ProductionSetupAPI(View):
             return self.create_advanced_game()
         elif action == 'create_learning_modules':
             return self.create_learning_modules()
+        elif action == 'check_questions':
+            return self.check_questions()
         
         try:
             results = {
@@ -1771,4 +1773,43 @@ class ProductionSetupAPI(View):
             return JsonResponse({
                 'status': 'failed',
                 'error': f'Learning modules creation failed: {str(e)}'
+            }, status=500)
+    
+    def check_questions(self):
+        """Debug method to check what questions are in both Basic and Advanced games"""
+        try:
+            results = {
+                'status': 'success',
+                'games': [],
+                'errors': []
+            }
+            
+            # Get all constitution challenge games
+            games = Game.objects.filter(game_type='constitution_challenge', is_active=True)
+            
+            for game in games:
+                questions = ConstitutionQuestion.objects.filter(game=game).order_by('order')
+                game_data = {
+                    'game_id': game.id,
+                    'game_title': game.title,
+                    'question_count': questions.count(),
+                    'questions': []
+                }
+                
+                for q in questions[:3]:  # Show first 3 questions for debugging
+                    game_data['questions'].append({
+                        'order': q.order,
+                        'category': q.category,
+                        'question_preview': q.question_text[:100] + "..." if len(q.question_text) > 100 else q.question_text,
+                        'options_count': q.options.count()
+                    })
+                
+                results['games'].append(game_data)
+            
+            return JsonResponse(results)
+                    
+        except Exception as e:
+            return JsonResponse({
+                'status': 'failed',
+                'error': f'Questions check failed: {str(e)}'
             }, status=500)
