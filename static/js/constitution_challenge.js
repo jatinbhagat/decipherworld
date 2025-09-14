@@ -226,18 +226,23 @@ async function submitAnswerDirectly(optionId, optionLetter) {
             }
             
             // Handle next question or completion
-            if (result.game_completed) {
+            if (result.game_completed || (!result.next_question && !result.learning_module)) {
                 // Game completed - redirect to final results
+                console.log('🎉 Game completed! Redirecting to results...');
                 setTimeout(() => {
                     showGameNotification('🎉 Constitution Challenge Complete! Redirecting to results...', 'success', 2000);
                     setTimeout(() => {
                         const resultsUrl = `/learn/constitution/${sessionCode}/final-results/?team_id=${teamId}`;
+                        console.log('🔄 Redirecting to:', resultsUrl);
                         window.location.href = resultsUrl;
                     }, 2000);
-                }, 3000);
+                }, 1500);
             } else if (!result.next_question) {
-                // No more questions but not marked complete - reload to check
-                setTimeout(() => window.location.reload(), 5000);
+                // No more questions but not marked complete - reload to check server state
+                console.log('🔄 No next question, reloading to check completion status...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
             }
             // If there are more questions, the UI update will show the next question
         } else {
