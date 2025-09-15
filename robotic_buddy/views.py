@@ -275,7 +275,7 @@ class ClassificationGameView(TemplateView):
             defaults={
                 'description': 'Teach your buddy to recognize different animals!',
                 'instructions': 'Show your buddy examples by dragging animals into the correct categories. Watch as your buddy learns to classify them!',
-                'min_examples_needed': 5,
+                'min_examples_needed': 16,
                 'max_examples': 16,
                 'experience_reward': 15,
                 'required_level': 1
@@ -824,3 +824,88 @@ def generate_detailed_reasoning(item, correct_category, training_examples, train
         'training_quality_score': training_quality['overall_score'],
         'confidence_explanation': confidence_explanation
     }
+
+
+class TestingPhaseView(TemplateView):
+    """Testing phase where AI demonstrates what it learned"""
+    template_name = 'robotic_buddy/testing_phase.html'
+    
+    def get(self, request, *args, **kwargs):
+        session_id = request.session.get('buddy_session_id')
+        if not session_id:
+            return redirect('robotic_buddy:create_buddy')
+        
+        try:
+            self.buddy = RoboticBuddy.objects.get(session_id=session_id)
+        except RoboticBuddy.DoesNotExist:
+            return redirect('robotic_buddy:create_buddy')
+        
+        return super().get(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get recent training session
+        training_session = self.buddy.training_sessions.filter(
+            status='training'
+        ).order_by('-started_at').first()
+        
+        if training_session:
+            training_examples = training_session.examples.filter(is_training_example=True)
+            training_count = training_examples.count()
+        else:
+            training_count = 0
+        
+        context.update({
+            'buddy': self.buddy,
+            'training_count': training_count,
+            'page_title': f'Testing {self.buddy.name}\'s Learning'
+        })
+        return context
+
+
+class LearningExplanationView(TemplateView):
+    """Show how the AI learned step-by-step"""
+    template_name = 'robotic_buddy/learning_explanation.html'
+    
+    def get(self, request, *args, **kwargs):
+        session_id = request.session.get('buddy_session_id')
+        if not session_id:
+            return redirect('robotic_buddy:create_buddy')
+        
+        try:
+            self.buddy = RoboticBuddy.objects.get(session_id=session_id)
+        except RoboticBuddy.DoesNotExist:
+            return redirect('robotic_buddy:create_buddy')
+        
+        return super().get(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get recent training session and examples
+        training_session = self.buddy.training_sessions.order_by('-started_at').first()
+        
+        if training_session:
+            training_examples = training_session.examples.filter(is_training_example=True)
+            test_examples = training_session.examples.filter(is_training_example=False)
+            
+            # Calculate visual patterns for learning explanation
+            visual_patterns = {
+                'total_examples': training_examples.count(),
+                'categories_learned': list(set([ex.data.get('category', 'unknown') for ex in training_examples if ex.data])),
+                'learning_progression': []
+            }
+        else:
+            training_examples = []
+            test_examples = []
+            visual_patterns = {'total_examples': 0, 'categories_learned': [], 'learning_progression': []}
+        
+        context.update({
+            'buddy': self.buddy,
+            'training_examples': training_examples,
+            'test_examples': test_examples,
+            'visual_patterns': visual_patterns,
+            'page_title': f'How {self.buddy.name} Learned'
+        })
+        return context

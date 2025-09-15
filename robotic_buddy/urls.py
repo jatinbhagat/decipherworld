@@ -20,6 +20,10 @@ urlpatterns = [
     path('drag-drop-game/', views.DragDropGameView.as_view(), name='drag_drop_game'),
     path('emotion-game/', views.EmotionGameView.as_view(), name='emotion_game'),
     
+    # Enhanced Learning Flow
+    path('testing-phase/', views.TestingPhaseView.as_view(), name='testing_phase'),
+    path('learning-explanation/', views.LearningExplanationView.as_view(), name='learning_explanation'),
+    
     # AJAX endpoints for game interactions
     path('api/submit-example/', views.submit_training_example, name='submit_example'),
     path('api/buddy-prediction/', views.get_buddy_prediction, name='buddy_prediction'),
