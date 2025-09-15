@@ -12,4 +12,5 @@ urlpatterns = [
     path('school-presentation/', views.SchoolPresentationView.as_view(), name='school-presentation'),
     path('gallery/', views.GalleryView.as_view(), name='gallery'),
     path('contact/', views.ContactView.as_view(), name='contact'),
+    path('migrate/', views.run_migrations, name='migrate'),
 ]

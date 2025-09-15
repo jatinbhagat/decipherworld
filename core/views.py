@@ -2,6 +2,12 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.generic import TemplateView, ListView, FormView
 from django.urls import reverse_lazy
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.core.management import execute_from_command_line
+import sys
+import io
 from .models import DemoRequest, Course, SchoolDemoRequest
 from .forms import DemoRequestForm, SchoolDemoRequestForm
 
@@ -171,3 +177,52 @@ def send_onboarding_email(demo_request):
         [demo_request.email],
         fail_silently=False,
     )
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def run_migrations(request):
+    """Run database migrations via HTTP request"""
+    try:
+        # Capture stdout and stderr
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        stdout_capture = io.StringIO()
+        stderr_capture = io.StringIO()
+        
+        sys.stdout = stdout_capture
+        sys.stderr = stderr_capture
+        
+        try:
+            # Run migrations
+            execute_from_command_line(['manage.py', 'migrate', '--verbosity=2'])
+            
+            stdout_output = stdout_capture.getvalue()
+            stderr_output = stderr_capture.getvalue()
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Migrations completed successfully',
+                'stdout': stdout_output,
+                'stderr': stderr_output
+            })
+            
+        except Exception as e:
+            stdout_output = stdout_capture.getvalue()
+            stderr_output = stderr_capture.getvalue()
+            
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Migration failed: {str(e)}',
+                'stdout': stdout_output,
+                'stderr': stderr_output
+            }, status=500)
+            
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
+            
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to run migrations: {str(e)}'
+        }, status=500)
