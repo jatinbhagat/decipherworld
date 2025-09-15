@@ -328,15 +328,18 @@ document.addEventListener('DOMContentLoaded', function() {
         showBuddyMessage(personalizedMessage);
         
         // Store training data for result page
-        localStorage.setItem('aiTrainingData', JSON.stringify({
+        const trainingData = {
             emotionData: emotionGameState.emotionData,
             examples: emotionGameState.examplesGiven,
             accuracy: overallAccuracy,
             gameType: 'emotion_game'
-        }));
+        };
+        localStorage.setItem('aiTrainingData', JSON.stringify(trainingData));
+        console.log('🎯 DEBUG: Emotion game saved training data to localStorage:', trainingData);
         
         setTimeout(() => {
             // Navigate directly to learning explanation
+            console.log('🎯 DEBUG: Emotion game redirecting to learning explanation...');
             window.location.href = '{% url "robotic_buddy:learning_explanation" %}';
         }, 4000);
     });

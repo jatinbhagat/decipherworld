@@ -304,13 +304,16 @@ document.getElementById('test-buddy-btn').addEventListener('click', function() {
 // Complete button
 document.getElementById('complete-btn').addEventListener('click', function() {
     // Store training data for result page
-    localStorage.setItem('aiTrainingData', JSON.stringify({
+    const trainingData = {
         categories: categoryTrainingData,
         examples: examplesGiven,
         gameType: 'simple_game'
-    }));
+    };
+    localStorage.setItem('aiTrainingData', JSON.stringify(trainingData));
+    console.log('🎯 DEBUG: Saved training data to localStorage:', trainingData);
     
     // Navigate directly to learning explanation
+    console.log('🎯 DEBUG: Redirecting to learning explanation...');
     window.location.href = '{% url "robotic_buddy:learning_explanation" %}';
 });
 

@@ -141,9 +141,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Get training data from localStorage
     const trainingData = localStorage.getItem('aiTrainingData');
+    console.log('🎯 DEBUG: Learning explanation page loaded, localStorage data:', trainingData);
     
     if (!trainingData) {
         // No training data found
+        console.log('🎯 DEBUG: No training data found - showing no-data message');
         document.getElementById('loading-message').style.display = 'none';
         document.getElementById('no-data-message').style.display = 'block';
         return;
@@ -151,9 +153,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     try {
         const data = JSON.parse(trainingData);
+        console.log('🎯 DEBUG: Successfully parsed training data:', data);
         displayLearningExplanation(data);
     } catch (error) {
-        console.error('Error parsing training data:', error);
+        console.error('🎯 DEBUG: Error parsing training data:', error);
         document.getElementById('loading-message').style.display = 'none';
         document.getElementById('no-data-message').style.display = 'block';
     }

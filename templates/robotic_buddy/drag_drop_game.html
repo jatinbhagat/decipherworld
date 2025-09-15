@@ -328,15 +328,18 @@ document.addEventListener('DOMContentLoaded', function() {
         showBuddyMessage(personalizedMessage);
         
         // Store training data for result page
-        localStorage.setItem('aiTrainingData', JSON.stringify({
+        const trainingData = {
             categories: dragDropGameState.learningData,
             examples: dragDropGameState.examplesGiven,
             accuracy: overallAccuracy,
             gameType: 'drag_drop_game'
-        }));
+        };
+        localStorage.setItem('aiTrainingData', JSON.stringify(trainingData));
+        console.log('🎯 DEBUG: Drag-drop game saved training data to localStorage:', trainingData);
         
         setTimeout(() => {
             // Navigate directly to learning explanation
+            console.log('🎯 DEBUG: Drag-drop game redirecting to learning explanation...');
             window.location.href = '{% url "robotic_buddy:learning_explanation" %}';
         }, 4000);
     });
