@@ -247,11 +247,10 @@ def populate_cyber_challenges(request):
             {
                 'challenge_number': 1,
                 'title': 'The Simple Password Trap',
-                'question': 'Alex uses "password123" for everything. What\'s the BIGGEST risk?',
+                'question_text': 'Alex uses "password123" for everything. What\'s the BIGGEST risk?',
                 'option_a': 'Easy to remember',
                 'option_b': 'Hackers can guess it easily',
                 'option_c': 'It has numbers',
-                'option_d': 'It\'s too long',
                 'correct_answer': 'B',
                 'explanation': 'Simple passwords like "password123" are incredibly easy for hackers to guess or crack using automated tools. They\'re among the first passwords hackers try!',
                 'tessa_tip': '💡 Pro tip: Think of passwords like house keys - you wouldn\'t use a toy key for your home! Use unique, complex passwords for each account.'
@@ -259,11 +258,10 @@ def populate_cyber_challenges(request):
             {
                 'challenge_number': 2,
                 'title': 'The Reused Password Problem',
-                'question': 'Maya uses "Soccer2023!" for her email, social media, and banking. What should she do?',
+                'question_text': 'Maya uses "Soccer2023!" for her email, social media, and banking. What should she do?',
                 'option_a': 'Keep using it - it\'s strong',
                 'option_b': 'Change it to "Soccer2024!"',
                 'option_c': 'Use different passwords for each account',
-                'option_d': 'Add more numbers',
                 'correct_answer': 'C',
                 'explanation': 'Using the same password everywhere is like having one key for your house, car, and office. If someone gets it, they access everything! Each account needs its own unique password.',
                 'tessa_tip': '🔐 Smart move: Use a password manager to create and store unique passwords for every account. It\'s like having a super-secure keychain!'
@@ -271,11 +269,10 @@ def populate_cyber_challenges(request):
             {
                 'challenge_number': 3,
                 'title': 'The Public Wi-Fi Danger',
-                'question': 'Sam wants to check his bank account on café Wi-Fi. What\'s the safest approach?',
+                'question_text': 'Sam wants to check his bank account on café Wi-Fi. What\'s the safest approach?',
                 'option_a': 'Go ahead - the café looks trustworthy',
                 'option_b': 'Wait until he\'s on a secure, private network',
                 'option_c': 'Use the Wi-Fi but log out quickly',
-                'option_d': 'Ask the café owner if it\'s safe',
                 'correct_answer': 'B',
                 'explanation': 'Public Wi-Fi is like shouting your secrets in a crowded room - anyone can listen! Banking and sensitive activities should only happen on secure, private networks.',
                 'tessa_tip': '📱 Safety first: Use your phone\'s hotspot or wait for secure Wi-Fi. Your financial safety is worth the wait!'
@@ -283,11 +280,10 @@ def populate_cyber_challenges(request):
             {
                 'challenge_number': 4,
                 'title': 'The Suspicious Email Challenge',
-                'question': 'Emma gets an email: "Your account expires in 24 hours! Click here to verify!" What should she do?',
+                'question_text': 'Emma gets an email: "Your account expires in 24 hours! Click here to verify!" What should she do?',
                 'option_a': 'Click the link immediately',
                 'option_b': 'Forward it to friends as a warning',
                 'option_c': 'Go directly to the official website instead',
-                'option_d': 'Reply asking for more info',
                 'correct_answer': 'C',
                 'explanation': 'This is a classic phishing attempt! Urgent emails with suspicious links are red flags. Always visit the official website directly instead of clicking email links.',
                 'tessa_tip': '🎣 Phishing alert: When in doubt, don\'t click! Go directly to the official website or call the company to verify any urgent requests.'
@@ -295,11 +291,10 @@ def populate_cyber_challenges(request):
             {
                 'challenge_number': 5,
                 'title': 'The Update Alert',
-                'question': 'Jake\'s computer shows: "Critical security update available." What should he do?',
+                'question_text': 'Jake\'s computer shows: "Critical security update available." What should he do?',
                 'option_a': 'Ignore it - updates are annoying',
                 'option_b': 'Install it immediately',
                 'option_c': 'Wait a few months to see if others have problems',
-                'option_d': 'Only update if something breaks',
                 'correct_answer': 'B',
                 'explanation': 'Security updates are like fixing holes in your armor! They patch vulnerabilities that hackers could exploit. Installing them quickly keeps you protected.',
                 'tessa_tip': '🛡️ Update power: Enable automatic updates when possible. Think of them as your digital immune system getting stronger!'
