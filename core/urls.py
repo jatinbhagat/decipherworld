@@ -13,4 +13,5 @@ urlpatterns = [
     path('gallery/', views.GalleryView.as_view(), name='gallery'),
     path('contact/', views.ContactView.as_view(), name='contact'),
     path('migrate/', views.run_migrations, name='migrate'),
+    path('populate-cyber-challenges/', views.populate_cyber_challenges, name='populate_cyber_challenges'),
 ]
