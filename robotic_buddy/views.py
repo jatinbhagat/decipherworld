@@ -577,9 +577,9 @@ def complete_training_session(request):
         # Complete the session
         session.complete_session()
         
-        # Generate URL for the dedicated result page
+        # Generate URL for the learning explanation directly
         from django.urls import reverse
-        result_url = reverse('robotic_buddy:session_result', kwargs={'session_id': session.id})
+        result_url = reverse('robotic_buddy:learning_explanation')
         
         return JsonResponse({
             'success': True,
@@ -868,44 +868,10 @@ class LearningExplanationView(TemplateView):
     """Show how the AI learned step-by-step"""
     template_name = 'robotic_buddy/learning_explanation.html'
     
-    def get(self, request, *args, **kwargs):
-        session_id = request.session.get('buddy_session_id')
-        if not session_id:
-            return redirect('robotic_buddy:create_buddy')
-        
-        try:
-            self.buddy = RoboticBuddy.objects.get(session_id=session_id)
-        except RoboticBuddy.DoesNotExist:
-            return redirect('robotic_buddy:create_buddy')
-        
-        return super().get(request, *args, **kwargs)
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Get recent training session and examples
-        training_session = self.buddy.training_sessions.order_by('-started_at').first()
-        
-        if training_session:
-            training_examples = training_session.examples.filter(is_training_example=True)
-            test_examples = training_session.examples.filter(is_training_example=False)
-            
-            # Calculate visual patterns for learning explanation
-            visual_patterns = {
-                'total_examples': training_examples.count(),
-                'categories_learned': list(set([ex.data.get('category', 'unknown') for ex in training_examples if ex.data])),
-                'learning_progression': []
-            }
-        else:
-            training_examples = []
-            test_examples = []
-            visual_patterns = {'total_examples': 0, 'categories_learned': [], 'learning_progression': []}
-        
+        # No session requirement - data comes from localStorage in JavaScript
         context.update({
-            'buddy': self.buddy,
-            'training_examples': training_examples,
-            'test_examples': test_examples,
-            'visual_patterns': visual_patterns,
-            'page_title': f'How {self.buddy.name} Learned'
+            'page_title': 'How Your AI Buddy Learned'
         })
         return context

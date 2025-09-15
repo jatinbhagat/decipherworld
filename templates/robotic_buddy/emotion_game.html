@@ -3,419 +3,125 @@
 {% block game_title %}Emotion Recognition Training{% endblock %}
 
 {% block game_content %}
-<div class="max-w-6xl mx-auto">
-    <!-- Game Header -->
-    <div class="text-center mb-8">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
-            😊 Emotion Recognition Training
-        </h1>
-        <p class="text-lg text-gray-600 mb-4">
-            Teach your AI buddy to understand human emotions and feelings!
-        </p>
+<div class="max-w-4xl mx-auto px-4">
+    <!-- Compact Header with Status -->
+    <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 border-b border-gray-100 -mx-4 px-4 py-3 mb-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full flex items-center justify-center text-white">
+                    😊
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold text-gray-800">Emotion Training</h1>
+                    <p class="text-xs text-gray-600 hidden sm:block">Match emotions to scenarios</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <div class="text-sm font-semibold text-gray-800">
+                        <span id="examples-count">0</span>/16
+                    </div>
+                    <div class="text-xs text-gray-500">examples</div>
+                </div>
+                <div class="w-16 h-2 bg-gray-200 rounded-full">
+                    <div id="progress-bar" class="bg-gradient-to-r from-pink-400 to-purple-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Game Interface -->
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <!-- Emotion Selection Section -->
+        <div class="bg-gradient-to-br from-pink-50 to-purple-50 p-6 border-b border-gray-200">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-gray-800 text-sm">Choose Emotion</h3>
+                <button id="new-scenario-btn" class="px-3 py-1 bg-purple-500 text-white rounded-md text-xs hover:bg-purple-600 transition-colors">
+                    Next
+                </button>
+            </div>
+            <div id="emotion-pool" class="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-4">
+                <div class="emotion-btn bg-yellow-50 border-2 border-yellow-200 rounded-lg p-3 text-center cursor-pointer hover:bg-yellow-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
+                     data-emotion="happy">
+                    <div class="text-3xl sm:text-2xl mb-1">😊</div>
+                    <div class="text-xs font-medium text-gray-800">Happy</div>
+                </div>
+                <div class="emotion-btn bg-blue-50 border-2 border-blue-200 rounded-lg p-3 text-center cursor-pointer hover:bg-blue-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
+                     data-emotion="sad">
+                    <div class="text-3xl sm:text-2xl mb-1">😢</div>
+                    <div class="text-xs font-medium text-gray-800">Sad</div>
+                </div>
+                <div class="emotion-btn bg-red-50 border-2 border-red-200 rounded-lg p-3 text-center cursor-pointer hover:bg-red-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
+                     data-emotion="angry">
+                    <div class="text-3xl sm:text-2xl mb-1">😠</div>
+                    <div class="text-xs font-medium text-gray-800">Angry</div>
+                </div>
+                <div class="emotion-btn bg-orange-50 border-2 border-orange-200 rounded-lg p-3 text-center cursor-pointer hover:bg-orange-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
+                     data-emotion="surprised">
+                    <div class="text-3xl sm:text-2xl mb-1">😮</div>
+                    <div class="text-xs font-medium text-gray-800">Surprised</div>
+                </div>
+                <div class="emotion-btn bg-purple-50 border-2 border-purple-200 rounded-lg p-3 text-center cursor-pointer hover:bg-purple-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
+                     data-emotion="scared">
+                    <div class="text-3xl sm:text-2xl mb-1">😨</div>
+                    <div class="text-xs font-medium text-gray-800">Scared</div>
+                </div>
+                <div class="emotion-btn bg-gray-50 border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:bg-gray-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
+                     data-emotion="neutral">
+                    <div class="text-3xl sm:text-2xl mb-1">😐</div>
+                    <div class="text-xs font-medium text-gray-800">Neutral</div>
+                </div>
+            </div>
+            <div class="text-center text-xs text-gray-600 mt-3">
+                <span class="md:hidden">👆 Tap emotion, then tap scenario below</span>
+                <span class="hidden md:inline">🖱️ Click emotion, then click scenario</span>
+            </div>
+        </div>
         
-        <!-- Game Progress -->
-        <div class="game-card bg-white p-4 max-w-md mx-auto">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-gray-700">Training Progress</span>
-                <span class="text-sm text-gray-600"><span id="examples-count">0</span> / 16 examples</span>
+        <!-- Scenario Section -->
+        <div class="p-6">
+            <div class="text-center mb-4">
+                <h3 class="font-semibold text-gray-800 text-sm">Scenario</h3>
             </div>
-            <div class="w-full bg-gray-200 rounded-full h-3">
-                <div id="progress-bar" class="bg-gradient-to-r from-pink-400 to-purple-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            <div id="scenario-zone" class="min-h-[140px] border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-purple-400 hover:bg-purple-50 transition-colors duration-200 touch-manipulation">
+                <div id="scenario-content" class="mb-3">
+                    <div class="text-gray-400 text-sm">Loading scenario...</div>
+                </div>
+                <div class="text-gray-400 text-xs">
+                    <span class="md:hidden">👆 Tap after selecting emotion above</span>
+                    <span class="hidden md:inline">🖱️ Click after selecting emotion</span>
+                </div>
             </div>
-        </div>
-    </div>
-    
-    <!-- Game Instructions -->
-    <div class="game-card bg-gradient-to-r from-pink-100 to-purple-100 p-6 mb-8">
-        <div class="flex items-start space-x-4">
-            <div class="w-16 h-16 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xl">
-                🤖
-            </div>
-            <div class="flex-1">
-                <h3 class="font-semibold text-gray-800 mb-2">Your AI Buddy Says:</h3>
-                <p id="buddy-instruction" class="text-gray-700">
-                    Hi! I want to learn about human emotions! Read each scenario and help me understand what emotion the person is feeling.
-                </p>
+            <div id="scenario-result" class="mt-3 text-center">
+                <!-- Results will appear here -->
             </div>
         </div>
     </div>
     
-    <!-- Training Interface -->
-    <div class="space-y-6">
-        <!-- Mobile-First Emotion Options -->
-        <div class="game-card bg-white p-4">
-            <h3 class="font-semibold text-gray-800 mb-4 text-center">😊 Choose the Emotion</h3>
-            
-            <!-- Mobile-Optimized Emotion Grid -->
-            <div id="emotion-pool" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
-                <div class="draggable-item bg-yellow-50 border-2 border-yellow-200 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:bg-yellow-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
-                     draggable="true" data-item="happy" data-emotion="happy">
-                    <div class="text-4xl sm:text-3xl mb-1">😊</div>
-                    <div class="text-xs sm:text-sm font-medium text-gray-800">Happy</div>
-                </div>
-                <div class="draggable-item bg-blue-50 border-2 border-blue-200 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:bg-blue-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
-                     draggable="true" data-item="sad" data-emotion="sad">
-                    <div class="text-4xl sm:text-3xl mb-1">😢</div>
-                    <div class="text-xs sm:text-sm font-medium text-gray-800">Sad</div>
-                </div>
-                <div class="draggable-item bg-red-50 border-2 border-red-200 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:bg-red-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
-                     draggable="true" data-item="angry" data-emotion="angry">
-                    <div class="text-4xl sm:text-3xl mb-1">😠</div>
-                    <div class="text-xs sm:text-sm font-medium text-gray-800">Angry</div>
-                </div>
-                <div class="draggable-item bg-orange-50 border-2 border-orange-200 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:bg-orange-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
-                     draggable="true" data-item="surprised" data-emotion="surprised">
-                    <div class="text-4xl sm:text-3xl mb-1">😮</div>
-                    <div class="text-xs sm:text-sm font-medium text-gray-800">Surprised</div>
-                </div>
-                <div class="draggable-item bg-purple-50 border-2 border-purple-200 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:bg-purple-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
-                     draggable="true" data-item="scared" data-emotion="scared">
-                    <div class="text-4xl sm:text-3xl mb-1">😨</div>
-                    <div class="text-xs sm:text-sm font-medium text-gray-800">Scared</div>
-                </div>
-                <div class="draggable-item bg-gray-50 border-2 border-gray-200 rounded-lg p-3 sm:p-4 text-center cursor-pointer hover:bg-gray-100 transition-all duration-200 touch-manipulation hover:scale-105 active:scale-95" 
-                     draggable="true" data-item="neutral" data-emotion="neutral">
-                    <div class="text-4xl sm:text-3xl mb-1">😐</div>
-                    <div class="text-xs sm:text-sm font-medium text-gray-800">Neutral</div>
-                </div>
-            </div>
-            
-            <!-- Mobile Instructions -->
-            <div class="text-center text-sm text-gray-600 mb-3">
-                <div class="hidden md:block">🖱️ Drag the emotion or click to select</div>
-                <div class="md:hidden">👆 Tap an emotion, then tap the scenario below</div>
-            </div>
-            
-            <button id="new-scenario-btn" class="btn btn-sm btn-outline btn-primary w-full">
-                Get New Scenario
+    <!-- Compact Response & Actions -->
+    <div class="mt-4 space-y-3">
+        <!-- Buddy Response (Compact) -->
+        <div id="buddy-response" class="bg-gradient-to-r from-pink-100 to-purple-100 rounded-lg p-3 text-center" style="display: none;">
+            <p id="buddy-message" class="text-sm text-gray-700 font-medium"></p>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex justify-center space-x-3">
+            <button id="complete-btn" class="px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-sm font-medium" style="display: none;">
+                🎉 Complete Training
             </button>
-        </div>
-        
-        <!-- Current Scenario -->
-        <div>
-            <div class="grid gap-6 mb-6">
-                <!-- Scenario Card -->
-                <div class="game-card bg-white p-6">
-                    <div class="text-center mb-4">
-                        <h3 class="font-semibold text-gray-800 mb-3">📖 Emotion Scenario</h3>
-                    </div>
-                    <div class="drop-zone min-h-[180px] border-3 border-dashed border-gray-300 rounded-lg p-4 sm:p-6 text-center touch-manipulation hover:border-purple-400 transition-colors duration-200" 
-                         id="scenario-zone">
-                        <div id="scenario-content" class="mb-4">
-                            <div class="text-gray-400 text-sm">Loading scenario...</div>
-                        </div>
-                        <div class="text-gray-400 text-sm">
-                            <div class="hidden md:block">🖱️ Drag the emotion that matches this scenario here</div>
-                            <div class="md:hidden">👆 Tap this area after selecting an emotion above</div>
-                        </div>
-                    </div>
-                    <div id="scenario-result" class="mt-3 text-center">
-                        <!-- Results will appear here -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Buddy Response Area -->
-            <div id="buddy-response" class="game-card bg-white p-6 mb-6" style="display: none;">
-                <div class="flex items-start space-x-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-xl">
-                        🤖
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-semibold text-purple-800 mb-2">Your AI Buddy Says:</h4>
-                        <p id="buddy-message" class="text-purple-700"></p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- AI Emotion Brain Visualization -->
-            <div id="ai-visualization" class="game-card bg-gradient-to-r from-purple-50 to-pink-50 p-6 mb-6 border-2 border-purple-200 transition-all duration-500" style="display: none;">
-                <div class="text-center mb-4">
-                    <h3 class="text-xl font-bold text-purple-800 mb-2">🧠 Inside My Emotion Brain</h3>
-                    <p class="text-sm text-purple-600 font-medium">Watch how I learn to understand emotions!</p>
-                    <div class="mt-2 animate-pulse text-xs text-purple-500">✨ Real emotion learning happening here! ✨</div>
-                </div>
-                
-                <!-- Emotion Memory Palace -->
-                <div class="mb-6">
-                    <h4 class="font-bold text-purple-700 mb-3 text-center">🏰 My Emotion Memory Palace:</h4>
-                    <div class="grid grid-cols-3 gap-2 text-xs">
-                        <div class="bg-gradient-to-b from-yellow-100 to-yellow-50 p-2 rounded-lg text-center border-2 border-yellow-200 shadow-sm">
-                            <div class="text-xl mb-1">😊</div>
-                            <div class="font-bold text-yellow-800">Happy</div>
-                            <div id="happy-memory" class="text-yellow-600 mt-1 font-medium">Empty</div>
-                        </div>
-                        <div class="bg-gradient-to-b from-blue-100 to-blue-50 p-2 rounded-lg text-center border-2 border-blue-200 shadow-sm">
-                            <div class="text-xl mb-1">😢</div>
-                            <div class="font-bold text-blue-800">Sad</div>
-                            <div id="sad-memory" class="text-blue-600 mt-1 font-medium">Empty</div>
-                        </div>
-                        <div class="bg-gradient-to-b from-red-100 to-red-50 p-2 rounded-lg text-center border-2 border-red-200 shadow-sm">
-                            <div class="text-xl mb-1">😠</div>
-                            <div class="font-bold text-red-800">Angry</div>
-                            <div id="angry-memory" class="text-red-600 mt-1 font-medium">Empty</div>
-                        </div>
-                        <div class="bg-gradient-to-b from-orange-100 to-orange-50 p-2 rounded-lg text-center border-2 border-orange-200 shadow-sm">
-                            <div class="text-xl mb-1">😮</div>
-                            <div class="font-bold text-orange-800">Surprised</div>
-                            <div id="surprised-memory" class="text-orange-600 mt-1 font-medium">Empty</div>
-                        </div>
-                        <div class="bg-gradient-to-b from-purple-100 to-purple-50 p-2 rounded-lg text-center border-2 border-purple-200 shadow-sm">
-                            <div class="text-xl mb-1">😨</div>
-                            <div class="font-bold text-purple-800">Scared</div>
-                            <div id="scared-memory" class="text-purple-600 mt-1 font-medium">Empty</div>
-                        </div>
-                        <div class="bg-gradient-to-b from-gray-100 to-gray-50 p-2 rounded-lg text-center border-2 border-gray-200 shadow-sm">
-                            <div class="text-xl mb-1">😐</div>
-                            <div class="font-bold text-gray-800">Neutral</div>
-                            <div id="neutral-memory" class="text-gray-600 mt-1 font-medium">Empty</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Emotion Confidence Thermometer -->
-                <div class="mb-6">
-                    <h4 class="font-bold text-purple-700 mb-3 text-center">🌡️ My Emotion Confidence:</h4>
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <span class="w-16 text-xs text-gray-600">Happy:</span>
-                            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                                <div id="happy-confidence" class="bg-yellow-400 h-2 rounded-full transition-all" style="width: 0%"></div>
-                            </div>
-                            <span id="happy-percent" class="text-xs text-gray-600">0%</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="w-16 text-xs text-gray-600">Sad:</span>
-                            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                                <div id="sad-confidence" class="bg-blue-400 h-2 rounded-full transition-all" style="width: 0%"></div>
-                            </div>
-                            <span id="sad-percent" class="text-xs text-gray-600">0%</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="w-16 text-xs text-gray-600">Angry:</span>
-                            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                                <div id="angry-confidence" class="bg-red-400 h-2 rounded-full transition-all" style="width: 0%"></div>
-                            </div>
-                            <span id="angry-percent" class="text-xs text-gray-600">0%</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="w-16 text-xs text-gray-600">Surprised:</span>
-                            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                                <div id="surprised-confidence" class="bg-orange-400 h-2 rounded-full transition-all" style="width: 0%"></div>
-                            </div>
-                            <span id="surprised-percent" class="text-xs text-gray-600">0%</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="w-16 text-xs text-gray-600">Scared:</span>
-                            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                                <div id="scared-confidence" class="bg-purple-400 h-2 rounded-full transition-all" style="width: 0%"></div>
-                            </div>
-                            <span id="scared-percent" class="text-xs text-gray-600">0%</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="w-16 text-xs text-gray-600">Neutral:</span>
-                            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                                <div id="neutral-confidence" class="bg-gray-400 h-2 rounded-full transition-all" style="width: 0%"></div>
-                            </div>
-                            <span id="neutral-percent" class="text-xs text-gray-600">0%</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Learning Insights -->
-                <div class="mt-4 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
-                    <h5 class="font-bold text-orange-700 text-xs mb-1">💡 Did You Know?</h5>
-                    <p class="text-xs text-orange-600">
-                        I learn emotions by understanding the context and situation! Each scenario you teach me helps me recognize similar emotional patterns in the future.
-                    </p>
-                </div>
-            </div>
-            
-            <!-- Game Actions -->
-            <div class="text-center">
-                <button id="test-buddy-btn" class="btn btn-primary btn-lg mr-3" style="display: none;">
-                    🧠 Test My Emotion Understanding!
-                </button>
-                <button id="complete-session-btn" class="btn btn-success btn-lg" style="display: none;">
-                    🎉 Complete Emotion Training
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Phase 2: Camera Integration Section -->
-    <div class="mt-12 game-card bg-gradient-to-br from-blue-50 to-purple-50 p-8" id="camera-section">
-        <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">📹 Live Emotion Recognition</h2>
-            <p class="text-gray-600">Use your camera to practice real emotion recognition with your AI buddy!</p>
-        </div>
-        
-        <!-- Camera Mode Toggle -->
-        <div class="flex justify-center mb-6">
-            <div class="btn-group">
-                <button id="scenario-mode-btn" class="btn btn-primary text-sm sm:text-base px-3 sm:px-4">📖 <span class="hidden sm:inline">Scenario </span>Mode</button>
-                <button id="camera-mode-btn" class="btn btn-outline btn-primary text-sm sm:text-base px-3 sm:px-4">📹 <span class="hidden sm:inline">Camera </span>Mode</button>
-            </div>
-        </div>
-        
-        <!-- Camera Training Interface -->
-        <div id="camera-interface" class="hidden">
-            <div class="grid md:grid-cols-2 gap-6">
-                <!-- Camera Feed -->
-                <div class="space-y-4">
-                    <div class="bg-white rounded-lg p-4">
-                        <h3 class="font-semibold text-gray-800 mb-3">Camera Feed</h3>
-                        <div class="relative bg-gray-100 rounded-lg overflow-hidden" style="aspect-ratio: 4/3;">
-                            <video id="emotion-camera" class="w-full h-full object-cover" autoplay muted></video>
-                            <canvas id="emotion-canvas" class="absolute top-0 left-0 w-full h-full"></canvas>
-                            
-                            <!-- Camera Controls -->
-                            <div class="absolute bottom-4 left-4 right-4 flex justify-center space-x-2">
-                                <button id="start-camera-btn" class="btn btn-sm btn-primary">
-                                    📷 Start Camera
-                                </button>
-                                <button id="capture-emotion-btn" class="btn btn-sm btn-success hidden">
-                                    📸 Capture Emotion
-                                </button>
-                                <button id="stop-camera-btn" class="btn btn-sm btn-secondary hidden">
-                                    ⏹️ Stop Camera
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Camera Instructions -->
-                    <div class="bg-white rounded-lg p-4">
-                        <h4 class="font-semibold text-gray-800 mb-2">📋 Instructions</h4>
-                        <div id="camera-instructions" class="text-sm text-gray-600">
-                            <p>1. Click "Start Camera" to begin</p>
-                            <p>2. Make facial expressions for different emotions</p>
-                            <p>3. Click "Capture Emotion" to teach your buddy</p>
-                            <p>4. Accept or reject each capture to train your AI buddy!</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Emotion Capture Review Modal -->
-                    <div id="emotion-capture-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-                        <div class="bg-white rounded-lg p-6 max-w-md mx-4">
-                            <h3 class="text-lg font-semibold mb-4">🎭 Captured Emotion</h3>
-                            <div class="text-center mb-4">
-                                <div class="bg-gray-100 rounded-lg p-4 mb-4">
-                                    <canvas id="captured-emotion-canvas" width="200" height="150" class="mx-auto rounded border"></canvas>
-                                </div>
-                                <div id="captured-emotion-analysis" class="text-sm text-gray-700"></div>
-                            </div>
-                            <div class="flex justify-center space-x-3">
-                                <button id="reject-capture-btn" class="btn btn-sm btn-outline-secondary">
-                                    ❌ Reject
-                                </button>
-                                <button id="accept-capture-btn" class="btn btn-sm btn-success">
-                                    ✅ Accept & Train
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Training History -->
-                    <div class="bg-white rounded-lg p-4">
-                        <h4 class="font-semibold text-gray-800 mb-3">🎯 Camera Training History</h4>
-                        <div id="camera-training-history" class="grid grid-cols-3 gap-2 text-center">
-                            <div class="training-emotion-count" data-emotion="happy">
-                                <div class="text-2xl">😊</div>
-                                <div class="text-sm font-medium">Happy</div>
-                                <div class="text-xs text-gray-600"><span id="happy-count">0</span> captures</div>
-                            </div>
-                            <div class="training-emotion-count" data-emotion="sad">
-                                <div class="text-2xl">😢</div>
-                                <div class="text-sm font-medium">Sad</div>
-                                <div class="text-xs text-gray-600"><span id="sad-count">0</span> captures</div>
-                            </div>
-                            <div class="training-emotion-count" data-emotion="angry">
-                                <div class="text-2xl">😠</div>
-                                <div class="text-sm font-medium">Angry</div>
-                                <div class="text-xs text-gray-600"><span id="angry-count">0</span> captures</div>
-                            </div>
-                            <div class="training-emotion-count" data-emotion="surprised">
-                                <div class="text-2xl">😲</div>
-                                <div class="text-sm font-medium">Surprised</div>
-                                <div class="text-xs text-gray-600"><span id="surprised-count">0</span> captures</div>
-                            </div>
-                            <div class="training-emotion-count" data-emotion="scared">
-                                <div class="text-2xl">😨</div>
-                                <div class="text-sm font-medium">Scared</div>
-                                <div class="text-xs text-gray-600"><span id="scared-count">0</span> captures</div>
-                            </div>
-                            <div class="training-emotion-count" data-emotion="neutral">
-                                <div class="text-2xl">😐</div>
-                                <div class="text-sm font-medium">Neutral</div>
-                                <div class="text-xs text-gray-600"><span id="neutral-count">0</span> captures</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Emotion Detection Results -->
-                <div class="space-y-4">
-                    <div class="bg-white rounded-lg p-4">
-                        <h3 class="font-semibold text-gray-800 mb-3">📸 Captured Emotions</h3>
-                        <div id="camera-emotion-results" class="space-y-2">
-                            <div class="text-center text-gray-500 py-8">
-                                Start camera and capture emotions to train your AI buddy
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Buddy Camera Feedback -->
-                    <div class="bg-white rounded-lg p-4">
-                        <h3 class="font-semibold text-gray-800 mb-3">🤖 Buddy's Analysis</h3>
-                        <div id="buddy-camera-feedback" class="text-gray-600">
-                            I'm ready to learn from your expressions! Start the camera and show me different emotions.
-                        </div>
-                    </div>
-                    
-                    <!-- Emotion Practice Game -->
-                    <div id="emotion-practice-game" class="bg-white rounded-lg p-4 hidden">
-                        <h3 class="font-semibold text-gray-800 mb-3">🎭 Emotion Challenge</h3>
-                        <div class="text-center">
-                            <div id="emotion-challenge" class="text-2xl mb-3">😊</div>
-                            <p id="challenge-text" class="text-gray-700 mb-3">Show me a happy expression!</p>
-                            <div class="flex justify-center space-x-2">
-                                <button id="next-challenge-btn" class="btn btn-sm btn-primary">Next Challenge</button>
-                                <button id="end-practice-btn" class="btn btn-sm btn-secondary">End Practice</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
 
-<!-- Face-API.js for emotion detection -->
-<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/dist/face-api.min.js"></script>
-
 <script>
-// Enhanced Emotion Learning System with Mobile Support
+// Emotion Game State
 let emotionGameState = {
     currentScenarioIndex: 0,
     examplesGiven: 0,
     maxExamples: 16,
-    correctPredictions: 0,
-    totalPredictions: 0,
-    selectedEmotion: null, // For mobile tap-to-select interaction
-    isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-    
-    // Emotion learning data
-    emotionData: {
-        happy: { correct: 0, total: 0, examples: [] },
-        sad: { correct: 0, total: 0, examples: [] },
-        angry: { correct: 0, total: 0, examples: [] },
-        surprised: { correct: 0, total: 0, examples: [] },
-        scared: { correct: 0, total: 0, examples: [] },
-        neutral: { correct: 0, total: 0, examples: [] }
-    },
-    
-    // Emotion scenarios for training
+    selectedEmotion: null,
+    currentScenario: null,
     scenarios: [
         { text: "Sarah just found out she won first place in the science fair! She's jumping up and down.", emotion: "happy" },
         { text: "Tom's favorite pet dog passed away yesterday. He's been sitting quietly in his room.", emotion: "sad" },
@@ -430,8 +136,15 @@ let emotionGameState = {
         { text: "Amy heard footsteps behind her in the dark hallway and started walking faster.", emotion: "scared" },
         { text: "James sat quietly during the meeting, listening to what everyone had to say.", emotion: "neutral" }
     ],
-    
-    usedScenarios: []
+    usedScenarios: [],
+    emotionData: {
+        happy: { correct: 0, total: 0 },
+        sad: { correct: 0, total: 0 },
+        angry: { correct: 0, total: 0 },
+        surprised: { correct: 0, total: 0 },
+        scared: { correct: 0, total: 0 },
+        neutral: { correct: 0, total: 0 }
+    }
 };
 
 function showBuddyMessage(message, isCorrect = true) {
@@ -442,39 +155,25 @@ function showBuddyMessage(message, isCorrect = true) {
     responseDiv.style.display = 'block';
     
     if (isCorrect) {
-        responseDiv.className = 'game-card bg-gradient-to-r from-green-100 to-blue-100 p-6 mb-6';
+        responseDiv.className = 'bg-gradient-to-r from-pink-100 to-purple-100 rounded-lg p-3 text-center';
     } else {
-        responseDiv.className = 'game-card bg-gradient-to-r from-orange-100 to-red-100 p-6 mb-6';
+        responseDiv.className = 'bg-gradient-to-r from-orange-100 to-red-100 rounded-lg p-3 text-center';
     }
     
     setTimeout(() => {
         responseDiv.style.display = 'none';
-    }, 4000);
-}
-
-function updateBuddyMessage(message) {
-    document.getElementById('buddy-instruction').textContent = message;
+    }, 3000);
 }
 
 function updateProgress() {
-    const totalExamples = getTotalTrainingExamples();
-    const progress = (totalExamples / emotionGameState.maxExamples) * 100;
+    const progress = (emotionGameState.examplesGiven / emotionGameState.maxExamples) * 100;
     document.getElementById('progress-bar').style.width = progress + '%';
-    document.getElementById('examples-count').textContent = totalExamples;
-    
-    // Show test button only after minimum training threshold
-    if (hasEnoughTrainingData()) {
-        document.getElementById('test-buddy-btn').style.display = 'inline-block';
-        updateBuddyMessage(`Great! I now have ${totalExamples} training examples! You can test my knowledge or continue teaching me more emotions.`);
-    } else {
-        updateBuddyMessage(`I'm learning! I need ${TRAINING_THRESHOLDS.MIN_TOTAL_EXAMPLES - totalExamples} more examples before I can make predictions.`);
-    }
+    document.getElementById('examples-count').textContent = emotionGameState.examplesGiven;
     
     // Show complete button after max examples
-    if (totalExamples >= emotionGameState.maxExamples) {
-        document.getElementById('complete-session-btn').style.display = 'inline-block';
+    if (emotionGameState.examplesGiven >= emotionGameState.maxExamples) {
+        document.getElementById('complete-btn').style.display = 'block';
         document.getElementById('new-scenario-btn').style.display = 'none';
-        updateBuddyMessage("Wow! I think I understand emotions much better now! You can test my knowledge or complete our training!");
     }
 }
 
@@ -499,104 +198,102 @@ function loadNewScenario() {
     // Display the scenario
     const scenarioContent = document.getElementById('scenario-content');
     scenarioContent.innerHTML = `
-        <div class="text-lg font-medium text-gray-800 mb-2">📖 Read this scenario:</div>
-        <div class="text-gray-700 italic bg-gray-50 p-4 rounded-lg">"${currentScenario.text}"</div>
-        <div class="text-sm text-gray-600 mt-3">What emotion is this person feeling?</div>
+        <div class="text-sm font-medium text-gray-800 mb-2">📖 Read this scenario:</div>
+        <div class="text-gray-700 italic bg-gray-50 p-3 rounded-lg text-sm">"${currentScenario.text}"</div>
+        <div class="text-xs text-gray-600 mt-2">What emotion is this person feeling?</div>
     `;
     
-    updateBuddyMessage(`Here's a new scenario! Read it carefully and drag the emotion that best matches what the person is feeling.`);
-}
-
-function recordEmotionExample(emotion, correctEmotion, wasCorrect) {
-    // Update emotion data
-    emotionGameState.emotionData[correctEmotion].total++;
-    if (wasCorrect) {
-        emotionGameState.emotionData[correctEmotion].correct++;
-    }
+    // Clear previous results
+    document.getElementById('scenario-result').innerHTML = '';
     
-    // Store example
-    const example = {
-        scenario: emotionGameState.currentScenario.text,
-        correct: wasCorrect,
-        guessed: emotion
-    };
-    emotionGameState.emotionData[correctEmotion].examples.push(example);
-    
-    // Limit examples stored
-    if (emotionGameState.emotionData[correctEmotion].examples.length > 2) {
-        emotionGameState.emotionData[correctEmotion].examples.shift();
-    }
-}
-
-function updateEmotionVisualization() {
-    // Update Memory Palace
-    ['happy', 'sad', 'angry', 'surprised', 'scared', 'neutral'].forEach(emotion => {
-        const memoryEl = document.getElementById(emotion + '-memory');
-        const examples = emotionGameState.emotionData[emotion].examples;
-        
-        if (examples.length === 0) {
-            memoryEl.textContent = 'Empty';
-        } else {
-            const recent = examples.slice(-1).map(ex => 
-                ex.correct ? '✓' : '✗'
-            ).join(' ');
-            memoryEl.textContent = recent + ` (${examples.length})`;
-        }
-        
-        // Update confidence levels
-        const data = emotionGameState.emotionData[emotion];
-        const confidence = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
-        
-        document.getElementById(emotion + '-confidence').style.width = confidence + '%';
-        document.getElementById(emotion + '-percent').textContent = confidence + '%';
+    // Reset emotion selection
+    emotionGameState.selectedEmotion = null;
+    document.querySelectorAll('.emotion-btn').forEach(btn => {
+        btn.classList.remove('ring-4', 'ring-purple-400', 'ring-opacity-50');
     });
 }
 
-// Enhanced drop zone with mobile support
-function setupEmotionDropZone() {
-    const dropZone = document.getElementById('scenario-zone');
-    
-    // Traditional drag events
-    dropZone.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        this.classList.add('border-purple-400', 'bg-purple-50');
-    });
-    
-    dropZone.addEventListener('dragleave', function() {
-        this.classList.remove('border-purple-400', 'bg-purple-50');
-    });
-    
-    // Mobile tap-to-place support
-    dropZone.addEventListener('click', function(e) {
-        if (emotionGameState.selectedEmotion) {
+function setupEmotionButtons() {
+    document.querySelectorAll('.emotion-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Use the selected emotion
-            const draggedEmotion = emotionGameState.selectedEmotion;
-            
-            // Process the drop
-            handleEmotionDrop(draggedEmotion);
-            
-            // Clear selection
-            emotionGameState.selectedEmotion = null;
-            document.querySelectorAll('.draggable-item').forEach(el => {
-                el.classList.remove('ring-4', 'ring-purple-400', 'ring-opacity-50', 'selected-emotion');
+            // Clear previous selection
+            document.querySelectorAll('.emotion-btn').forEach(el => {
+                el.classList.remove('ring-4', 'ring-purple-400', 'ring-opacity-50');
             });
             
-            // Reset drop zone style
+            // Select this emotion
+            this.classList.add('ring-4', 'ring-purple-400', 'ring-opacity-50');
+            emotionGameState.selectedEmotion = this.dataset.emotion;
+            
+            // Highlight the scenario zone
+            const scenarioZone = document.getElementById('scenario-zone');
+            scenarioZone.classList.add('border-purple-400', 'bg-purple-50');
+            scenarioZone.classList.remove('border-gray-300');
+        });
+    });
+}
+
+function setupScenarioZone() {
+    const scenarioZone = document.getElementById('scenario-zone');
+    
+    scenarioZone.addEventListener('click', function(e) {
+        if (emotionGameState.selectedEmotion && emotionGameState.currentScenario) {
+            e.preventDefault();
+            
+            const selectedEmotion = emotionGameState.selectedEmotion;
+            const correctEmotion = emotionGameState.currentScenario.emotion;
+            const isCorrect = selectedEmotion === correctEmotion;
+            
+            // Show result
+            const resultEl = document.getElementById('scenario-result');
+            const emotionEmojis = {
+                happy: '😊', sad: '😢', angry: '😠', 
+                surprised: '😮', scared: '😨', neutral: '😐'
+            };
+            
+            resultEl.innerHTML = `
+                <div class="p-3 rounded-lg ${isCorrect ? 'bg-green-100 border border-green-300' : 'bg-orange-100 border border-orange-300'} transition-all duration-300">
+                    <div class="text-2xl mb-1">${emotionEmojis[selectedEmotion]}</div>
+                    <div class="font-medium ${isCorrect ? 'text-green-800' : 'text-orange-800'} text-sm">
+                        You chose: ${selectedEmotion.charAt(0).toUpperCase() + selectedEmotion.slice(1)}
+                    </div>
+                    ${!isCorrect ? `<div class="text-xs text-orange-600 mt-1">Correct answer: ${correctEmotion.charAt(0).toUpperCase() + correctEmotion.slice(1)} ${emotionEmojis[correctEmotion]}</div>` : ''}
+                    ${isCorrect ? '<div class="text-xs text-green-600 mt-1">🎉 Perfect! Great emotional understanding!</div>' : '<div class="text-xs text-orange-600 mt-1">💡 Keep practicing to get better!</div>'}
+                </div>
+            `;
+            
+            // Record the example
+            emotionGameState.emotionData[correctEmotion].total++;
+            if (isCorrect) {
+                emotionGameState.emotionData[correctEmotion].correct++;
+            }
+            
+            // Show feedback
+            showBuddyMessage(`Thank you! I'll remember that this expression shows ${selectedEmotion}! I'm learning to understand emotions better! 🌟`);
+            
+            emotionGameState.examplesGiven++;
+            updateProgress();
+            
+            // Reset selection
+            emotionGameState.selectedEmotion = null;
+            document.querySelectorAll('.emotion-btn').forEach(btn => {
+                btn.classList.remove('ring-4', 'ring-purple-400', 'ring-opacity-50');
+            });
+            
+            // Reset zone style
             this.classList.remove('border-purple-400', 'bg-purple-50');
             this.classList.add('border-gray-300');
             
-            // Haptic feedback
-            if (navigator.vibrate) {
-                navigator.vibrate(100);
-            }
-        } else if (emotionGameState.isMobile) {
+            // Load new scenario after delay
+            setTimeout(() => {
+                if (emotionGameState.examplesGiven < emotionGameState.maxExamples) {
+                    loadNewScenario();
+                }
+            }, 2000);
+        } else if (!emotionGameState.selectedEmotion) {
             // Guide user to select an emotion first
-            updateBuddyMessage("Please select an emotion from above first, then tap here!");
-            
-            // Briefly highlight the emotion options
             const emotionPool = document.getElementById('emotion-pool');
             emotionPool.classList.add('ring-2', 'ring-yellow-400', 'ring-opacity-75');
             setTimeout(() => {
@@ -604,709 +301,45 @@ function setupEmotionDropZone() {
             }, 1500);
         }
     });
-    
-    dropZone.addEventListener('drop', function(e) {
-        e.preventDefault();
-        this.classList.remove('border-purple-400', 'bg-purple-50');
-        
-        const draggedEmotion = e.dataTransfer.getData('text/plain');
-        handleEmotionDrop(draggedEmotion);
-    });
-}
-
-// Unified function to handle both drag/drop and tap interactions
-function handleEmotionDrop(draggedEmotion) {
-    const correctEmotion = emotionGameState.currentScenario.emotion;
-    const isCorrect = draggedEmotion === correctEmotion;
-    
-    // Show result with enhanced mobile feedback
-    const resultEl = document.getElementById('scenario-result');
-    const emotionEmojis = {
-        happy: '😊', sad: '😢', angry: '😠', 
-        surprised: '😮', scared: '😨', neutral: '😐'
-    };
-    
-    resultEl.innerHTML = `
-        <div class="p-4 rounded-lg ${isCorrect ? 'bg-green-100 border border-green-300' : 'bg-orange-100 border border-orange-300'} transition-all duration-300">
-            <div class="text-3xl mb-2">${emotionEmojis[draggedEmotion]}</div>
-            <div class="font-medium ${isCorrect ? 'text-green-800' : 'text-orange-800'}">
-                You chose: ${draggedEmotion.charAt(0).toUpperCase() + draggedEmotion.slice(1)}
-            </div>
-            ${!isCorrect ? `<div class="text-sm text-orange-600 mt-1">Correct answer: ${correctEmotion.charAt(0).toUpperCase() + correctEmotion.slice(1)} ${emotionEmojis[correctEmotion]}</div>` : ''}
-            ${isCorrect ? '<div class="text-sm text-green-600 mt-1">🎉 Perfect! Great emotional understanding!</div>' : '<div class="text-sm text-orange-600 mt-1">💡 Keep practicing to get better!</div>'}
-        </div>
-    `;
-    
-    // Record the example
-    recordEmotionExample(draggedEmotion, correctEmotion, isCorrect);
-    
-    // Show feedback
-    if (isCorrect) {
-        showBuddyMessage(`Thank you! I'll remember that this expression shows ${correctEmotion}! I'm learning to understand emotions better! 🌟`);
-    } else {
-        showBuddyMessage(`I see! That person is actually feeling ${correctEmotion}, not ${draggedEmotion}. Thank you for teaching me the difference! 🤔`, false);
-    }
-    
-    emotionGameState.examplesGiven++;
-    updateProgress();
-    updateEmotionVisualization();
-    
-    // Show AI brain after 2 examples
-    if (emotionGameState.examplesGiven >= 2) {
-        document.getElementById('ai-visualization').style.display = 'block';
-    }
-    
-    // Load new scenario after delay
-    setTimeout(() => {
-        if (emotionGameState.examplesGiven < emotionGameState.maxExamples) {
-            loadNewScenario();
-            resultEl.innerHTML = '';
-        }
-    }, 3000);
-}
-
-// Enhanced drag and touch support
-function setupDragItems() {
-    document.querySelectorAll('.draggable-item').forEach(item => {
-        // Traditional drag events
-        item.addEventListener('dragstart', function(e) {
-            console.log('Drag started for:', this.dataset.item);
-            this.classList.add('opacity-50');
-            e.dataTransfer.setData('text/plain', this.dataset.emotion);
-            e.dataTransfer.effectAllowed = 'move';
-        });
-        
-        item.addEventListener('dragend', function() {
-            this.classList.remove('opacity-50');
-        });
-        
-        // Mobile tap-to-select support
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Clear previous selection
-            document.querySelectorAll('.draggable-item').forEach(el => {
-                el.classList.remove('ring-4', 'ring-purple-400', 'ring-opacity-50', 'selected-emotion');
-            });
-            
-            // Select this emotion
-            this.classList.add('ring-4', 'ring-purple-400', 'ring-opacity-50', 'selected-emotion');
-            emotionGameState.selectedEmotion = this.dataset.emotion;
-            
-            // Provide haptic feedback if available
-            if (navigator.vibrate) {
-                navigator.vibrate(50);
-            }
-            
-            // Visual feedback
-            updateBuddyMessage(`Great! You selected ${this.dataset.emotion}. Now tap the scenario box below to make your choice!`);
-            
-            // Highlight the drop zone
-            const dropZone = document.getElementById('scenario-zone');
-            dropZone.classList.add('border-purple-400', 'bg-purple-50');
-            dropZone.classList.remove('border-gray-300');
-        });
-        
-        // Touch events for better mobile experience
-        item.addEventListener('touchstart', function(e) {
-            // Add touch feedback
-            this.classList.add('scale-95');
-        });
-        
-        item.addEventListener('touchend', function(e) {
-            // Remove touch feedback
-            this.classList.remove('scale-95');
-        });
-    });
-}
-
-// Test buddy function
-function testBuddyEmotionKnowledge() {
-    // Check if there's enough training data for AI responses
-    if (!hasEnoughTrainingData()) {
-        showBuddyMessage(
-            `I need more training before I can make predictions! Please teach me at least ${TRAINING_THRESHOLDS.MIN_TOTAL_EXAMPLES} examples first. I've only learned from ${getTotalTrainingExamples()} examples so far. 📚`,
-            false
-        );
-        return;
-    }
-    
-    const testScenario = emotionGameState.scenarios[Math.floor(Math.random() * emotionGameState.scenarios.length)];
-    const correctEmotion = testScenario.emotion;
-    
-    // Get training data for this specific emotion
-    const emotionTraining = getTrainingDataForEmotion(correctEmotion);
-    
-    // AI makes prediction based on actual training data
-    let prediction;
-    let confidence = 0;
-    let reasoning = "";
-    
-    if (emotionTraining.examples === 0) {
-        // No training for this emotion - AI should guess based on most trained emotions
-        const trainedEmotions = Object.keys(emotionGameState.emotionData).filter(emotion => 
-            getTrainingDataForEmotion(emotion).examples > 0
-        );
-        
-        if (trainedEmotions.length === 0) {
-            prediction = 'neutral'; // Default fallback
-            confidence = 25;
-            reasoning = "I haven't been trained on emotions like this yet, so I'm just guessing.";
-        } else {
-            // Pick the most trained emotion as bias
-            prediction = trainedEmotions.reduce((maxEmotion, emotion) => 
-                getTrainingDataForEmotion(emotion).examples > getTrainingDataForEmotion(maxEmotion).examples ? 
-                emotion : maxEmotion
-            );
-            confidence = Math.min(40, getTrainingDataForEmotion(prediction).examples * 10);
-            reasoning = `I haven't learned about this type of situation, but it reminds me of ${prediction} situations I've been taught.`;
-        }
-    } else {
-        // AI has training data for this emotion
-        const accuracy = emotionTraining.correct / emotionTraining.total;
-        confidence = Math.min(95, Math.round(accuracy * 100) + (emotionTraining.examples * 5));
-        
-        if (Math.random() < accuracy) {
-            // Correct prediction based on training
-            prediction = correctEmotion;
-            reasoning = `I've learned about ${emotionTraining.examples} similar situations and I'm confident this is ${correctEmotion}!`;
-        } else {
-            // Wrong prediction - AI makes mistake based on confusion from training
-            const confusableEmotions = Object.keys(emotionGameState.emotionData).filter(emotion => 
-                emotion !== correctEmotion && getTrainingDataForEmotion(emotion).examples > 0
-            );
-            
-            if (confusableEmotions.length > 0) {
-                prediction = confusableEmotions[Math.floor(Math.random() * confusableEmotions.length)];
-                reasoning = `This situation is tricky! It reminds me of the ${prediction} examples I've been taught.`;
-            } else {
-                prediction = correctEmotion; // Fallback if no other trained emotions
-                reasoning = `This matches the ${correctEmotion} examples I remember learning.`;
-            }
-        }
-    }
-    
-    const isCorrect = prediction === correctEmotion;
-    
-    setTimeout(() => {
-        showBuddyMessage(
-            `Let me test my emotion understanding! In this situation: "${testScenario.text}" - I think the person feels ${prediction}. I'm ${confidence}% confident! ${reasoning} ${isCorrect ? 'Did I get it right? 🎉' : 'Was I correct? 🤔'}`,
-            isCorrect
-        );
-    }, 1000);
-    
-    if (isCorrect) {
-        emotionGameState.correctPredictions++;
-    }
-    emotionGameState.totalPredictions++;
 }
 
 // Initialize game
 document.addEventListener('DOMContentLoaded', function() {
-    setupEmotionDropZone();
-    setupDragItems();
+    setupEmotionButtons();
+    setupScenarioZone();
     loadNewScenario();
     
     // Event listeners
     document.getElementById('new-scenario-btn').addEventListener('click', loadNewScenario);
-    document.getElementById('test-buddy-btn').addEventListener('click', testBuddyEmotionKnowledge);
     
-    document.getElementById('complete-session-btn').addEventListener('click', function() {
-        const overallAccuracy = emotionGameState.totalPredictions > 0 ? 
-            Math.round((emotionGameState.correctPredictions / emotionGameState.totalPredictions) * 100) : 0;
-            
-        showBuddyMessage(
-            `Amazing emotion training! You taught me ${emotionGameState.examplesGiven} emotional scenarios and I achieved ${overallAccuracy}% accuracy on my tests! Now I understand human feelings much better! 🎓💝`
-        );
+    document.getElementById('complete-btn').addEventListener('click', function() {
+        // Calculate basic learning statistics
+        const overallAccuracy = emotionGameState.examplesGiven > 0 ? 
+            Math.round(((emotionGameState.emotionData.happy.correct + 
+                        emotionGameState.emotionData.sad.correct + 
+                        emotionGameState.emotionData.angry.correct +
+                        emotionGameState.emotionData.surprised.correct +
+                        emotionGameState.emotionData.scared.correct +
+                        emotionGameState.emotionData.neutral.correct) / 
+                       emotionGameState.examplesGiven) * 100) : 0;
+        
+        let personalizedMessage = `Amazing emotion training! You taught me ${emotionGameState.examplesGiven} emotional scenarios! Now I understand human feelings much better! 🎓💝`;
+        
+        showBuddyMessage(personalizedMessage);
+        
+        // Store training data for result page
+        localStorage.setItem('aiTrainingData', JSON.stringify({
+            emotionData: emotionGameState.emotionData,
+            examples: emotionGameState.examplesGiven,
+            accuracy: overallAccuracy,
+            gameType: 'emotion_game'
+        }));
         
         setTimeout(() => {
-            alert('🎉 Congratulations! Your AI buddy now understands emotions better and can recognize feelings in different situations!');
-            window.location.href = '{% url "robotic_buddy:activities" %}';
+            // Navigate directly to learning explanation
+            window.location.href = '{% url "robotic_buddy:learning_explanation" %}';
         }, 4000);
     });
-    
-    // Camera Mode Toggle Event Listeners
-    document.getElementById('scenario-mode-btn').addEventListener('click', function() {
-        document.getElementById('camera-interface').classList.add('hidden');
-        this.classList.remove('btn-outline');
-        this.classList.add('btn-primary');
-        document.getElementById('camera-mode-btn').classList.add('btn-outline');
-        document.getElementById('camera-mode-btn').classList.remove('btn-primary');
-        stopCameraStream();
-    });
-    
-    document.getElementById('camera-mode-btn').addEventListener('click', function() {
-        document.getElementById('camera-interface').classList.remove('hidden');
-        this.classList.remove('btn-outline');
-        this.classList.add('btn-primary');
-        document.getElementById('scenario-mode-btn').classList.add('btn-outline');
-        document.getElementById('scenario-mode-btn').classList.remove('btn-primary');
-    });
-    
-    // Camera functionality event listeners
-    document.getElementById('start-camera-btn').addEventListener('click', startCamera);
-    document.getElementById('capture-emotion-btn').addEventListener('click', captureEmotion);
-    document.getElementById('stop-camera-btn').addEventListener('click', stopCameraStream);
-    document.getElementById('accept-capture-btn').addEventListener('click', acceptCapturedEmotion);
-    document.getElementById('reject-capture-btn').addEventListener('click', rejectCapturedEmotion);
-    document.getElementById('next-challenge-btn').addEventListener('click', startEmotionChallenge);
-    document.getElementById('end-practice-btn').addEventListener('click', endEmotionPractice);
-});
-
-// Camera and Face-API functionality
-let videoStream = null;
-let isModelLoaded = false;
-let emotionDetectionInterval = null;
-let currentChallenge = null;
-let currentCaptureData = null;
-
-// Camera training data
-let cameraTrainingData = {
-    happy: 0,
-    sad: 0,
-    angry: 0,
-    surprised: 0,
-    scared: 0,
-    neutral: 0
-};
-
-// Training requirements and thresholds
-const TRAINING_THRESHOLDS = {
-    MIN_EXAMPLES_PER_EMOTION: 2,  // Minimum examples needed per emotion
-    MIN_TOTAL_EXAMPLES: 6,        // Minimum total examples before AI responses
-    TEST_MODE_THRESHOLD: 3        // Examples needed before test button shows
-};
-
-function getTotalTrainingExamples() {
-    return emotionGameState.examplesGiven + 
-           Object.values(cameraTrainingData).reduce((sum, count) => sum + count, 0);
-}
-
-function hasEnoughTrainingData() {
-    const totalExamples = getTotalTrainingExamples();
-    return totalExamples >= TRAINING_THRESHOLDS.MIN_TOTAL_EXAMPLES;
-}
-
-function getTrainingDataForEmotion(emotion) {
-    const scenarioExamples = emotionGameState.emotionData[emotion];
-    const cameraExamples = cameraTrainingData[emotion] || 0;
-    
-    return {
-        total: scenarioExamples.total + cameraExamples,
-        correct: scenarioExamples.correct + cameraExamples, // Camera examples are assumed correct since user accepts them
-        examples: scenarioExamples.examples.length + cameraExamples
-    };
-}
-
-// Emotion challenges for the practice game
-const emotionChallenges = [
-    { emotion: 'happy', text: 'Show me a happy expression! 😊', emoji: '😊' },
-    { emotion: 'sad', text: 'Show me a sad expression! 😢', emoji: '😢' },
-    { emotion: 'angry', text: 'Show me an angry expression! 😠', emoji: '😠' },
-    { emotion: 'surprised', text: 'Show me a surprised expression! 😮', emoji: '😮' },
-    { emotion: 'neutral', text: 'Show me a neutral expression! 😐', emoji: '😐' }
-];
-
-async function loadFaceApiModels() {
-    const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/model';
-    
-    try {
-        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-        await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
-        isModelLoaded = true;
-        console.log('Face-API models loaded successfully');
-        
-        document.getElementById('buddy-camera-feedback').textContent = 
-            "Great! I've loaded my emotion recognition models. Start the camera and I'll analyze your expressions!";
-            
-    } catch (error) {
-        console.error('Error loading Face-API models:', error);
-        document.getElementById('buddy-camera-feedback').textContent = 
-            "I had trouble loading my emotion recognition models. The camera feature might not work perfectly, but you can still try!";
-    }
-}
-
-async function captureEmotion() {
-    const video = document.getElementById('emotion-camera');
-    const canvas = document.getElementById('emotion-canvas');
-    const captureCanvas = document.getElementById('captured-emotion-canvas');
-    
-    if (!video.videoWidth || !video.videoHeight) {
-        alert('Please wait for the camera to fully load before capturing.');
-        return;
-    }
-    
-    try {
-        // Capture current frame to a temporary canvas
-        const tempCanvas = document.createElement('canvas');
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCanvas.width = video.videoWidth;
-        tempCanvas.height = video.videoHeight;
-        tempCtx.drawImage(video, 0, 0);
-        
-        // Detect emotions in the captured frame
-        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-            .withFaceExpressions();
-            
-        if (detections.length === 0) {
-            alert('No face detected! Please make sure your face is visible in the camera.');
-            return;
-        }
-        
-        const expressions = detections[0].expressions;
-        
-        // Find the emotion with highest confidence
-        let topEmotion = null;
-        let maxConfidence = 0;
-        
-        Object.keys(expressions).forEach(emotion => {
-            if (expressions[emotion] > maxConfidence) {
-                maxConfidence = expressions[emotion];
-                topEmotion = emotion;
-            }
-        });
-        
-        // Store capture data for review
-        currentCaptureData = {
-            emotion: topEmotion,
-            confidence: Math.round(maxConfidence * 100),
-            canvas: tempCanvas
-        };
-        
-        // Display in the review modal
-        const captureCtx = captureCanvas.getContext('2d');
-        captureCtx.drawImage(tempCanvas, 0, 0, captureCanvas.width, captureCanvas.height);
-        
-        // Show analysis
-        const analysisText = `Detected: ${topEmotion.toUpperCase()} (${currentCaptureData.confidence}% confidence)`;
-        document.getElementById('captured-emotion-analysis').textContent = analysisText;
-        
-        // Show modal
-        document.getElementById('emotion-capture-modal').classList.remove('hidden');
-        
-        document.getElementById('buddy-camera-feedback').textContent = 
-            `I detected ${topEmotion} with ${currentCaptureData.confidence}% confidence. Do you want to teach me this is correct?`;
-            
-    } catch (error) {
-        console.error('Error capturing emotion:', error);
-        alert('Error analyzing your expression. Please try again.');
-    }
-}
-
-function acceptCapturedEmotion() {
-    if (!currentCaptureData) return;
-    
-    const emotion = currentCaptureData.emotion;
-    
-    // Add to camera training data
-    cameraTrainingData[emotion]++;
-    
-    // Also add to main emotion training data for integration
-    emotionGameState.emotionData[emotion].total++;
-    emotionGameState.emotionData[emotion].correct++; // Since user accepted it
-    emotionGameState.emotionData[emotion].examples.push({
-        type: 'camera',
-        confidence: currentCaptureData.confidence
-    });
-    
-    // Update training history display
-    document.getElementById(`${emotion}-count`).textContent = cameraTrainingData[emotion];
-    
-    // Add to captured emotions display
-    addCapturedEmotionToHistory(emotion, currentCaptureData.confidence, true);
-    
-    // Update overall progress
-    emotionGameState.examplesGiven++;
-    updateProgress();
-    
-    // Close modal
-    document.getElementById('emotion-capture-modal').classList.add('hidden');
-    
-    // Show buddy feedback
-    document.getElementById('buddy-camera-feedback').textContent = 
-        `Great! I learned that this expression is ${emotion}! I now have ${cameraTrainingData[emotion]} examples of ${emotion}. Keep teaching me!`;
-    
-    currentCaptureData = null;
-}
-
-function rejectCapturedEmotion() {
-    // Close modal without saving
-    document.getElementById('emotion-capture-modal').classList.add('hidden');
-    
-    if (currentCaptureData) {
-        document.getElementById('buddy-camera-feedback').textContent = 
-            `Okay, I won't learn from that example. Try making another expression and capture again!`;
-    }
-    
-    currentCaptureData = null;
-}
-
-function addCapturedEmotionToHistory(emotion, confidence, accepted) {
-    const emotionEmojis = {
-        happy: '😊', sad: '😢', angry: '😠', surprised: '😲', 
-        scared: '😨', neutral: '😐', fearful: '😨'
-    };
-    
-    const historyHtml = `
-        <div class="flex items-center justify-between p-2 bg-gray-50 rounded border mb-2">
-            <div class="flex items-center space-x-2">
-                <span class="text-xl">${emotionEmojis[emotion] || '😐'}</span>
-                <span class="text-sm font-medium">${emotion}</span>
-                <span class="text-xs text-gray-500">${confidence}%</span>
-            </div>
-            <div class="text-xs ${accepted ? 'text-green-600' : 'text-red-600'}">
-                ${accepted ? '✅ Accepted' : '❌ Rejected'}
-            </div>
-        </div>
-    `;
-    
-    const resultsDiv = document.getElementById('camera-emotion-results');
-    if (resultsDiv.innerHTML.includes('Ready to capture emotions')) {
-        resultsDiv.innerHTML = '<div class="space-y-2"></div>';
-    }
-    resultsDiv.firstElementChild.insertAdjacentHTML('afterbegin', historyHtml);
-}
-
-async function startCamera() {
-    try {
-        // Load models if not already loaded
-        if (!isModelLoaded) {
-            document.getElementById('buddy-camera-feedback').textContent = "Loading emotion recognition models...";
-            await loadFaceApiModels();
-        }
-        
-        const video = document.getElementById('emotion-camera');
-        const constraints = {
-            video: {
-                width: { ideal: 640 },
-                height: { ideal: 480 },
-                facingMode: 'user'
-            }
-        };
-        
-        videoStream = await navigator.mediaDevices.getUserMedia(constraints);
-        video.srcObject = videoStream;
-        
-        // Update UI - show capture and stop buttons
-        document.getElementById('start-camera-btn').classList.add('hidden');
-        document.getElementById('capture-emotion-btn').classList.remove('hidden');
-        document.getElementById('stop-camera-btn').classList.remove('hidden');
-        
-        // Setup canvas when video loads
-        video.addEventListener('loadeddata', () => {
-            const canvas = document.getElementById('emotion-canvas');
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-        });
-        
-        document.getElementById('buddy-camera-feedback').textContent = 
-            "Camera started! Make facial expressions and click 'Capture Emotion' to teach me!";
-        
-        // Update camera results section
-        document.getElementById('camera-emotion-results').innerHTML = 
-            '<div class="text-center text-blue-600 py-4">📷 Ready to capture emotions! Make an expression and click the capture button.</div>';
-            
-    } catch (error) {
-        console.error('Camera access error:', error);
-        alert('Unable to access camera. Please make sure you have granted camera permissions.');
-        document.getElementById('buddy-camera-feedback').textContent = 
-            "I couldn't access your camera. Please check your browser permissions and try again.";
-    }
-}
-
-async function startEmotionDetection() {
-    const video = document.getElementById('emotion-camera');
-    const canvas = document.getElementById('emotion-canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Set canvas size to match video
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-    
-    emotionDetectionInterval = setInterval(async () => {
-        if (video.readyState === video.HAVE_ENOUGH_DATA && isModelLoaded) {
-            try {
-                const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-                    .withFaceExpressions();
-                
-                // Clear previous drawings
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                if (detections.length > 0) {
-                    const detection = detections[0];
-                    const expressions = detection.expressions;
-                    
-                    // Draw face detection box
-                    const box = detection.detection.box;
-                    ctx.strokeStyle = '#00ff00';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(box.x, box.y, box.width, box.height);
-                    
-                    // Update emotion results
-                    updateEmotionResults(expressions);
-                    
-                    // Check challenge completion
-                    if (currentChallenge) {
-                        checkChallengeCompletion(expressions);
-                    }
-                } else {
-                    // No face detected
-                    document.getElementById('camera-emotion-results').innerHTML = 
-                        '<div class="text-center text-gray-500 py-4">No face detected - make sure you\'re in view!</div>';
-                }
-            } catch (error) {
-                console.error('Emotion detection error:', error);
-            }
-        }
-    }, 100); // Check 10 times per second
-}
-
-function updateEmotionResults(expressions) {
-    const emotionMapping = {
-        happy: 'happy',
-        sad: 'sad',
-        angry: 'angry',
-        surprised: 'surprised',
-        neutral: 'neutral',
-        fearful: 'scared'
-    };
-    
-    // Convert to our emotion format and sort by confidence
-    const emotions = Object.keys(expressions)
-        .map(emotion => ({
-            name: emotionMapping[emotion] || emotion,
-            confidence: Math.round(expressions[emotion] * 100),
-            original: emotion
-        }))
-        .filter(emotion => emotion.name) // Only include mapped emotions
-        .sort((a, b) => b.confidence - a.confidence);
-    
-    const topEmotion = emotions[0];
-    const emotionEmojis = {
-        happy: '😊', sad: '😢', angry: '😠', 
-        surprised: '😮', scared: '😨', neutral: '😐'
-    };
-    
-    // Update results display
-    const resultsHTML = emotions.map((emotion, index) => `
-        <div class="flex items-center justify-between p-2 rounded ${index === 0 ? 'bg-blue-50' : 'bg-gray-50'}">
-            <div class="flex items-center space-x-2">
-                <span class="text-lg">${emotionEmojis[emotion.name] || '😊'}</span>
-                <span class="font-medium text-gray-800">${emotion.name.charAt(0).toUpperCase() + emotion.name.slice(1)}</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <div class="w-16 bg-gray-200 rounded-full h-2">
-                    <div class="bg-blue-500 h-2 rounded-full" style="width: ${emotion.confidence}%"></div>
-                </div>
-                <span class="text-sm font-mono text-gray-600">${emotion.confidence}%</span>
-            </div>
-        </div>
-    `).join('');
-    
-    document.getElementById('camera-emotion-results').innerHTML = resultsHTML;
-    
-    // Update buddy feedback
-    if (topEmotion && topEmotion.confidence > 30) {
-        document.getElementById('buddy-camera-feedback').textContent = 
-            `I see you're feeling ${topEmotion.name}! I'm ${topEmotion.confidence}% confident about this. ${emotionEmojis[topEmotion.name]} Your expression helps me learn!`;
-    }
-}
-
-function startEmotionChallenge() {
-    if (emotionChallenges.length === 0) return;
-    
-    currentChallenge = emotionChallenges[Math.floor(Math.random() * emotionChallenges.length)];
-    
-    document.getElementById('emotion-challenge').textContent = currentChallenge.emoji;
-    document.getElementById('challenge-text').textContent = currentChallenge.text;
-    
-    document.getElementById('buddy-camera-feedback').textContent = 
-        `Challenge time! ${currentChallenge.text} I'll watch and see if I can recognize it!`;
-}
-
-function checkChallengeCompletion(expressions) {
-    if (!currentChallenge) return;
-    
-    const emotionMapping = {
-        happy: 'happy',
-        sad: 'sad', 
-        angry: 'angry',
-        surprised: 'surprised',
-        neutral: 'neutral',
-        fearful: 'scared'
-    };
-    
-    const targetEmotion = currentChallenge.emotion;
-    let detectedConfidence = 0;
-    
-    // Find the confidence for our target emotion
-    Object.keys(expressions).forEach(emotion => {
-        if (emotionMapping[emotion] === targetEmotion) {
-            detectedConfidence = expressions[emotion];
-        }
-    });
-    
-    // Check if confidence is high enough (threshold: 0.6)
-    if (detectedConfidence > 0.6) {
-        document.getElementById('buddy-camera-feedback').textContent = 
-            `Perfect! I detected ${targetEmotion} with ${Math.round(detectedConfidence * 100)}% confidence! You're great at expressing emotions! 🎉`;
-        
-        // Auto-advance to next challenge after 2 seconds
-        setTimeout(() => {
-            startEmotionChallenge();
-        }, 2000);
-    }
-}
-
-function endEmotionPractice() {
-    document.getElementById('emotion-practice-game').classList.add('hidden');
-    currentChallenge = null;
-    
-    document.getElementById('buddy-camera-feedback').textContent = 
-        "Great emotion practice session! I learned so much from watching your expressions. You can continue using the camera or go back to scenario training!";
-}
-
-function stopCameraStream() {
-    if (videoStream) {
-        videoStream.getTracks().forEach(track => track.stop());
-        videoStream = null;
-    }
-    
-    if (emotionDetectionInterval) {
-        clearInterval(emotionDetectionInterval);
-        emotionDetectionInterval = null;
-    }
-    
-    // Reset UI
-    document.getElementById('start-camera-btn').classList.remove('hidden');
-    document.getElementById('capture-emotion-btn').classList.add('hidden');
-    document.getElementById('stop-camera-btn').classList.add('hidden');
-    document.getElementById('emotion-practice-game').classList.add('hidden');
-    
-    // Close any open modal
-    document.getElementById('emotion-capture-modal').classList.add('hidden');
-    
-    // Clear canvas and results
-    const canvas = document.getElementById('emotion-canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    document.getElementById('camera-emotion-results').innerHTML = 
-        '<div class="text-center text-gray-500 py-8">Start camera and capture emotions to train your AI buddy</div>';
-        
-    document.getElementById('buddy-camera-feedback').textContent = 
-        "Camera stopped. Thanks for the emotion training session!";
-        
-    currentChallenge = null;
-    currentCaptureData = null;
-}
-
-// Load Face-API models when the page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Delay model loading to not interfere with main game
-    setTimeout(() => {
-        loadFaceApiModels();
-    }, 1000);
 });
 </script>
 {% endblock %}

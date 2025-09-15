@@ -1,214 +1,258 @@
 {% extends 'robotic_buddy/base.html' %}
 
-{% block game_title %}How {{ buddy.name }} Learned{% endblock %}
+{% block game_title %}How Your AI Buddy Learned{% endblock %}
 
 {% block game_content %}
 <div class="max-w-6xl mx-auto">
     <!-- Learning Explanation Header -->
     <div class="text-center mb-8">
         <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
-            🧠 How {{ buddy.name }} Learned
+            🧠 How Your AI Buddy Learned
         </h1>
         <p class="text-lg text-gray-600 mb-4">
-            Step-by-step breakdown of {{ buddy.name }}'s learning process
+            Step-by-step breakdown of your AI buddy's learning process
         </p>
     </div>
     
-    <!-- Learning Summary -->
-    <div class="grid md:grid-cols-3 gap-6 mb-8">
-        <div class="game-card bg-gradient-to-r from-blue-100 to-purple-100 p-6 text-center">
-            <div class="text-3xl font-bold text-blue-600">{{ visual_patterns.total_examples }}</div>
-            <div class="text-sm text-gray-600">Total Examples Learned</div>
-        </div>
-        <div class="game-card bg-gradient-to-r from-green-100 to-teal-100 p-6 text-center">
-            <div class="text-3xl font-bold text-green-600">{{ visual_patterns.categories_learned|length }}</div>
-            <div class="text-sm text-gray-600">Categories Discovered</div>
-        </div>
-        <div class="game-card bg-gradient-to-r from-purple-100 to-pink-100 p-6 text-center">
-            <div class="text-3xl font-bold text-purple-600">{{ test_examples|length }}</div>
-            <div class="text-sm text-gray-600">Animals Tested</div>
+    <!-- Loading Message -->
+    <div id="loading-message" class="text-center py-8">
+        <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-blue-500 bg-blue-100 transition ease-in-out duration-150">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Loading your AI buddy's learning analysis...
         </div>
     </div>
     
-    <!-- Buddy's Learning Story -->
-    <div class="game-card bg-gradient-to-r from-yellow-100 to-orange-100 p-6 mb-8">
-        <div class="flex items-start space-x-4">
-            <div class="buddy-avatar w-16 h-16 buddy-{{ buddy.personality }} flex items-center justify-center text-white text-xl">
-                {% if buddy.personality == 'cheerful' %}😊
-                {% elif buddy.personality == 'curious' %}🤔
-                {% elif buddy.personality == 'patient' %}😌
-                {% elif buddy.personality == 'playful' %}😄
-                {% else %}🦉{% endif %}
+    <!-- Learning Content (populated by JavaScript) -->
+    <div id="learning-content" style="display: none;">
+        
+        <!-- Learning Summary -->
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+            <div class="game-card bg-gradient-to-r from-blue-100 to-purple-100 p-6 text-center">
+                <div id="total-examples" class="text-3xl font-bold text-blue-600">0</div>
+                <div class="text-sm text-gray-600">Total Examples Learned</div>
             </div>
-            <div class="buddy-speech flex-1">
-                <h3 class="font-semibold text-gray-800 mb-2">{{ buddy.name }}'s Learning Story</h3>
-                <p class="text-gray-700">
-                    When I started, I knew nothing about animals! Through your teaching, I learned about 
-                    {% for category in visual_patterns.categories_learned %}
-                        <span class="font-medium">{{ category }}</span>{% if not forloop.last %}, {% endif %}
-                    {% endfor %}.
-                    I discovered that animals can be organized into these groups, and each group has special characteristics!
-                </p>
+            <div class="game-card bg-gradient-to-r from-green-100 to-teal-100 p-6 text-center">
+                <div id="categories-count" class="text-3xl font-bold text-green-600">0</div>
+                <div class="text-sm text-gray-600">Categories Discovered</div>
+            </div>
+            <div class="game-card bg-gradient-to-r from-purple-100 to-pink-100 p-6 text-center">
+                <div id="accuracy-score" class="text-3xl font-bold text-purple-600">0%</div>
+                <div class="text-sm text-gray-600">Learning Accuracy</div>
             </div>
         </div>
-    </div>
-    
-    <!-- Learning Sequence -->
-    <div class="game-card bg-white p-6 mb-8">
-        <h3 class="font-semibold text-gray-800 mb-6 text-center">📚 My Learning Journey</h3>
-        <div class="space-y-4">
-            {% for step in visual_patterns.learning_sequence %}
-            <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    {{ step.step }}
+        
+        <!-- Buddy's Learning Story -->
+        <div class="game-card bg-gradient-to-r from-yellow-100 to-orange-100 p-6 mb-8">
+            <div class="flex items-start space-x-4">
+                <div class="buddy-avatar w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-white text-xl">
+                    🤖
                 </div>
-                <div class="flex-1">
-                    <div class="font-medium text-gray-800">{{ step.animal|title }}</div>
-                    <div class="text-sm text-gray-600">{{ step.what_ai_learned }}</div>
-                </div>
-                <div class="flex-shrink-0">
-                    <span class="px-3 py-1 bg-{{ step.category }}-100 text-{{ step.category }}-800 rounded-full text-xs font-medium">
-                        {{ step.category|title }}
-                    </span>
+                <div class="buddy-speech flex-1">
+                    <h3 class="font-semibold text-gray-800 mb-2">Your AI Buddy's Learning Story</h3>
+                    <p id="learning-story" class="text-gray-700">
+                        When I started, I knew nothing about animals! Through your teaching, I learned about different categories and their characteristics.
+                    </p>
                 </div>
             </div>
-            {% endfor %}
         </div>
-    </div>
-    
-    <!-- Visual Learning Patterns -->
-    <div class="grid md:grid-cols-2 gap-6 mb-8">
-        <!-- Categories Learned -->
-        <div class="game-card bg-white p-6">
+        
+        <!-- Learning Categories -->
+        <div class="game-card bg-white p-6 mb-8">
             <h3 class="font-semibold text-gray-800 mb-4 text-center">🏷️ Categories I Learned</h3>
-            {% for category, animals in learned_categories.items %}
-            <div class="mb-4 p-4 bg-gray-50 rounded-lg">
-                <div class="font-medium text-gray-800 mb-2">{{ category|title }}</div>
-                <div class="flex flex-wrap gap-2">
-                    {% for animal in animals %}
-                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">{{ animal }}</span>
-                    {% endfor %}
-                </div>
-                <div class="text-xs text-gray-600 mt-2">
-                    I learned {{ animals|length }} {{ category }} example{{ animals|length|pluralize }}
-                </div>
+            <div id="categories-learned" class="space-y-4">
+                <!-- Categories will be populated by JavaScript -->
             </div>
-            {% endfor %}
         </div>
         
         <!-- Learning Patterns -->
-        <div class="game-card bg-white p-6">
+        <div class="game-card bg-white p-6 mb-8">
             <h3 class="font-semibold text-gray-800 mb-4 text-center">🔍 Learning Patterns</h3>
-            <div class="space-y-4">
-                {% for category, count in visual_patterns.examples_per_category.items %}
-                <div class="p-3 bg-gray-50 rounded-lg">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-medium text-gray-800">{{ category|title }}</span>
-                        <span class="text-sm text-gray-600">{{ count }} examples</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full" 
-                             style="width: {{ count|floatformat:0|add:'0'|mul:6.25 }}%"></div>
-                    </div>
-                </div>
-                {% endfor %}
+            <div id="learning-patterns" class="space-y-4">
+                <!-- Learning patterns will be populated by JavaScript -->
             </div>
             
             <div class="mt-4 p-3 bg-blue-50 rounded-lg">
                 <div class="text-sm text-blue-800">
                     <strong>Learning Insight:</strong> 
-                    {% if visual_patterns.examples_per_category.items|length > 1 %}
-                        I learned about multiple categories, which helps me distinguish between different types of animals.
-                    {% else %}
-                        I learned mostly about one category, so I might classify new animals into that category more often.
-                    {% endif %}
+                    <span id="learning-insight">Your teaching helped me understand how to classify different types of animals!</span>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Key Insights -->
+        <div class="game-card bg-gradient-to-r from-indigo-100 to-purple-100 p-6 mb-8">
+            <h3 class="font-semibold text-gray-800 mb-4 text-center">🔑 Key Learning Insights</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-medium text-gray-800 mb-2">What I Remember:</h4>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                        <li>• I can only classify animals you taught me about</li>
+                        <li>• I remember exactly what category you put each animal in</li>
+                        <li>• For new animals, I guess based on my training patterns</li>
+                        <li>• I'm more confident about animals I've seen before</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium text-gray-800 mb-2">How I Make Predictions:</h4>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                        <li>• First, I check if I've seen this exact animal before</li>
+                        <li>• If not, I look at which categories I learned the most about</li>
+                        <li>• I make my best guess based on my training</li>
+                        <li>• My confidence depends on how much I learned</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="text-center">
+            <div class="space-x-4">
+                <a href="{% url 'robotic_buddy:simple_game' %}" class="btn btn-primary">
+                    🔙 Train Again
+                </a>
+                <a href="{% url 'games:ai_learning' %}" class="btn btn-secondary">
+                    🎮 More AI Games
+                </a>
+                <a href="{% url 'robotic_buddy:home' %}" class="btn btn-outline btn-primary">
+                    🏠 AI Buddy Home
+                </a>
             </div>
         </div>
     </div>
     
-    <!-- Test Results Analysis -->
-    {% if test_examples %}
-    <div class="game-card bg-white p-6 mb-8">
-        <h3 class="font-semibold text-gray-800 mb-4 text-center">🧪 How I Applied My Learning</h3>
-        <div class="grid gap-4">
-            {% for example in test_examples %}
-            <div class="p-4 border border-gray-200 rounded-lg">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <div class="font-medium text-gray-800">{{ example.label|title }}</div>
-                        <div class="text-sm text-gray-600">
-                            I predicted: <span class="font-medium">{{ example.buddy_prediction }}</span>
-                        </div>
-                        <div class="text-sm {% if example.was_correct %}text-green-600{% else %}text-red-600{% endif %}">
-                            Actual category: {{ example.data.correct_category }}
-                            {% if example.was_correct %}✅{% else %}❌{% endif %}
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-sm text-gray-600">Confidence</div>
-                        <div class="font-bold text-lg">{{ example.confidence_level|floatformat:0|mul:100 }}%</div>
-                    </div>
-                </div>
-                
-                <!-- Reasoning for this prediction -->
-                <div class="mt-3 p-3 bg-gray-50 rounded">
-                    <div class="text-sm text-gray-700">
-                        <strong>My reasoning:</strong> 
-                        {% if example.was_correct %}
-                            I correctly identified this because I remembered learning about similar {{ example.data.correct_category }}s during training.
-                        {% else %}
-                            I made an error here. This shows how my training influenced my predictions - 
-                            I may have learned more about {{ example.buddy_prediction }}s, so I guessed that category.
-                        {% endif %}
-                    </div>
-                </div>
+    <!-- No Data Message -->
+    <div id="no-data-message" class="text-center py-8" style="display: none;">
+        <div class="game-card bg-yellow-50 border border-yellow-200 p-6">
+            <div class="text-yellow-800">
+                <h3 class="font-semibold mb-2">🤔 No Learning Data Found</h3>
+                <p class="mb-4">It looks like you haven't trained your AI buddy yet!</p>
+                <a href="{% url 'robotic_buddy:simple_game' %}" class="btn btn-primary">
+                    🎓 Start Training Your AI Buddy
+                </a>
             </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-    
-    <!-- Key Insights -->
-    <div class="game-card bg-gradient-to-r from-indigo-100 to-purple-100 p-6 mb-8">
-        <h3 class="font-semibold text-gray-800 mb-4 text-center">🔑 Key Learning Insights</h3>
-        <div class="grid md:grid-cols-2 gap-6">
-            <div>
-                <h4 class="font-medium text-gray-800 mb-2">What I Remember:</h4>
-                <ul class="text-sm text-gray-700 space-y-1">
-                    <li>• I can only classify animals you taught me about</li>
-                    <li>• I remember exactly what category you put each animal in</li>
-                    <li>• For new animals, I guess based on my training patterns</li>
-                    <li>• I'm more confident about animals I've seen before</li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-medium text-gray-800 mb-2">How I Make Predictions:</h4>
-                <ul class="text-sm text-gray-700 space-y-1">
-                    <li>• First, I check if I've seen this exact animal before</li>
-                    <li>• If not, I look at which categories I learned the most about</li>
-                    <li>• I make my best guess based on my training</li>
-                    <li>• My confidence depends on how much I learned</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Navigation -->
-    <div class="text-center">
-        <div class="space-x-4">
-            <a href="/buddy/testing/{{ session.id }}/" class="btn btn-primary">
-                🔙 Back to Testing
-            </a>
-            <a href="/buddy/classification-game/" class="btn btn-secondary">
-                🎮 Train New Session
-            </a>
-            <a href="/buddy/my-buddy/" class="btn btn-outline btn-primary">
-                🏠 My Buddy Dashboard
-            </a>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get training data from localStorage
+    const trainingData = localStorage.getItem('aiTrainingData');
+    
+    if (!trainingData) {
+        // No training data found
+        document.getElementById('loading-message').style.display = 'none';
+        document.getElementById('no-data-message').style.display = 'block';
+        return;
+    }
+    
+    try {
+        const data = JSON.parse(trainingData);
+        displayLearningExplanation(data);
+    } catch (error) {
+        console.error('Error parsing training data:', error);
+        document.getElementById('loading-message').style.display = 'none';
+        document.getElementById('no-data-message').style.display = 'block';
+    }
+});
+
+function displayLearningExplanation(data) {
+    // Hide loading and show content
+    document.getElementById('loading-message').style.display = 'none';
+    document.getElementById('learning-content').style.display = 'block';
+    
+    const categories = data.categories || {};
+    const totalExamples = data.examples || 0;
+    
+    // Calculate statistics based on PURE LEARNING - only count categories that were actually used
+    let totalCategoriesUsed = 0;
+    let learningStory = [];
+    
+    // Only count categories where the user actually taught examples
+    for (const [category, categoryData] of Object.entries(categories)) {
+        if (categoryData.total > 0) {
+            totalCategoriesUsed++;
+            learningStory.push(category);
+        }
+    }
+    
+    // In pure learning, accuracy is always 100% because AI learns exactly what user teaches
+    const accuracy = totalExamples > 0 ? 100 : 0;
+    
+    // Update summary cards
+    document.getElementById('total-examples').textContent = totalExamples;
+    document.getElementById('categories-count').textContent = totalCategoriesUsed;
+    document.getElementById('accuracy-score').textContent = accuracy + '%';
+    
+    // Update learning story
+    if (learningStory.length > 0) {
+        const storyText = `When I started, I knew nothing about animals! Through your teaching, I learned about ${learningStory.join(', ')}. Each time you showed me an animal, I remembered which category you put it in. That's how I learned to recognize different types of animals!`;
+        document.getElementById('learning-story').textContent = storyText;
+    }
+    
+    // Display categories learned
+    const categoriesContainer = document.getElementById('categories-learned');
+    categoriesContainer.innerHTML = '';
+    
+    for (const [category, categoryData] of Object.entries(categories)) {
+        if (categoryData.total > 0) {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'p-4 bg-gray-50 rounded-lg';
+            
+            // In pure learning, accuracy is always 100% for categories that were taught
+            const categoryAccuracy = 100;
+            
+            categoryDiv.innerHTML = `
+                <div class="font-medium text-gray-800 mb-2">${category.charAt(0).toUpperCase() + category.slice(1)}</div>
+                <div class="text-xs text-gray-600 mb-2">
+                    I learned ${categoryData.total} ${category} example${categoryData.total !== 1 ? 's' : ''} with ${categoryAccuracy}% accuracy
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full" 
+                         style="width: ${Math.min(100, (categoryData.total / Math.max(totalExamples, 1)) * 100)}%"></div>
+                </div>
+            `;
+            categoriesContainer.appendChild(categoryDiv);
+        }
+    }
+    
+    // Display learning patterns
+    const patternsContainer = document.getElementById('learning-patterns');
+    patternsContainer.innerHTML = '';
+    
+    for (const [category, categoryData] of Object.entries(categories)) {
+        if (categoryData.total > 0) {
+            const patternDiv = document.createElement('div');
+            patternDiv.className = 'p-3 bg-gray-50 rounded-lg';
+            
+            patternDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-medium text-gray-800">${category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                    <span class="text-sm text-gray-600">${categoryData.total} examples</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full" 
+                         style="width: ${Math.min(100, (categoryData.total / 16) * 100)}%"></div>
+                </div>
+            `;
+            patternsContainer.appendChild(patternDiv);
+        }
+    }
+    
+    // Update learning insight
+    const insightElement = document.getElementById('learning-insight');
+    if (totalCategoriesUsed > 1) {
+        insightElement.textContent = "I learned about multiple categories, which helps me distinguish between different types of animals.";
+    } else if (totalCategoriesUsed === 1) {
+        insightElement.textContent = "I learned mostly about one category, so I might classify new animals into that category more often.";
+    } else {
+        insightElement.textContent = "Your teaching helped me understand how to classify different types of animals!";
+    }
+}
+</script>
 
 <style>
 /* Custom category colors */
@@ -218,5 +262,9 @@
 .text-birds-800 { color: #1e40af; }
 .bg-fish-100 { background-color: #d1fae5; }
 .text-fish-800 { color: #065f46; }
+
+.buddy-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
 </style>
 {% endblock %}

@@ -3,105 +3,81 @@
 {% block game_title %}Train Your AI Buddy{% endblock %}
 
 {% block game_content %}
-<div class="max-w-4xl mx-auto">
-    <!-- Simple Step-by-Step Instructions -->
-    <div class="text-center mb-8">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-            🎓 Teach Your AI Buddy About Animals!
-        </h1>
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-            <h2 class="text-xl font-semibold text-blue-800 mb-4">📚 How to Train:</h2>
-            <div class="grid md:grid-cols-3 gap-4 text-left">
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
-                    <div>
-                        <h3 class="font-semibold text-blue-800">See the Animal</h3>
-                        <p class="text-blue-700 text-sm">Look at the animal that appears below</p>
-                    </div>
+<div class="max-w-4xl mx-auto px-4">
+    <!-- Compact Header with Status -->
+    <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 border-b border-gray-100 -mx-4 px-4 py-3 mb-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white">
+                    🤖
                 </div>
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
-                    <div>
-                        <h3 class="font-semibold text-green-800">Click the Right Box</h3>
-                        <p class="text-green-700 text-sm">Click which category it belongs to</p>
-                    </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold text-gray-800">Train Your AI Buddy</h1>
+                    <p class="text-xs text-gray-600 hidden sm:block">Tap the correct category for each animal</p>
                 </div>
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">3</div>
-                    <div>
-                        <h3 class="font-semibold text-purple-800">Watch Buddy Learn</h3>
-                        <p class="text-purple-700 text-sm">See your buddy get smarter!</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <div class="text-sm font-semibold text-gray-800">
+                        <span id="examples-count">0</span>/16
                     </div>
+                    <div class="text-xs text-gray-500">examples</div>
+                </div>
+                <div class="w-16 h-2 bg-gray-200 rounded-full">
+                    <div id="progress-bar" class="bg-gradient-to-r from-blue-400 to-purple-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Current Animal to Classify -->
-    <div class="text-center mb-8">
-        <div class="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
-            <h3 class="text-xl font-semibold mb-4">🐾 What type of animal is this?</h3>
-            <div id="current-animal" class="mb-6">
-                <div class="text-8xl mb-4">🐕</div>
-                <h2 class="text-2xl font-bold text-gray-800">Dog</h2>
-            </div>
-            
-            <!-- Mobile-Optimized Click Buttons -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-2xl mx-auto">
-                <button class="category-btn bg-orange-100 hover:bg-orange-200 active:bg-orange-300 border-2 border-orange-300 rounded-xl p-4 sm:p-6 transition-all duration-200 transform hover:scale-105 active:scale-95 touch-manipulation" data-category="mammals">
-                    <div class="text-4xl sm:text-4xl mb-2">🦁</div>
-                    <h3 class="font-bold text-orange-800 text-sm sm:text-base">Mammals</h3>
-                    <p class="text-xs sm:text-sm text-orange-600 hidden sm:block">Has fur, warm blood</p>
-                </button>
-                
-                <button class="category-btn bg-blue-100 hover:bg-blue-200 active:bg-blue-300 border-2 border-blue-300 rounded-xl p-4 sm:p-6 transition-all duration-200 transform hover:scale-105 active:scale-95 touch-manipulation" data-category="birds">
-                    <div class="text-4xl sm:text-4xl mb-2">🦅</div>
-                    <h3 class="font-bold text-blue-800 text-sm sm:text-base">Birds</h3>
-                    <p class="text-xs sm:text-sm text-blue-600 hidden sm:block">Has feathers, can fly</p>
-                </button>
-                
-                <button class="category-btn bg-green-100 hover:bg-green-200 active:bg-green-300 border-2 border-green-300 rounded-xl p-4 sm:p-6 transition-all duration-200 transform hover:scale-105 active:scale-95 touch-manipulation" data-category="fish">
-                    <div class="text-4xl sm:text-4xl mb-2">🐟</div>
-                    <h3 class="font-bold text-green-800 text-sm sm:text-base">Fish</h3>
-                    <p class="text-xs sm:text-sm text-green-600 hidden sm:block">Lives in water, has gills</p>
-                </button>
+    <!-- Main Game Interface -->
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <!-- Animal Display -->
+        <div class="bg-gradient-to-br from-gray-50 to-gray-100 px-6 py-8 text-center border-b border-gray-200">
+            <div id="current-animal" class="space-y-3">
+                <div class="text-7xl md:text-8xl">🐕</div>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800">Dog</h2>
             </div>
         </div>
-    </div>
-    
-    <!-- Progress -->
-    <div class="bg-white rounded-xl p-6 mb-8">
-        <div class="flex items-center justify-between mb-3">
-            <h3 class="font-semibold text-gray-800">🎯 Training Progress</h3>
-            <span class="text-sm text-gray-600"><span id="examples-count">0</span> / 16 examples</span>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-4">
-            <div id="progress-bar" class="bg-gradient-to-r from-blue-400 to-purple-500 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
-        </div>
-    </div>
-    
-    <!-- Buddy Response Area -->
-    <div id="buddy-response" class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-6 mb-8" style="display: none;">
-        <div class="flex items-start space-x-4">
-            <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-xl">
-                🤖
-            </div>
-            <div class="flex-1">
-                <h4 class="font-semibold text-purple-800 mb-2">Your AI Buddy Says:</h4>
-                <p id="buddy-message" class="text-purple-700"></p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Test Buddy Button -->
-    <div class="text-center">
-        <button id="test-buddy-btn" class="btn btn-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105" style="display: none;">
-            🧠 Test My Buddy's Knowledge!
-        </button>
         
-        <button id="complete-btn" class="btn btn-lg bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105" style="display: none;">
-            🎉 Training Complete!
-        </button>
+        <!-- Category Selection -->
+        <div class="p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-lg mx-auto">
+                <button class="category-btn bg-orange-100 hover:bg-orange-200 active:bg-orange-300 border-2 border-orange-300 rounded-lg p-4 transition-all duration-200 transform hover:scale-105 active:scale-95 touch-manipulation min-h-[60px] flex flex-col items-center justify-center" data-category="mammals">
+                    <div class="text-2xl mb-1">🦁</div>
+                    <div class="font-bold text-orange-800 text-sm">Mammals</div>
+                </button>
+                
+                <button class="category-btn bg-blue-100 hover:bg-blue-200 active:bg-blue-300 border-2 border-blue-300 rounded-lg p-4 transition-all duration-200 transform hover:scale-105 active:scale-95 touch-manipulation min-h-[60px] flex flex-col items-center justify-center" data-category="birds">
+                    <div class="text-2xl mb-1">🦅</div>
+                    <div class="font-bold text-blue-800 text-sm">Birds</div>
+                </button>
+                
+                <button class="category-btn bg-green-100 hover:bg-green-200 active:bg-green-300 border-2 border-green-300 rounded-lg p-4 transition-all duration-200 transform hover:scale-105 active:scale-95 touch-manipulation min-h-[60px] flex flex-col items-center justify-center" data-category="fish">
+                    <div class="text-2xl mb-1">🐟</div>
+                    <div class="font-bold text-green-800 text-sm">Fish</div>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Compact Response & Actions -->
+    <div class="mt-4 space-y-3">
+        <!-- Buddy Response (Compact) -->
+        <div id="buddy-response" class="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-3 text-center" style="display: none;">
+            <p id="buddy-message" class="text-sm text-gray-700 font-medium"></p>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex justify-center space-x-3">
+            <button id="test-buddy-btn" class="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-sm font-medium" style="display: none;">
+                🧠 Test Knowledge
+            </button>
+            
+            <button id="complete-btn" class="px-6 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-sm font-medium" style="display: none;">
+                🎉 Complete Training
+            </button>
+        </div>
     </div>
 </div>
 
@@ -145,17 +121,16 @@ function showAnimal(animal) {
 function recordTrainingExample(selectedCategory, correctCategory, animalName) {
     const isCorrect = selectedCategory === correctCategory;
     
-    // Record the training data
-    categoryTrainingData[correctCategory].total++;
-    categoryTrainingData[correctCategory].examples.push({
+    // Record the training data based on what the USER taught (pure learning)
+    categoryTrainingData[selectedCategory].total++;
+    categoryTrainingData[selectedCategory].examples.push({
         animal: animalName,
         userGuess: selectedCategory,
         correct: isCorrect
     });
     
-    if (isCorrect) {
-        categoryTrainingData[correctCategory].correct++;
-    }
+    // In pure learning, we always count it as "correct" since we're learning what the user teaches
+    categoryTrainingData[selectedCategory].correct++;
 }
 
 function hasEnoughTrainingForAI() {
@@ -226,7 +201,7 @@ document.querySelectorAll('.category-btn').forEach(btn => {
         } else {
             this.classList.add('bg-red-200', 'border-red-400');
             const correctCategory = currentAnimal.category;
-            showBuddyMessage(`Oops! ${currentAnimal.name} is actually a ${correctCategory.slice(0, -1)}, not a ${selectedCategory.slice(0, -1)}. Thanks for teaching me! 🤔`, false);
+            showBuddyMessage(`Thank you! I'll remember that ${currentAnimal.name} is a ${selectedCategory.slice(0, -1)}! I'm learning from your teaching! 🌟`, true);
         }
         
         // Record training data
@@ -268,58 +243,54 @@ document.getElementById('test-buddy-btn').addEventListener('click', function() {
     
     nextAnimal();
     const currentAnimal = animals[currentAnimalIndex];
-    const correctCategory = currentAnimal.category;
     
-    // AI prediction based on actual training data
+    // AI prediction based on pure learning - what the user has taught
     let prediction;
     let confidence = 0;
     let reasoning = "";
     
-    const categoryAccuracy = getTrainingAccuracyForCategory(correctCategory);
-    const categoryTraining = categoryTrainingData[correctCategory];
+    // Find the category the AI thinks this animal belongs to based on user training
+    const trainedCategories = Object.keys(categoryTrainingData).filter(cat => 
+        categoryTrainingData[cat].total > 0
+    );
     
-    if (categoryTraining.total === 0) {
-        // No training for this category - AI guesses based on most trained category
-        const trainedCategories = Object.keys(categoryTrainingData).filter(cat => 
-            categoryTrainingData[cat].total > 0
-        );
+    if (trainedCategories.length === 0) {
+        prediction = 'mammals'; // Default fallback
+        confidence = 25;
+        reasoning = "I haven't been trained on any categories yet, so I'm just guessing.";
+    } else {
+        // Check if the AI has seen this exact animal before
+        let hasSeenAnimal = false;
+        let learnedCategory = null;
         
-        if (trainedCategories.length === 0) {
-            prediction = 'mammals'; // Default fallback
-            confidence = 25;
-            reasoning = "I haven't been trained on categories like this yet, so I'm just guessing.";
+        for (const category of trainedCategories) {
+            const animalExample = categoryTrainingData[category].examples.find(ex => 
+                ex.animal.toLowerCase() === currentAnimal.name.toLowerCase()
+            );
+            if (animalExample) {
+                hasSeenAnimal = true;
+                learnedCategory = category;
+                break;
+            }
+        }
+        
+        if (hasSeenAnimal) {
+            // AI has seen this exact animal before - high confidence
+            prediction = learnedCategory;
+            confidence = 95;
+            reasoning = `I remember you taught me that ${currentAnimal.name} is a ${learnedCategory}!`;
         } else {
-            // Pick the most trained category as bias
+            // AI hasn't seen this animal - makes prediction based on most trained category
             prediction = trainedCategories.reduce((maxCat, cat) => 
                 categoryTrainingData[cat].total > categoryTrainingData[maxCat].total ? cat : maxCat
             );
-            confidence = Math.min(40, categoryTrainingData[prediction].total * 10);
-            reasoning = `I haven't learned about ${correctCategory} yet, but this reminds me of the ${prediction} I've been taught.`;
-        }
-    } else {
-        // AI has training data for this category
-        confidence = Math.min(95, Math.round(categoryAccuracy * 100) + (categoryTraining.total * 5));
-        
-        if (Math.random() < categoryAccuracy) {
-            // Correct prediction based on training
-            prediction = correctCategory;
-            reasoning = `I've learned about ${categoryTraining.total} ${correctCategory} and I'm confident this is one!`;
-        } else {
-            // Wrong prediction - AI makes mistake based on confusion
-            const otherCategories = Object.keys(categoryTrainingData).filter(cat => 
-                cat !== correctCategory && categoryTrainingData[cat].total > 0
-            );
-            
-            if (otherCategories.length > 0) {
-                prediction = otherCategories[Math.floor(Math.random() * otherCategories.length)];
-                reasoning = `This is tricky! It reminds me of the ${prediction} examples I've learned.`;
-            } else {
-                prediction = correctCategory;
-                reasoning = `Based on my training, I think this matches what I know about ${correctCategory}.`;
-            }
+            confidence = Math.min(70, categoryTrainingData[prediction].total * 5);
+            reasoning = `I haven't seen ${currentAnimal.name} before, but based on my training, I think it's probably a ${prediction}.`;
         }
     }
     
+    // In pure learning, "correct" means matching what the user taught
+    const correctCategory = currentAnimal.category; // Still needed for display
     const isCorrect = prediction === correctCategory;
     
     setTimeout(() => {
@@ -332,8 +303,15 @@ document.getElementById('test-buddy-btn').addEventListener('click', function() {
 
 // Complete button
 document.getElementById('complete-btn').addEventListener('click', function() {
-    alert('🎉 Congratulations! You\'ve successfully taught your AI Buddy about animals! Your buddy is now smarter thanks to you!');
-    window.location.href = '{% url "robotic_buddy:home" %}';
+    // Store training data for result page
+    localStorage.setItem('aiTrainingData', JSON.stringify({
+        categories: categoryTrainingData,
+        examples: examplesGiven,
+        gameType: 'simple_game'
+    }));
+    
+    // Navigate directly to learning explanation
+    window.location.href = '{% url "robotic_buddy:learning_explanation" %}';
 });
 
 // Initialize

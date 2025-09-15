@@ -3,266 +3,134 @@
 {% block game_title %}Drag & Drop Animal Training{% endblock %}
 
 {% block game_content %}
-<div class="max-w-6xl mx-auto">
-    <!-- Game Header -->
-    <div class="text-center mb-8">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
-            🐾 Drag & Drop Animal Training
-        </h1>
-        <p class="text-lg text-gray-600 mb-4">
-            Drag animals into the correct categories to teach your AI buddy!
-        </p>
-        
-        <!-- Game Progress -->
-        <div class="game-card bg-white p-4 max-w-md mx-auto">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-gray-700">Training Progress</span>
-                <span class="text-sm text-gray-600"><span id="examples-count">0</span> / 16 examples</span>
+<div class="max-w-4xl mx-auto px-4">
+    <!-- Compact Header with Status -->
+    <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 border-b border-gray-100 -mx-4 px-4 py-3 mb-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white">
+                    🐾
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold text-gray-800">Drag & Drop Training</h1>
+                    <p class="text-xs text-gray-600 hidden sm:block">Drag animals to the correct category</p>
+                </div>
             </div>
-            <div class="w-full bg-gray-200 rounded-full h-3">
-                <div id="progress-bar" class="bg-gradient-to-r from-blue-400 to-purple-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Game Instructions -->
-    <div class="game-card bg-gradient-to-r from-blue-100 to-purple-100 p-6 mb-8">
-        <div class="flex items-start space-x-4">
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xl">
-                🤖
-            </div>
-            <div class="flex-1">
-                <h3 class="font-semibold text-gray-800 mb-2">Your AI Buddy Says:</h3>
-                <p id="buddy-instruction" class="text-gray-700">
-                    Hi! I'm ready to learn about animals! Drag each animal from the left into the correct category on the right. 
-                    I'll watch and learn from your examples!
-                </p>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <div class="text-sm font-semibold text-gray-800">
+                        <span id="examples-count">0</span>/16
+                    </div>
+                    <div class="text-xs text-gray-500">examples</div>
+                </div>
+                <div class="w-16 h-2 bg-gray-200 rounded-full">
+                    <div id="progress-bar" class="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Training Interface -->
-    <div class="space-y-6">
-        <!-- Mobile-First Animal Pool -->
-        <div class="game-card bg-white p-4">
+    <!-- Main Game Interface -->
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <!-- Animal Pool Section -->
+        <div class="bg-gradient-to-br from-green-50 to-blue-50 p-6 border-b border-gray-200">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-semibold text-gray-800">🎲 Animal to Classify</h3>
-                <button id="new-animal-btn" class="btn btn-sm btn-outline btn-primary">
-                    Next Animal
+                <h3 class="font-semibold text-gray-800 text-sm">Current Animal</h3>
+                <button id="new-animal-btn" class="px-3 py-1 bg-blue-500 text-white rounded-md text-xs hover:bg-blue-600 transition-colors">
+                    Next
                 </button>
             </div>
-            <div id="animal-pool" class="text-center">
+            <div id="animal-pool" class="text-center min-h-[120px] flex items-center justify-center">
                 <!-- Current animal will be displayed here -->
             </div>
-            
-            <!-- Mobile Instructions -->
-            <div class="text-center text-sm text-gray-600 mt-4">
-                <div class="hidden md:block">🖱️ Drag the animal to the correct category below</div>
-                <div class="md:hidden">👆 Tap the animal, then tap the correct category below</div>
+            <div class="text-center text-xs text-gray-600 mt-3">
+                <span class="md:hidden">👆 Tap animal, then tap category below</span>
+                <span class="hidden md:inline">🖱️ Drag to the correct category below</span>
             </div>
         </div>
         
-        <!-- Classification Categories -->
-        <div>
-            <div class="grid md:grid-cols-3 gap-4 mb-6">
+        <!-- Drop Categories -->
+        <div class="p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <!-- Mammals -->
-                <div class="game-card bg-white p-4">
-                    <div class="text-center mb-4">
-                        <div class="text-4xl mb-2">🦁</div>
-                        <h3 class="font-semibold text-gray-800">Mammals</h3>
-                        <p class="text-sm text-gray-600">Warm-blooded, have hair or fur</p>
+                <div class="bg-orange-50 border-2 border-orange-200 rounded-lg p-3">
+                    <div class="text-center mb-2">
+                        <div class="text-2xl">🦁</div>
+                        <h3 class="font-semibold text-orange-800 text-sm">Mammals</h3>
                     </div>
-                    <div class="drop-zone min-h-[120px] border-3 border-dashed border-gray-300 rounded-lg p-4 text-center flex items-center justify-center touch-manipulation hover:border-orange-400 hover:bg-orange-50 transition-colors duration-200" 
+                    <div class="drop-zone min-h-[80px] border-2 border-dashed border-orange-300 rounded-md p-2 text-center flex items-center justify-center touch-manipulation hover:border-orange-400 hover:bg-orange-100 transition-colors duration-200" 
                          data-category="mammals" id="mammals-zone">
-                        <div class="text-gray-400 text-sm">
-                            <div class="hidden md:block">Drop mammals here</div>
-                            <div class="md:hidden">Tap for mammals</div>
+                        <div class="text-orange-400 text-xs">
+                            <span class="md:hidden">Tap for mammals</span>
+                            <span class="hidden md:inline">Drop here</span>
                         </div>
                     </div>
-                    <div id="mammals-items" class="mt-3 flex flex-wrap gap-2">
+                    <div id="mammals-items" class="mt-2 flex flex-wrap gap-1">
                         <!-- Classified mammals will appear here -->
                     </div>
                 </div>
                 
                 <!-- Birds -->
-                <div class="game-card bg-white p-4">
-                    <div class="text-center mb-4">
-                        <div class="text-4xl mb-2">🦅</div>
-                        <h3 class="font-semibold text-gray-800">Birds</h3>
-                        <p class="text-sm text-gray-600">Have feathers and wings</p>
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-3">
+                    <div class="text-center mb-2">
+                        <div class="text-2xl">🦅</div>
+                        <h3 class="font-semibold text-blue-800 text-sm">Birds</h3>
                     </div>
-                    <div class="drop-zone min-h-[120px] border-3 border-dashed border-gray-300 rounded-lg p-4 text-center flex items-center justify-center touch-manipulation hover:border-blue-400 hover:bg-blue-50 transition-colors duration-200" 
+                    <div class="drop-zone min-h-[80px] border-2 border-dashed border-blue-300 rounded-md p-2 text-center flex items-center justify-center touch-manipulation hover:border-blue-400 hover:bg-blue-100 transition-colors duration-200" 
                          data-category="birds" id="birds-zone">
-                        <div class="text-gray-400 text-sm">
-                            <div class="hidden md:block">Drop birds here</div>
-                            <div class="md:hidden">Tap for birds</div>
+                        <div class="text-blue-400 text-xs">
+                            <span class="md:hidden">Tap for birds</span>
+                            <span class="hidden md:inline">Drop here</span>
                         </div>
                     </div>
-                    <div id="birds-items" class="mt-3 flex flex-wrap gap-2">
+                    <div id="birds-items" class="mt-2 flex flex-wrap gap-1">
                         <!-- Classified birds will appear here -->
                     </div>
                 </div>
                 
                 <!-- Fish -->
-                <div class="game-card bg-white p-4">
-                    <div class="text-center mb-4">
-                        <div class="text-4xl mb-2">🐟</div>
-                        <h3 class="font-semibold text-gray-800">Fish</h3>
-                        <p class="text-sm text-gray-600">Live in water, have gills</p>
+                <div class="bg-green-50 border-2 border-green-200 rounded-lg p-3">
+                    <div class="text-center mb-2">
+                        <div class="text-2xl">🐟</div>
+                        <h3 class="font-semibold text-green-800 text-sm">Fish</h3>
                     </div>
-                    <div class="drop-zone min-h-[120px] border-3 border-dashed border-gray-300 rounded-lg p-4 text-center flex items-center justify-center touch-manipulation hover:border-green-400 hover:bg-green-50 transition-colors duration-200" 
+                    <div class="drop-zone min-h-[80px] border-2 border-dashed border-green-300 rounded-md p-2 text-center flex items-center justify-center touch-manipulation hover:border-green-400 hover:bg-green-100 transition-colors duration-200" 
                          data-category="fish" id="fish-zone">
-                        <div class="text-gray-400 text-sm">
-                            <div class="hidden md:block">Drop fish here</div>
-                            <div class="md:hidden">Tap for fish</div>
+                        <div class="text-green-400 text-xs">
+                            <span class="md:hidden">Tap for fish</span>
+                            <span class="hidden md:inline">Drop here</span>
                         </div>
                     </div>
-                    <div id="fish-items" class="mt-3 flex flex-wrap gap-2">
+                    <div id="fish-items" class="mt-2 flex flex-wrap gap-1">
                         <!-- Classified fish will appear here -->
                     </div>
                 </div>
             </div>
-            
-            <!-- Buddy Response Area -->
-            <div id="buddy-response" class="game-card bg-white p-6 mb-6" style="display: none;">
-                <div class="flex items-start space-x-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-xl">
-                        🤖
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-semibold text-purple-800 mb-2">Your AI Buddy Says:</h4>
-                        <p id="buddy-message" class="text-purple-700"></p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- AI Brain Visualization -->
-            <div id="ai-visualization" class="game-card bg-gradient-to-r from-purple-50 to-pink-50 p-6 mb-6 border-2 border-purple-200" style="display: none;">
-                <div class="text-center mb-4">
-                    <h3 class="text-xl font-bold text-purple-800 mb-2">🧠 Inside My AI Brain</h3>
-                    <p class="text-sm text-purple-600 font-medium">Watch me learn and think! This is how AI works!</p>
-                    <div class="mt-2 animate-pulse text-xs text-purple-500">✨ Real AI learning happening here! ✨</div>
-                </div>
-                
-                <!-- Memory Palace -->
-                <div class="mb-6">
-                    <h4 class="font-bold text-purple-700 mb-3 text-center">📚 My Memory Palace - Where I Store What I Learn:</h4>
-                    <div class="grid grid-cols-3 gap-3 text-xs">
-                        <div class="bg-gradient-to-b from-red-100 to-red-50 p-3 rounded-lg text-center border-2 border-red-200 shadow-sm">
-                            <div class="text-2xl mb-1">🦁</div>
-                            <div class="font-bold text-red-800">Mammals</div>
-                            <div id="mammals-memory" class="text-red-600 mt-2 font-medium">Empty</div>
-                        </div>
-                        <div class="bg-gradient-to-b from-blue-100 to-blue-50 p-3 rounded-lg text-center border-2 border-blue-200 shadow-sm">
-                            <div class="text-2xl mb-1">🦅</div>
-                            <div class="font-bold text-blue-800">Birds</div>
-                            <div id="birds-memory" class="text-blue-600 mt-2 font-medium">Empty</div>
-                        </div>
-                        <div class="bg-gradient-to-b from-green-100 to-green-50 p-3 rounded-lg text-center border-2 border-green-200 shadow-sm">
-                            <div class="text-2xl mb-1">🐟</div>
-                            <div class="font-bold text-green-800">Fish</div>
-                            <div id="fish-memory" class="text-green-600 mt-2 font-medium">Empty</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Confidence Thermometer -->
-                <div class="mb-6">
-                    <h4 class="font-bold text-purple-700 mb-3 text-center">🌡️ My Confidence Thermometer - How Sure I Am:</h4>
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <span class="w-16 text-xs text-gray-600">Mammals:</span>
-                            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                                <div id="mammals-confidence" class="bg-red-400 h-2 rounded-full transition-all" style="width: 0%"></div>
-                            </div>
-                            <span id="mammals-percent" class="text-xs text-gray-600">0%</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="w-16 text-xs text-gray-600">Birds:</span>
-                            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                                <div id="birds-confidence" class="bg-blue-400 h-2 rounded-full transition-all" style="width: 0%"></div>
-                            </div>
-                            <span id="birds-percent" class="text-xs text-gray-600">0%</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="w-16 text-xs text-gray-600">Fish:</span>
-                            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                                <div id="fish-confidence" class="bg-green-400 h-2 rounded-full transition-all" style="width: 0%"></div>
-                            </div>
-                            <span id="fish-percent" class="text-xs text-gray-600">0%</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Thinking Process History -->
-                <div id="thinking-history" class="mb-6" style="display: none;">
-                    <h4 class="font-bold text-purple-700 mb-3 text-center">🤔 My Thinking Process History:</h4>
-                    <div id="thinking-container" class="max-h-64 overflow-y-auto space-y-3 bg-gradient-to-b from-purple-50 to-indigo-50 p-3 rounded-lg border border-purple-200">
-                        <!-- Thinking history will be populated here -->
-                    </div>
-                    <div class="text-center mt-2">
-                        <button id="toggle-brain-mode" class="btn btn-sm btn-secondary">
-                            🧠 See How I Think! (Advanced)
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Advanced AI Brain Mode -->
-                <div id="advanced-brain-mode" class="mt-4" style="display: none;">
-                    <!-- Pattern Detective -->
-                    <div class="mb-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
-                        <h5 class="font-bold text-green-700 mb-3 text-center">🔍 Pattern Detective - What I See:</h5>
-                        <div id="pattern-features" class="grid grid-cols-3 gap-2 mb-3">
-                            <!-- Feature detection boxes will appear here -->
-                        </div>
-                        <div id="similarity-scores" class="text-xs text-green-600">
-                            <!-- Similarity comparisons will appear here -->
-                        </div>
-                    </div>
-                    
-                    <!-- Classification Boundaries -->
-                    <div class="mb-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
-                        <h5 class="font-bold text-indigo-700 mb-3 text-center">📊 Classification Map - Where Animals Live:</h5>
-                        <div id="classification-map" class="bg-white rounded-lg p-3 min-h-32">
-                            <!-- Classification visualization will appear here -->
-                        </div>
-                        <div class="text-xs text-indigo-600 mt-2 text-center">
-                            Animals cluster together by similar features. Boundaries show where I decide between categories.
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Learning Insights -->
-                <div class="mt-4 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
-                    <h5 class="font-bold text-orange-700 text-xs mb-1">💡 Did You Know?</h5>
-                    <p class="text-xs text-orange-600">
-                        This is how real AI works! Every example you give me helps me learn patterns. 
-                        The more good examples I get for each category, the better I become at recognizing similar animals!
-                    </p>
-                </div>
-            </div>
-            
-            <!-- Game Actions -->
-            <div class="text-center">
-                <button id="test-buddy-btn" class="btn btn-primary btn-lg mr-3" style="display: none;">
-                    🧠 Test My Buddy's Learning!
-                </button>
-                <button id="complete-session-btn" class="btn btn-success btn-lg" style="display: none;">
-                    🎉 Complete Training Session
-                </button>
-            </div>
+        </div>
+    </div>
+    
+    <!-- Compact Response & Actions -->
+    <div class="mt-4 space-y-3">
+        <!-- Buddy Response (Compact) -->
+        <div id="buddy-response" class="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-3 text-center" style="display: none;">
+            <p id="buddy-message" class="text-sm text-gray-700 font-medium"></p>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex justify-center space-x-3">
+            <button id="complete-btn" class="px-6 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-sm font-medium" style="display: none;">
+                🎉 Complete Training
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-// Enhanced AI Learning System with Category-Specific Training
-let gameState = {
+// Drag & Drop Game State
+let dragDropGameState = {
     currentAnimalIndex: 0,
     examplesGiven: 0,
     maxExamples: 16,
-    correctPredictions: 0,
-    totalPredictions: 0,
     animals: [
         { name: 'Dog', emoji: '🐕', category: 'mammals' },
         { name: 'Cat', emoji: '🐱', category: 'mammals' },
@@ -271,39 +139,13 @@ let gameState = {
         { name: 'Lion', emoji: '🦁', category: 'mammals' },
         { name: 'Parrot', emoji: '🦜', category: 'birds' },
         { name: 'Shark', emoji: '🦈', category: 'fish' },
-        { name: 'Elephant', emoji: '🐘', category: 'mammals' },
-        { name: 'Owl', emoji: '🦉', category: 'birds' },
-        { name: 'Whale', emoji: '🐋', category: 'mammals' }
+        { name: 'Elephant', emoji: '🐘', category: 'mammals' }
     ],
     usedAnimals: [],
-    // Enhanced Learning Data - tracks category-specific training quality
     learningData: {
-        mammals: { correct: 0, total: 0, examples: [] },
-        birds: { correct: 0, total: 0, examples: [] },
-        fish: { correct: 0, total: 0, examples: [] }
-    },
-    // Memory Palace - visual representation of learned examples
-    memoryPalace: {
-        mammals: [],
-        birds: [],
-        fish: []
-    },
-    // Thinking Process History
-    thinkingHistory: [],
-    // Advanced AI Brain Mode
-    brainModeActive: false,
-    // Animal Features for Pattern Recognition
-    animalFeatures: {
-        'Dog': { fur: 1, feathers: 0, scales: 0, liveInWater: 0, hasWings: 0, warmBlooded: 1 },
-        'Cat': { fur: 1, feathers: 0, scales: 0, liveInWater: 0, hasWings: 0, warmBlooded: 1 },
-        'Eagle': { fur: 0, feathers: 1, scales: 0, liveInWater: 0, hasWings: 1, warmBlooded: 1 },
-        'Goldfish': { fur: 0, feathers: 0, scales: 1, liveInWater: 1, hasWings: 0, warmBlooded: 0 },
-        'Lion': { fur: 1, feathers: 0, scales: 0, liveInWater: 0, hasWings: 0, warmBlooded: 1 },
-        'Parrot': { fur: 0, feathers: 1, scales: 0, liveInWater: 0, hasWings: 1, warmBlooded: 1 },
-        'Shark': { fur: 0, feathers: 0, scales: 1, liveInWater: 1, hasWings: 0, warmBlooded: 0 },
-        'Elephant': { fur: 1, feathers: 0, scales: 0, liveInWater: 0, hasWings: 0, warmBlooded: 1 },
-        'Owl': { fur: 0, feathers: 1, scales: 0, liveInWater: 0, hasWings: 1, warmBlooded: 1 },
-        'Whale': { fur: 0, feathers: 0, scales: 0, liveInWater: 1, hasWings: 0, warmBlooded: 1 }
+        mammals: { correct: 0, total: 0 },
+        birds: { correct: 0, total: 0 },
+        fish: { correct: 0, total: 0 }
     }
 };
 
@@ -315,55 +157,45 @@ function showBuddyMessage(message, isCorrect = true) {
     responseDiv.style.display = 'block';
     
     if (isCorrect) {
-        responseDiv.className = 'game-card bg-gradient-to-r from-green-100 to-blue-100 p-6 mb-6';
+        responseDiv.className = 'bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-3 text-center';
     } else {
-        responseDiv.className = 'game-card bg-gradient-to-r from-orange-100 to-red-100 p-6 mb-6';
+        responseDiv.className = 'bg-gradient-to-r from-orange-100 to-red-100 rounded-lg p-3 text-center';
     }
     
     setTimeout(() => {
         responseDiv.style.display = 'none';
-    }, 4000);
-}
-
-function updateBuddyMessage(message) {
-    document.getElementById('buddy-instruction').textContent = message;
+    }, 3000);
 }
 
 function updateProgress() {
-    const progress = (gameState.examplesGiven / gameState.maxExamples) * 100;
+    const progress = (dragDropGameState.examplesGiven / dragDropGameState.maxExamples) * 100;
     document.getElementById('progress-bar').style.width = progress + '%';
-    document.getElementById('examples-count').textContent = gameState.examplesGiven;
-    
-    // Show test button after 3 examples
-    if (gameState.examplesGiven >= 3) {
-        document.getElementById('test-buddy-btn').style.display = 'inline-block';
-    }
+    document.getElementById('examples-count').textContent = dragDropGameState.examplesGiven;
     
     // Show complete button after max examples
-    if (gameState.examplesGiven >= gameState.maxExamples) {
-        document.getElementById('complete-session-btn').style.display = 'inline-block';
+    if (dragDropGameState.examplesGiven >= dragDropGameState.maxExamples) {
+        document.getElementById('complete-btn').style.display = 'block';
         document.getElementById('new-animal-btn').style.display = 'none';
-        updateBuddyMessage("Wow! I think I've learned a lot! You can test my knowledge or complete our training!");
     }
 }
 
 function addNewAnimal() {
     // Get random animal that hasn't been used recently
-    const availableAnimals = gameState.animals.filter(animal => 
-        !gameState.usedAnimals.includes(animal.name)
+    const availableAnimals = dragDropGameState.animals.filter(animal => 
+        !dragDropGameState.usedAnimals.includes(animal.name)
     );
     
     if (availableAnimals.length === 0) {
         // Reset used animals if we've used them all
-        gameState.usedAnimals = [];
-        gameState.currentAnimalIndex = 0;
+        dragDropGameState.usedAnimals = [];
+        dragDropGameState.currentAnimalIndex = 0;
     }
     
     const currentAnimal = availableAnimals.length > 0 ? 
         availableAnimals[Math.floor(Math.random() * availableAnimals.length)] :
-        gameState.animals[gameState.currentAnimalIndex % gameState.animals.length];
+        dragDropGameState.animals[dragDropGameState.currentAnimalIndex % dragDropGameState.animals.length];
     
-    gameState.usedAnimals.push(currentAnimal.name);
+    dragDropGameState.usedAnimals.push(currentAnimal.name);
     
     // Add animal to the pool
     const animalPool = document.getElementById('animal-pool');
@@ -392,9 +224,6 @@ function addNewAnimal() {
     });
     
     animalPool.appendChild(animalElement);
-    
-    // Update instructions
-    updateBuddyMessage(`I see a ${currentAnimal.name}! Can you drag it to the correct category to teach me?`);
 }
 
 // Set up drop zones
@@ -416,14 +245,14 @@ function setupDropZones() {
         });
         
         zone.addEventListener('drop', function(e) {
-            console.log('Drop event triggered!'); // Debug log
+            console.log('Drop event triggered!');
             e.preventDefault();
             this.classList.remove('border-blue-400', 'bg-blue-50');
             
             const animalName = e.dataTransfer.getData('text/plain');
             const category = this.dataset.category;
             
-            console.log('Animal:', animalName, 'Category:', category); // Debug log
+            console.log('Animal:', animalName, 'Category:', category);
             
             // Find the dragged animal element
             const animalElement = document.querySelector(`[data-item="${animalName}"]`);
@@ -431,7 +260,7 @@ function setupDropZones() {
                 const correctCategory = animalElement.dataset.category;
                 const isCorrect = correctCategory === category;
                 
-                console.log('Correct category:', correctCategory, 'Is correct:', isCorrect); // Debug log
+                console.log('Correct category:', correctCategory, 'Is correct:', isCorrect);
                 
                 // Move animal to category display
                 const categoryItems = document.getElementById(category + '-items');
@@ -448,305 +277,29 @@ function setupDropZones() {
                     this.innerHTML = '';
                 }
                 
-                // Record training data (wrapped in try-catch to prevent errors)
-                try {
-                    recordTrainingExample(animalName, correctCategory, category, isCorrect);
-                    updateAIVisualization();
-                } catch (error) {
-                    console.log('Error in learning functions:', error);
+                // Record training data
+                dragDropGameState.learningData[correctCategory].total++;
+                if (isCorrect) {
+                    dragDropGameState.learningData[correctCategory].correct++;
                 }
                 
                 // Show feedback
-                if (isCorrect) {
-                    showBuddyMessage(`Thank you! I'll remember that ${animalName} is a ${category.slice(0, -1)}! I'm learning from your teaching! 🌟`);
-                } else {
-                    showBuddyMessage(`Hmm, ${animalName} is actually a ${correctCategory.slice(0, -1)}, not a ${category.slice(0, -1)}. Thanks for the correction - I'll remember that! 🤔`, false);
-                }
+                showBuddyMessage(`Thank you! I'll remember that ${animalName} is a ${category.slice(0, -1)}! I'm learning from your teaching! 🌟`);
                 
-                gameState.examplesGiven++;
+                dragDropGameState.examplesGiven++;
                 updateProgress();
-                
-                // Show AI brain after 2 examples
-                try {
-                    if (gameState.examplesGiven >= 2) {
-                        document.getElementById('ai-visualization').style.display = 'block';
-                    }
-                } catch (error) {
-                    console.log('Error showing AI visualization:', error);
-                }
                 
                 // Add new animal after delay
                 setTimeout(() => {
-                    if (gameState.examplesGiven < gameState.maxExamples) {
+                    if (dragDropGameState.examplesGiven < dragDropGameState.maxExamples) {
                         addNewAnimal();
                     }
-                }, 3000);
+                }, 2000);
             } else {
                 console.log('Animal element not found!');
             }
         });
     });
-}
-
-// Enhanced learning functions
-function recordTrainingExample(animalName, correctCategory, givenCategory, wasCorrect) {
-    // Update learning data for the correct category
-    gameState.learningData[correctCategory].total++;
-    if (wasCorrect) {
-        gameState.learningData[correctCategory].correct++;
-    }
-    
-    // Store example in memory palace
-    const example = {
-        animal: animalName,
-        correct: wasCorrect,
-        confusion: wasCorrect ? null : givenCategory
-    };
-    gameState.memoryPalace[correctCategory].push(example);
-    
-    // Limit memory palace size (keep recent examples)
-    if (gameState.memoryPalace[correctCategory].length > 3) {
-        gameState.memoryPalace[correctCategory].shift();
-    }
-}
-
-function updateAIVisualization() {
-    // Update Memory Palace display
-    ['mammals', 'birds', 'fish'].forEach(category => {
-        const memoryEl = document.getElementById(category + '-memory');
-        const examples = gameState.memoryPalace[category];
-        
-        if (examples.length === 0) {
-            memoryEl.textContent = 'Empty';
-        } else {
-            const recent = examples.slice(-2).map(ex => 
-                ex.correct ? `✓${ex.animal}` : `✗${ex.animal}`
-            ).join(' ');
-            memoryEl.textContent = recent;
-        }
-        
-        // Update confidence levels
-        const data = gameState.learningData[category];
-        const confidence = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
-        
-        document.getElementById(category + '-confidence').style.width = confidence + '%';
-        document.getElementById(category + '-percent').textContent = confidence + '%';
-    });
-}
-
-function calculateCategoryAccuracy(category) {
-    const data = gameState.learningData[category];
-    if (data.total === 0) return 0.33; // Base probability
-    return Math.max(0.1, data.correct / data.total); // Minimum 10% accuracy
-}
-
-// Enhanced Thinking Process Functions
-function addToThinkingHistory(animal, prediction, confidence, reasoning, features, patterns) {
-    const timestamp = new Date().toLocaleTimeString();
-    const thinkingEntry = {
-        animal,
-        prediction,
-        confidence,
-        reasoning,
-        features,
-        patterns,
-        timestamp
-    };
-    
-    gameState.thinkingHistory.push(thinkingEntry);
-    updateThinkingHistoryDisplay();
-    
-    if (gameState.brainModeActive) {
-        updatePatternDetective(animal, features);
-        updateClassificationMap(animal, prediction, patterns);
-    }
-}
-
-function updateThinkingHistoryDisplay() {
-    const container = document.getElementById('thinking-container');
-    const historyEl = document.getElementById('thinking-history');
-    
-    // Show thinking history after first prediction
-    if (gameState.thinkingHistory.length > 0) {
-        historyEl.style.display = 'block';
-    }
-    
-    // Display all thinking processes as conversation bubbles
-    container.innerHTML = gameState.thinkingHistory.map((entry, index) => `
-        <div class="thinking-bubble bg-white p-3 rounded-lg border border-purple-300 shadow-sm">
-            <div class="flex items-center justify-between mb-2">
-                <div class="font-semibold text-purple-800 text-sm">🤔 Thinking ${index + 1}: ${entry.animal}</div>
-                <div class="text-xs text-gray-500">${entry.timestamp}</div>
-            </div>
-            <div class="space-y-1 text-xs text-purple-600">
-                <div>1. Looking at ${entry.animal}...</div>
-                <div>2. Checking my memory palace...</div>
-                <div>3. ${entry.reasoning}</div>
-                <div>4. Prediction: <strong>${entry.prediction}</strong> (${entry.confidence}% confident)</div>
-            </div>
-        </div>
-    `).join('');
-    
-    // Auto-scroll to latest
-    container.scrollTop = container.scrollHeight;
-}
-
-function updatePatternDetective(animal, features) {
-    const featuresContainer = document.getElementById('pattern-features');
-    const similarityContainer = document.getElementById('similarity-scores');
-    
-    // Show feature detection boxes
-    const featureBoxes = [
-        { name: 'Has Fur', value: features.fur, emoji: '🦔' },
-        { name: 'Has Feathers', value: features.feathers, emoji: '🪶' },
-        { name: 'Has Scales', value: features.scales, emoji: '🐟' },
-        { name: 'Lives in Water', value: features.liveInWater, emoji: '🌊' },
-        { name: 'Has Wings', value: features.hasWings, emoji: '🪽' },
-        { name: 'Warm Blooded', value: features.warmBlooded, emoji: '🔥' }
-    ];
-    
-    featuresContainer.innerHTML = featureBoxes.map(feature => {
-        const isPresent = feature.value > 0;
-        return `
-            <div class="feature-box p-2 rounded text-center text-xs ${isPresent ? 'bg-green-100 border-green-300' : 'bg-gray-100 border-gray-300'} border">
-                <div class="text-lg mb-1">${feature.emoji}</div>
-                <div class="font-medium ${isPresent ? 'text-green-800' : 'text-gray-500'}">${feature.name}</div>
-                <div class="text-xs ${isPresent ? 'text-green-600' : 'text-gray-400'}">${isPresent ? '✓ Yes' : '✗ No'}</div>
-            </div>
-        `;
-    }).join('');
-    
-    // Show similarity to learned examples
-    const similarities = calculateSimilarities(animal);
-    similarityContainer.innerHTML = similarities.length > 0 ? 
-        `<div class="font-medium mb-1">Pattern Matching:</div>` +
-        similarities.map(sim => `
-            <div class="similarity-bar flex items-center mb-1">
-                <span class="text-xs w-16">${sim.example}:</span>
-                <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                    <div class="bg-green-400 h-2 rounded-full" style="width: ${sim.similarity}%"></div>
-                </div>
-                <span class="text-xs w-8">${sim.similarity}%</span>
-            </div>
-        `).join('') :
-        '<div class="text-xs">No examples to compare with yet.</div>';
-}
-
-function updateClassificationMap(animal, prediction, patterns) {
-    const mapContainer = document.getElementById('classification-map');
-    
-    // Simple 2D visualization of animal clusters
-    const positions = {
-        mammals: { x: 20, y: 60, color: '#dc2626' },
-        birds: { x: 50, y: 20, color: '#2563eb' },
-        fish: { x: 80, y: 80, color: '#16a34a' }
-    };
-    
-    let mapHTML = '<div class="relative w-full h-32">';
-    
-    // Draw category regions
-    Object.keys(positions).forEach(category => {
-        const pos = positions[category];
-        mapHTML += `
-            <div class="absolute w-16 h-16 rounded-full opacity-20" 
-                 style="background-color: ${pos.color}; left: ${pos.x - 8}%; top: ${pos.y - 20}%;">
-            </div>
-            <div class="absolute text-xs font-medium" 
-                 style="color: ${pos.color}; left: ${pos.x - 5}%; top: ${pos.y + 5}%;">
-                ${category.charAt(0).toUpperCase() + category.slice(1)}
-            </div>
-        `;
-    });
-    
-    // Show current animal position
-    const currentPos = positions[gameState.animals.find(a => a.name === animal)?.category || 'mammals'];
-    mapHTML += `
-        <div class="absolute w-4 h-4 rounded-full bg-purple-600 border-2 border-white shadow-lg animate-pulse" 
-             style="left: ${currentPos.x - 2}%; top: ${currentPos.y - 10}%;">
-        </div>
-        <div class="absolute text-xs font-bold text-purple-800" 
-             style="left: ${currentPos.x - 3}%; top: ${currentPos.y + 15}%;">
-            ${animal}
-        </div>
-    `;
-    
-    mapHTML += '</div>';
-    mapContainer.innerHTML = mapHTML;
-}
-
-function calculateSimilarities(animal) {
-    const currentFeatures = gameState.animalFeatures[animal];
-    const similarities = [];
-    
-    // Compare with learned examples from memory palace
-    Object.keys(gameState.memoryPalace).forEach(category => {
-        gameState.memoryPalace[category].forEach(example => {
-            if (example.animal !== animal && gameState.animalFeatures[example.animal]) {
-                const exampleFeatures = gameState.animalFeatures[example.animal];
-                let similarity = 0;
-                let totalFeatures = 0;
-                
-                Object.keys(currentFeatures).forEach(feature => {
-                    totalFeatures++;
-                    if (currentFeatures[feature] === exampleFeatures[feature]) {
-                        similarity++;
-                    }
-                });
-                
-                const percentSimilarity = Math.round((similarity / totalFeatures) * 100);
-                similarities.push({
-                    example: example.animal,
-                    similarity: percentSimilarity
-                });
-            }
-        });
-    });
-    
-    return similarities.sort((a, b) => b.similarity - a.similarity).slice(0, 3);
-}
-
-// Enhanced Test buddy function with category-specific learning
-function testBuddyKnowledge() {
-    const testAnimal = gameState.animals[Math.floor(Math.random() * gameState.animals.length)];
-    const correctCategory = testAnimal.category;
-    
-    // Use actual learning data to determine accuracy
-    const categoryAccuracy = calculateCategoryAccuracy(correctCategory);
-    const isCorrect = Math.random() < categoryAccuracy;
-    
-    let prediction, reasoning;
-    if (isCorrect) {
-        prediction = correctCategory;
-        const examples = gameState.memoryPalace[correctCategory];
-        reasoning = examples.length > 0 ? 
-            `I remember learning about similar ${correctCategory}!` :
-            `This looks like the ${correctCategory} I've been learning about.`;
-    } else {
-        // Make realistic mistakes based on common confusions
-        const wrongCategories = ['mammals', 'birds', 'fish'].filter(c => c !== correctCategory);
-        prediction = wrongCategories[Math.floor(Math.random() * wrongCategories.length)];
-        reasoning = `I'm still learning about ${correctCategory} - this looks similar to ${prediction} I've seen.`;
-    }
-    
-    const confidence = Math.round(categoryAccuracy * 100);
-    
-    // Add to thinking history with enhanced information
-    const features = gameState.animalFeatures[testAnimal.name];
-    const patterns = calculateSimilarities(testAnimal.name);
-    
-    addToThinkingHistory(testAnimal.name, prediction.slice(0, -1), confidence, reasoning, features, patterns);
-    
-    setTimeout(() => {
-        showBuddyMessage(
-            `Let me test my knowledge! I think a ${testAnimal.name} ${testAnimal.emoji} is a ${prediction.slice(0, -1)}. I'm ${confidence}% confident based on my training! ${isCorrect ? 'Did I get it right? 🎉' : 'Hmm, was I correct? 🤔'}`,
-            isCorrect
-        );
-    }, 2000);
-    
-    if (isCorrect) {
-        gameState.correctPredictions++;
-    }
-    gameState.totalPredictions++;
 }
 
 // Initialize game
@@ -757,147 +310,34 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         setupDropZones();
         addNewAnimal();
-        
-        // Backup method - directly attach events to each zone
-        const mammalsZone = document.getElementById('mammals-zone');
-        const birdsZone = document.getElementById('birds-zone');
-        const fishZone = document.getElementById('fish-zone');
-        
-        [mammalsZone, birdsZone, fishZone].forEach(zone => {
-            if (zone) {
-                console.log('Setting backup events for:', zone.id);
-                zone.ondragover = function(e) {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    this.style.backgroundColor = '#dbeafe';
-                    this.style.borderColor = '#3b82f6';
-                };
-                
-                zone.ondragleave = function(e) {
-                    this.style.backgroundColor = '';
-                    this.style.borderColor = '';
-                };
-                
-                zone.ondrop = function(e) {
-                    e.preventDefault();
-                    console.log('Backup drop triggered on:', this.id);
-                    this.style.backgroundColor = '';
-                    this.style.borderColor = '';
-                    
-                    const animalName = e.dataTransfer.getData('text/plain');
-                    const category = this.dataset.category;
-                    
-                    const animalElement = document.querySelector(`[data-item="${animalName}"]`);
-                    if (animalElement) {
-                        const correctCategory = animalElement.dataset.category;
-                        const isCorrect = correctCategory === category;
-                        
-                        // Simple processing without complex functions
-                        const categoryItems = document.getElementById(category + '-items');
-                        const itemElement = document.createElement('span');
-                        itemElement.className = `inline-block ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} px-3 py-1 rounded-full text-sm font-medium m-1`;
-                        itemElement.innerHTML = `${animalElement.querySelector('.text-4xl').textContent} ${animalName}`;
-                        categoryItems.appendChild(itemElement);
-                        
-                        animalElement.remove();
-                        
-                        // Basic feedback
-                        showBuddyMessage(isCorrect ? 
-                            `Great! ${animalName} is a ${category.slice(0, -1)}! 🌟` :
-                            `Actually, ${animalName} is a ${correctCategory.slice(0, -1)}, not a ${category.slice(0, -1)}. Thanks for teaching me! 🤔`, 
-                            isCorrect
-                        );
-                        
-                        gameState.examplesGiven++;
-                        updateProgress();
-                        
-                        setTimeout(() => {
-                            if (gameState.examplesGiven < gameState.maxExamples) {
-                                addNewAnimal();
-                            }
-                        }, 3000);
-                    }
-                };
-            }
-        });
     }, 100);
     
     // Event listeners
     document.getElementById('new-animal-btn').addEventListener('click', addNewAnimal);
     
-    document.getElementById('test-buddy-btn').addEventListener('click', testBuddyKnowledge);
-    
-    // Brain mode toggle
-    document.getElementById('toggle-brain-mode').addEventListener('click', function() {
-        gameState.brainModeActive = !gameState.brainModeActive;
-        const brainModeEl = document.getElementById('advanced-brain-mode');
+    document.getElementById('complete-btn').addEventListener('click', function() {
+        // Calculate basic learning statistics
+        const overallAccuracy = dragDropGameState.examplesGiven > 0 ? 
+            Math.round(((dragDropGameState.learningData.mammals.correct + 
+                        dragDropGameState.learningData.birds.correct + 
+                        dragDropGameState.learningData.fish.correct) / 
+                       dragDropGameState.examplesGiven) * 100) : 0;
         
-        if (gameState.brainModeActive) {
-            brainModeEl.style.display = 'block';
-            this.textContent = '🧠 Hide Advanced Mode';
-            this.className = 'btn btn-sm btn-warning';
-            
-            // Update visualizations if we have thinking history
-            if (gameState.thinkingHistory.length > 0) {
-                const lastEntry = gameState.thinkingHistory[gameState.thinkingHistory.length - 1];
-                updatePatternDetective(lastEntry.animal, lastEntry.features);
-                updateClassificationMap(lastEntry.animal, lastEntry.prediction, lastEntry.patterns);
-            }
-        } else {
-            brainModeEl.style.display = 'none';
-            this.textContent = '🧠 See How I Think! (Advanced)';
-            this.className = 'btn btn-sm btn-secondary';
-        }
-    });
-    
-    document.getElementById('complete-session-btn').addEventListener('click', function() {
-        // Calculate detailed learning statistics
-        const stats = {
-            mammals: gameState.learningData.mammals,
-            birds: gameState.learningData.birds,
-            fish: gameState.learningData.fish
-        };
-        
-        const overallAccuracy = gameState.totalPredictions > 0 ? 
-            Math.round((gameState.correctPredictions / gameState.totalPredictions) * 100) : 0;
-        
-        // Find best and worst learned categories
-        let bestCategory = 'mammals';
-        let worstCategory = 'mammals';
-        let bestScore = 0;
-        let worstScore = 100;
-        
-        Object.keys(stats).forEach(category => {
-            if (stats[category].total > 0) {
-                const score = Math.round((stats[category].correct / stats[category].total) * 100);
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestCategory = category;
-                }
-                if (score < worstScore) {
-                    worstScore = score;
-                    worstCategory = category;
-                }
-            }
-        });
-        
-        let personalizedMessage = `Amazing training session! You taught me ${gameState.examplesGiven} examples and I achieved ${overallAccuracy}% accuracy on my tests!`;
-        
-        if (bestScore > 0) {
-            personalizedMessage += ` I'm especially good at ${bestCategory} now (${bestScore}% accuracy)!`;
-        }
-        
-        if (worstScore < bestScore && stats[worstCategory].total > 0) {
-            personalizedMessage += ` I could use more practice with ${worstCategory} though!`;
-        }
-        
-        personalizedMessage += ` Thank you for making me smarter! 🎓✨`;
+        let personalizedMessage = `Amazing training session! You taught me ${dragDropGameState.examplesGiven} examples! Thank you for making me smarter! 🎓✨`;
         
         showBuddyMessage(personalizedMessage);
         
+        // Store training data for result page
+        localStorage.setItem('aiTrainingData', JSON.stringify({
+            categories: dragDropGameState.learningData,
+            examples: dragDropGameState.examplesGiven,
+            accuracy: overallAccuracy,
+            gameType: 'drag_drop_game'
+        }));
+        
         setTimeout(() => {
-            alert('🎉 Congratulations! Your AI buddy learned from your training and can see how its knowledge improved!');
-            window.location.href = '{% url "robotic_buddy:activities" %}';
+            // Navigate directly to learning explanation
+            window.location.href = '{% url "robotic_buddy:learning_explanation" %}';
         }, 4000);
     });
 });

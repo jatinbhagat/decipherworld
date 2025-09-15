@@ -3,143 +3,157 @@
 {% block game_title %}{{ buddy.name }} Learns Animals{% endblock %}
 
 {% block game_content %}
-<div class="max-w-6xl mx-auto">
-    <!-- Game Header -->
-    <div class="text-center mb-8">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
-            🐾 Animal Classification Training
-        </h1>
-        <p class="text-lg text-gray-600 mb-4">
-            Help {{ buddy.name }} learn to classify animals into different categories!
-        </p>
-        
-        <!-- Game Progress -->
-        <div class="game-card bg-white p-4 max-w-md mx-auto">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium text-gray-700">Training Progress</span>
-                <span class="text-sm text-gray-600"><span id="examples-count">0</span> / {{ activity.max_examples }} examples</span>
-            </div>
-            <div class="w-full bg-gray-200 rounded-full h-3">
-                <div id="progress-bar" class="progress-bar h-3" style="width: 0%"></div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Game Instructions -->
-    <div class="game-card bg-gradient-to-r from-blue-100 to-purple-100 p-6 mb-8">
-        <div class="flex items-start space-x-4">
-            <div class="buddy-avatar w-16 h-16 buddy-{{ buddy.personality }} flex items-center justify-center text-white text-xl">
-                {% if buddy.personality == 'cheerful' %}😊
-                {% elif buddy.personality == 'curious' %}🤔
-                {% elif buddy.personality == 'patient' %}😌
-                {% elif buddy.personality == 'playful' %}😄
-                {% else %}🦉{% endif %}
-            </div>
-            <div class="buddy-speech flex-1">
-                <p id="buddy-instruction">
-                    Hi! I'm ready to learn about animals! Show me examples by dragging each animal to the right category. 
-                    I'll watch and learn, then try to guess where new animals belong!
-                </p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Training Interface -->
-    <div class="grid lg:grid-cols-4 gap-6">
-        <!-- Animal Pool -->
-        <div class="lg:col-span-1">
-            <div class="game-card bg-white p-4 sticky top-32">
-                <h3 class="font-semibold text-gray-800 mb-4 text-center">🎲 Animals to Classify</h3>
-                <div id="animal-pool" class="space-y-2 min-h-[300px]">
-                    <!-- Animals will be populated here -->
+<div class="max-w-4xl mx-auto px-4">
+    <!-- Compact Header with Status -->
+    <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 border-b border-gray-100 -mx-4 px-4 py-3 mb-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-green-500 rounded-full flex items-center justify-center text-white buddy-{{ buddy.personality }}">
+                    {% if buddy.personality == 'cheerful' %}😊
+                    {% elif buddy.personality == 'curious' %}🤔
+                    {% elif buddy.personality == 'patient' %}😌
+                    {% elif buddy.personality == 'playful' %}😄
+                    {% else %}🦉{% endif %}
                 </div>
-                <button id="new-animal-btn" class="btn btn-sm btn-outline btn-primary w-full mt-4">
-                    Get New Animal
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold text-gray-800">Animal Classification</h1>
+                    <p class="text-xs text-gray-600 hidden sm:block">Drag animals to categories</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <div class="text-sm font-semibold text-gray-800">
+                        <span id="examples-count">0</span>/{{ activity.max_examples }}
+                    </div>
+                    <div class="text-xs text-gray-500">examples</div>
+                </div>
+                <div class="w-16 h-2 bg-gray-200 rounded-full">
+                    <div id="progress-bar" class="bg-gradient-to-r from-blue-400 to-green-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Game Interface -->
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <!-- Animal Pool Section -->
+        <div class="bg-gradient-to-br from-blue-50 to-green-50 p-6 border-b border-gray-200">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-gray-800 text-sm">Current Animal</h3>
+                <button id="new-animal-btn" class="px-3 py-1 bg-blue-500 text-white rounded-md text-xs hover:bg-blue-600 transition-colors">
+                    Next
                 </button>
+            </div>
+            <div id="animal-pool" class="text-center min-h-[120px] flex items-center justify-center">
+                <!-- Current animal will be displayed here -->
+            </div>
+            <div class="text-center text-xs text-gray-600 mt-3">
+                <span class="md:hidden">👆 Tap animal, then tap category below</span>
+                <span class="hidden md:inline">🖱️ Drag to the correct category below</span>
             </div>
         </div>
         
         <!-- Classification Categories -->
-        <div class="lg:col-span-3">
-            <div class="grid md:grid-cols-3 gap-4 mb-6">
+        <div class="p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <!-- Mammals -->
-                <div class="game-card bg-white p-4">
-                    <div class="text-center mb-4">
-                        <div class="text-4xl mb-2">🦁</div>
-                        <h3 class="font-semibold text-gray-800">Mammals</h3>
-                        <p class="text-sm text-gray-600">Warm-blooded, have hair or fur</p>
+                <div class="bg-orange-50 border-2 border-orange-200 rounded-lg p-3">
+                    <div class="text-center mb-2">
+                        <div class="text-2xl">🦁</div>
+                        <h3 class="font-semibold text-orange-800 text-sm">Mammals</h3>
+                        <p class="text-xs text-orange-600">Warm-blooded, have hair</p>
                     </div>
-                    <div class="drop-zone" data-category="mammals" id="mammals-zone">
-                        <div class="text-gray-400 text-sm">Drop mammals here</div>
+                    <div class="drop-zone min-h-[80px] border-2 border-dashed border-orange-300 rounded-md p-2 text-center flex items-center justify-center touch-manipulation hover:border-orange-400 hover:bg-orange-100 transition-colors duration-200" 
+                         data-category="mammals" id="mammals-zone">
+                        <div class="text-orange-400 text-xs">
+                            <span class="md:hidden">Tap for mammals</span>
+                            <span class="hidden md:inline">Drop here</span>
+                        </div>
                     </div>
-                    <div id="mammals-items" class="mt-3 flex flex-wrap gap-2">
+                    <div id="mammals-items" class="mt-2 flex flex-wrap gap-1">
                         <!-- Classified mammals will appear here -->
                     </div>
                 </div>
                 
                 <!-- Birds -->
-                <div class="game-card bg-white p-4">
-                    <div class="text-center mb-4">
-                        <div class="text-4xl mb-2">🦅</div>
-                        <h3 class="font-semibold text-gray-800">Birds</h3>
-                        <p class="text-sm text-gray-600">Have feathers and wings</p>
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-3">
+                    <div class="text-center mb-2">
+                        <div class="text-2xl">🦅</div>
+                        <h3 class="font-semibold text-blue-800 text-sm">Birds</h3>
+                        <p class="text-xs text-blue-600">Have feathers and wings</p>
                     </div>
-                    <div class="drop-zone" data-category="birds" id="birds-zone">
-                        <div class="text-gray-400 text-sm">Drop birds here</div>
+                    <div class="drop-zone min-h-[80px] border-2 border-dashed border-blue-300 rounded-md p-2 text-center flex items-center justify-center touch-manipulation hover:border-blue-400 hover:bg-blue-100 transition-colors duration-200" 
+                         data-category="birds" id="birds-zone">
+                        <div class="text-blue-400 text-xs">
+                            <span class="md:hidden">Tap for birds</span>
+                            <span class="hidden md:inline">Drop here</span>
+                        </div>
                     </div>
-                    <div id="birds-items" class="mt-3 flex flex-wrap gap-2">
+                    <div id="birds-items" class="mt-2 flex flex-wrap gap-1">
                         <!-- Classified birds will appear here -->
                     </div>
                 </div>
                 
                 <!-- Fish -->
-                <div class="game-card bg-white p-4">
-                    <div class="text-center mb-4">
-                        <div class="text-4xl mb-2">🐟</div>
-                        <h3 class="font-semibold text-gray-800">Fish</h3>
-                        <p class="text-sm text-gray-600">Live in water, have gills</p>
+                <div class="bg-green-50 border-2 border-green-200 rounded-lg p-3">
+                    <div class="text-center mb-2">
+                        <div class="text-2xl">🐟</div>
+                        <h3 class="font-semibold text-green-800 text-sm">Fish</h3>
+                        <p class="text-xs text-green-600">Live in water, have gills</p>
                     </div>
-                    <div class="drop-zone" data-category="fish" id="fish-zone">
-                        <div class="text-gray-400 text-sm">Drop fish here</div>
+                    <div class="drop-zone min-h-[80px] border-2 border-dashed border-green-300 rounded-md p-2 text-center flex items-center justify-center touch-manipulation hover:border-green-400 hover:bg-green-100 transition-colors duration-200" 
+                         data-category="fish" id="fish-zone">
+                        <div class="text-green-400 text-xs">
+                            <span class="md:hidden">Tap for fish</span>
+                            <span class="hidden md:inline">Drop here</span>
+                        </div>
                     </div>
-                    <div id="fish-items" class="mt-3 flex flex-wrap gap-2">
+                    <div id="fish-items" class="mt-2 flex flex-wrap gap-1">
                         <!-- Classified fish will appear here -->
                     </div>
                 </div>
             </div>
-            
-            <!-- Buddy Prediction Area -->
-            <div class="game-card bg-white p-6" id="prediction-area" style="display: none;">
-                <div class="text-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">🤖 {{ buddy.name }}'s Turn!</h3>
-                    <p class="text-gray-600">Watch me try to classify this animal based on what I've learned!</p>
-                </div>
-                
-                <div class="flex items-center justify-center space-x-8 mb-6">
-                    <div id="prediction-animal" class="text-center">
-                        <!-- Current animal being predicted -->
-                    </div>
-                    <div class="text-2xl">→</div>
-                    <div id="prediction-result" class="text-center">
-                        <!-- Buddy's prediction -->
-                    </div>
-                </div>
-                
-                <div class="flex justify-center space-x-3">
-                    <button id="correct-btn" class="btn btn-success">✅ Correct!</button>
-                    <button id="wrong-btn" class="btn btn-error">❌ Wrong</button>
-                </div>
+        </div>
+    </div>
+    
+    <!-- Buddy Prediction Area (Compact) -->
+    <div id="prediction-area" class="mt-4 bg-white rounded-xl shadow-lg border border-gray-200 p-4" style="display: none;">
+        <div class="text-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">🤖 {{ buddy.name }}'s Turn!</h3>
+            <p class="text-gray-600 text-sm">Watch me try to classify this animal!</p>
+        </div>
+        
+        <div class="flex items-center justify-center space-x-6 mb-4">
+            <div id="prediction-animal" class="text-center">
+                <!-- Current animal being predicted -->
             </div>
-            
-            <!-- Game Actions -->
-            <div class="text-center mt-6">
-                <button id="test-buddy-btn" class="btn btn-primary btn-lg" style="display: none;">
-                    🧠 Test {{ buddy.name }}'s Learning!
-                </button>
-                <button id="complete-session-btn" class="btn btn-success btn-lg" style="display: none;">
-                    🎉 Complete Training Session
-                </button>
+            <div class="text-xl">→</div>
+            <div id="prediction-result" class="text-center">
+                <!-- Buddy's prediction -->
             </div>
+        </div>
+        
+        <div class="flex justify-center space-x-3">
+            <button id="correct-btn" class="px-4 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 transition-colors">✅ Correct!</button>
+            <button id="wrong-btn" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors">❌ Wrong</button>
+        </div>
+    </div>
+    
+    <!-- Compact Response & Actions -->
+    <div class="mt-4 space-y-3">
+        <!-- Buddy Response (Compact) -->
+        <div id="buddy-response" class="bg-gradient-to-r from-blue-100 to-green-100 rounded-lg p-3 text-center" style="display: none;">
+            <p id="buddy-message" class="text-sm text-gray-700 font-medium"></p>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex justify-center space-x-3">
+            <button id="test-buddy-btn" class="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-sm font-medium" style="display: none;">
+                🧠 Test {{ buddy.name }}!
+            </button>
+            <button id="complete-session-btn" class="px-6 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg shadow-md hover:shadow-lg transition-all text-sm font-medium" style="display: none;">
+                🎉 Complete Training
+            </button>
         </div>
     </div>
 </div>
@@ -262,15 +276,17 @@ function addNewAnimal() {
     classificationGameState.currentAnimal = randomAnimal;
     classificationGameState.usedAnimals.push(randomAnimal.name);
     
-    // Add animal to the pool
+    // Clear previous animals and add new one
     const animalPool = document.getElementById('animal-pool');
+    animalPool.innerHTML = '';
+    
     const animalElement = document.createElement('div');
-    animalElement.className = 'draggable-item bg-blue-50 border border-blue-200 rounded-lg p-3 text-center cursor-grab hover:bg-blue-100 transition-colors';
+    animalElement.className = 'draggable-item bg-blue-50 border-2 border-blue-200 rounded-lg p-4 text-center cursor-grab hover:bg-blue-100 transition-colors shadow-sm';
     animalElement.draggable = true;
     animalElement.dataset.item = randomAnimal.name;
     animalElement.dataset.category = randomAnimal.category;
     animalElement.innerHTML = `
-        <div class="text-3xl mb-1">${animalEmojis[randomAnimal.name] || '🐾'}</div>
+        <div class="text-4xl mb-2">${animalEmojis[randomAnimal.name] || '🐾'}</div>
         <div class="text-sm font-medium text-gray-800">${randomAnimal.name}</div>
     `;
     
@@ -278,13 +294,6 @@ function addNewAnimal() {
     
     // Initialize drag and drop for the new element
     initializeDragAndDrop(animalElement);
-    
-    // Update instructions
-    updateBuddyMessage(`I see a ${randomAnimal.name}! Can you show me which category it belongs to?`);
-}
-
-function updateBuddyMessage(message) {
-    document.getElementById('buddy-instruction').textContent = message;
 }
 
 function updateProgress() {
@@ -301,8 +310,25 @@ function updateProgress() {
     if (classificationGameState.examplesGiven >= {{ activity.max_examples }}) {
         document.getElementById('complete-session-btn').style.display = 'block';
         document.getElementById('new-animal-btn').style.display = 'none';
-        updateBuddyMessage("Wow! I think I've learned a lot! You can test my knowledge or complete our session.");
     }
+}
+
+function showBuddyMessage(message, type = 'success') {
+    const responseDiv = document.getElementById('buddy-response');
+    const messageEl = document.getElementById('buddy-message');
+    
+    messageEl.textContent = message;
+    responseDiv.style.display = 'block';
+    
+    if (type === 'success') {
+        responseDiv.className = 'bg-gradient-to-r from-blue-100 to-green-100 rounded-lg p-3 text-center';
+    } else {
+        responseDiv.className = 'bg-gradient-to-r from-orange-100 to-red-100 rounded-lg p-3 text-center';
+    }
+    
+    setTimeout(() => {
+        responseDiv.style.display = 'none';
+    }, 3000);
 }
 
 // Enhanced drop handling
@@ -326,7 +352,7 @@ window.handleDrop = function(dropZone, animalName) {
             // Add to category display
             const categoryItems = document.getElementById(category + '-items');
             const itemElement = document.createElement('span');
-            itemElement.className = `inline-block bg-${isCorrect ? 'green' : 'red'}-100 text-${isCorrect ? 'green' : 'red'}-800 px-2 py-1 rounded text-sm`;
+            itemElement.className = `inline-block ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} px-3 py-1 rounded-full text-sm font-medium m-1`;
             itemElement.innerHTML = `${animalEmojis[animalName] || '🐾'} ${animalName}`;
             categoryItems.appendChild(itemElement);
             
@@ -347,11 +373,7 @@ window.handleDrop = function(dropZone, animalName) {
                     updateProgress();
                     
                     // Show feedback
-                    if (isCorrect) {
-                        window.GameUtils.showBuddyMessage(`Thank you! I'll remember that ${animalName} is a ${category.slice(0, -1)}! I'm learning from your teaching! 🌟`, 'success');
-                    } else {
-                        window.GameUtils.showBuddyMessage(`Oops! A ${animalName} is actually a ${animalData.category.slice(0, -1)}, not a ${category.slice(0, -1)}. I'll remember that! 🤔`);
-                    }
+                    showBuddyMessage(`Thank you! I'll remember that ${animalName} is a ${category.slice(0, -1)}! I'm learning from your teaching! 🌟`);
                     
                     // Add new animal after a delay
                     setTimeout(() => {
@@ -367,11 +389,6 @@ window.handleDrop = function(dropZone, animalName) {
 
 // New animal button handler
 document.getElementById('new-animal-btn').addEventListener('click', function() {
-    // Clear current animal if exists
-    const currentAnimalEl = document.querySelector('[data-item]');
-    if (currentAnimalEl) {
-        currentAnimalEl.remove();
-    }
     addNewAnimal();
 });
 
@@ -406,14 +423,14 @@ function showPredictionInterface(animal, prediction) {
     const resultDiv = document.getElementById('prediction-result');
     
     animalDiv.innerHTML = `
-        <div class="text-4xl mb-2">${animalEmojis[animal.name] || '🐾'}</div>
-        <div class="font-medium">${animal.name}</div>
+        <div class="text-3xl mb-1">${animalEmojis[animal.name] || '🐾'}</div>
+        <div class="font-medium text-sm">${animal.name}</div>
     `;
     
     resultDiv.innerHTML = `
-        <div class="text-4xl mb-2">${prediction.prediction === 'mammals' ? '🦁' : prediction.prediction === 'birds' ? '🦅' : '🐟'}</div>
-        <div class="font-medium">${prediction.prediction}</div>
-        <div class="text-sm text-gray-600">Confidence: ${Math.round(prediction.confidence * 100)}%</div>
+        <div class="text-3xl mb-1">${prediction.prediction === 'mammals' ? '🦁' : prediction.prediction === 'birds' ? '🦅' : '🐟'}</div>
+        <div class="font-medium text-sm">${prediction.prediction}</div>
+        <div class="text-xs text-gray-600">${Math.round(prediction.confidence * 100)}% sure</div>
     `;
     
     predictionArea.style.display = 'block';
@@ -427,7 +444,7 @@ function showPredictionInterface(animal, prediction) {
         handlePredictionFeedback(animal, prediction, false);
     };
     
-    updateBuddyMessage(prediction.explanation);
+    showBuddyMessage(prediction.explanation);
 }
 
 function handlePredictionFeedback(animal, prediction, wasCorrect) {
@@ -455,9 +472,9 @@ function handlePredictionFeedback(animal, prediction, wasCorrect) {
         
         // Show feedback message
         if (wasCorrect) {
-            window.GameUtils.showBuddyMessage("Yay! I got it right! I'm getting better at this! 🎉", 'success');
+            showBuddyMessage("Yay! I got it right! I'm getting better at this! 🎉");
         } else {
-            window.GameUtils.showBuddyMessage("Oops, I was wrong! But that's how I learn - thank you for teaching me! 🤗");
+            showBuddyMessage("Oops, I was wrong! But that's how I learn - thank you for teaching me! 🤗");
         }
         
         // Continue testing or allow completion
@@ -465,7 +482,7 @@ function handlePredictionFeedback(animal, prediction, wasCorrect) {
             if (classificationGameState.totalPredictions < 3) {
                 testBuddyKnowledge();
             } else {
-                updateBuddyMessage(`I've made ${classificationGameState.totalPredictions} predictions and got ${classificationGameState.correctPredictions} right! Ready to complete our session?`);
+                showBuddyMessage(`I've made ${classificationGameState.totalPredictions} predictions and got ${classificationGameState.correctPredictions} right! Ready to complete our session?`);
                 document.getElementById('complete-session-btn').style.display = 'block';
             }
         }, 2000);
@@ -479,10 +496,7 @@ document.getElementById('complete-session-btn').addEventListener('click', functi
     }, function(response) {
         if (response.success) {
             // Show brief completion message
-            window.GameUtils.showBuddyMessage(
-                `Training complete! Let's see how I learned! 🧠`,
-                'success'
-            );
+            showBuddyMessage('Training complete! Let\'s see how I learned! 🧠');
             
             // Redirect to result page immediately
             setTimeout(() => {
