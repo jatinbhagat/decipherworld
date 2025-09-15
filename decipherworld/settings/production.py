@@ -19,7 +19,7 @@ ALLOWED_HOSTS = [
 ] + config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',')] if v else [])
 
 # Database - Production PostgreSQL
-DATABASE_URL = config('DATABASE_URL')
+DATABASE_URL = config('DATABASE_URL', default='')
 if DATABASE_URL:
     import dj_database_url
     DATABASES = {

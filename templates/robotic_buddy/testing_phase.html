@@ -1,0 +1,342 @@
+{% extends 'robotic_buddy/base.html' %}
+
+{% block game_title %}Testing {{ buddy.name }}'s Learning{% endblock %}
+
+{% block game_content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Testing Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
+            🧪 Testing Phase
+        </h1>
+        <p class="text-lg text-gray-600 mb-4">
+            Now let's see what {{ buddy.name }} learned from {{ training_count }} training examples!
+        </p>
+    </div>
+    
+    <!-- Buddy Instructions -->
+    <div class="game-card bg-gradient-to-r from-green-100 to-blue-100 p-6 mb-8">
+        <div class="flex items-start space-x-4">
+            <div class="buddy-avatar w-16 h-16 buddy-{{ buddy.personality }} flex items-center justify-center text-white text-xl">
+                {% if buddy.personality == 'cheerful' %}😊
+                {% elif buddy.personality == 'curious' %}🤔
+                {% elif buddy.personality == 'patient' %}😌
+                {% elif buddy.personality == 'playful' %}😄
+                {% else %}🦉{% endif %}
+            </div>
+            <div class="buddy-speech flex-1">
+                <p id="buddy-message">
+                    I've finished learning! Now I'm ready to classify new animals based on what you taught me. 
+                    Show me any animal and I'll tell you what category I think it belongs to!
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Testing Interface -->
+    <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Test Animals Pool -->
+        <div class="lg:col-span-1">
+            <div class="game-card bg-white p-4">
+                <h3 class="font-semibold text-gray-800 mb-4 text-center">🔬 New Animals to Test</h3>
+                <p class="text-sm text-gray-600 mb-4 text-center">
+                    These animals weren't in my training. Let's see how well I learned!
+                </p>
+                <div id="test-animal-pool" class="space-y-2 min-h-[300px]">
+                    <!-- Test animals will be populated here -->
+                </div>
+                <button id="get-random-animal" class="btn btn-sm btn-primary w-full mt-4">
+                    🎲 Get Random Animal
+                </button>
+            </div>
+        </div>
+        
+        <!-- AI Prediction Area -->
+        <div class="lg:col-span-2">
+            <div class="game-card bg-white p-6">
+                <h3 class="font-semibold text-gray-800 mb-4 text-center">🤖 AI Prediction</h3>
+                
+                <!-- Current Test Animal -->
+                <div id="current-test-animal" class="text-center mb-6" style="display: none;">
+                    <div class="text-6xl mb-2" id="animal-emoji">🐾</div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2" id="animal-name">Select an animal</h2>
+                    <button id="make-prediction" class="btn btn-primary" disabled>
+                        Let {{ buddy.name }} Predict!
+                    </button>
+                </div>
+                
+                <!-- AI Prediction Result -->
+                <div id="prediction-result" class="hidden">
+                    <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-6 mb-4">
+                        <h4 class="font-semibold text-gray-800 mb-3">{{ buddy.name }}'s Prediction:</h4>
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-purple-600 mb-2" id="prediction-category">Unknown</div>
+                            <div class="text-sm text-gray-600 mb-3" id="confidence-level">Confidence: 0%</div>
+                            <div class="text-sm italic text-gray-700" id="prediction-explanation">Thinking...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Reasoning Steps -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                        <h5 class="font-semibold text-gray-800 mb-3">🧠 How I figured this out:</h5>
+                        <div id="reasoning-steps" class="space-y-2">
+                            <!-- Reasoning steps will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex gap-4 justify-center">
+                        <button id="test-another" class="btn btn-outline btn-primary">
+                            Test Another Animal
+                        </button>
+                        <button id="see-learning-explanation" class="btn btn-secondary">
+                            See How I Learned
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Test Results Summary -->
+    <div class="game-card bg-white p-6 mt-8">
+        <h3 class="font-semibold text-gray-800 mb-4 text-center">📊 Test Results Summary</h3>
+        <div class="grid md:grid-cols-3 gap-4">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-blue-600" id="total-tests">0</div>
+                <div class="text-sm text-gray-600">Animals Tested</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-green-600" id="correct-predictions">0</div>
+                <div class="text-sm text-gray-600">Correct Predictions</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-purple-600" id="average-confidence">0%</div>
+                <div class="text-sm text-gray-600">Average Confidence</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden data for JavaScript -->
+<div id="game-data" 
+     data-session-id="{{ session.id }}"
+     data-buddy-name="{{ buddy.name }}"
+     data-test-animals="{{ test_animals|safe }}"
+     style="display: none;">
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Game state
+    let currentAnimal = null;
+    let testResults = {
+        total: 0,
+        correct: 0,
+        totalConfidence: 0
+    };
+    
+    // Get game data
+    const gameData = document.getElementById('game-data');
+    const sessionId = gameData.dataset.sessionId;
+    const buddyName = gameData.dataset.buddyName;
+    const testAnimals = JSON.parse(gameData.dataset.testAnimals);
+    
+    // DOM elements
+    const animalPool = document.getElementById('test-animal-pool');
+    const currentTestAnimal = document.getElementById('current-test-animal');
+    const animalEmoji = document.getElementById('animal-emoji');
+    const animalName = document.getElementById('animal-name');
+    const makePredictionBtn = document.getElementById('make-prediction');
+    const predictionResult = document.getElementById('prediction-result');
+    const getRandomAnimalBtn = document.getElementById('get-random-animal');
+    const testAnotherBtn = document.getElementById('test-another');
+    const seeLearningBtn = document.getElementById('see-learning-explanation');
+    
+    // Animal emojis
+    const animalEmojis = {
+        'dog': '🐕', 'cat': '🐱', 'elephant': '🐘', 'lion': '🦁', 'bear': '🐻', 
+        'monkey': '🐵', 'whale': '🐋', 'horse': '🐴', 'cow': '🐄', 'pig': '🐷',
+        'eagle': '🦅', 'parrot': '🦜', 'penguin': '🐧', 'owl': '🦉', 'robin': '🐦', 
+        'flamingo': '🦩', 'hawk': '🦅', 'duck': '🦆', 'chicken': '🐓', 'peacock': '🦚',
+        'goldfish': '🐠', 'shark': '🦈', 'tuna': '🐟', 'salmon': '🐟', 'clownfish': '🐠', 
+        'bass': '🐟', 'trout': '🐟', 'catfish': '🐟', 'swordfish': '🗡️🐟', 'eel': '🐍'
+    };
+    
+    // Initialize test animals in pool
+    function initializeAnimalPool() {
+        animalPool.innerHTML = '';
+        testAnimals.forEach(animal => {
+            const animalElement = document.createElement('div');
+            animalElement.className = 'test-animal-item p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors';
+            animalElement.innerHTML = `
+                <div class="text-2xl text-center">${animalEmojis[animal.name] || '🐾'}</div>
+                <div class="text-sm text-center font-medium">${animal.name}</div>
+            `;
+            animalElement.onclick = () => selectAnimal(animal);
+            animalPool.appendChild(animalElement);
+        });
+    }
+    
+    // Select animal for testing
+    function selectAnimal(animal) {
+        currentAnimal = animal;
+        animalEmoji.textContent = animalEmojis[animal.name] || '🐾';
+        animalName.textContent = animal.name;
+        currentTestAnimal.style.display = 'block';
+        predictionResult.classList.add('hidden');
+        makePredictionBtn.disabled = false;
+        
+        // Update buddy message
+        document.getElementById('buddy-message').textContent = 
+            `I see a ${animal.name}! Based on my training, let me think about what category this belongs to...`;
+    }
+    
+    // Make AI prediction
+    async function makePrediction() {
+        if (!currentAnimal) return;
+        
+        makePredictionBtn.disabled = true;
+        makePredictionBtn.textContent = `${buddyName} is thinking...`;
+        
+        try {
+            const response = await fetch('/buddy/api/buddy-prediction/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    type: 'classification',
+                    item: currentAnimal.name,
+                    session_id: sessionId
+                })
+            });
+            
+            const result = await response.json();
+            showPredictionResult(result);
+            
+            // Record test result
+            testResults.total++;
+            testResults.totalConfidence += result.confidence || 0;
+            if (result.prediction === currentAnimal.category) {
+                testResults.correct++;
+            }
+            
+            // Save test example to database
+            await fetch('/buddy/api/submit-example/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    session_id: sessionId,
+                    example_type: 'classification_item',
+                    label: currentAnimal.name,
+                    prediction: result.prediction,
+                    was_correct: result.prediction === currentAnimal.category,
+                    confidence: result.confidence,
+                    data: {
+                        correct_category: currentAnimal.category,
+                        test_mode: true
+                    }
+                })
+            });
+            
+            updateTestSummary();
+            
+        } catch (error) {
+            console.error('Prediction error:', error);
+            document.getElementById('buddy-message').textContent = 
+                "Sorry, I'm having trouble thinking right now. Please try again!";
+        }
+    }
+    
+    // Show prediction result
+    function showPredictionResult(result) {
+        document.getElementById('prediction-category').textContent = result.prediction || 'Unknown';
+        document.getElementById('confidence-level').textContent = 
+            `Confidence: ${Math.round((result.confidence || 0) * 100)}%`;
+        document.getElementById('prediction-explanation').textContent = 
+            result.explanation || "I'm not sure about this one.";
+        
+        // Show reasoning steps
+        const reasoningSteps = document.getElementById('reasoning-steps');
+        reasoningSteps.innerHTML = '';
+        
+        if (result.reasoning_steps && result.reasoning_steps.length > 0) {
+            result.reasoning_steps.forEach((step, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = 'bg-white rounded p-3 border-l-4 border-blue-400';
+                stepElement.innerHTML = `
+                    <div class="font-medium text-gray-800">${step.title}</div>
+                    <div class="text-sm text-gray-600 mt-1">${step.description}</div>
+                `;
+                reasoningSteps.appendChild(stepElement);
+            });
+        }
+        
+        predictionResult.classList.remove('hidden');
+        makePredictionBtn.textContent = `Let ${buddyName} Predict!`;
+        
+        // Check if prediction was correct
+        const isCorrect = result.prediction === currentAnimal.category;
+        document.getElementById('buddy-message').textContent = isCorrect ?
+            `My prediction was correct! Based on my training, I predicted ${currentAnimal.name} as a ${currentAnimal.category}! 🎉` :
+            `I thought ${currentAnimal.name} was a ${result.prediction}, but you're telling me it's a ${currentAnimal.category}. I'll learn from this feedback!`;
+    }
+    
+    // Update test summary
+    function updateTestSummary() {
+        document.getElementById('total-tests').textContent = testResults.total;
+        document.getElementById('correct-predictions').textContent = testResults.correct;
+        const avgConfidence = testResults.total > 0 ? 
+            Math.round((testResults.totalConfidence / testResults.total) * 100) : 0;
+        document.getElementById('average-confidence').textContent = `${avgConfidence}%`;
+    }
+    
+    // Get random animal
+    function getRandomAnimal() {
+        const randomAnimal = testAnimals[Math.floor(Math.random() * testAnimals.length)];
+        selectAnimal(randomAnimal);
+    }
+    
+    // Event listeners
+    makePredictionBtn.addEventListener('click', makePrediction);
+    getRandomAnimalBtn.addEventListener('click', getRandomAnimal);
+    testAnotherBtn.addEventListener('click', () => {
+        currentAnimal = null;
+        currentTestAnimal.style.display = 'none';
+        predictionResult.classList.add('hidden');
+        document.getElementById('buddy-message').textContent = 
+            "Great! Pick another animal for me to classify, or get a random one!";
+    });
+    
+    seeLearningBtn.addEventListener('click', () => {
+        window.location.href = `/buddy/learning-explanation/${sessionId}/`;
+    });
+    
+    // Utility function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Initialize
+    initializeAnimalPool();
+    document.getElementById('buddy-message').textContent = 
+        `I've finished my training! I learned about ${testAnimals.length > 0 ? 'many' : 'some'} different animals. Pick any animal from the pool to test what I learned!`;
+});
+</script>
+{% endblock %}

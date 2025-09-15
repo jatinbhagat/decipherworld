@@ -22,7 +22,8 @@
       "Bash(python test:*)",
       "WebSearch",
       "Bash(az webapp log tail:*)",
-      "Bash(az webapp ssh:*)"
+      "Bash(az webapp ssh:*)",
+      "Bash(az webapp deployment source delete:*)"
     ],
     "deny": [],
     "ask": []
