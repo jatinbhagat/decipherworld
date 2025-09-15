@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Cyber City Protection Squad - Quick Start{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+    body {
+        background: linear-gradient(135deg, #0a0a23 0%, #1a1a3a 100%);
+        font-family: 'Orbitron', monospace;
+        color: #00ffff;
+        overflow-x: hidden;
+    }
+    
+    .cyber-grid {
+        background-image: 
+            linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        animation: gridPulse 4s ease-in-out infinite;
+    }
+    
+    @keyframes gridPulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.6; }
+    }
+    
+    .cyber-card {
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(15px);
+        border: 1px solid #00ffff;
+        border-radius: 15px;
+        box-shadow: 
+            0 0 30px rgba(0, 255, 255, 0.2),
+            inset 0 0 30px rgba(0, 255, 255, 0.05);
+    }
+    
+    .cyber-btn {
+        background: linear-gradient(45deg, #00ffff, #0080ff);
+        border: none;
+        color: #000;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cyber-btn:hover {
+        background: linear-gradient(45deg, #ff6b35, #ff8c42);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(255, 107, 53, 0.4);
+    }
+    
+    .glitch-text {
+        animation: glitch 2s infinite;
+    }
+    
+    @keyframes glitch {
+        0%, 100% { transform: translateX(0); }
+        10% { transform: translateX(-2px); }
+        20% { transform: translateX(2px); }
+        30% { transform: translateX(-2px); }
+        40% { transform: translateX(2px); }
+        50% { transform: translateX(0); }
+    }
+    
+    .floating {
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .feature-card {
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid rgba(0, 255, 255, 0.3);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        border-color: #00ffff;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+        transform: scale(1.02);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cyber-grid"></div>
+
+<div class="min-h-screen relative z-10 flex items-center justify-center">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <h1 class="text-6xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 glitch-text">
+                    🛡️ CYBER CITY PROTECTION SQUAD
+                </h1>
+                <p class="text-2xl text-cyan-300 mb-4 floating">Mission 1: Password Fortress</p>
+                <p class="text-lg text-cyan-500 max-w-2xl mx-auto">
+                    Join the elite Cyber City Protection Squad and defend our digital infrastructure against cyber threats.
+                    Learn essential cybersecurity skills through an immersive gaming experience.
+                </p>
+            </div>
+
+            <!-- Quick Start Card -->
+            <div class="cyber-card p-8 mb-8">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">🚀</div>
+                    <h2 class="text-3xl font-bold text-cyan-400 mb-6">QUICK START MISSION</h2>
+                    
+                    {% if session_code %}
+                    <div class="mb-6">
+                        <p class="text-cyan-300 mb-4">Your mission briefing is ready, defender!</p>
+                        <div class="bg-cyan-900/30 border border-cyan-500 rounded p-4 mb-4">
+                            <div class="text-cyan-400 font-bold">Mission Code:</div>
+                            <div class="text-orange-400 text-2xl font-mono">{{ session_code }}</div>
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'cyber_city:game' session_code %}" class="cyber-btn px-8 py-4 text-xl rounded-lg">
+                        🎮 START MISSION
+                    </a>
+                    {% else %}
+                    <form method="post" class="inline-block">
+                        {% csrf_token %}
+                        <button type="submit" class="cyber-btn px-8 py-4 text-xl rounded-lg">
+                            🚀 CREATE NEW MISSION
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Game Features -->
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="feature-card p-6 text-center">
+                    <div class="text-4xl mb-4">🔐</div>
+                    <h3 class="text-xl font-bold text-cyan-400 mb-3">Password Security</h3>
+                    <p class="text-cyan-300 text-sm">Learn to create unbreakable passwords and protect your digital identity</p>
+                </div>
+                
+                <div class="feature-card p-6 text-center">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h3 class="text-xl font-bold text-cyan-400 mb-3">Threat Detection</h3>
+                    <p class="text-cyan-300 text-sm">Master the art of spotting phishing attempts and social engineering</p>
+                </div>
+                
+                <div class="feature-card p-6 text-center">
+                    <div class="text-4xl mb-4">🛡️</div>
+                    <h3 class="text-xl font-bold text-cyan-400 mb-3">Digital Defense</h3>
+                    <p class="text-cyan-300 text-sm">Build multiple layers of security to protect against cyber attacks</p>
+                </div>
+            </div>
+
+            <!-- Mission Details -->
+            <div class="cyber-card p-8">
+                <h3 class="text-2xl font-bold text-cyan-400 mb-6 text-center">🎯 MISSION OVERVIEW</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-lg font-bold text-orange-400 mb-4">Mission Objectives</h4>
+                        <ul class="space-y-2 text-cyan-300">
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-400">✓</span>
+                                <span>Complete 5 cybersecurity challenges</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-400">✓</span>
+                                <span>Learn password security best practices</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-400">✓</span>
+                                <span>Understand phishing and social engineering</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-400">✓</span>
+                                <span>Master two-factor authentication</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-green-400">✓</span>
+                                <span>Secure your digital presence</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-bold text-orange-400 mb-4">Rewards & Achievements</h4>
+                        <ul class="space-y-2 text-cyan-300">
+                            <li class="flex items-center space-x-2">
+                                <span class="text-yellow-400">🛡️</span>
+                                <span>Perfect Defender Badge</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-yellow-400">⚡</span>
+                                <span>Cyber Speedster Badge</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-yellow-400">🔐</span>
+                                <span>Password Master Badge</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-yellow-400">🎯</span>
+                                <span>Security Expert Badge</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="text-yellow-400">🏙️</span>
+                                <span>City Protector Badge</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-8 p-6 bg-cyan-900/30 rounded border border-cyan-500">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="text-2xl">🤖</div>
+                        <div class="text-cyan-400 font-bold">Captain Tessa - AI Mission Commander</div>
+                    </div>
+                    <div class="text-cyan-300">
+                        "Welcome to the Cyber City Protection Squad, recruit! I'm Captain Tessa, your AI guide through this critical mission. 
+                        Together, we'll secure our city's digital infrastructure and make you a cybersecurity expert. 
+                        Are you ready to defend our digital future?"
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add some interactive effects
+document.addEventListener('DOMContentLoaded', function() {
+    // Add sparkle effect to the title
+    const title = document.querySelector('.glitch-text');
+    if (title) {
+        setInterval(() => {
+            if (Math.random() > 0.8) {
+                title.style.textShadow = '0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff';
+                setTimeout(() => {
+                    title.style.textShadow = 'none';
+                }, 200);
+            }
+        }, 1000);
+    }
+    
+    console.log('🛡️ Cyber City Protection Squad - Mission Loading...');
+});
+</script>
+{% endblock %}

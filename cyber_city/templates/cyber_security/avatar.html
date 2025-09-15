@@ -1,0 +1,395 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Your Cyber Defender - Cyber City{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+    body {
+        background: linear-gradient(135deg, #0a0a23 0%, #1a1a3a 100%);
+        font-family: 'Orbitron', monospace;
+        color: #00ffff;
+        overflow-x: hidden;
+    }
+    
+    .cyber-grid {
+        background-image: 
+            linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        animation: gridPulse 4s ease-in-out infinite;
+    }
+    
+    @keyframes gridPulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.6; }
+    }
+    
+    .neon-border {
+        border: 2px solid #00ffff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        position: relative;
+    }
+    
+    .neon-border::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, #00ffff, #ff6b35, #00ffff);
+        border-radius: 12px;
+        z-index: -1;
+        animation: neonRotate 3s linear infinite;
+        opacity: 0.7;
+    }
+    
+    @keyframes neonRotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .cyber-card {
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(15px);
+        border: 1px solid #00ffff;
+        border-radius: 15px;
+        box-shadow: 
+            0 0 30px rgba(0, 255, 255, 0.2),
+            inset 0 0 30px rgba(0, 255, 255, 0.05);
+        position: relative;
+    }
+    
+    .suit-option {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid rgba(0, 255, 255, 0.3);
+        background: rgba(0, 0, 0, 0.7);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .suit-option::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .suit-option:hover::before {
+        left: 100%;
+    }
+    
+    .suit-option:hover {
+        border-color: #00ffff;
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+        transform: scale(1.05) rotateX(5deg);
+    }
+    
+    .suit-option.selected {
+        border-color: #ff6b35;
+        box-shadow: 0 0 30px rgba(255, 107, 53, 0.6);
+        background: rgba(255, 107, 53, 0.1);
+    }
+    
+    .color-picker {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 3px solid #00ffff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .color-picker:hover {
+        transform: scale(1.1) rotate(10deg);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    }
+    
+    .cyber-button {
+        background: linear-gradient(45deg, #00ffff, #0080ff);
+        border: none;
+        color: #000;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cyber-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+    }
+    
+    .cyber-button:hover::before {
+        left: 100%;
+    }
+    
+    .cyber-button:hover {
+        background: linear-gradient(45deg, #ff6b35, #ff8c42);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(255, 107, 53, 0.4);
+    }
+    
+    .glitch-text {
+        animation: glitch 2s infinite;
+    }
+    
+    @keyframes glitch {
+        0%, 100% { transform: translateX(0); }
+        10% { transform: translateX(-2px); }
+        20% { transform: translateX(2px); }
+        30% { transform: translateX(-2px); }
+        40% { transform: translateX(2px); }
+        50% { transform: translateX(0); }
+    }
+    
+    .floating {
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .hero-preview {
+        background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+        border: 2px dashed #00ffff;
+        border-radius: 15px;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .hero-avatar {
+        font-size: 4rem;
+        filter: drop-shadow(0 0 10px #00ffff);
+        animation: avatarPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes avatarPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cyber-grid"></div>
+
+<div class="container mx-auto px-4 py-8 relative z-10">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 glitch-text">
+                🛡️ CREATE YOUR CYBER DEFENDER
+            </h1>
+            <p class="text-xl text-cyan-300 floating">Design your hero for the Cyber City Protection Squad</p>
+            <div class="mt-4 text-orange-400 font-bold">
+                ⚡ MISSION: Password Fortress Infiltration ⚡
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Avatar Creation Form -->
+            <div class="cyber-card p-8">
+                <form method="post" class="space-y-8" id="avatarForm">
+                    {% csrf_token %}
+                    
+                    <!-- Hero Nickname -->
+                    <div class="space-y-4">
+                        <label class="block text-xl font-bold text-cyan-400">
+                            🦸‍♂️ Hero Nickname
+                        </label>
+                        <input 
+                            type="text" 
+                            name="hero_nickname" 
+                            maxlength="50" 
+                            required
+                            class="w-full p-4 bg-black/50 border-2 border-cyan-400 rounded-lg text-cyan-100 placeholder-cyan-500 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 transition-all"
+                            placeholder="Enter your cyber hero name..."
+                            oninput="updatePreview()"
+                        >
+                        <p class="text-sm text-cyan-500">Choose a name that strikes fear into the hearts of cyber villains!</p>
+                    </div>
+
+                    <!-- Suit Style Selection -->
+                    <div class="space-y-4">
+                        <label class="block text-xl font-bold text-cyan-400">
+                            🤖 Cyber Suit Style
+                        </label>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="suit-option neon-border p-4 text-center selected" onclick="selectSuit('neon_knight')">
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-4xl">⚔️</div>
+                                    <div class="text-left">
+                                        <h3 class="text-lg font-bold text-cyan-300">Neon Knight</h3>
+                                        <p class="text-sm text-cyan-500">Classic defender with glowing armor</p>
+                                    </div>
+                                </div>
+                                <input type="radio" name="suit_style" value="neon_knight" class="hidden" checked>
+                            </div>
+                            
+                            <div class="suit-option neon-border p-4 text-center" onclick="selectSuit('pixel_guard')">
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-4xl">🛡️</div>
+                                    <div class="text-left">
+                                        <h3 class="text-lg font-bold text-cyan-300">Pixel Guard</h3>
+                                        <p class="text-sm text-cyan-500">Retro-futuristic protector</p>
+                                    </div>
+                                </div>
+                                <input type="radio" name="suit_style" value="pixel_guard" class="hidden">
+                            </div>
+                            
+                            <div class="suit-option neon-border p-4 text-center" onclick="selectSuit('glitch_hunter')">
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-4xl">👾</div>
+                                    <div class="text-left">
+                                        <h3 class="text-lg font-bold text-cyan-300">Glitch Hunter</h3>
+                                        <p class="text-sm text-cyan-500">Advanced stealth specialist</p>
+                                    </div>
+                                </div>
+                                <input type="radio" name="suit_style" value="glitch_hunter" class="hidden">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Color Picker -->
+                    <div class="space-y-4">
+                        <label class="block text-xl font-bold text-cyan-400">
+                            🎨 Suit Color
+                        </label>
+                        <div class="flex flex-wrap gap-4 items-center">
+                            <input type="color" name="suit_color" value="#00FFFF" class="color-picker" title="Choose your suit color" onchange="updatePreview()">
+                            <div class="flex space-x-3">
+                                <div class="color-picker" style="background: #00FFFF" onclick="setColor('#00FFFF')" title="Cyber Cyan"></div>
+                                <div class="color-picker" style="background: #FF6B35" onclick="setColor('#FF6B35')" title="Neon Orange"></div>
+                                <div class="color-picker" style="background: #8A2BE2" onclick="setColor('#8A2BE2')" title="Digital Purple"></div>
+                                <div class="color-picker" style="background: #00FF41" onclick="setColor('#00FF41')" title="Matrix Green"></div>
+                                <div class="color-picker" style="background: #FF1493" onclick="setColor('#FF1493')" title="Electric Pink"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-center pt-6">
+                        <button type="submit" class="cyber-button px-12 py-4 text-xl rounded-lg">
+                            🚀 JOIN THE SQUAD
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Hero Preview -->
+            <div class="cyber-card p-8">
+                <h2 class="text-2xl font-bold text-center text-cyan-400 mb-6">🎭 HERO PREVIEW</h2>
+                
+                <div class="hero-preview mb-6">
+                    <div class="text-center">
+                        <div class="hero-avatar" id="heroAvatar">⚔️</div>
+                        <div class="text-xl font-bold text-cyan-300 mt-2" id="heroName">Cyber Defender</div>
+                        <div class="text-sm text-cyan-500" id="heroClass">Neon Knight</div>
+                    </div>
+                </div>
+
+                <!-- Mission Briefing -->
+                <div class="neon-border p-6 bg-black/50">
+                    <h3 class="text-lg font-bold text-orange-400 mb-3">🎯 MISSION BRIEFING</h3>
+                    <div class="space-y-2 text-sm text-cyan-300">
+                        <p>• <strong>Objective:</strong> Infiltrate the Password Fortress</p>
+                        <p>• <strong>Target:</strong> Secure the city's digital infrastructure</p>
+                        <p>• <strong>Challenges:</strong> 5 cybersecurity missions</p>
+                        <p>• <strong>AI Support:</strong> Captain Tessa will guide you</p>
+                        <p>• <strong>Rewards:</strong> Cyber badges and city security points</p>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-cyan-900/30 rounded border border-cyan-500">
+                        <div class="text-cyan-400 font-bold">💡 Captain Tessa says:</div>
+                        <div class="text-cyan-300 text-sm mt-1">
+                            "Welcome to the squad, defender! Your mission is crucial for protecting our city's digital fortress. Stay sharp!"
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const suitEmojis = {
+    'neon_knight': '⚔️',
+    'pixel_guard': '🛡️',
+    'glitch_hunter': '👾'
+};
+
+const suitNames = {
+    'neon_knight': 'Neon Knight',
+    'pixel_guard': 'Pixel Guard',
+    'glitch_hunter': 'Glitch Hunter'
+};
+
+function selectSuit(suitType) {
+    // Remove selected class from all suits
+    document.querySelectorAll('.suit-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Add selected class to clicked suit
+    event.currentTarget.classList.add('selected');
+    
+    // Check the radio button
+    document.querySelector(`input[value="${suitType}"]`).checked = true;
+    
+    updatePreview();
+}
+
+function setColor(color) {
+    document.querySelector('input[name="suit_color"]').value = color;
+    updatePreview();
+}
+
+function updatePreview() {
+    const nickname = document.querySelector('input[name="hero_nickname"]').value || 'Cyber Defender';
+    const selectedSuit = document.querySelector('input[name="suit_style"]:checked').value;
+    const suitColor = document.querySelector('input[name="suit_color"]').value;
+    
+    // Update preview
+    document.getElementById('heroAvatar').textContent = suitEmojis[selectedSuit];
+    document.getElementById('heroAvatar').style.filter = `drop-shadow(0 0 10px ${suitColor})`;
+    document.getElementById('heroName').textContent = nickname;
+    document.getElementById('heroClass').textContent = suitNames[selectedSuit];
+    
+    // Update preview styling
+    document.querySelector('.hero-preview').style.background = 
+        `radial-gradient(circle, ${suitColor}20 0%, transparent 70%)`;
+}
+
+// Initialize preview
+updatePreview();
+</script>
+{% endblock %}

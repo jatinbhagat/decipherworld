@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'games',
     'robotic_buddy',
     'group_learning',
+    'cyber_city',
 ]
 
 MIDDLEWARE = [

@@ -13,6 +13,7 @@ urlpatterns = [
     path('games/', include('games.urls')),
     path('buddy/', include('robotic_buddy.urls')),
     path('learn/', include('group_learning.urls')),
+    path('cyber-city/', include('cyber_city.urls')),
 ]
 
 # Serve static files during development
