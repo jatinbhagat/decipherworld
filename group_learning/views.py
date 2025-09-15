@@ -1328,6 +1328,49 @@ class ConstitutionFinalResultsView(TemplateView):
         if current_team:
             team_ranking = list(all_teams).index(current_team) + 1
         
+        # Get category breakdown for the current team
+        category_breakdown = {}
+        if current_team:
+            # Get or create country state for scoring breakdown
+            try:
+                country_state = current_team.country_state
+                
+                # Create category breakdown for template
+                category_breakdown = {
+                    'democracy': {
+                        'score': country_state.democracy_score,
+                        'display_name': 'Democracy',
+                        'emoji': '🏛️',
+                        'percentage': min(100, (country_state.democracy_score / 10) * 100)
+                    },
+                    'fairness': {
+                        'score': country_state.fairness_score,
+                        'display_name': 'Fairness',
+                        'emoji': '⚖️',
+                        'percentage': min(100, (country_state.fairness_score / 10) * 100)
+                    },
+                    'freedom': {
+                        'score': country_state.freedom_score,
+                        'display_name': 'Freedom',
+                        'emoji': '🕊️',
+                        'percentage': min(100, (country_state.freedom_score / 10) * 100)
+                    },
+                    'stability': {
+                        'score': country_state.stability_score,
+                        'display_name': 'Stability',
+                        'emoji': '🏗️',
+                        'percentage': min(100, (country_state.stability_score / 10) * 100)
+                    }
+                }
+            except CountryState.DoesNotExist:
+                # Fallback if no country state exists
+                category_breakdown = {
+                    'democracy': {'score': 0, 'display_name': 'Democracy', 'emoji': '🏛️', 'percentage': 0},
+                    'fairness': {'score': 0, 'display_name': 'Fairness', 'emoji': '⚖️', 'percentage': 0},
+                    'freedom': {'score': 0, 'display_name': 'Freedom', 'emoji': '🕊️', 'percentage': 0},
+                    'stability': {'score': 0, 'display_name': 'Stability', 'emoji': '🏗️', 'percentage': 0}
+                }
+
         context.update({
             'session': session,
             'game': session.game,
@@ -1335,6 +1378,7 @@ class ConstitutionFinalResultsView(TemplateView):
             'all_teams': all_teams,
             'team_ranking': team_ranking,
             'total_teams': all_teams.count(),
+            'category_breakdown': category_breakdown,
         })
         
         return context

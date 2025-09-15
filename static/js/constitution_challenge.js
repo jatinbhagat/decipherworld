@@ -498,6 +498,9 @@ function selectAnswer(optionId, optionLetter) {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('📚 Constitution Challenge initialized');
     
+    // Check if game is already completed on page load
+    checkGameCompletionOnLoad();
+    
     // Add keyboard shortcut for leaderboard (L key)
     document.addEventListener('keydown', function(event) {
         // Only trigger if not typing in an input field
@@ -509,6 +512,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Check game completion on page load
+async function checkGameCompletionOnLoad() {
+    const sessionCode = document.querySelector('[data-session-code]')?.getAttribute('data-session-code');
+    const teamId = document.querySelector('[data-team-id]')?.getAttribute('data-team-id');
+    
+    if (!sessionCode || !teamId) {
+        console.log('🔍 No session or team data found, skipping completion check');
+        return;
+    }
+    
+    console.log('🔍 Checking game completion on page load...');
+    
+    try {
+        const response = await fetch(`/learn/api/constitution/${sessionCode}/question/?team_id=${teamId}`);
+        const result = await response.json();
+        
+        if (result.game_completed) {
+            console.log('🎉 Game already completed! Redirecting to final results...');
+            showGameNotification('🎉 Constitution Challenge Complete! Redirecting to results...', 'success', 2000);
+            
+            setTimeout(() => {
+                const resultsUrl = `/learn/constitution/${sessionCode}/final-results/?team_id=${teamId}`;
+                console.log('🔄 Redirecting to:', resultsUrl);
+                window.location.href = resultsUrl;
+            }, 2000);
+        } else {
+            console.log('✅ Game in progress, continuing normally');
+        }
+    } catch (error) {
+        console.error('❌ Error checking game completion:', error);
+        // Don't show error to user, just continue normally
+    }
+}
 
 // Main initialization function for external calls
 function initializeConstitutionChallenge() {
