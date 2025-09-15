@@ -23,7 +23,8 @@
       "WebSearch",
       "Bash(az webapp log tail:*)",
       "Bash(az webapp ssh:*)",
-      "Bash(az webapp deployment source delete:*)"
+      "Bash(az webapp deployment source delete:*)",
+      "Bash(az webapp log deployment list:*)"
     ],
     "deny": [],
     "ask": []

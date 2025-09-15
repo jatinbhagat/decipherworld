@@ -222,7 +222,7 @@ document.querySelectorAll('.category-btn').forEach(btn => {
         // Visual feedback
         if (isCorrect) {
             this.classList.add('bg-green-200', 'border-green-400');
-            showBuddyMessage(`Great! ${currentAnimal.name} is indeed a ${selectedCategory.slice(0, -1)}! I'm learning! 🌟`);
+            showBuddyMessage(`Thank you! I'll remember that ${currentAnimal.name} is a ${selectedCategory.slice(0, -1)}! I'm learning from your teaching! 🌟`);
         } else {
             this.classList.add('bg-red-200', 'border-red-400');
             const correctCategory = currentAnimal.category;

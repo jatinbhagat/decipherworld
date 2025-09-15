@@ -101,7 +101,7 @@ class GameActivity(models.Model):
     instructions = models.TextField(help_text="How to play instructions")
     
     # Game Configuration
-    min_examples_needed = models.IntegerField(default=5, help_text="Minimum examples needed to 'train' buddy")
+    min_examples_needed = models.IntegerField(default=16, help_text="Minimum examples needed to 'train' buddy")
     max_examples = models.IntegerField(default=16, help_text="Maximum examples in one session")
     experience_reward = models.IntegerField(default=10, help_text="XP awarded for completing activity")
     
@@ -125,7 +125,8 @@ class TrainingSession(models.Model):
     Records of individual training sessions between child and buddy
     """
     STATUS_CHOICES = [
-        ('in_progress', 'In Progress'),
+        ('training', 'Training Phase'),
+        ('testing', 'Testing Phase'),
         ('completed', 'Completed'),
         ('abandoned', 'Abandoned'),
     ]
@@ -135,7 +136,9 @@ class TrainingSession(models.Model):
     
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_progress')
+    training_completed_at = models.DateTimeField(null=True, blank=True, help_text="When training phase completed")
+    testing_started_at = models.DateTimeField(null=True, blank=True, help_text="When testing phase started")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='training')
     
     # Session Results
     examples_provided = models.IntegerField(default=0)
@@ -212,6 +215,7 @@ class TrainingExample(models.Model):
     # Example Data
     label = models.CharField(max_length=100, help_text="What the example represents (e.g., 'cat', 'happy', 'jump')")
     data = models.JSONField(help_text="Example-specific data (image path, text, coordinates, etc.)")
+    is_training_example = models.BooleanField(default=True, help_text="True for training phase, False for testing phase")
     
     # Buddy's Response
     buddy_prediction = models.CharField(max_length=100, blank=True, help_text="What buddy predicted")

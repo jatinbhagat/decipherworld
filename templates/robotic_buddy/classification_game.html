@@ -348,7 +348,7 @@ window.handleDrop = function(dropZone, animalName) {
                     
                     // Show feedback
                     if (isCorrect) {
-                        window.GameUtils.showBuddyMessage(`Great job! A ${animalName} is indeed a ${category.slice(0, -1)}! I'm learning! 🌟`, 'success');
+                        window.GameUtils.showBuddyMessage(`Thank you! I'll remember that ${animalName} is a ${category.slice(0, -1)}! I'm learning from your teaching! 🌟`, 'success');
                     } else {
                         window.GameUtils.showBuddyMessage(`Oops! A ${animalName} is actually a ${animalData.category.slice(0, -1)}, not a ${category.slice(0, -1)}. I'll remember that! 🤔`);
                     }
