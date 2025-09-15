@@ -1297,6 +1297,71 @@ class ConstitutionTeamJoinView(TemplateView):
         return context
 
 
+class ConstitutionFinalResultsView(TemplateView):
+    """Final results page for Constitution Challenge games"""
+    template_name = 'group_learning/constitution_final_results.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        session_code = kwargs.get('session_code')
+        team_id = self.request.GET.get('team_id')
+        
+        session = get_object_or_404(GameSession, session_code=session_code)
+        
+        if session.game.game_type != 'constitution_challenge':
+            messages.error(self.request, 'This session is not a Constitution Challenge game.')
+            return redirect('group_learning:session_detail', session_code=session_code)
+        
+        # Get all teams for this session ordered by score
+        all_teams = ConstitutionTeam.objects.filter(session=session).order_by('-total_score')
+        
+        # Get current team if team_id provided
+        current_team = None
+        if team_id:
+            try:
+                current_team = ConstitutionTeam.objects.get(id=team_id, session=session)
+            except ConstitutionTeam.DoesNotExist:
+                pass
+        
+        # Get team ranking
+        team_ranking = None
+        if current_team:
+            team_ranking = list(all_teams).index(current_team) + 1
+        
+        context.update({
+            'session': session,
+            'game': session.game,
+            'team': current_team,  # Template expects 'team' not 'current_team'
+            'all_teams': all_teams,
+            'team_ranking': team_ranking,
+            'total_teams': all_teams.count(),
+        })
+        
+        return context
+
+
+class ConstitutionFeedbackView(View):
+    """Handle feedback submissions for Constitution Challenge games"""
+    
+    def post(self, request, session_code):
+        session = get_object_or_404(GameSession, session_code=session_code)
+        
+        if session.game.game_type != 'constitution_challenge':
+            return JsonResponse({'error': 'Invalid session'}, status=400)
+        
+        # Get feedback data from request
+        feedback_text = request.POST.get('feedback', '')
+        rating = request.POST.get('rating')
+        
+        # You can save feedback to database here if needed
+        # For now, just return success
+        
+        messages.success(request, 'Thank you for your feedback!')
+        
+        # Redirect back to final results
+        return redirect('group_learning:constitution_final_results', session_code=session_code)
+
+
 class ProductionDiagnosticsAPI(View):
     """Diagnostics API to check production database schema"""
     

@@ -32,6 +32,8 @@ urlpatterns = [
     path('constitution/<str:session_code>/', views.ConstitutionTeamJoinView.as_view(), name='constitution_join'),
     path('constitution/<str:session_code>/play/', views.ConstitutionGameView.as_view(), name='constitution_game'),
     path('constitution/<str:session_code>/create-team/', views.ConstitutionTeamCreateView.as_view(), name='constitution_create_team'),
+    path('constitution/<str:session_code>/final-results/', views.ConstitutionFinalResultsView.as_view(), name='constitution_final_results'),
+    path('constitution/<str:session_code>/feedback/', views.ConstitutionFeedbackView.as_view(), name='submit_constitution_feedback'),
     
     # Constitution Challenge API endpoints
     path('api/constitution/<str:session_code>/question/', views.ConstitutionQuestionAPI.as_view(), name='constitution_question_api'),

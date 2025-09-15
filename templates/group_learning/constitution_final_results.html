@@ -125,10 +125,10 @@
                             ⭐ Quick Review <span class="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">Required</span>
                         </h3>
                         
-                        <form id="feedback-form" action="{% url 'group_learning:submit_constitution_feedback' team.session.session_code %}" method="post" class="space-y-4">
+                        <form id="feedback-form" action="{% url 'group_learning:submit_constitution_feedback' session.session_code %}" method="post" class="space-y-4">
                             {% csrf_token %}
                             <input type="hidden" name="team_id" value="{{ team.id }}">
-                            <input type="hidden" name="game_level" value="{% if 'Advanced' in team.session.game.title %}advanced{% else %}basic{% endif %}">
+                            <input type="hidden" name="game_level" value="{% if 'Advanced' in session.game.title %}advanced{% else %}basic{% endif %}">
                             
                             <!-- Rating -->
                             <div class="text-center mb-3 lg:mb-4">
@@ -204,7 +204,7 @@
                         <a href="{% url 'group_learning:constitution_quick_start' %}" class="bg-green-600 hover:bg-green-700 text-white py-3 lg:py-4 rounded-xl font-semibold text-sm lg:text-lg text-center transform hover:scale-105 transition-all">
                             🔄 Play Again
                         </a>
-                        {% if 'Advanced' not in team.session.game.title %}
+                        {% if 'Advanced' not in session.game.title %}
                         <a href="{% url 'group_learning:constitution_quick_start_level' 'advanced' %}" class="bg-purple-600 hover:bg-purple-700 text-white py-3 lg:py-4 rounded-xl font-semibold text-sm lg:text-lg text-center transform hover:scale-105 transition-all">
                             🎓 Try Advanced
                         </a>
@@ -284,7 +284,7 @@
                                 <a href="{% url 'group_learning:constitution_quick_start' %}" class="bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold text-lg text-center transform hover:scale-105 transition-all">
                                     🔄 Play Again
                                 </a>
-                                {% if 'Advanced' not in team.session.game.title %}
+                                {% if 'Advanced' not in session.game.title %}
                                 <a href="{% url 'group_learning:constitution_quick_start_level' 'advanced' %}" class="bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-semibold text-lg text-center transform hover:scale-105 transition-all">
                                     🎓 Try Advanced
                                 </a>
