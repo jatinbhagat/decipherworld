@@ -5,111 +5,94 @@
 
 {% block content %}
 <!-- Modern Professional Hero Section -->
-<section class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
-    <div class="absolute inset-0 bg-white/40"></div>
+<section class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
     
-    <!-- Subtle Background Pattern -->
-    <div class="absolute inset-0 opacity-5">
-        <div class="absolute top-20 left-20 w-32 h-32 bg-secondary rounded-full blur-3xl"></div>
-        <div class="absolute top-40 right-32 w-24 h-24 bg-primary rounded-full blur-2xl"></div>
-        <div class="absolute bottom-32 left-1/3 w-40 h-40 bg-accent rounded-full blur-3xl"></div>
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-20 left-20 w-32 h-32 bg-white rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute top-40 right-32 w-24 h-24 bg-white rounded-full blur-2xl animate-pulse delay-300"></div>
+        <div class="absolute bottom-32 left-1/3 w-40 h-40 bg-white rounded-full blur-3xl animate-pulse delay-700"></div>
     </div>
     
     <div class="relative z-10 container mx-auto px-6 py-20 lg:py-32">
-        <div class="max-w-4xl mx-auto text-center">
-            <div class="mb-12">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
                 <!-- Professional Icon Display -->
-                <div class="flex items-center justify-center gap-6 mb-8">
-                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center">
+                <div class="flex items-center justify-center gap-4 mb-8">
+                    <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                         <i class="fas fa-brain text-3xl text-white"></i>
                     </div>
-                    <div class="w-16 h-16 bg-gradient-to-br from-secondary to-accent rounded-2xl flex items-center justify-center">
+                    <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                         <i class="fas fa-bolt text-3xl text-white"></i>
                     </div>
-                    <div class="w-16 h-16 bg-gradient-to-br from-accent to-primary rounded-2xl flex items-center justify-center">
+                    <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                         <i class="fas fa-chalkboard-teacher text-3xl text-white"></i>
                     </div>
                 </div>
                 
-                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-neutral mb-6 leading-tight">
-                    <span class="text-primary">AI Training</span> for Teachers
+                <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold mb-6 leading-tight">
+                    <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">AI Training</span>
+                    <br>for Teachers
                 </h1>
                 
-                <!-- Key Benefits with Professional Badges -->
-                <div class="flex flex-col sm:flex-row gap-3 justify-center mb-8 flex-wrap">
-                    <div class="badge badge-primary badge-lg px-4 py-3">
-                        <i class="fas fa-chart-line mr-2"></i>5X Productivity
-                    </div>
-                    <div class="badge badge-secondary badge-lg px-4 py-3">
-                        <i class="fas fa-tools mr-2"></i>40+ AI Tools
-                    </div>
-                    <div class="badge badge-accent badge-lg px-4 py-3">
-                        <i class="fas fa-certificate mr-2"></i>Expert Training
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Enhanced Value Proposition -->
-            <div class="space-y-6 mb-12">
-                <p class="text-lg sm:text-xl md:text-2xl text-slate-700 leading-relaxed max-w-3xl mx-auto">
-                    Master <strong class="text-primary">AI tools</strong> that transform teaching. From <strong class="text-secondary">automated lesson planning</strong> to <strong class="text-accent">instant grading</strong>, unlock superpowers that save <strong class="text-neutral">20+ hours weekly</strong>.
+                <p class="text-xl sm:text-2xl mb-8 max-w-4xl mx-auto leading-relaxed opacity-90">
+                    Master AI tools that transform teaching. Save 20+ hours weekly with automated lesson planning, instant grading, and smart classroom management.
                 </p>
                 
-                <!-- Key Benefits Bullets -->
-                <div class="flex flex-col sm:flex-row gap-4 justify-center text-base sm:text-lg">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-primary rounded-full"></span>
-                        <span class="text-slate-600">Real Classroom Applications</span>
+                <!-- Key Benefits Badges -->
+                <div class="flex flex-wrap gap-3 justify-center mb-12">
+                    <div class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
+                        <i class="fas fa-chart-line mr-2 text-yellow-400"></i>
+                        <span class="font-semibold">5X Productivity Boost</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-secondary rounded-full"></span>
-                        <span class="text-slate-600">Personalized Learning</span>
+                    <div class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
+                        <i class="fas fa-tools mr-2 text-green-400"></i>
+                        <span class="font-semibold">40+ AI Tools</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-accent rounded-full"></span>
-                        <span class="text-slate-600">Ongoing Support</span>
+                    <div class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
+                        <i class="fas fa-certificate mr-2 text-blue-400"></i>
+                        <span class="font-semibold">Expert Certification</span>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Professional CTAs -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <a href="{% url 'core:contact' %}" class="btn btn-primary btn-lg px-8 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <i class="fas fa-rocket mr-2"></i>
-                    <span class="hidden xs:inline">Start AI Training</span>
-                    <span class="xs:hidden">Start Training</span>
-                </a>
-                <a href="#curriculum" class="btn btn-outline btn-secondary btn-lg px-8 hover:btn-secondary shadow-lg hover:shadow-xl transition-all duration-300">
-                    <i class="fas fa-book-open mr-2"></i>
-                    <span class="hidden xs:inline">View Curriculum</span>
-                    <span class="xs:hidden">Curriculum</span>
-                </a>
+                
+                <!-- Professional CTAs -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+                    <a href="{% url 'core:contact' %}" class="bg-white text-blue-600 px-8 py-4 rounded-xl hover:bg-gray-50 transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl">
+                        <i class="fas fa-rocket mr-2"></i>
+                        Start AI Training Now
+                    </a>
+                    <a href="#curriculum" class="bg-white/20 backdrop-blur-sm border border-white/30 text-white px-8 py-4 rounded-xl hover:bg-white/30 transition-all duration-300 font-semibold">
+                        <i class="fas fa-book-open mr-2"></i>
+                        View Curriculum
+                    </a>
+                </div>
             </div>
             
             <!-- Trust Indicators -->
-            <div class="grid grid-cols-3 gap-4 sm:gap-6 max-w-2xl mx-auto">
-                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20">
-                    <div class="text-primary mb-2">
-                        <i class="fas fa-users text-xl sm:text-2xl"></i>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div class="bg-white/15 backdrop-blur-md rounded-2xl p-8 border border-white/20 text-center">
+                    <div class="text-yellow-400 mb-4">
+                        <i class="fas fa-users text-4xl"></i>
                     </div>
-                    <div class="text-xl sm:text-2xl font-bold text-neutral mb-1">500+</div>
-                    <div class="text-xs sm:text-sm text-slate-600">Teachers Trained</div>
+                    <div class="text-4xl font-bold mb-2">500+</div>
+                    <div class="text-lg opacity-90">Teachers Trained</div>
                 </div>
                 
-                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20">
-                    <div class="text-secondary mb-2">
-                        <i class="fas fa-clock text-xl sm:text-2xl"></i>
+                <div class="bg-white/15 backdrop-blur-md rounded-2xl p-8 border border-white/20 text-center">
+                    <div class="text-green-400 mb-4">
+                        <i class="fas fa-clock text-4xl"></i>
                     </div>
-                    <div class="text-xl sm:text-2xl font-bold text-neutral mb-1">20+</div>
-                    <div class="text-xs sm:text-sm text-slate-600">Hours Saved</div>
+                    <div class="text-4xl font-bold mb-2">20+</div>
+                    <div class="text-lg opacity-90">Hours Saved Weekly</div>
                 </div>
                 
-                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg border border-white/20">
-                    <div class="text-accent mb-2">
-                        <i class="fas fa-star text-xl sm:text-2xl"></i>
+                <div class="bg-white/15 backdrop-blur-md rounded-2xl p-8 border border-white/20 text-center">
+                    <div class="text-blue-400 mb-4">
+                        <i class="fas fa-star text-4xl"></i>
                     </div>
-                    <div class="text-xl sm:text-2xl font-bold text-neutral mb-1">98%</div>
-                    <div class="text-xs sm:text-sm text-slate-600">Satisfaction</div>
+                    <div class="text-4xl font-bold mb-2">98%</div>
+                    <div class="text-lg opacity-90">Satisfaction Rate</div>
                 </div>
             </div>
         </div>
@@ -117,61 +100,123 @@
 </section>
 
 <!-- Training Program Overview -->
-<section class="py-20 bg-white">
-    <div class="container mx-auto px-4">
+<section class="py-24 bg-white">
+    <div class="container mx-auto px-6">
         <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-neutral mb-4">Complete AI Teaching Transformation</h2>
-            <p class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                A comprehensive <strong class="text-primary">8-week program</strong> designed specifically for educators to master <strong class="text-secondary">AI tools</strong> and boost <strong class="text-accent">classroom productivity</strong>
+            <div class="inline-flex items-center bg-blue-100 text-blue-800 rounded-full px-4 py-2 text-sm font-semibold mb-4">
+                <span class="mr-2">🚀</span>
+                TRANSFORMATION PROGRAM
+            </div>
+            <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+                Complete AI Teaching Revolution
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                A comprehensive 8-week program designed specifically for educators to master AI tools and transform classroom productivity
             </p>
         </div>
         
-        <div class="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <!-- Training Features -->
-            <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 hover:shadow-2xl transition-all duration-300">
-                <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-rocket text-3xl text-primary"></i>
+        <div class="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            <!-- Productivity Feature -->
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-8 text-white">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+                            <i class="fas fa-rocket text-3xl"></i>
+                        </div>
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Core Benefit</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">5X Productivity Boost</h3>
+                    <p class="text-blue-100">Transform your teaching efficiency</p>
                 </div>
-                <h3 class="text-2xl font-bold text-neutral mb-4">5X Productivity Boost</h3>
-                    <p class="text-slate-600 mb-4">
-                        Save 20+ hours weekly with automated lesson planning, grading, and administrative tasks
+                
+                <div class="p-8">
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Save 20+ hours weekly with automated lesson planning, grading, and administrative tasks. Focus on what matters most - your students.
                     </p>
-                    <div class="flex flex-wrap gap-2">
-                        <div class="badge badge-primary badge-sm">Lesson Planning</div>
-                        <div class="badge badge-primary badge-sm">Auto Grading</div>
-                        <div class="badge badge-primary badge-sm">Report Generation</div>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                            Automated Lesson Planning
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                            Instant Auto-Grading
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                            Smart Report Generation
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 hover:shadow-2xl transition-all duration-300">
-                <div class="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-tools text-3xl text-secondary"></i>
+            <!-- Tools Mastery Feature -->
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-br from-green-500 to-emerald-600 p-8 text-white">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+                            <i class="fas fa-tools text-3xl"></i>
+                        </div>
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Comprehensive</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">40+ AI Tools Mastery</h3>
+                    <p class="text-green-100">Industry-leading platform expertise</p>
                 </div>
-                <h3 class="text-2xl font-bold text-neutral mb-4">40+ AI Tools Mastery</h3>
-                    <p class="text-slate-600 mb-4">
-                        Master industry-leading tools: MagicSchool.ai, Eduaide.ai, Khanmigo, Curipod, and more
+                
+                <div class="p-8">
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Master cutting-edge tools: MagicSchool.ai, Eduaide.ai, Khanmigo, Curipod, and many more powerful AI platforms.
                     </p>
-                    <div class="flex flex-wrap gap-2">
-                        <div class="badge badge-secondary badge-sm">MagicSchool.ai</div>
-                        <div class="badge badge-secondary badge-sm">Eduaide.ai</div>
-                        <div class="badge badge-secondary badge-sm">Khanmigo</div>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                            MagicSchool.ai Certification
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                            Eduaide.ai Mastery
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                            Khanmigo Integration
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 hover:shadow-2xl transition-all duration-300">
-                <div class="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-certificate text-3xl text-accent"></i>
+            <!-- Certification Feature -->
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-br from-purple-500 to-pink-600 p-8 text-white">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+                            <i class="fas fa-certificate text-3xl"></i>
+                        </div>
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Expert Level</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Expert Certification</h3>
+                    <p class="text-purple-100">Recognized credentials & support</p>
                 </div>
-                <h3 class="text-2xl font-bold text-neutral mb-4">Expert Certification</h3>
-                    <p class="text-slate-600 mb-4">
-                        Earn recognized credentials and ongoing support to become your school's AI champion
+                
+                <div class="p-8">
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Earn recognized credentials and ongoing support to become your school's AI champion with lifetime access to resources.
                     </p>
-                    <div class="flex flex-wrap gap-2">
-                        <div class="badge badge-accent badge-sm">Certification</div>
-                        <div class="badge badge-accent badge-sm">24/7 Support</div>
-                        <div class="badge badge-accent badge-sm">Community</div>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                            Official Certification
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                            24/7 Expert Support
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                            Teacher Community Access
+                        </div>
                     </div>
                 </div>
             </div>
@@ -180,188 +225,263 @@
 </section>
 
 <!-- Curriculum Section -->
-<section id="curriculum" class="py-20 bg-slate-50">
-    <div class="container mx-auto px-4">
+<section id="curriculum" class="py-24 bg-gray-50">
+    <div class="container mx-auto px-6">
         <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-neutral mb-4">8-Week Curriculum</h2>
-            <p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                Structured learning path from <strong class="text-primary">AI basics</strong> to <strong class="text-secondary">advanced classroom implementation</strong>
+            <div class="inline-flex items-center bg-gray-100 text-gray-700 rounded-full px-4 py-2 text-sm font-semibold mb-4">
+                <span class="mr-2">📚</span>
+                STRUCTURED LEARNING
+            </div>
+            <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+                8-Week Comprehensive Curriculum
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Structured learning path from AI basics to advanced classroom implementation with hands-on projects
             </p>
         </div>
         
-        <div class="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            <!-- Week 1-4 -->
-            <div class="space-y-6">
-                <h3 class="text-xl md:text-2xl font-bold text-neutral mb-6 flex items-center gap-3">
-                    <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-play text-primary text-sm"></i>
+        <div class="grid lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
+            <!-- Foundation Weeks -->
+            <div>
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center bg-blue-100 text-blue-800 rounded-full px-4 py-2 text-sm font-semibold mb-4">
+                        <i class="fas fa-play mr-2"></i>
+                        FOUNDATION PHASE
                     </div>
-                    Foundation (Weeks 1-4)
-                </h3>
+                    <h3 class="text-2xl font-bold text-gray-900">Weeks 1-4: Building Your AI Foundation</h3>
+                </div>
                 
-                <div class="bg-white rounded-2xl p-6 shadow-lg border border-slate-100 hover:shadow-xl transition-all duration-300">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="badge badge-primary px-3 py-2">Week 1</div>
-                        <h4 class="text-lg md:text-xl font-semibold text-neutral">AI Fundamentals for Educators</h4>
-                    </div>
-                        <ul class="list-disc list-inside text-slate-600 space-y-2">
-                            <li>Understanding AI in education context</li>
-                            <li>ChatGPT and prompt engineering basics</li>
-                            <li>AI ethics and responsible usage</li>
+                <div class="space-y-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Week 1</div>
+                            <h4 class="text-lg font-bold text-gray-900">AI Fundamentals for Educators</h4>
+                        </div>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Understanding AI in education context
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                ChatGPT and prompt engineering basics
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                AI ethics and responsible usage
+                            </li>
                         </ul>
                     </div>
 
-                <div class="card bg-white shadow-lg">
-                    <div class="card-body">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="badge badge-primary">Week 2</div>
-                            <h4 class="text-xl font-semibold">Lesson Planning Revolution</h4>
+                            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Week 2</div>
+                            <h4 class="text-lg font-bold text-gray-900">Lesson Planning Revolution</h4>
                         </div>
-                        <ul class="list-disc list-inside text-slate-600 space-y-2">
-                            <li>MagicSchool.ai for curriculum design</li>
-                            <li>Automated lesson plan generation</li>
-                            <li>Differentiated learning materials</li>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                MagicSchool.ai for curriculum design
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Automated lesson plan generation
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Differentiated learning materials
+                            </li>
                         </ul>
                     </div>
 
-                <div class="card bg-white shadow-lg">
-                    <div class="card-body">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="badge badge-primary">Week 3</div>
-                            <h4 class="text-xl font-semibold">Assessment & Feedback</h4>
+                            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Week 3</div>
+                            <h4 class="text-lg font-bold text-gray-900">Assessment & Feedback</h4>
                         </div>
-                        <ul class="list-disc list-inside text-slate-600 space-y-2">
-                            <li>Automated quiz and test creation</li>
-                            <li>Instant feedback generation</li>
-                            <li>Rubric development with AI</li>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Automated quiz and test creation
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Instant feedback generation
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Rubric development with AI
+                            </li>
                         </ul>
                     </div>
 
-                <div class="card bg-white shadow-lg">
-                    <div class="card-body">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="badge badge-primary">Week 4</div>
-                            <h4 class="text-xl font-semibold">Student Engagement Tools</h4>
+                            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Week 4</div>
+                            <h4 class="text-lg font-bold text-gray-900">Student Engagement Tools</h4>
                         </div>
-                        <ul class="list-disc list-inside text-slate-600 space-y-2">
-                            <li>Interactive presentations with Curipod</li>
-                            <li>Gamification strategies</li>
-                            <li>Personalized learning paths</li>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Interactive presentations with Curipod
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Gamification strategies
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Personalized learning paths
+                            </li>
                         </ul>
                     </div>
+                </div>
             </div>
 
-            <!-- Week 5-8 -->
-            <div class="space-y-6">
-                <h3 class="text-xl md:text-2xl font-bold text-neutral mb-6 flex items-center gap-3">
-                    <div class="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-rocket text-secondary text-sm"></i>
+            <!-- Advanced Weeks -->
+            <div>
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center bg-purple-100 text-purple-800 rounded-full px-4 py-2 text-sm font-semibold mb-4">
+                        <i class="fas fa-rocket mr-2"></i>
+                        ADVANCED PHASE
                     </div>
-                    Advanced (Weeks 5-8)
-                </h3>
+                    <h3 class="text-2xl font-bold text-gray-900">Weeks 5-8: Advanced Implementation</h3>
+                </div>
                 
-                <div class="card bg-white shadow-lg">
-                    <div class="card-body">
+                <div class="space-y-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="badge badge-secondary">Week 5</div>
-                            <h4 class="text-xl font-semibold">Administrative Efficiency</h4>
+                            <div class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">Week 5</div>
+                            <h4 class="text-lg font-bold text-gray-900">Administrative Efficiency</h4>
                         </div>
-                        <ul class="list-disc list-inside text-slate-600 space-y-2">
-                            <li>Parent communication automation</li>
-                            <li>IEP and report generation</li>
-                            <li>Meeting summaries and action items</li>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Parent communication automation
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                                IEP and report generation
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Meeting summaries and action items
+                            </li>
                         </ul>
                     </div>
 
-                <div class="card bg-white shadow-lg">
-                    <div class="card-body">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="badge badge-secondary">Week 6</div>
-                            <h4 class="text-xl font-semibold">Data Analysis & Insights</h4>
+                            <div class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">Week 6</div>
+                            <h4 class="text-lg font-bold text-gray-900">Data Analysis & Insights</h4>
                         </div>
-                        <ul class="list-disc list-inside text-slate-600 space-y-2">
-                            <li>Student performance analytics</li>
-                            <li>Learning gap identification</li>
-                            <li>Predictive intervention strategies</li>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Student performance analytics
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Learning gap identification
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Predictive intervention strategies
+                            </li>
                         </ul>
                     </div>
 
-                <div class="card bg-white shadow-lg">
-                    <div class="card-body">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="badge badge-secondary">Week 7</div>
-                            <h4 class="text-xl font-semibold">Advanced AI Integration</h4>
+                            <div class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">Week 7</div>
+                            <h4 class="text-lg font-bold text-gray-900">Advanced AI Integration</h4>
                         </div>
-                        <ul class="list-disc list-inside text-slate-600 space-y-2">
-                            <li>Khanmigo tutoring implementation</li>
-                            <li>AI-powered special needs support</li>
-                            <li>Multilingual classroom support</li>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Khanmigo tutoring implementation
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                                AI-powered special needs support
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Multilingual classroom support
+                            </li>
                         </ul>
                     </div>
 
-                <div class="card bg-white shadow-lg">
-                    <div class="card-body">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="badge badge-accent">Week 8</div>
-                            <h4 class="text-xl font-semibold">Implementation & Certification</h4>
+                            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Week 8</div>
+                            <h4 class="text-lg font-bold text-gray-900">Implementation & Certification</h4>
                         </div>
-                        <ul class="list-disc list-inside text-slate-600 space-y-2">
-                            <li>Final project presentation</li>
-                            <li>School-wide implementation planning</li>
-                            <li>Certification ceremony</li>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Final project presentation
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></span>
+                                School-wide implementation planning
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></span>
+                                Official certification ceremony
+                            </li>
                         </ul>
                     </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Professional CTA Section -->
-<section class="py-20 bg-gradient-to-br from-primary via-secondary to-accent text-white relative overflow-hidden">
-    <div class="absolute inset-0 bg-black/10"></div>
-    <div class="absolute inset-0">
-        <div class="absolute top-10 right-10 w-20 h-20 bg-white/10 rounded-full"></div>
-        <div class="absolute bottom-20 left-10 w-16 h-16 bg-white/10 rounded-full"></div>
-        <div class="absolute top-1/2 left-1/2 w-32 h-32 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+<section class="py-24 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-10 right-10 w-20 h-20 bg-white rounded-full animate-pulse"></div>
+        <div class="absolute bottom-20 left-10 w-16 h-16 bg-white rounded-full animate-pulse delay-300"></div>
+        <div class="absolute top-1/2 left-1/2 w-32 h-32 bg-white rounded-full -translate-x-1/2 -translate-y-1/2 animate-pulse delay-700"></div>
     </div>
     
     <div class="relative z-10 container mx-auto px-6 text-center">
         <div class="max-w-4xl mx-auto">
-            <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-8">
                 <i class="fas fa-graduation-cap text-4xl text-white"></i>
             </div>
             
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Teaching?</h2>
-            <p class="text-lg md:text-xl mb-8 text-white/90 leading-relaxed max-w-3xl mx-auto">
-                Join <strong class="text-white">500+ teachers</strong> who've already boosted their productivity by <strong class="text-white">5X</strong> with our comprehensive AI training program.
+            <h2 class="text-4xl sm:text-5xl font-bold mb-6">Ready to Transform Your Teaching?</h2>
+            <p class="text-xl sm:text-2xl mb-12 text-white/90 leading-relaxed max-w-3xl mx-auto">
+                Join 500+ teachers who've already boosted their productivity by 5X with our comprehensive AI training program.
             </p>
             
             <!-- Success Stats -->
-            <div class="grid grid-cols-3 gap-6 max-w-md mx-auto mb-10">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto mb-12">
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-white mb-1">500+</div>
-                    <div class="text-sm text-white/80">Teachers</div>
+                    <div class="text-4xl font-bold text-white mb-2">500+</div>
+                    <div class="text-lg text-white/80">Teachers Trained</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-white mb-1">5X</div>
-                    <div class="text-sm text-white/80">Productivity</div>
+                    <div class="text-4xl font-bold text-white mb-2">5X</div>
+                    <div class="text-lg text-white/80">Productivity Increase</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-2xl font-bold text-white mb-1">98%</div>
-                    <div class="text-sm text-white/80">Satisfaction</div>
+                    <div class="text-4xl font-bold text-white mb-2">98%</div>
+                    <div class="text-lg text-white/80">Satisfaction Rate</div>
                 </div>
             </div>
             
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'core:contact' %}" class="btn btn-white btn-lg px-8 text-primary hover:bg-slate-100 shadow-lg hover:shadow-xl transition-all duration-300">
+                <a href="{% url 'core:contact' %}" class="bg-white text-blue-600 px-8 py-4 rounded-xl hover:bg-gray-50 transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl">
                     <i class="fas fa-rocket mr-2"></i>
-                    <span class="hidden xs:inline">Enroll Now</span>
-                    <span class="xs:hidden">Enroll</span>
+                    Enroll Now
                 </a>
-                <a href="mailto:customerservice@decipherworld.com" class="btn btn-outline btn-white btn-lg px-8 hover:bg-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
+                <a href="mailto:customerservice@decipherworld.com" class="bg-white/20 backdrop-blur-sm border border-white/30 text-white px-8 py-4 rounded-xl hover:bg-white/30 transition-all duration-300 font-semibold">
                     <i class="fas fa-envelope mr-2"></i>
-                    <span class="hidden xs:inline">Schedule Consultation</span>
-                    <span class="xs:hidden">Contact</span>
+                    Schedule Consultation
                 </a>
             </div>
         </div>
