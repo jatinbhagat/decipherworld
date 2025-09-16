@@ -96,6 +96,15 @@ class MyBuddyView(TemplateView):
         try:
             self.buddy = RoboticBuddy.objects.get(session_id=session_id)
         except RoboticBuddy.DoesNotExist:
+            # Clear invalid session and redirect to create new buddy
+            if 'buddy_session_id' in request.session:
+                del request.session['buddy_session_id']
+            return redirect('robotic_buddy:create_buddy')
+        except Exception as e:
+            # Log database errors and redirect
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Database error in MyBuddyView: {str(e)}")
             return redirect('robotic_buddy:create_buddy')
             
         return super().get(request, *args, **kwargs)
@@ -103,23 +112,53 @@ class MyBuddyView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Get available activities based on buddy level
-        available_activities = GameActivity.objects.filter(
-            is_active=True,
-            required_level__lte=self.buddy.current_level
-        )
+        # Safely get available activities with error handling
+        try:
+            available_activities = GameActivity.objects.filter(
+                is_active=True,
+                required_level__lte=self.buddy.current_level
+            )
+        except Exception as e:
+            # Fallback: get all active activities if filtering fails
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"GameActivity query error in MyBuddyView: {str(e)}")
+            try:
+                available_activities = GameActivity.objects.filter(is_active=True)
+            except:
+                available_activities = GameActivity.objects.none()
         
-        # Get recent training sessions
-        recent_sessions = TrainingSession.objects.filter(
-            buddy=self.buddy
-        ).select_related('activity')[:5]
+        # Safely get recent training sessions with error handling
+        try:
+            recent_sessions = TrainingSession.objects.filter(
+                buddy=self.buddy
+            ).select_related('activity')[:5]
+        except Exception as e:
+            # Fallback: empty queryset if sessions query fails
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"TrainingSession query error in MyBuddyView: {str(e)}")
+            recent_sessions = TrainingSession.objects.none()
+        
+        # Safely get greeting message
+        try:
+            greeting_message = self.buddy.get_personality_greeting()
+        except Exception as e:
+            # Fallback greeting if method fails
+            greeting_message = "Hello! I'm your AI buddy and ready to learn!"
+        
+        # Safely get buddy name for title
+        try:
+            page_title = f'{self.buddy.name} - Your AI Buddy'
+        except Exception as e:
+            page_title = 'Your AI Buddy'
         
         context.update({
             'buddy': self.buddy,
             'available_activities': available_activities,
             'recent_sessions': recent_sessions,
-            'greeting_message': self.buddy.get_personality_greeting(),
-            'page_title': f'{self.buddy.name} - Your AI Buddy'
+            'greeting_message': greeting_message,
+            'page_title': page_title
         })
         return context
 
