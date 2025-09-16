@@ -45,7 +45,7 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-16">
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8 mb-16">
             <!-- AI Learning Games -->
             <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <div class="p-8">
@@ -179,6 +179,52 @@
                         </a>
                         <a href="{% url 'games:group_learning' %}" class="flex-1 border border-purple-600 text-purple-600 py-3 px-6 rounded-lg hover:bg-purple-50 transition-colors text-center font-medium">
                             View All Games
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cyber Security Games -->
+            <div class="bg-gradient-to-br from-red-50 to-orange-100 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div class="p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-red-600 text-white w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4">
+                            🛡️
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900">Cyber Security Games</h3>
+                            <p class="text-red-600">Digital Defense & Safety Training</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-6">
+                        Protect the digital world through interactive cybersecurity missions. Learn password safety, threat detection, and digital defense while saving Cyber City from security breaches.
+                    </p>
+                    <div class="space-y-3 mb-8">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Password Security Training
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Cyber Threat Recognition
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Badge & Achievement System
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="{% url 'cyber_city:quick_game' %}" class="flex-1 bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors text-center font-medium">
+                            Start Mission
+                        </a>
+                        <a href="{% url 'cyber_city:quick_game' %}" class="flex-1 border border-red-600 text-red-600 py-3 px-6 rounded-lg hover:bg-red-50 transition-colors text-center font-medium">
+                            Password Fortress
                         </a>
                     </div>
                 </div>
