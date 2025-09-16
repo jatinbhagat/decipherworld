@@ -821,13 +821,26 @@ function startMission() {
             action_type: 'start_mission'
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.indexOf('application/json') !== -1) {
+            return response.json();
+        } else {
+            throw new Error('Response is not JSON');
+        }
+    })
     .then(data => {
         if (data.action_result === 'mission_started') {
             window.location.reload();
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to start mission. Please try again.');
+    });
 }
 
 function submitAnswer() {
@@ -850,13 +863,24 @@ function submitAnswer() {
             time_taken: 30
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.indexOf('application/json') !== -1) {
+            return response.json();
+        } else {
+            throw new Error('Response is not JSON');
+        }
+    })
     .then(data => {
         showResult(data);
     })
     .catch(error => {
         console.error('Error:', error);
         document.getElementById('submitBtn').disabled = false;
+        alert('Failed to submit answer. Please try again.');
     });
 }
 

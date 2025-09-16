@@ -2,6 +2,8 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import JsonResponse
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from games.base.views import BaseGameSessionView, BaseGameActionView, QuickGameView
 from .models import CyberCitySession, CyberCityPlayer, SecurityChallenge, PlayerChallenge, CyberBadge
 from .plugin import CyberCityProtectionSquadPlugin
@@ -89,6 +91,7 @@ class CyberCityAvatarView(BaseGameSessionView):
         messages.success(request, f'Welcome to the Squad, {hero_nickname}!')
         return redirect('cyber_city:game', session_code=session_code)
 
+@method_decorator(csrf_exempt, name='dispatch')
 class CyberCityActionAPI(BaseGameActionView):
     """API for processing Cyber City Protection Squad challenge answers"""
     

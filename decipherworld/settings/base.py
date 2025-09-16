@@ -90,10 +90,13 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'en-IN'  # Indian English
+TIME_ZONE = 'Asia/Kolkata'  # Indian Standard Time
 USE_I18N = True
 USE_TZ = True
+
+# Sites framework for SEO
+SITE_ID = 1
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
