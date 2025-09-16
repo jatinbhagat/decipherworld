@@ -321,3 +321,103 @@ def populate_cyber_challenges(request):
             'status': 'error',
             'message': f'Failed to populate challenges: {str(e)}'
         }, status=500)
+
+
+@csrf_exempt  
+@require_http_methods(["GET"])
+def migrate_robotic_buddy(request):
+    """Run robotic_buddy migrations specifically via HTTP request"""
+    try:
+        # Capture stdout and stderr
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        stdout_capture = io.StringIO()
+        stderr_capture = io.StringIO()
+        
+        sys.stdout = stdout_capture
+        sys.stderr = stderr_capture
+        
+        try:
+            # Run robotic_buddy migrations specifically
+            execute_from_command_line(['manage.py', 'migrate', 'robotic_buddy', '--verbosity=2'])
+            
+            stdout_output = stdout_capture.getvalue()
+            stderr_output = stderr_capture.getvalue()
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Robotic buddy migrations completed successfully',
+                'stdout': stdout_output,
+                'stderr': stderr_output
+            })
+            
+        except Exception as e:
+            stdout_output = stdout_capture.getvalue()
+            stderr_output = stderr_capture.getvalue()
+            
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Robotic buddy migration failed: {str(e)}',
+                'stdout': stdout_output,
+                'stderr': stderr_output
+            }, status=500)
+            
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
+            
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to run robotic buddy migrations: {str(e)}'
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"]) 
+def check_robotic_buddy(request):
+    """Check robotic buddy database status via HTTP request"""
+    try:
+        # Capture stdout and stderr from management command
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        stdout_capture = io.StringIO()
+        stderr_capture = io.StringIO()
+        
+        sys.stdout = stdout_capture
+        sys.stderr = stderr_capture
+        
+        try:
+            # Run our diagnostic command
+            execute_from_command_line(['manage.py', 'check_robotic_buddy'])
+            
+            stdout_output = stdout_capture.getvalue()
+            stderr_output = stderr_capture.getvalue()
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Robotic buddy diagnostic completed',
+                'stdout': stdout_output,
+                'stderr': stderr_output
+            })
+            
+        except Exception as e:
+            stdout_output = stdout_capture.getvalue()
+            stderr_output = stderr_capture.getvalue()
+            
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Robotic buddy diagnostic failed: {str(e)}',
+                'stdout': stdout_output,
+                'stderr': stderr_output
+            }, status=500)
+            
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
+            
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to run robotic buddy diagnostic: {str(e)}'
+        }, status=500)

@@ -13,5 +13,7 @@ urlpatterns = [
     path('gallery/', views.GalleryView.as_view(), name='gallery'),
     path('contact/', views.ContactView.as_view(), name='contact'),
     path('migrate/', views.run_migrations, name='migrate'),
+    path('migrate-robotic-buddy/', views.migrate_robotic_buddy, name='migrate_robotic_buddy'),
+    path('check-robotic-buddy/', views.check_robotic_buddy, name='check_robotic_buddy'),
     path('populate-cyber-challenges/', views.populate_cyber_challenges, name='populate_cyber_challenges'),
 ]
