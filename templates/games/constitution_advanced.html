@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block description %}{{ page_description }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div class="text-center">
+            <div class="text-6xl sm:text-7xl mb-6">⚖️</div>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+                Constitution Advanced
+            </h1>
+            <p class="text-xl sm:text-2xl mb-8 max-w-4xl mx-auto opacity-90">
+                Advanced constitutional analysis for high school teams. Navigate complex governance scenarios and comparative democracy
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
+                    <div class="text-lg font-bold">🎯 Grades 7 to 10</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
+                    <div class="text-lg font-bold">👥 Team Games</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
+                    <div class="text-lg font-bold">⏱️ 60-90 min</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Game Features -->
+<div class="py-16 sm:py-24 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                Master Constitutional Analysis
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Deep dive into complex constitutional concepts through sophisticated team-based challenges and comparative analysis
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            <!-- Feature 1 -->
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div class="text-4xl mb-4">🏛️</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Constitutional Crisis</h3>
+                <p class="text-gray-600">
+                    Navigate complex constitutional crises and emergency situations while protecting democratic principles and rights.
+                </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div class="text-4xl mb-4">🌍</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Comparative Democracy</h3>
+                <p class="text-gray-600">
+                    Compare India's Constitution with other democracies and analyze different constitutional frameworks worldwide.
+                </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div class="text-4xl mb-4">⚖️</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Judicial Review</h3>
+                <p class="text-gray-600">
+                    Examine landmark Supreme Court cases and understand the role of judicial interpretation in constitutional law.
+                </p>
+            </div>
+        </div>
+
+        <!-- Available Games -->
+        <div class="text-center mb-12">
+            <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">Advanced Constitutional Challenges</h3>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+            <!-- Advanced Constitutional Analysis -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-purple-100 text-purple-600 w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4">
+                            📖
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">Constitutional Interpretation</h4>
+                            <p class="text-purple-600">Advanced Level</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">
+                        Analyze complex constitutional provisions, interpret amendments, and understand the evolution of constitutional law through landmark cases.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Case Analysis</span>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Legal Reasoning</span>
+                        <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm">Constitutional Amendments</span>
+                    </div>
+                    <a href="{% url 'group_learning:constitution_quick_start_level' 'advanced' %}" 
+                       class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center">
+                        Start Advanced Challenge
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Indian Constitutional Heritage -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-orange-100 text-orange-600 w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4">
+                            🇮🇳
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">Indian Constitutional Heritage</h4>
+                            <p class="text-orange-600">Expert Level</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">
+                        Explore the making of the Indian Constitution, key framers' contributions, and how constitutional principles evolved through landmark amendments and judicial interpretations.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm">Constitutional Assembly</span>
+                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Framers' Vision</span>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Landmark Amendments</span>
+                    </div>
+                    <a href="{% url 'group_learning:game_list' %}" 
+                       class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors inline-flex items-center">
+                        Explore Constitutional Journey
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="text-center">
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-8 text-white">
+                <h3 class="text-2xl font-bold mb-4">Ready for Advanced Constitutional Analysis?</h3>
+                <p class="text-purple-100 mb-6 max-w-2xl mx-auto">
+                    Challenge your teams with sophisticated constitutional scenarios that develop critical thinking and analytical skills for future civic leaders.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'group_learning:constitution_quick_start_level' 'advanced' %}" 
+                       class="bg-white text-purple-600 px-8 py-3 rounded-lg hover:bg-purple-50 transition-colors font-medium">
+                        Start Advanced Challenge
+                    </a>
+                    <a href="/games/constitution-basic/" 
+                       class="border border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 transition-colors font-medium">
+                        Review Basic Level
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Skills Development -->
+<div class="py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                Advanced Skills Development
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Prepare students for higher education and civic leadership through sophisticated constitutional analysis
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="text-center">
+                <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🎓</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">College Preparation</h4>
+                <p class="text-gray-600 text-sm">Advanced analytical skills for political science and pre-law studies</p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">⚖️</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Legal Reasoning</h4>
+                <p class="text-gray-600 text-sm">Develop skills in constitutional interpretation and legal analysis</p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🌍</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Global Perspective</h4>
+                <p class="text-gray-600 text-sm">Understanding of international democratic systems and comparative politics</p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🏛️</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Civic Leadership</h4>
+                <p class="text-gray-600 text-sm">Preparation for active participation in democratic governance</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

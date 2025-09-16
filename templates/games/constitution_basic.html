@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block description %}{{ page_description }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div class="text-center">
+            <div class="text-6xl sm:text-7xl mb-6">🏛️</div>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+                Constitution Basic
+            </h1>
+            <p class="text-xl sm:text-2xl mb-8 max-w-4xl mx-auto opacity-90">
+                Team-based constitutional challenges where students explore fundamental democratic principles, rights, and governance
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
+                    <div class="text-lg font-bold">🎯 Grades 4 to 7</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
+                    <div class="text-lg font-bold">👥 Team Games</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
+                    <div class="text-lg font-bold">⏱️ 45-60 min</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Game Features -->
+<div class="py-16 sm:py-24 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                Learn Democracy Through Teamwork
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Engage with fundamental constitutional concepts through collaborative scenarios designed for middle school teams
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            <!-- Feature 1 -->
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div class="text-4xl mb-4">⚖️</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Fundamental Rights</h3>
+                <p class="text-gray-600">
+                    Explore basic constitutional rights and responsibilities through interactive team scenarios and decision-making exercises.
+                </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div class="text-4xl mb-4">🏛️</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Democratic Principles</h3>
+                <p class="text-gray-600">
+                    Learn about separation of powers, checks and balances, and how democratic institutions work together.
+                </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div class="text-4xl mb-4">👥</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Team Collaboration</h3>
+                <p class="text-gray-600">
+                    Work together to solve constitutional challenges, debate scenarios, and make collective decisions.
+                </p>
+            </div>
+        </div>
+
+        <!-- Available Games -->
+        <div class="text-center mb-12">
+            <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">Available Constitutional Challenges</h3>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+            <!-- Basic Constitutional Scenarios -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-green-100 text-green-600 w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4">
+                            📜
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">Constitutional Foundation</h4>
+                            <p class="text-green-600">Basic Level</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">
+                        Explore the basic structure of the Indian Constitution, fundamental rights, and the role of citizens in democracy.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Rights & Duties</span>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Government Structure</span>
+                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Citizen Participation</span>
+                    </div>
+                    <a href="{% url 'group_learning:constitution_quick_start_level' 'basic' %}" 
+                       class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors inline-flex items-center">
+                        Start Challenge
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Constitutional Crisis Management -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-orange-100 text-orange-600 w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4">
+                            🚨
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">Crisis & Decision Making</h4>
+                            <p class="text-orange-600">Intermediate Level</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">
+                        Navigate constitutional challenges and learn how democratic institutions respond to crises while protecting rights.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm">Emergency Powers</span>
+                        <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">Constitutional Remedies</span>
+                        <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">Team Strategy</span>
+                    </div>
+                    <a href="{% url 'group_learning:game_list' %}" 
+                       class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors inline-flex items-center">
+                        Explore Scenarios
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="text-center">
+            <div class="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl p-8 text-white">
+                <h3 class="text-2xl font-bold mb-4">Ready to Start Your Constitutional Journey?</h3>
+                <p class="text-green-100 mb-6 max-w-2xl mx-auto">
+                    Begin with fundamental constitutional concepts or explore more advanced scenarios. Perfect for classroom teams and collaborative learning.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'group_learning:constitution_quick_start_level' 'basic' %}" 
+                       class="bg-white text-green-600 px-8 py-3 rounded-lg hover:bg-green-50 transition-colors font-medium">
+                        Start Basic Challenge
+                    </a>
+                    <a href="/games/constitution-advanced/" 
+                       class="border border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 transition-colors font-medium">
+                        Try Advanced Level
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Educational Value -->
+<div class="py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                Educational Impact
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Designed to meet curriculum standards while building critical thinking and civic engagement skills
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="text-center">
+                <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">📚</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Curriculum Aligned</h4>
+                <p class="text-gray-600 text-sm">Meets social studies and civics education standards for Grades 4-7</p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🤝</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Collaborative Learning</h4>
+                <p class="text-gray-600 text-sm">Develops teamwork and communication skills through group challenges</p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🧠</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Critical Thinking</h4>
+                <p class="text-gray-600 text-sm">Builds analytical skills through constitutional problem-solving scenarios</p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🎯</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Civic Engagement</h4>
+                <p class="text-gray-600 text-sm">Prepares students for active and informed citizenship</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

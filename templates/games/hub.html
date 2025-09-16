@@ -6,27 +6,35 @@
 
 {% block content %}
 <!-- Hero Section -->
-<div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+<div class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
         <div class="text-center">
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
-                🎮 Educational Games Hub
+            <div class="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
+                <span class="text-2xl mr-2">🎯</span>
+                <span class="font-semibold">Game-Based Learning Platform</span>
+            </div>
+            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight">
+                Educational Games
+                <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">Hub</span>
             </h1>
-            <p class="text-xl sm:text-2xl mb-8 max-w-4xl mx-auto opacity-90">
-                Transform learning into adventure through AI-powered games, collaborative scenarios, and interactive challenges
+            <p class="text-xl sm:text-2xl mb-12 max-w-4xl mx-auto leading-relaxed opacity-95">
+                Transform learning into adventure through AI-powered games, team collaboration, and interactive challenges designed for Indian students
             </p>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto mt-12">
-                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-                    <div class="text-3xl sm:text-4xl font-bold">{{ ai_activities_count }}+</div>
-                    <div class="text-sm sm:text-base opacity-90">AI Learning Activities</div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <div class="bg-white/15 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                    <div class="text-4xl sm:text-5xl font-bold mb-2 text-yellow-300">{{ ai_activities_count }}+</div>
+                    <div class="text-lg font-medium opacity-90">AI Learning Games</div>
                 </div>
-                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-                    <div class="text-3xl sm:text-4xl font-bold">{{ group_learning_count }}+</div>
-                    <div class="text-sm sm:text-base opacity-90">Collaborative Scenarios</div>
+                <div class="bg-white/15 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                    <div class="text-4xl sm:text-5xl font-bold mb-2 text-green-300">{{ group_learning_count }}+</div>
+                    <div class="text-lg font-medium opacity-90">Team Challenges</div>
                 </div>
-                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-                    <div class="text-3xl sm:text-4xl font-bold">{{ robotic_buddy_count }}+</div>
-                    <div class="text-sm sm:text-base opacity-90">AI Buddies Created</div>
+                <div class="bg-white/15 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                    <div class="text-4xl sm:text-5xl font-bold mb-2 text-blue-300">6</div>
+                    <div class="text-lg font-medium opacity-90">Game Categories</div>
                 </div>
             </div>
         </div>
@@ -36,203 +44,350 @@
 <!-- Game Categories -->
 <div class="py-16 sm:py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-                Explore Game Categories
-            </h2>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                From AI training to collaborative problem-solving, discover educational games designed for every learning style
-            </p>
-        </div>
+        <!-- Individual Games Section -->
+        <div class="mb-24">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center bg-blue-100 text-blue-800 rounded-full px-4 py-2 text-sm font-semibold mb-4">
+                    <span class="mr-2">🎯</span>
+                    INDIVIDUAL LEARNING
+                </div>
+                <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+                    Individual Games
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                    Self-paced learning adventures where students master skills independently through AI-powered educational experiences
+                </p>
+            </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8 mb-16">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- AI Learning Games -->
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <div class="p-8">
-                    <div class="flex items-center mb-6">
-                        <div class="bg-blue-600 text-white w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4">
-                            🤖
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-3">
+                            <span class="text-2xl">🤖</span>
                         </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-900">AI Learning Games</h3>
-                            <p class="text-blue-600">Create & Train Your Robotic Buddy</p>
-                        </div>
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Grades 1-5</span>
                     </div>
-                    <p class="text-gray-700 mb-6">
+                    <h3 class="text-2xl font-bold mb-2">AI Learning Games</h3>
+                    <p class="text-blue-100 text-sm">Create & Train Your Robotic Buddy</p>
+                </div>
+                
+                <div class="p-6">
+                    <p class="text-gray-600 mb-6 leading-relaxed">
                         Design, customize, and train your very own AI robotic buddy. Learn machine learning, programming, and problem-solving through hands-on artificial intelligence education.
                     </p>
-                    <div class="space-y-3 mb-8">
+                    
+                    <div class="space-y-3 mb-6">
                         <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
                             Interactive AI Training Sessions
                         </div>
                         <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
                             Classification & Pattern Recognition
                         </div>
                         <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Drag & Drop Visual Interface
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                            Machine Learning Basics
                         </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <a href="{% url 'games:ai_learning' %}" class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium">
-                            Explore AI Games
+                    
+                    <div class="space-y-3">
+                        <a href="{% url 'games:ai_learning' %}" class="block w-full bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-all duration-200 text-center font-semibold group-hover:scale-105">
+                            Start AI Adventure
                         </a>
-                        <a href="{% url 'games:robotic_buddy_landing' %}" class="flex-1 border border-blue-600 text-blue-600 py-3 px-6 rounded-lg hover:bg-blue-50 transition-colors text-center font-medium">
+                        <a href="{% url 'games:robotic_buddy_landing' %}" class="block w-full border-2 border-blue-200 text-blue-600 py-3 px-4 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-center font-medium">
                             Create Your Buddy
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Group Learning Games -->
-            <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <div class="p-8">
-                    <div class="flex items-center mb-6">
-                        <div class="bg-green-600 text-white w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4">
-                            🌍
+            <!-- Financial Literacy Game -->
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-br from-green-500 to-emerald-600 p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-3">
+                            <span class="text-2xl">💰</span>
                         </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-900">Group Learning Games</h3>
-                            <p class="text-green-600">Collaborative Scenario-Based Learning</p>
-                        </div>
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Grades 5-10</span>
                     </div>
-                    <p class="text-gray-700 mb-6">
-                        Multi-player educational scenarios where students collaborate to solve real-world challenges. Experience role-playing games focused on climate change, problem-solving, and teamwork.
-                    </p>
-                    <div class="space-y-3 mb-8">
-                        <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Real-World Problem Solving
-                        </div>
-                        <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Role-Based Collaborative Learning
-                        </div>
-                        <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Climate & Environmental Focus
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <a href="{% url 'games:group_learning' %}" class="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors text-center font-medium">
-                            Explore Scenarios
-                        </a>
-                        <a href="{% url 'games:monsoon_mayhem_landing' %}" class="flex-1 border border-green-600 text-green-600 py-3 px-6 rounded-lg hover:bg-green-50 transition-colors text-center font-medium">
-                            Try Monsoon Mayhem
-                        </a>
-                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Financial Literacy</h3>
+                    <p class="text-green-100 text-sm">Budgeting, Banking & Investment</p>
                 </div>
-            </div>
-
-            <!-- Advanced Constitution Challenge -->
-            <div class="bg-gradient-to-br from-purple-50 to-indigo-100 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <div class="p-8">
-                    <div class="flex items-center mb-6">
-                        <div class="bg-purple-600 text-white w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4">
-                            🏛️
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-900">Advanced Constitution Challenge</h3>
-                            <p class="text-purple-600">High School Government & Civics</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-700 mb-6">
-                        Advanced constitutional analysis for high school students. Navigate complex governance scenarios and compare India's Constitution with other democracies through challenging multi-choice questions.
+                
+                <div class="p-6">
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Learn about budgeting, banking, stocks and mutual funds through interactive scenarios. Master financial decision-making skills aligned with CBSE curriculum.
                     </p>
-                    <div class="space-y-3 mb-8">
+                    
+                    <div class="space-y-3 mb-6">
                         <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Constitutional Crisis Scenarios
+                            <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                            CBSE Curriculum Aligned
                         </div>
                         <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Comparative Democracy Analysis
+                            <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                            Banking & Investment Skills
                         </div>
                         <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Grades 9-12 Advanced Level
+                            <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                            Smart Money Management
                         </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <a href="{% url 'group_learning:constitution_quick_start_level' 'advanced' %}" class="flex-1 bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition-colors text-center font-medium">
-                            Start Advanced Challenge
+                    
+                    <div class="space-y-3">
+                        <a href="{% url 'games:financial_literacy' %}" class="block w-full bg-green-600 text-white py-3 px-4 rounded-xl hover:bg-green-700 transition-all duration-200 text-center font-semibold group-hover:scale-105">
+                            Start Investing Game
                         </a>
-                        <a href="{% url 'games:group_learning' %}" class="flex-1 border border-purple-600 text-purple-600 py-3 px-6 rounded-lg hover:bg-purple-50 transition-colors text-center font-medium">
-                            View All Games
+                        <a href="https://games.decipherworld.com/InvestingGame/" target="_blank" rel="noopener" class="block w-full border-2 border-green-200 text-green-600 py-3 px-4 rounded-xl hover:bg-green-50 hover:border-green-300 transition-all duration-200 text-center font-medium">
+                            Play Direct <i class="fas fa-external-link-alt ml-1 text-xs"></i>
                         </a>
                     </div>
                 </div>
             </div>
 
             <!-- Cyber Security Games -->
-            <div class="bg-gradient-to-br from-red-50 to-orange-100 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <div class="p-8">
-                    <div class="flex items-center mb-6">
-                        <div class="bg-red-600 text-white w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4">
-                            🛡️
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-br from-red-500 to-rose-600 p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-3">
+                            <span class="text-2xl">🛡️</span>
                         </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-900">Cyber Security Games</h3>
-                            <p class="text-red-600">Digital Defense & Safety Training</p>
-                        </div>
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Grades 1-6</span>
                     </div>
-                    <p class="text-gray-700 mb-6">
-                        Protect the digital world through interactive cybersecurity missions. Learn password safety, threat detection, and digital defense while saving Cyber City from security breaches.
+                    <h3 class="text-2xl font-bold mb-2">Cyber Security</h3>
+                    <p class="text-red-100 text-sm">Digital Defense & Safety Training</p>
+                </div>
+                
+                <div class="p-6">
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Protect the digital world through interactive cybersecurity missions. Learn password safety, threat detection, and digital defense while saving Cyber City.
                     </p>
-                    <div class="space-y-3 mb-8">
+                    
+                    <div class="space-y-3 mb-6">
                         <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
+                            <div class="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
                             Password Security Training
                         </div>
                         <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Cyber Threat Recognition
+                            <div class="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+                            Digital Threat Detection
                         </div>
                         <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
+                            <div class="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
                             Badge & Achievement System
                         </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <a href="{% url 'cyber_city:quick_game' %}" class="flex-1 bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors text-center font-medium">
-                            Start Mission
+                    
+                    <div class="space-y-3">
+                        <a href="/games/cyber-security/" class="block w-full bg-red-600 text-white py-3 px-4 rounded-xl hover:bg-red-700 transition-all duration-200 text-center font-semibold group-hover:scale-105">
+                            Defend Cyber City
                         </a>
-                        <a href="{% url 'cyber_city:quick_game' %}" class="flex-1 border border-red-600 text-red-600 py-3 px-6 rounded-lg hover:bg-red-50 transition-colors text-center font-medium">
+                        <a href="{% url 'cyber_city:quick_game' %}" class="block w-full border-2 border-red-200 text-red-600 py-3 px-4 rounded-xl hover:bg-red-50 hover:border-red-300 transition-all duration-200 text-center font-medium">
                             Password Fortress
                         </a>
                     </div>
                 </div>
             </div>
+            </div>
         </div>
 
-        <!-- Coming Soon Categories -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Team Games Section -->
+        <div class="mb-24">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center bg-purple-100 text-purple-800 rounded-full px-4 py-2 text-sm font-semibold mb-4">
+                    <span class="mr-2">👥</span>
+                    COLLABORATIVE LEARNING
+                </div>
+                <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+                    Team Games
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                    Collaborative learning experiences where students work together to solve complex challenges and build essential teamwork skills
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8">
+            <!-- Entrepreneurship Game -->
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-br from-orange-500 to-amber-600 p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-3">
+                            <span class="text-2xl">🚀</span>
+                        </div>
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Grades 4-10</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Entrepreneurship</h3>
+                    <p class="text-orange-100 text-sm">Business Building & Scaling</p>
+                </div>
+                
+                <div class="p-6">
+                    <p class="text-gray-600 mb-6 leading-relaxed text-sm">
+                        Build on the famous Lemonade Stand Game to teach business basics through collaborative team challenges.
+                    </p>
+                    
+                    <div class="space-y-2 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+                            Business Planning & Strategy
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+                            Team Collaboration Skills
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <a href="{% url 'games:entrepreneurship' %}" class="block w-full bg-orange-600 text-white py-2.5 px-4 rounded-xl hover:bg-orange-700 transition-all duration-200 text-center font-semibold text-sm group-hover:scale-105">
+                            Build Your Business
+                        </a>
+                        <a href="https://games.decipherworld.com" target="_blank" rel="noopener" class="block w-full border-2 border-orange-200 text-orange-600 py-2.5 px-4 rounded-xl hover:bg-orange-50 hover:border-orange-300 transition-all duration-200 text-center font-medium text-sm">
+                            Play Direct <i class="fas fa-external-link-alt ml-1 text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Constitution Basic Games -->
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-br from-emerald-500 to-green-600 p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-3">
+                            <span class="text-2xl">🏛️</span>
+                        </div>
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Grades 4-7</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Constitution Basic</h3>
+                    <p class="text-emerald-100 text-sm">Team-based Civics & Government</p>
+                </div>
+                
+                <div class="p-6">
+                    <p class="text-gray-600 mb-6 leading-relaxed text-sm">
+                        Collaborative constitutional challenges where teams explore fundamental democratic principles and governance.
+                    </p>
+                    
+                    <div class="space-y-2 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                            Fundamental Rights & Democracy
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                            Team-based Problem Solving
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <a href="/games/constitution-basic/" class="block w-full bg-emerald-600 text-white py-2.5 px-4 rounded-xl hover:bg-emerald-700 transition-all duration-200 text-center font-semibold text-sm group-hover:scale-105">
+                            Start Basic Challenge
+                        </a>
+                        <a href="{% url 'games:constitution_advanced' %}" class="block w-full border-2 border-emerald-200 text-emerald-600 py-2.5 px-4 rounded-xl hover:bg-emerald-50 hover:border-emerald-300 transition-all duration-200 text-center font-medium text-sm">
+                            Advanced Level
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Constitution Advanced Challenge -->
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-br from-purple-500 to-indigo-600 p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-3">
+                            <span class="text-2xl">⚖️</span>
+                        </div>
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Grades 7-10</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Constitution Advanced</h3>
+                    <p class="text-purple-100 text-sm">Team-based Constitutional Analysis</p>
+                </div>
+                
+                <div class="p-6">
+                    <p class="text-gray-600 mb-6 leading-relaxed text-sm">
+                        Advanced constitutional analysis for high school teams. Navigate complex governance scenarios and challenging collaborative exercises.
+                    </p>
+                    
+                    <div class="space-y-2 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                            Constitutional Crisis Scenarios
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                            Comparative Democracy Analysis
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <a href="/games/constitution-advanced/" class="block w-full bg-purple-600 text-white py-2.5 px-4 rounded-xl hover:bg-purple-700 transition-all duration-200 text-center font-semibold text-sm group-hover:scale-105">
+                            Start Advanced Challenge
+                        </a>
+                        <a href="/games/constitution-basic/" class="block w-full border-2 border-purple-200 text-purple-600 py-2.5 px-4 rounded-xl hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 text-center font-medium text-sm">
+                            Try Basic Level
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Climate Change Challenge -->
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-br from-blue-500 to-cyan-600 p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-3">
+                            <span class="text-2xl">🌍</span>
+                        </div>
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Grades 6-10</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Climate Challenge</h3>
+                    <p class="text-blue-100 text-sm">Team-based Environmental Action</p>
+                </div>
+                
+                <div class="p-6">
+                    <p class="text-gray-600 mb-6 leading-relaxed text-sm">
+                        Collaborative climate scenarios where teams tackle environmental challenges and develop sustainable solutions.
+                    </p>
+                    
+                    <div class="space-y-2 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                            Environmental Problem Solving
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                            Sustainable Development Goals
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <a href="{% url 'games:monsoon_mayhem_landing' %}" class="block w-full bg-blue-600 text-white py-2.5 px-4 rounded-xl hover:bg-blue-700 transition-all duration-200 text-center font-semibold text-sm group-hover:scale-105">
+                            Start Climate Challenge
+                        </a>
+                        <a href="{% url 'games:group_learning' %}" class="block w-full border-2 border-blue-200 text-blue-600 py-2.5 px-4 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-center font-medium text-sm">
+                            More Environmental Games
+                        </a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Coming Soon Section -->
+        <div class="mb-24">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center bg-gray-100 text-gray-700 rounded-full px-4 py-2 text-sm font-semibold mb-4">
+                    <span class="mr-2">🚀</span>
+                    COMING SOON
+                </div>
+                <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+                    Future Adventures
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                    Exciting new educational experiences in development - expanding learning opportunities across all subjects
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- STEM Challenges -->
             <div class="bg-gradient-to-br from-orange-50 to-red-100 rounded-xl overflow-hidden shadow-lg opacity-75">
                 <div class="p-8">

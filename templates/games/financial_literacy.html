@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block description %}{{ page_description }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div class="text-center">
+            <div class="flex justify-center mb-6">
+                <div class="bg-white/20 backdrop-blur-sm rounded-full p-6">
+                    <span class="text-6xl">💰</span>
+                </div>
+            </div>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+                Financial Literacy Games
+            </h1>
+            <p class="text-xl sm:text-2xl mb-8 max-w-4xl mx-auto opacity-90">
+                Master budgeting, banking, stocks and mutual funds through interactive CBSE-aligned educational experiences
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto">
+                <a href="https://games.decipherworld.com/InvestingGame/" target="_blank" rel="noopener" class="bg-white text-green-600 px-8 py-4 rounded-lg hover:bg-gray-50 transition-colors font-bold text-lg">
+                    Start Investing Game <i class="fas fa-external-link-alt ml-2"></i>
+                </a>
+                <a href="{% url 'games:hub' %}" class="bg-white/20 backdrop-blur-sm text-white border border-white/30 px-8 py-4 rounded-lg hover:bg-white/30 transition-colors font-medium">
+                    Explore All Games
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Game Details -->
+<div class="py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+            <div>
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+                    Build Financial Intelligence
+                </h2>
+                <p class="text-xl text-gray-600 mb-8">
+                    Learn essential money management skills through interactive scenarios designed specifically for Indian students. Understand budgeting, banking systems, stock markets, and mutual funds in an engaging game-based environment.
+                </p>
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="bg-green-100 rounded-full p-2 mr-4 mt-1">
+                            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">CBSE Curriculum Aligned</h3>
+                            <p class="text-gray-600">Content designed to complement CBSE financial literacy education standards</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-green-100 rounded-full p-2 mr-4 mt-1">
+                            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Real-World Scenarios</h3>
+                            <p class="text-gray-600">Practice with authentic Indian banking and investment contexts</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-green-100 rounded-full p-2 mr-4 mt-1">
+                            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Progressive Learning</h3>
+                            <p class="text-gray-600">Build from basic budgeting to advanced investment strategies</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="relative">
+                <div class="bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl p-8 shadow-lg">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">📊</div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Investment Simulation</h3>
+                        <p class="text-gray-600 mb-6">Practice stock market investing with virtual money and real market principles</p>
+                        <div class="bg-white rounded-lg p-4">
+                            <div class="text-sm text-gray-500 mb-2">Portfolio Value</div>
+                            <div class="text-3xl font-bold text-green-600">₹1,25,000</div>
+                            <div class="text-sm text-green-600">+25% returns</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Objectives -->
+        <div class="bg-gray-50 rounded-2xl p-8 sm:p-12 mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Learning Objectives</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="bg-green-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                        🏦
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Banking Fundamentals</h3>
+                    <p class="text-gray-600">Understand savings accounts, fixed deposits, and loan systems</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-green-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                        📈
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Investment Basics</h3>
+                    <p class="text-gray-600">Learn about stocks, mutual funds, and portfolio diversification</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-green-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                        💡
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Smart Budgeting</h3>
+                    <p class="text-gray-600">Master personal finance planning and expense management</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Information -->
+        <div class="text-center">
+            <div class="bg-green-50 border border-green-200 rounded-lg p-6 inline-block">
+                <div class="flex items-center text-green-800">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="font-medium">
+                        <strong>Grades 5-10</strong> • Individual Game • CBSE/ICSE Aligned • Financial Education
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="bg-green-600 text-white py-16">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+            Ready to Build Financial Intelligence?
+        </h2>
+        <p class="text-xl mb-8 opacity-90">
+            Start your journey to financial literacy through engaging, interactive gameplay
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto">
+            <a href="https://games.decipherworld.com/InvestingGame/" target="_blank" rel="noopener" class="bg-white text-green-600 px-8 py-3 rounded-lg hover:bg-gray-50 transition-colors font-bold">
+                Launch Investing Game <i class="fas fa-external-link-alt ml-2"></i>
+            </a>
+            <a href="{% url 'games:hub' %}" class="bg-green-700 text-white px-8 py-3 rounded-lg hover:bg-green-800 transition-colors font-medium">
+                Explore More Games
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

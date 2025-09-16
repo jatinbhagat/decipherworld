@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block description %}{{ page_description }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-red-600 via-orange-600 to-yellow-600 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div class="text-center">
+            <div class="text-6xl sm:text-7xl mb-6">🛡️</div>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+                Cyber Security Games
+            </h1>
+            <p class="text-xl sm:text-2xl mb-8 max-w-4xl mx-auto opacity-90">
+                Protect the digital world through interactive cybersecurity missions designed for young digital defenders
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
+                    <div class="text-lg font-bold">🎯 Grades 1 to 6</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
+                    <div class="text-lg font-bold">👤 Individual Games</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
+                    <div class="text-lg font-bold">⏱️ 20-45 min</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Game Features -->
+<div class="py-16 sm:py-24 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                Learn Cybersecurity Through Gaming
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Age-appropriate cybersecurity education through engaging individual missions and interactive challenges
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            <!-- Feature 1 -->
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div class="text-4xl mb-4">🔐</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Password Security</h3>
+                <p class="text-gray-600">
+                    Learn to create strong passwords, understand why they matter, and protect your digital accounts from hackers.
+                </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div class="text-4xl mb-4">🕵️</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Threat Detection</h3>
+                <p class="text-gray-600">
+                    Identify suspicious emails, dangerous links, and other cyber threats before they can cause harm.
+                </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div class="text-4xl mb-4">🏆</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Achievement System</h3>
+                <p class="text-gray-600">
+                    Earn cyber defender badges and track your progress as you master digital safety skills.
+                </p>
+            </div>
+        </div>
+
+        <!-- Available Games -->
+        <div class="text-center mb-12">
+            <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">Cybersecurity Missions</h3>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+            <!-- Cyber City Protection Squad -->
+            <div class="bg-gradient-to-br from-blue-900 to-purple-900 rounded-xl shadow-lg overflow-hidden text-white">
+                <div class="p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-cyan-400 text-blue-900 w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4">
+                            🏙️
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold">Cyber City Protection Squad</h4>
+                            <p class="text-cyan-300">Password Fortress Mission</p>
+                        </div>
+                    </div>
+                    <p class="text-blue-100 mb-6">
+                        Join Captain Tessa and protect Cyber City from digital threats! Learn password security through an immersive sci-fi adventure.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="bg-cyan-400/20 text-cyan-300 px-3 py-1 rounded-full text-sm">Password Security</span>
+                        <span class="bg-purple-400/20 text-purple-300 px-3 py-1 rounded-full text-sm">Interactive Story</span>
+                        <span class="bg-orange-400/20 text-orange-300 px-3 py-1 rounded-full text-sm">Badge System</span>
+                    </div>
+                    <a href="{% url 'cyber_city:quick_game' %}" 
+                       class="bg-cyan-400 text-blue-900 px-6 py-3 rounded-lg hover:bg-cyan-300 transition-colors inline-flex items-center font-bold">
+                        Start Mission
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Digital Safety Academy -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-dashed border-gray-300">
+                <div class="p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-gray-100 text-gray-400 w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4">
+                            🎓
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900">Digital Safety Academy</h4>
+                            <p class="text-orange-600">Coming Soon</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">
+                        Interactive lessons on internet safety, digital citizenship, and responsible online behavior for young learners.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm">Internet Safety</span>
+                        <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm">Digital Citizenship</span>
+                        <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm">Online Ethics</span>
+                    </div>
+                    <div class="bg-orange-100 text-orange-800 px-6 py-3 rounded-lg inline-flex items-center">
+                        🚀 Coming Soon
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Start Guide -->
+        <div class="bg-gradient-to-r from-red-600 to-orange-600 rounded-xl p-8 text-white text-center">
+            <h3 class="text-2xl font-bold mb-4">Ready to Become a Cyber Defender?</h3>
+            <p class="text-red-100 mb-6 max-w-2xl mx-auto">
+                Start your cybersecurity journey with age-appropriate missions that teach real digital safety skills through fun, engaging gameplay.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'cyber_city:quick_game' %}" 
+                   class="bg-white text-red-600 px-8 py-3 rounded-lg hover:bg-red-50 transition-colors font-medium">
+                    Start Your First Mission
+                </a>
+                <a href="/games/" 
+                   class="border border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 transition-colors font-medium">
+                    Explore All Games
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Learning Outcomes -->
+<div class="py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                Essential Digital Safety Skills
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Building foundational cybersecurity awareness for the next generation of digital citizens
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="text-center">
+                <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🔒</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Password Awareness</h4>
+                <p class="text-gray-600 text-sm">Understanding strong passwords and account security basics</p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🚨</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Threat Recognition</h4>
+                <p class="text-gray-600 text-sm">Identifying suspicious online content and potential dangers</p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🛡️</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Digital Protection</h4>
+                <p class="text-gray-600 text-sm">Basic strategies for staying safe online and protecting personal information</p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">👨‍👩‍👧‍👦</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Family Engagement</h4>
+                <p class="text-gray-600 text-sm">Encouraging conversations about digital safety at home</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Age-Appropriate Content -->
+<div class="py-16 sm:py-24 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                Designed for Young Learners
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Age-appropriate cybersecurity education that grows with students from elementary through middle school
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Grades 1-2 -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="text-center mb-6">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🌱</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900">Grades 1-2</h3>
+                    <p class="text-green-600">Digital Awareness</p>
+                </div>
+                <ul class="text-gray-600 space-y-2 text-sm">
+                    <li class="flex items-center">
+                        <span class="text-green-500 mr-2">✓</span>
+                        Basic password concepts
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-green-500 mr-2">✓</span>
+                        Stranger danger online
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-green-500 mr-2">✓</span>
+                        Asking adults for help
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Grades 3-4 -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="text-center mb-6">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🌿</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900">Grades 3-4</h3>
+                    <p class="text-blue-600">Security Building</p>
+                </div>
+                <ul class="text-gray-600 space-y-2 text-sm">
+                    <li class="flex items-center">
+                        <span class="text-blue-500 mr-2">✓</span>
+                        Strong password creation
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-blue-500 mr-2">✓</span>
+                        Recognizing suspicious links
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-blue-500 mr-2">✓</span>
+                        Personal information protection
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Grades 5-6 -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="text-center mb-6">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🌳</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900">Grades 5-6</h3>
+                    <p class="text-purple-600">Cyber Mastery</p>
+                </div>
+                <ul class="text-gray-600 space-y-2 text-sm">
+                    <li class="flex items-center">
+                        <span class="text-purple-500 mr-2">✓</span>
+                        Advanced threat recognition
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-purple-500 mr-2">✓</span>
+                        Digital footprint awareness
+                    </li>
+                    <li class="flex items-center">
+                        <span class="text-purple-500 mr-2">✓</span>
+                        Responsible sharing practices
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

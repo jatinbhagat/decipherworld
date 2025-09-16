@@ -11,6 +11,9 @@ class GamesHubView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
+            'page_title': 'Educational Games Hub - Game Based Learning for CBSE ICSE Students | DecipherWorld India',
+            'page_description': 'Discover AI learning games, cyber security training, and constitutional challenges for CBSE & ICSE students across India. Interactive game-based learning platform for grades 1-10.',
+            'canonical_url': '/games/',
             'group_learning_count': Game.objects.filter(is_active=True).count(),
             'robotic_buddy_count': RoboticBuddy.objects.count(),
             # Include core AI games (Robotic Buddy, Simple Game, Emotion Game, Drag & Drop) + dynamic activities
@@ -26,6 +29,9 @@ class AILearningGamesView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
+            'page_title': 'AI Learning Games for Kids - Grades 1-5 | Machine Learning Education India',
+            'page_description': 'Interactive AI and machine learning games for CBSE ICSE students grades 1-5. Create robotic buddies, learn artificial intelligence through fun educational games across India.',
+            'canonical_url': '/games/ai-learning/',
             'activities': GameActivity.objects.filter(is_active=True)[:6],
             'buddy_count': RoboticBuddy.objects.count(),
         })
@@ -111,5 +117,75 @@ class LanguageAdventuresView(TemplateView):
         context.update({
             'page_title': 'Language Adventures - Interactive Language Learning (Coming Soon)',
             'page_description': 'Immersive language learning adventures through storytelling, role-playing, and cultural exploration games.',
+        })
+        return context
+
+
+class CyberSecurityGamesView(TemplateView):
+    """Cyber Security Games category page"""
+    template_name = 'games/cyber_security.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Cyber Security Games for Kids - Digital Safety Education India | Grades 1-6',
+            'page_description': 'Learn cyber security through interactive games for CBSE ICSE students grades 1-6. Password safety, digital threats, and online protection training across India.',
+            'canonical_url': '/games/cyber-security/',
+        })
+        return context
+
+
+class ConstitutionBasicView(TemplateView):
+    """Constitution Basic Games category page"""
+    template_name = 'games/constitution_basic.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Constitution Learning Games - Indian Civics for CBSE ICSE Grades 4-7 | Team Games',
+            'page_description': 'Learn Indian Constitution through team-based civics games for CBSE ICSE students grades 4-7. Democratic principles, fundamental rights, and governance education across India.',
+            'canonical_url': '/games/constitution-basic/',
+        })
+        return context
+
+
+class ConstitutionAdvancedView(TemplateView):
+    """Constitution Advanced Games category page"""
+    template_name = 'games/constitution_advanced.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Advanced Constitution Games - Indian Constitutional Law | CBSE ICSE Grades 7-10',
+            'page_description': 'Master Indian Constitutional law through advanced team games for CBSE ICSE students grades 7-10. Supreme Court cases, constitutional analysis, and legal reasoning education.',
+            'canonical_url': '/games/constitution-advanced/',
+        })
+        return context
+
+
+class FinancialLiteracyView(TemplateView):
+    """Financial Literacy Games category page"""
+    template_name = 'games/financial_literacy.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Financial Literacy Games - Budgeting Banking Investment | CBSE ICSE Grades 5-10',
+            'page_description': 'Learn budgeting, banking, stocks and mutual funds through interactive games for CBSE ICSE students grades 5-10. CBSE curriculum aligned financial decision-making education across India.',
+            'canonical_url': '/games/financial-literacy/',
+        })
+        return context
+
+
+class EntrepreneurshipView(TemplateView):
+    """Entrepreneurship Games category page"""
+    template_name = 'games/entrepreneurship.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Entrepreneurship Games - Business Building Team Challenges | CBSE ICSE Grades 4-10',
+            'page_description': 'Build on Lemonade Stand Game to teach business basics through team collaboration for CBSE ICSE students grades 4-10. Business planning, strategy, and scaling education across India.',
+            'canonical_url': '/games/entrepreneurship/',
         })
         return context

@@ -3,14 +3,15 @@ from django.utils import timezone
 
 
 def simple_sitemap(request):
-    """Enhanced sitemap with SEO-friendly URLs and dynamic content"""
+    """Enhanced sitemap with SEO-friendly URLs for Indian educational market"""
     
     scheme = 'https' if request.is_secure() else 'http'
     domain = request.get_host()
     base_url = f"{scheme}://{domain}"
+    # Use Indian timezone for timestamps
     current_date = timezone.now().strftime('%Y-%m-%d')
     
-    # Essential URLs with SEO priorities
+    # Essential URLs with SEO priorities for Indian education
     urls = [
         # Core pages (highest priority)
         ('', '1.0', 'daily'),
@@ -20,24 +21,27 @@ def simple_sitemap(request):
         ('/contact/', '0.8', 'monthly'),
         ('/gallery/', '0.7', 'monthly'),
         
-        # Games (high discoverability)
+        # Games Hub (high discoverability for Indian students)
         ('/games/', '0.9', 'weekly'),
-        ('/games/ai-learning/', '0.8', 'weekly'),  
-        ('/games/group-learning/', '0.8', 'weekly'),
-        ('/games/stem-challenges/', '0.7', 'weekly'),
-        ('/games/language-adventures/', '0.7', 'weekly'),
         
-        # Robotic Buddy pages
-        ('/buddy/', '0.8', 'weekly'),
-        ('/buddy/create/', '0.7', 'weekly'),
-        ('/buddy/activities/', '0.7', 'weekly'),
-        ('/buddy/simple-game/', '0.6', 'monthly'),
-        ('/buddy/classification-game/', '0.6', 'monthly'),
-        ('/buddy/drag-drop-game/', '0.6', 'monthly'),
-        ('/buddy/emotion-game/', '0.6', 'monthly'),
+        # Individual Games (CBSE/ICSE focused)
+        ('/games/ai-learning/', '0.8', 'weekly'),
+        ('/games/cyber-security/', '0.8', 'weekly'),
+        ('/games/financial-literacy/', '0.8', 'weekly'),
         
-        # Group Learning
-        ('/learn/', '0.8', 'weekly'),
+        # Team Games (Constitutional & Environmental Education)
+        ('/games/constitution-basic/', '0.8', 'weekly'),
+        ('/games/constitution-advanced/', '0.8', 'weekly'),
+        ('/games/entrepreneurship/', '0.8', 'weekly'),
+        ('/games/group-learning/', '0.7', 'weekly'),
+        ('/games/group-learning/monsoon-mayhem/', '0.7', 'weekly'),
+        
+        # Future categories
+        ('/games/stem-challenges/', '0.6', 'monthly'),
+        ('/games/language-adventures/', '0.6', 'monthly'),
+        
+        # Cyber City Security Games
+        ('/cyber-city/', '0.7', 'weekly'),
     ]
     
     # Add dynamic Group Learning game pages

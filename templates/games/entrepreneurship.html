@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block description %}{{ page_description }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-orange-600 via-amber-600 to-yellow-600 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div class="text-center">
+            <div class="flex justify-center mb-6">
+                <div class="bg-white/20 backdrop-blur-sm rounded-full p-6">
+                    <span class="text-6xl">🚀</span>
+                </div>
+            </div>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+                Entrepreneurship Team Games
+            </h1>
+            <p class="text-xl sm:text-2xl mb-8 max-w-4xl mx-auto opacity-90">
+                Build businesses through team collaboration - from Lemonade Stands to scaling startups
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto">
+                <a href="https://games.decipherworld.com" target="_blank" rel="noopener" class="bg-white text-orange-600 px-8 py-4 rounded-lg hover:bg-gray-50 transition-colors font-bold text-lg">
+                    Launch Business Game <i class="fas fa-external-link-alt ml-2"></i>
+                </a>
+                <a href="{% url 'games:hub' %}" class="bg-white/20 backdrop-blur-sm text-white border border-white/30 px-8 py-4 rounded-lg hover:bg-white/30 transition-colors font-medium">
+                    Explore All Games
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Game Details -->
+<div class="py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+            <div>
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+                    Build Your Business Empire
+                </h2>
+                <p class="text-xl text-gray-600 mb-8">
+                    Starting with the classic Lemonade Stand concept, teams learn to set up, run, and scale businesses through collaborative challenges. Experience real entrepreneurship through team-based problem solving and strategic planning.
+                </p>
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="bg-orange-100 rounded-full p-2 mr-4 mt-1">
+                            <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Team Collaboration Focus</h3>
+                            <p class="text-gray-600">Build communication and teamwork skills through business challenges</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-orange-100 rounded-full p-2 mr-4 mt-1">
+                            <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Progressive Business Building</h3>
+                            <p class="text-gray-600">Start simple with lemonade stands, scale to complex enterprises</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-orange-100 rounded-full p-2 mr-4 mt-1">
+                            <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Real-World Skills</h3>
+                            <p class="text-gray-600">Learn practical entrepreneurship through authentic scenarios</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="relative">
+                <div class="bg-gradient-to-br from-orange-100 to-amber-100 rounded-2xl p-8 shadow-lg">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">🍋</div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">From Lemonade to Legacy</h3>
+                        <p class="text-gray-600 mb-6">Watch your team's business grow from a simple lemonade stand to a thriving enterprise</p>
+                        <div class="bg-white rounded-lg p-4">
+                            <div class="grid grid-cols-3 gap-4 text-center">
+                                <div>
+                                    <div class="text-2xl font-bold text-orange-600">₹500</div>
+                                    <div class="text-sm text-gray-500">Day 1 Revenue</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold text-orange-600">₹5,000</div>
+                                    <div class="text-sm text-gray-500">Week 1 Revenue</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold text-orange-600">₹50,000</div>
+                                    <div class="text-sm text-gray-500">Month 1 Revenue</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Objectives -->
+        <div class="bg-gray-50 rounded-2xl p-8 sm:p-12 mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Team Learning Objectives</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="bg-orange-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                        💡
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Idea Generation</h3>
+                    <p class="text-gray-600">Brainstorm and evaluate business opportunities as a team</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-orange-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                        📊
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Business Planning</h3>
+                    <p class="text-gray-600">Create comprehensive business plans through collaboration</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-orange-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                        🤝
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Team Leadership</h3>
+                    <p class="text-gray-600">Develop leadership and delegation skills within teams</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-orange-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                        📈
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Growth Strategy</h3>
+                    <p class="text-gray-600">Learn scaling strategies and market expansion together</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Challenges -->
+        <div class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Team Challenge Stages</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white border-2 border-orange-200 rounded-xl p-6 text-center">
+                    <div class="text-4xl mb-4">🍋</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Stage 1: Lemonade Stand</h3>
+                    <p class="text-gray-600">Teams start with classic lemonade stand basics - pricing, location, customer service</p>
+                    <div class="mt-4 text-sm text-orange-600 font-medium">Grades 4-6</div>
+                </div>
+                <div class="bg-white border-2 border-orange-200 rounded-xl p-6 text-center">
+                    <div class="text-4xl mb-4">🏪</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Stage 2: Local Business</h3>
+                    <p class="text-gray-600">Expand to local shops - inventory management, marketing, team roles</p>
+                    <div class="mt-4 text-sm text-orange-600 font-medium">Grades 6-8</div>
+                </div>
+                <div class="bg-white border-2 border-orange-200 rounded-xl p-6 text-center">
+                    <div class="text-4xl mb-4">🏢</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Stage 3: Scaling Up</h3>
+                    <p class="text-gray-600">Multi-location businesses - finance, partnerships, strategic planning</p>
+                    <div class="mt-4 text-sm text-orange-600 font-medium">Grades 8-10</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Information -->
+        <div class="text-center">
+            <div class="bg-orange-50 border border-orange-200 rounded-lg p-6 inline-block">
+                <div class="flex items-center text-orange-800">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="font-medium">
+                        <strong>Grades 4-10</strong> • Team Games • Business Education • Collaboration Skills
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="bg-orange-600 text-white py-16">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+            Ready to Build Your Business Team?
+        </h2>
+        <p class="text-xl mb-8 opacity-90">
+            Join teams worldwide learning entrepreneurship through collaborative gameplay
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto">
+            <a href="https://games.decipherworld.com" target="_blank" rel="noopener" class="bg-white text-orange-600 px-8 py-3 rounded-lg hover:bg-gray-50 transition-colors font-bold">
+                Launch Team Challenge <i class="fas fa-external-link-alt ml-2"></i>
+            </a>
+            <a href="{% url 'games:hub' %}" class="bg-orange-700 text-white px-8 py-3 rounded-lg hover:bg-orange-800 transition-colors font-medium">
+                Explore More Games
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

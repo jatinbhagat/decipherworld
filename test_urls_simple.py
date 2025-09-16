@@ -22,9 +22,18 @@ def test_urls():
         ('/gallery/', 200, "Gallery page"),
         ('/contact/', 200, "Contact page"),
         
-        # Games
+        # Games Hub
         ('/games/', 200, "Games Hub"),
+        
+        # Individual Games
         ('/games/ai-learning/', 200, "AI Learning Games"),
+        ('/games/cyber-security/', 200, "Cyber Security Games"),
+        ('/games/financial-literacy/', 200, "Financial Literacy Games"),
+        
+        # Team Games
+        ('/games/constitution-basic/', 200, "Constitution Basic Games"),
+        ('/games/constitution-advanced/', 200, "Constitution Advanced Games"),
+        ('/games/entrepreneurship/', 200, "Entrepreneurship Games"),
         ('/games/group-learning/', 200, "Group Learning Games"),
         
         # Robotic Buddy
