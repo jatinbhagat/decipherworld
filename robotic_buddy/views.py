@@ -57,26 +57,81 @@ class CreateBuddyView(TemplateView):
     
     def post(self, request, *args, **kwargs):
         """Handle buddy creation"""
+        import logging
+        logger = logging.getLogger(__name__)
+        
         try:
+            # Log form data for debugging
+            logger.info(f"Creating buddy with data: name={request.POST.get('name')}, personality={request.POST.get('personality')}, primary_color={request.POST.get('primary_color')}, secondary_color={request.POST.get('secondary_color')}")
+            
+            # Validate required fields
+            name = request.POST.get('name', '').strip()
+            if not name:
+                messages.error(request, 'Please enter a name for your buddy!')
+                return self.get(request, *args, **kwargs)
+            
+            # Validate personality choice
+            personality = request.POST.get('personality', 'cheerful')
+            valid_personalities = [choice[0] for choice in RoboticBuddy.PERSONALITY_CHOICES]
+            if personality not in valid_personalities:
+                logger.warning(f"Invalid personality '{personality}', using default 'cheerful'")
+                personality = 'cheerful'
+            
+            # Validate color choices
+            primary_color = request.POST.get('primary_color', 'blue')
+            secondary_color = request.POST.get('secondary_color', 'green')
+            valid_colors = [choice[0] for choice in RoboticBuddy.COLOR_CHOICES]
+            
+            if primary_color not in valid_colors:
+                logger.warning(f"Invalid primary_color '{primary_color}', using default 'blue'")
+                primary_color = 'blue'
+                
+            if secondary_color not in valid_colors:
+                logger.warning(f"Invalid secondary_color '{secondary_color}', using default 'green'")
+                secondary_color = 'green'
+            
             # Generate unique session ID
             session_id = str(uuid.uuid4())
+            logger.info(f"Generated session_id: {session_id}")
+            
+            # Test database connection first
+            try:
+                # Check if we can query the database
+                RoboticBuddy.objects.count()
+                logger.info("Database connection successful")
+            except Exception as db_test_error:
+                logger.error(f"Database connection test failed: {str(db_test_error)}")
+                messages.error(request, 'Database connection error. Please try again later.')
+                return self.get(request, *args, **kwargs)
             
             # Create the buddy
-            buddy = RoboticBuddy.objects.create(
-                name=request.POST.get('name', 'Buddy')[:50],
-                session_id=session_id,
-                personality=request.POST.get('personality', 'cheerful'),
-                primary_color=request.POST.get('primary_color', 'blue'),
-                secondary_color=request.POST.get('secondary_color', 'green')
-            )
+            try:
+                buddy = RoboticBuddy.objects.create(
+                    name=name[:50],  # Ensure name doesn't exceed max length
+                    session_id=session_id,
+                    personality=personality,
+                    primary_color=primary_color,
+                    secondary_color=secondary_color
+                )
+                logger.info(f"Successfully created buddy: {buddy.name} with ID: {buddy.id}")
+            except Exception as create_error:
+                logger.error(f"Failed to create buddy in database: {str(create_error)}")
+                messages.error(request, f'Failed to create buddy: {str(create_error)}')
+                return self.get(request, *args, **kwargs)
             
             # Store session ID for future reference
-            request.session['buddy_session_id'] = session_id
+            try:
+                request.session['buddy_session_id'] = session_id
+                logger.info(f"Session stored successfully: {session_id}")
+            except Exception as session_error:
+                logger.error(f"Failed to store session: {str(session_error)}")
+                # Continue anyway, buddy is created
             
             messages.success(request, f'🎉 Meet {buddy.name}! Your AI buddy is ready to learn!')
             return redirect('robotic_buddy:my_buddy')
             
         except Exception as e:
+            logger.error(f"Unexpected error in CreateBuddyView.post: {str(e)}", exc_info=True)
             messages.error(request, f'Error creating buddy: {str(e)}')
             return self.get(request, *args, **kwargs)
 
