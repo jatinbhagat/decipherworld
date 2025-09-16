@@ -45,6 +45,13 @@
     <!-- Web App Manifest -->
     <link rel="manifest" href="{% static 'site.webmanifest' %}">
     
+    <!-- Background Music -->
+    <audio id="backgroundMusic" loop preload="auto" style="display: none;">
+        <source src="{% static 'audio/cyber-ambient.mp3' %}" type="audio/mpeg">
+        <!-- Fallback: Simple generated tone -->
+        Your browser does not support the audio element.
+    </audio>
+    
     <!-- Custom CSS -->
     
     <link rel="stylesheet" href="/static/css/custom.css">
@@ -231,7 +238,12 @@
         </div>
         
         <!-- Mobile CTA Button -->
-        <div class="navbar-end">
+        <div class="navbar-end gap-2">
+            <!-- Music Control Button -->
+            <button id="musicToggle" onclick="toggleMusic()" class="btn btn-ghost btn-sm text-slate-600 hover:text-primary transition-colors" title="Toggle Background Music">
+                <i id="musicIcon" class="fas fa-volume-up text-lg"></i>
+            </button>
+            
             <a href="/contact/" class="btn btn-primary btn-sm shadow-lg hover:shadow-xl transition-all duration-300 px-3">
                 <i class="fas fa-rocket text-sm"></i>
                 <span class="hidden xs:inline text-sm">Get Started</span>
@@ -912,9 +924,53 @@ function getCookie(name) {
     return cookieValue;
 }
 
+// Music Control Functions
+let musicEnabled = false;
+const music = document.getElementById('backgroundMusic');
+
+function toggleMusic() {
+    const musicIcon = document.getElementById('musicIcon');
+    
+    if (musicEnabled) {
+        music.pause();
+        musicIcon.className = 'fas fa-volume-mute text-lg';
+        musicEnabled = false;
+        localStorage.setItem('cyberCityMusic', 'disabled');
+    } else {
+        music.play().catch(e => {
+            console.log('Music autoplay prevented by browser:', e);
+        });
+        musicIcon.className = 'fas fa-volume-up text-lg';
+        musicEnabled = true;
+        localStorage.setItem('cyberCityMusic', 'enabled');
+    }
+}
+
+function initializeMusic() {
+    const savedPreference = localStorage.getItem('cyberCityMusic');
+    
+    // Set subtle volume for background ambiance
+    music.volume = 0.25;
+    
+    // Always start muted to comply with browser autoplay policies
+    musicEnabled = false;
+    document.getElementById('musicIcon').className = 'fas fa-volume-mute text-lg';
+    
+    // Add error handling for audio loading
+    music.addEventListener('error', function(e) {
+        console.log('Audio file could not be loaded:', e);
+        document.getElementById('musicToggle').style.display = 'none';
+    });
+    
+    music.addEventListener('loadeddata', function() {
+        console.log('Cyber City ambient audio ready');
+    });
+}
+
 // Initialize game
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Cyber City Protection Squad initialized');
+    initializeMusic();
 });
 </script>
 
