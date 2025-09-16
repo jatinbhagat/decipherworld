@@ -1,0 +1,22 @@
+{
+    "name": "DecipherWorld - Educational Games Platform",
+    "short_name": "DecipherWorld",
+    "description": "Transform learning into adventure with AI-powered educational games",
+    "icons": [
+        {
+            "src": "/static/images/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/images/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#2563eb",
+    "background_color": "#ffffff",
+    "categories": ["education", "games", "learning"]
+}
