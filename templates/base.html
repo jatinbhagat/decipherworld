@@ -209,25 +209,98 @@
                     <li>
                         <details>
                             <summary class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-gamepad text-warning"></i>Educational Games<span class="badge badge-warning badge-xs ml-2">NEW</span></summary>
-                            <ul class="p-2 bg-slate-50 rounded-md mt-2">
-                                <li><a href="{% url 'games:hub' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white"><i class="fas fa-th-large text-warning"></i>Games Hub</a></li>
-                                <li class="border-t border-slate-200 pt-2 mt-2">
-                                    <div class="px-3 py-1 text-xs font-semibold text-slate-500 uppercase tracking-wide">Individual Games</div>
+                            <ul class="p-3 bg-slate-50 rounded-lg mt-2 space-y-1">
+                                <!-- Games Hub -->
+                                <li>
+                                    <a href="{% url 'games:hub' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white transition-colors">
+                                        <i class="fas fa-th-large text-warning w-4"></i>
+                                        <span class="font-medium text-slate-700">Games Hub</span>
+                                    </a>
                                 </li>
-                                <li><a href="{% url 'games:ai_learning' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white"><i class="fas fa-robot text-blue-500"></i>AI Learning <span class="text-xs text-slate-500">Grades 1-5</span></a></li>
-                                <li><a href="{% url 'games:cyber_security' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white"><i class="fas fa-shield-alt text-red-500"></i>Cyber Security <span class="text-xs text-slate-500">Grades 1-6</span></a></li>
-                                <li><a href="{% url 'games:financial_literacy' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white"><i class="fas fa-coins text-green-500"></i>Financial Literacy <span class="text-xs text-slate-500">Grades 5-10</span></a></li>
+                                
+                                <!-- Individual Games Section -->
                                 <li class="border-t border-slate-200 pt-2 mt-2">
-                                    <div class="px-3 py-1 text-xs font-semibold text-slate-500 uppercase tracking-wide">Team Games</div>
+                                    <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Individual Games</div>
                                 </li>
-                                <li><a href="{% url 'games:entrepreneurship' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white"><i class="fas fa-rocket text-orange-500"></i>Entrepreneurship <span class="text-xs text-slate-500">Grades 4-10</span></a></li>
-                                <li><a href="{% url 'games:constitution_basic' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white"><i class="fas fa-landmark text-green-500"></i>Constitution Basic <span class="text-xs text-slate-500">Grades 4-7</span></a></li>
-                                <li><a href="{% url 'games:constitution_advanced' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white"><i class="fas fa-balance-scale text-purple-500"></i>Constitution Advanced <span class="text-xs text-slate-500">Grades 7-10</span></a></li>
-                                <li><a href="{% url 'games:monsoon_mayhem_landing' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white"><i class="fas fa-cloud-rain text-blue-500"></i>Climate Change Challenge <span class="text-xs text-slate-500">Grades 6-10</span></a></li>
+                                <li>
+                                    <a href="{% url 'games:ai_learning' %}" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-robot text-blue-500 w-4"></i>
+                                            <span class="font-medium text-slate-700">AI Learning</span>
+                                        </div>
+                                        <span class="text-xs font-medium text-slate-500 bg-white px-2 py-0.5 rounded-full">Grades 1-5</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'games:cyber_security' %}" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-shield-alt text-red-500 w-4"></i>
+                                            <span class="font-medium text-slate-700">Cyber Security</span>
+                                        </div>
+                                        <span class="text-xs font-medium text-slate-500 bg-white px-2 py-0.5 rounded-full">Grades 1-6</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'games:financial_literacy' %}" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-coins text-green-500 w-4"></i>
+                                            <span class="font-medium text-slate-700">Financial Literacy</span>
+                                        </div>
+                                        <span class="text-xs font-medium text-slate-500 bg-white px-2 py-0.5 rounded-full">Grades 5-10</span>
+                                    </a>
+                                </li>
+                                
+                                <!-- Team Games Section -->
                                 <li class="border-t border-slate-200 pt-2 mt-2">
-                                    <div class="px-3 py-1 text-xs font-semibold text-slate-500 uppercase tracking-wide">Coming Soon</div>
+                                    <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Team Games</div>
                                 </li>
-                                <li><a href="{% url 'games:stem_challenges' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white text-gray-400"><i class="fas fa-flask text-orange-400"></i>STEM Challenges</a></li>
+                                <li>
+                                    <a href="{% url 'games:entrepreneurship' %}" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-rocket text-orange-500 w-4"></i>
+                                            <span class="font-medium text-slate-700">Entrepreneurship</span>
+                                        </div>
+                                        <span class="text-xs font-medium text-slate-500 bg-white px-2 py-0.5 rounded-full">Grades 4-10</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'games:constitution_basic' %}" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-landmark text-green-500 w-4"></i>
+                                            <span class="font-medium text-slate-700">Constitution Basic</span>
+                                        </div>
+                                        <span class="text-xs font-medium text-slate-500 bg-white px-2 py-0.5 rounded-full">Grades 4-7</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'games:constitution_advanced' %}" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-balance-scale text-purple-500 w-4"></i>
+                                            <span class="font-medium text-slate-700">Constitution Advanced</span>
+                                        </div>
+                                        <span class="text-xs font-medium text-slate-500 bg-white px-2 py-0.5 rounded-full">Grades 7-10</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'games:monsoon_mayhem_landing' %}" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-cloud-rain text-blue-500 w-4"></i>
+                                            <span class="font-medium text-slate-700">Climate Change Challenge</span>
+                                        </div>
+                                        <span class="text-xs font-medium text-slate-500 bg-white px-2 py-0.5 rounded-full">Grades 6-10</span>
+                                    </a>
+                                </li>
+                                
+                                <!-- Coming Soon Section -->
+                                <li class="border-t border-slate-200 pt-2 mt-2">
+                                    <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Coming Soon</div>
+                                </li>
+                                <li>
+                                    <a href="{% url 'games:stem_challenges' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white transition-colors opacity-60">
+                                        <i class="fas fa-flask text-orange-400 w-4"></i>
+                                        <span class="font-medium text-slate-500">STEM Challenges</span>
+                                    </a>
+                                </li>
                             </ul>
                         </details>
                     </li>
@@ -271,25 +344,98 @@
                             <i class="fas fa-gamepad text-warning"></i>Games
                             <div class="badge badge-warning badge-xs">NEW</div>
                         </summary>
-                        <ul class="p-2 bg-white shadow-lg rounded-lg border border-slate-200 w-64 z-50">
-                            <li><a href="{% url 'games:hub' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50"><i class="fas fa-th-large text-warning"></i>Games Hub</a></li>
-                            <li class="border-t border-slate-200 pt-2 mt-2">
-                                <div class="px-3 py-1 text-xs font-semibold text-slate-500 uppercase tracking-wide">Individual Games</div>
+                        <ul class="p-3 bg-white shadow-xl rounded-xl border border-slate-200 w-80 z-50">
+                            <!-- Games Hub -->
+                            <li>
+                                <a href="{% url 'games:hub' %}" class="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-slate-50 transition-colors">
+                                    <i class="fas fa-th-large text-warning w-4"></i>
+                                    <span class="font-medium text-slate-700">Games Hub</span>
+                                </a>
                             </li>
-                            <li><a href="{% url 'games:ai_learning' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50"><i class="fas fa-robot text-blue-500"></i>AI Learning <span class="text-xs text-slate-500">Grades 1-5</span></a></li>
-                            <li><a href="{% url 'games:cyber_security' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50"><i class="fas fa-shield-alt text-red-500"></i>Cyber Security <span class="text-xs text-slate-500">Grades 1-6</span></a></li>
-                            <li><a href="{% url 'games:financial_literacy' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50"><i class="fas fa-coins text-green-500"></i>Financial Literacy <span class="text-xs text-slate-500">Grades 5-10</span></a></li>
-                            <li class="border-t border-slate-200 pt-2 mt-2">
-                                <div class="px-3 py-1 text-xs font-semibold text-slate-500 uppercase tracking-wide">Team Games</div>
+                            
+                            <!-- Individual Games Section -->
+                            <li class="border-t border-slate-200 pt-3 mt-3">
+                                <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Individual Games</div>
                             </li>
-                            <li><a href="{% url 'games:entrepreneurship' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50"><i class="fas fa-rocket text-orange-500"></i>Entrepreneurship <span class="text-xs text-slate-500">Grades 4-10</span></a></li>
-                            <li><a href="{% url 'games:constitution_basic' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50"><i class="fas fa-landmark text-green-500"></i>Constitution Basic <span class="text-xs text-slate-500">Grades 4-7</span></a></li>
-                            <li><a href="{% url 'games:constitution_advanced' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50"><i class="fas fa-balance-scale text-purple-500"></i>Constitution Advanced <span class="text-xs text-slate-500">Grades 7-10</span></a></li>
-                            <li><a href="{% url 'games:monsoon_mayhem_landing' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50"><i class="fas fa-cloud-rain text-blue-500"></i>Climate Change Challenge <span class="text-xs text-slate-500">Grades 6-10</span></a></li>
-                            <li class="border-t border-slate-200 pt-2 mt-2">
-                                <div class="px-3 py-1 text-xs font-semibold text-slate-500 uppercase tracking-wide">Coming Soon</div>
+                            <li>
+                                <a href="{% url 'games:ai_learning' %}" class="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-slate-50 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-robot text-blue-500 w-4"></i>
+                                        <span class="font-medium text-slate-700">AI Learning</span>
+                                    </div>
+                                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">Grades 1-5</span>
+                                </a>
                             </li>
-                            <li><a href="{% url 'games:stem_challenges' %}" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50 text-gray-400"><i class="fas fa-flask text-orange-400"></i>STEM Challenges</a></li>
+                            <li>
+                                <a href="{% url 'games:cyber_security' %}" class="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-slate-50 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-shield-alt text-red-500 w-4"></i>
+                                        <span class="font-medium text-slate-700">Cyber Security</span>
+                                    </div>
+                                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">Grades 1-6</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'games:financial_literacy' %}" class="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-slate-50 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-coins text-green-500 w-4"></i>
+                                        <span class="font-medium text-slate-700">Financial Literacy</span>
+                                    </div>
+                                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">Grades 5-10</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Team Games Section -->
+                            <li class="border-t border-slate-200 pt-3 mt-3">
+                                <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Team Games</div>
+                            </li>
+                            <li>
+                                <a href="{% url 'games:entrepreneurship' %}" class="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-slate-50 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-rocket text-orange-500 w-4"></i>
+                                        <span class="font-medium text-slate-700">Entrepreneurship</span>
+                                    </div>
+                                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">Grades 4-10</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'games:constitution_basic' %}" class="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-slate-50 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-landmark text-green-500 w-4"></i>
+                                        <span class="font-medium text-slate-700">Constitution Basic</span>
+                                    </div>
+                                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">Grades 4-7</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'games:constitution_advanced' %}" class="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-slate-50 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-balance-scale text-purple-500 w-4"></i>
+                                        <span class="font-medium text-slate-700">Constitution Advanced</span>
+                                    </div>
+                                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">Grades 7-10</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'games:monsoon_mayhem_landing' %}" class="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-slate-50 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-cloud-rain text-blue-500 w-4"></i>
+                                        <span class="font-medium text-slate-700">Climate Change Challenge</span>
+                                    </div>
+                                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">Grades 6-10</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Coming Soon Section -->
+                            <li class="border-t border-slate-200 pt-3 mt-3">
+                                <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Coming Soon</div>
+                            </li>
+                            <li>
+                                <a href="{% url 'games:stem_challenges' %}" class="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-slate-50 transition-colors opacity-60">
+                                    <i class="fas fa-flask text-orange-400 w-4"></i>
+                                    <span class="font-medium text-slate-500">STEM Challenges</span>
+                                </a>
+                            </li>
                         </ul>
                     </details>
                 </li>
