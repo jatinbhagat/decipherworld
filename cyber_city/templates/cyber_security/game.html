@@ -1132,11 +1132,11 @@ function showResult(data) {
                     </div>
                 </div>
             ` : ''}
-            <button onclick="continueGame(false)" 
+            <button onclick="continueGame(false, ${data.is_correct})" 
                     style="background: linear-gradient(45deg, #00ffff, #0080ff); color: #000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);"
                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 255, 255, 0.4)'"
                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 255, 255, 0.3)'">
-                ➡️ CONTINUE MISSION
+                ${data.is_correct ? '➡️ CONTINUE MISSION' : '📚 CONTINUE LEARNING'}
             </button>
         </div>
     `;
@@ -1341,7 +1341,7 @@ function createCelebrationEffects() {
     }
 }
 
-function continueGame(missionComplete) {
+function continueGame(missionComplete, isCorrect = true) {
     try {
         // Remove overlay safely
         const overlay = document.querySelector('.fixed.inset-0');
@@ -1354,16 +1354,62 @@ function continueGame(missionComplete) {
             // Redirect to results page or reload with completed state
             window.location.href = window.location.href;
         } else {
-            // Continue to next challenge
-            setTimeout(() => {
-                window.location.reload();
-            }, 300);
+            // Continue to next challenge - handle both correct and wrong answers
+            if (isCorrect) {
+                // For correct answers, just reload to get next challenge
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            } else {
+                // For wrong answers, call backend to progress after wrong answer
+                progressAfterWrongAnswer();
+            }
         }
     } catch (error) {
         console.error('Error in continueGame:', error);
         // Fallback: just reload the page
         window.location.reload();
     }
+}
+
+// Progress after wrong answer - calls backend to advance the game
+function progressAfterWrongAnswer() {
+    // Update backend to progress the challenge after wrong answer
+    fetch(`/cyber-city/${sessionCode}/action/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            action_type: 'progress_after_wrong_answer',
+            challenge_id: currentChallengeId
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.indexOf('application/json') !== -1) {
+            return response.json();
+        } else {
+            throw new Error('Response is not JSON');
+        }
+    })
+    .then(data => {
+        // Reload to show next challenge or completion screen
+        setTimeout(() => {
+            window.location.reload();
+        }, 300);
+    })
+    .catch(error => {
+        console.error('Progress after wrong answer error:', error);
+        // Fallback: just reload anyway to progress the game
+        setTimeout(() => {
+            window.location.reload();
+        }, 300);
+    });
 }
 
 function getCookie(name) {
