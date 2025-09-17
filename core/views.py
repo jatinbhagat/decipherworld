@@ -421,3 +421,118 @@ def check_robotic_buddy(request):
             'status': 'error',
             'message': f'Failed to run robotic buddy diagnostic: {str(e)}'
         }, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def populate_cyberbully_challenges_web(request):
+    """Populate Cyberbully Crisis challenges via HTTP request"""
+    try:
+        from cyber_city.models import CyberbullyChallenge
+        
+        # Check if challenges already exist
+        if CyberbullyChallenge.objects.exists():
+            return JsonResponse({
+                'status': 'info',
+                'message': 'Cyberbully challenges already exist',
+                'count': CyberbullyChallenge.objects.count()
+            })
+        
+        # Create the 5 challenges with the exact content specified
+        challenges = [
+            {
+                'challenge_number': 1,
+                'title': 'Welcome to Cyber Street!',
+                'background_story': 'Bully Bots stomp in, posting graffiti above happy citizens.',
+                'option_a': 'You\'re awesome at this game!',
+                'option_a_type': 'friendly',
+                'option_b': 'Nobody likes you, just quit already.',
+                'option_b_type': 'bully',
+                'option_c': 'Good luck on your project!',
+                'option_c_type': 'friendly',
+                'correct_answer': 'B',
+                'explanation': 'The message "Nobody likes you, just quit already" is mean and hurtful. It\'s designed to make someone feel bad about themselves, which is bullying behavior.',
+                'mentor_tip': 'Great job! You protected Cyber City from meanness. Reporting helps stop bullies in their tracks.',
+                'mentor_voice_text': 'Excellent work! You spotted the bully message and helped keep our community safe!'
+            },
+            {
+                'challenge_number': 2,
+                'title': 'Group Chat Challenge',
+                'background_story': 'Projected group chat doors, avatars gathered in a virtual plaza.',
+                'option_a': 'You seriously think anyone cares about your art? LOL.',
+                'option_a_type': 'bully',
+                'option_b': 'Wow, that game was tough. Good job, everyone!',
+                'option_b_type': 'friendly',
+                'option_c': 'Check out this cat meme, it\'s hilarious!',
+                'option_c_type': 'friendly',
+                'correct_answer': 'A',
+                'explanation': 'Making fun of someone\'s creative work is hurtful and dismissive. This discourages people from sharing their talents.',
+                'mentor_tip': 'Right choice! Hurtful comments about someone\'s interests aren\'t jokes—they\'re bullying.',
+                'mentor_voice_text': 'Perfect! You recognized that making fun of someone\'s art is mean and hurtful. Art is for everyone!'
+            },
+            {
+                'challenge_number': 3,
+                'title': 'The Sneaky Excluder',
+                'background_story': 'Avatar group selfie projected above a party scene.',
+                'option_a': 'Let\'s invite everyone except Jamie—they\'re too weird.',
+                'option_a_type': 'bully',
+                'option_b': 'Here\'s the invite list!',
+                'option_b_type': 'friendly',
+                'option_c': 'Can\'t wait for the party!',
+                'option_c_type': 'friendly',
+                'correct_answer': 'A',
+                'explanation': 'Deliberately excluding someone and calling them weird is social bullying. Leaving people out on purpose is mean.',
+                'mentor_tip': 'Perfect! Leaving people out on purpose is cruel—even if it seems subtle.',
+                'mentor_voice_text': 'Excellent spotting! Excluding someone because they\'re different is sneaky bullying. Everyone deserves inclusion!'
+            },
+            {
+                'challenge_number': 4,
+                'title': 'Creative Work Teasing',
+                'background_story': 'Poetry contest—holograms of creative entries float above a stage.',
+                'option_a': 'Your poem made me laugh... in a good way! Loved it.',
+                'option_a_type': 'friendly',
+                'option_b': 'Everyone saw your poem, it was the worst I\'ve read!',
+                'option_b_type': 'bully',
+                'option_c': 'Thanks for sharing your poem.',
+                'option_c_type': 'friendly',
+                'correct_answer': 'B',
+                'explanation': 'Publicly calling someone\'s work "the worst" is mean and embarrassing. This hurts confidence and creativity.',
+                'mentor_tip': 'Bullies sometimes attack creative work—good for you, calling it out!',
+                'mentor_voice_text': 'Great job! You protected creativity from a mean comment. Creative expression should be encouraged!'
+            },
+            {
+                'challenge_number': 5,
+                'title': 'Joke or Bullying?',
+                'background_story': 'Gaming arcade scene, leaderboard up in lights.',
+                'option_a': 'Guess who tripped again today?',
+                'option_a_type': 'bully',
+                'option_b': 'Let\'s play at 6pm as usual!',
+                'option_b_type': 'friendly',
+                'option_c': 'Congrats on your new high score, Sam!',
+                'option_c_type': 'friendly',
+                'correct_answer': 'A',
+                'explanation': 'Making fun of someone\'s embarrassing moment isn\'t a joke—it\'s teasing that hurts. True friends don\'t embarrass each other.',
+                'mentor_tip': 'Teasing that embarrasses can feel like bullying—thank you for helping friends feel safe.',
+                'mentor_voice_text': 'Perfect! You understood that teasing about embarrassing moments is hurtful. You\'re a protector of kindness!'
+            }
+        ]
+        
+        created_count = 0
+        for challenge_data in challenges:
+            challenge, created = CyberbullyChallenge.objects.get_or_create(
+                challenge_number=challenge_data['challenge_number'],
+                defaults=challenge_data
+            )
+            if created:
+                created_count += 1
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': f'Successfully populated {created_count} cyberbully challenges',
+            'total_challenges': CyberbullyChallenge.objects.count()
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to populate cyberbully challenges: {str(e)}'
+        }, status=500)

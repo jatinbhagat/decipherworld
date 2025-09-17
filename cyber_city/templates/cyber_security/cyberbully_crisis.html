@@ -1,0 +1,760 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyberbully Crisis on Cyber Street - Mission 2</title>
+    {% csrf_token %}
+    
+    <!-- Tailwind CSS with DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Background Music -->
+    <audio id="backgroundMusic" loop preload="auto" style="display: none;">
+        <source src="{% static 'audio/cyber-ambient.mp3' %}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .cyber-street {
+            background: linear-gradient(180deg, #1e3a8a 0%, #3730a3 50%, #581c87 100%);
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(59, 130, 246, 0.2) 0%, transparent 50%);
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .neon-border {
+            border: 2px solid #60a5fa;
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+        }
+        
+        .chat-bubble {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            min-height: 120px;
+        }
+        
+        .chat-bubble:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .friendly-bubble {
+            border-left: 5px solid #10b981;
+        }
+        
+        .friendly-bubble:hover {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0.95) 100%);
+            animation: greenGlow 0.5s ease;
+        }
+        
+        .bully-bubble {
+            border-left: 5px solid #ef4444;
+        }
+        
+        .bully-bubble.correct-selection {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 0.95) 100%);
+            animation: redGlow 0.5s ease, reportSuccess 1s ease;
+        }
+        
+        .mentor-float {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        .mentor-bubble {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 20px 20px 5px 20px;
+            margin-left: 10px;
+            position: relative;
+            max-width: 250px;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+        
+        .citizens {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+        
+        .citizen {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            animation: citizenHappy 2s ease infinite;
+        }
+        
+        .bully-bot {
+            position: absolute;
+            top: 20%;
+            right: 10%;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            animation: bullyBotMean 1.5s ease infinite;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+        
+        .street-lamp {
+            position: absolute;
+            left: 10%;
+            top: 10%;
+            width: 20px;
+            height: 200px;
+            background: linear-gradient(180deg, #374151 0%, #6b7280 100%);
+            border-radius: 10px;
+        }
+        
+        .street-lamp::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.7);
+            animation: lampGlow 2s ease-in-out infinite alternate;
+        }
+        
+        .coin-rain {
+            position: fixed;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #fbbf24;
+            animation: coinFall 2s ease-out forwards;
+            z-index: 1000;
+        }
+        
+        .sparkle {
+            position: absolute;
+            font-size: 16px;
+            color: #fbbf24;
+            animation: sparkle 1s ease-out forwards;
+        }
+        
+        .challenge-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .progress-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(-50%) translateX(0px); }
+            50% { transform: translateY(-50%) translateX(-10px); }
+        }
+        
+        @keyframes greenGlow {
+            0% { box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+            50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.5); }
+            100% { box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        
+        @keyframes redGlow {
+            0% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+            50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.5); }
+            100% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        
+        @keyframes reportSuccess {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+            100% { transform: translateY(0) scale(1); }
+        }
+        
+        @keyframes citizenHappy {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        @keyframes bullyBotMean {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+        
+        @keyframes lampGlow {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes coinFall {
+            0% { 
+                transform: translateX(-50%) translateY(-50px) rotate(0deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateX(-50%) translateY(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes sparkle {
+            0% { 
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: scale(1) rotate(180deg);
+                opacity: 0;
+            }
+        }
+        
+        .voice-indicator {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body data-theme="light" class="cyber-street">
+    <!-- Background Elements -->
+    <div class="street-lamp"></div>
+    <div class="bully-bot" id="bullyBot">🤖</div>
+    
+    <!-- Citizens -->
+    <div class="citizens">
+        <div class="citizen" style="background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);">👩</div>
+        <div class="citizen" style="background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);">👨</div>
+        <div class="citizen" style="background: linear-gradient(135deg, #34d399 0%, #10b981 100%);">🧑</div>
+        <div class="citizen" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);">👧</div>
+        <div class="citizen" style="background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);">👦</div>
+    </div>
+    
+    <!-- Floating Mentor -->
+    <div class="mentor-float">
+        <div class="relative">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-2xl">
+                🧙‍♂️
+            </div>
+            <div class="voice-indicator" id="voiceIndicator" style="display: none;"></div>
+        </div>
+        <div class="mentor-bubble" id="mentorBubble">
+            Welcome to Cyber Street! Help me identify the mean messages to keep our community safe! 🛡️
+        </div>
+    </div>
+    
+    <!-- Main Game Container -->
+    <div class="challenge-container">
+        <!-- Progress Section -->
+        <div class="progress-container">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">
+                Mission 2: Cyberbully Crisis on Cyber Street
+            </h1>
+            <h2 class="text-xl text-gray-600 mb-4">Guardians of Kindness</h2>
+            
+            <!-- Progress Bar -->
+            <div class="mb-4">
+                <div class="flex justify-between text-sm mb-2">
+                    <span>Progress</span>
+                    <span id="progressText">{{ player.cyberbully_challenges_completed|default:0 }}/5</span>
+                </div>
+                <div class="bg-gray-200 rounded-full h-4">
+                    <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-4 rounded-full transition-all duration-500" 
+                         style="width: {% widthratio player.cyberbully_challenges_completed|default:0 5 100 %}%"></div>
+                </div>
+            </div>
+            
+            <!-- Score Display -->
+            <div class="flex justify-center items-center space-x-6">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-yellow-600">
+                        <i class="fas fa-trophy"></i>
+                        <span id="scoreDisplay">{{ player.total_score|default:0 }}</span>
+                    </div>
+                    <div class="text-sm text-gray-600">Total Score</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-600">
+                        <i class="fas fa-shield-alt"></i>
+                        <span id="correctAnswers">{{ player.correct_answers|default:0 }}</span>
+                    </div>
+                    <div class="text-sm text-gray-600">Reports Made</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Challenge Content -->
+        <div id="challengeContent">
+            {% if current_challenge %}
+                <!-- Current Challenge -->
+                <div class="challenge-card bg-white bg-opacity-95 backdrop-blur-lg rounded-2xl p-8 mb-6">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">{{ current_challenge.title }}</h3>
+                        <p class="text-lg text-gray-600">{{ current_challenge.background_story }}</p>
+                    </div>
+                    
+                    <!-- Chat Messages -->
+                    <div class="space-y-4">
+                        <div class="chat-bubble {{ current_challenge.option_a_type }}-bubble" 
+                             onclick="selectAnswer('A')" data-option="A">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-r from-pink-400 to-pink-600 rounded-full flex items-center justify-center">
+                                    {% if current_challenge.option_a_type == 'bully' %}🤖{% else %}👩{% endif %}
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm text-gray-500 mb-1">
+                                        {% if current_challenge.option_a_type == 'bully' %}Bully Bot{% else %}Friendly Citizen{% endif %}
+                                    </div>
+                                    <div class="text-gray-800">{{ current_challenge.option_a }}</div>
+                                </div>
+                                <div class="flag-icon" style="display: none;">
+                                    <i class="fas fa-flag text-red-500 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-bubble {{ current_challenge.option_b_type }}-bubble" 
+                             onclick="selectAnswer('B')" data-option="B">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                                    {% if current_challenge.option_b_type == 'bully' %}🤖{% else %}👨{% endif %}
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm text-gray-500 mb-1">
+                                        {% if current_challenge.option_b_type == 'bully' %}Bully Bot{% else %}Friendly Citizen{% endif %}
+                                    </div>
+                                    <div class="text-gray-800">{{ current_challenge.option_b }}</div>
+                                </div>
+                                <div class="flag-icon" style="display: none;">
+                                    <i class="fas fa-flag text-red-500 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-bubble {{ current_challenge.option_c_type }}-bubble" 
+                             onclick="selectAnswer('C')" data-option="C">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                                    {% if current_challenge.option_c_type == 'bully' %}🤖{% else %}🧑{% endif %}
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm text-gray-500 mb-1">
+                                        {% if current_challenge.option_c_type == 'bully' %}Bully Bot{% else %}Friendly Citizen{% endif %}
+                                    </div>
+                                    <div class="text-gray-800">{{ current_challenge.option_c }}</div>
+                                </div>
+                                <div class="flag-icon" style="display: none;">
+                                    <i class="fas fa-flag text-red-500 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-6">
+                        <p class="text-lg font-semibold text-gray-700 mb-4">
+                            <i class="fas fa-flag text-red-500 mr-2"></i>
+                            Click on the message that shows bullying behavior to report it!
+                        </p>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Mission Introduction -->
+                <div class="challenge-card bg-white bg-opacity-95 backdrop-blur-lg rounded-2xl p-8 text-center">
+                    <h3 class="text-3xl font-bold text-gray-800 mb-6">Welcome to Cyber Street! 🏙️</h3>
+                    <p class="text-xl text-gray-600 mb-8">
+                        The Bully Bots are causing trouble on our peaceful digital street. 
+                        Help protect our community by identifying and reporting mean messages!
+                    </p>
+                    <button onclick="startMission()" class="btn btn-primary btn-lg neon-border">
+                        <i class="fas fa-shield-alt mr-2"></i>Start Mission
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const sessionCode = '{{ session.session_code }}';
+        let currentChallengeId = {{ current_challenge.id|default:'null' }};
+        let selectedAnswer = null;
+        let speechSynthesis = window.speechSynthesis;
+        
+        // Voice settings
+        function speakText(text) {
+            if (speechSynthesis) {
+                // Cancel any ongoing speech
+                speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9; // Slightly slower for kids
+                utterance.pitch = 1.1; // Slightly higher pitch for friendly tone
+                utterance.volume = 0.8;
+                
+                // Try to use a kid-friendly voice
+                const voices = speechSynthesis.getVoices();
+                const kidFriendlyVoice = voices.find(voice => 
+                    voice.name.toLowerCase().includes('female') || 
+                    voice.name.toLowerCase().includes('child') ||
+                    voice.name.toLowerCase().includes('karen') ||
+                    voice.name.toLowerCase().includes('zira')
+                );
+                
+                if (kidFriendlyVoice) {
+                    utterance.voice = kidFriendlyVoice;
+                }
+                
+                // Show voice indicator
+                const voiceIndicator = document.getElementById('voiceIndicator');
+                voiceIndicator.style.display = 'block';
+                
+                utterance.onend = function() {
+                    voiceIndicator.style.display = 'none';
+                };
+                
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        // Initialize voices
+        speechSynthesis.onvoiceschanged = function() {
+            // Voices are now loaded
+        };
+        
+        // Background music control
+        document.addEventListener('click', function() {
+            const music = document.getElementById('backgroundMusic');
+            if (music.paused) {
+                music.play().catch(e => console.log('Music play failed:', e));
+            }
+        }, { once: true });
+        
+        // Start mission
+        function startMission() {
+            fetch(`/cyber-city/${sessionCode}/action/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    action_type: 'start_cyberbully_mission'
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.indexOf('application/json') !== -1) {
+                    return response.json();
+                } else {
+                    throw new Error('Response is not JSON');
+                }
+            })
+            .then(data => {
+                if (data.action_result === 'mission_started') {
+                    window.location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to start mission. Please try again.');
+            });
+        }
+        
+        // Select answer
+        function selectAnswer(option) {
+            selectedAnswer = option;
+            
+            // Show flag icon on selected chat bubble
+            document.querySelectorAll('.flag-icon').forEach(icon => {
+                icon.style.display = 'none';
+            });
+            
+            const selectedBubble = document.querySelector(`[data-option="${option}"]`);
+            const flagIcon = selectedBubble.querySelector('.flag-icon');
+            flagIcon.style.display = 'block';
+            
+            // Submit answer after a short delay for visual feedback
+            setTimeout(() => {
+                submitAnswer();
+            }, 500);
+        }
+        
+        // Submit answer
+        function submitAnswer() {
+            if (!selectedAnswer) return;
+            
+            fetch(`/cyber-city/${sessionCode}/action/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    action_type: 'submit_cyberbully_answer',
+                    challenge_id: currentChallengeId,
+                    answer: selectedAnswer,
+                    time_taken: 30
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.indexOf('application/json') !== -1) {
+                    return response.json();
+                } else {
+                    throw new Error('Response is not JSON');
+                }
+            })
+            .then(data => {
+                showResult(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to submit answer. Please try again.');
+            });
+        }
+        
+        // Show result
+        function showResult(data) {
+            const selectedBubble = document.querySelector(`[data-option="${selectedAnswer}"]`);
+            
+            if (data.is_correct) {
+                // Correct answer - bully was reported
+                selectedBubble.classList.add('correct-selection');
+                
+                // Create coin rain effect
+                createCoinRain();
+                
+                // Create sparkle effects
+                createSparkles(selectedBubble);
+                
+                // Make bully bot disappear with explosion effect
+                const bullyBot = document.getElementById('bullyBot');
+                bullyBot.style.animation = 'none';
+                bullyBot.style.transform = 'scale(0) rotate(360deg)';
+                bullyBot.style.opacity = '0';
+                
+                // Show citizens cheering
+                document.querySelectorAll('.citizen').forEach(citizen => {
+                    citizen.style.animation = 'citizenHappy 0.5s ease infinite';
+                });
+                
+                // Update mentor message and speak
+                const mentorText = data.mentor_tip || "Great job! You protected Cyber City from meanness. Reporting helps stop bullies in their tracks.";
+                updateMentorMessage(mentorText);
+                speakText(data.mentor_voice_text || mentorText);
+                
+            } else {
+                // Incorrect answer - friendly message was flagged
+                selectedBubble.style.background = 'linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(255, 255, 255, 0.95) 100%)';
+                
+                const mentorText = "That was a friendly message! Look for messages that are mean or hurtful. Try again!";
+                updateMentorMessage(mentorText);
+                speakText(mentorText);
+            }
+            
+            // Update score display
+            document.getElementById('scoreDisplay').textContent = data.new_score || 0;
+            document.getElementById('correctAnswers').textContent = data.correct_answers || 0;
+            
+            // Show explanation overlay
+            setTimeout(() => {
+                showExplanationOverlay(data);
+            }, 2000);
+        }
+        
+        // Update mentor message
+        function updateMentorMessage(message) {
+            const mentorBubble = document.getElementById('mentorBubble');
+            mentorBubble.textContent = message;
+        }
+        
+        // Create coin rain effect
+        function createCoinRain() {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const coin = document.createElement('div');
+                    coin.className = 'coin-rain';
+                    coin.innerHTML = '🪙';
+                    coin.style.left = Math.random() * 100 + '%';
+                    document.body.appendChild(coin);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(coin);
+                    }, 2000);
+                }, i * 200);
+            }
+        }
+        
+        // Create sparkle effects
+        function createSparkles(element) {
+            const rect = element.getBoundingClientRect();
+            
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.innerHTML = '✨';
+                    sparkle.style.left = (rect.left + Math.random() * rect.width) + 'px';
+                    sparkle.style.top = (rect.top + Math.random() * rect.height) + 'px';
+                    document.body.appendChild(sparkle);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(sparkle);
+                    }, 1000);
+                }, i * 100);
+            }
+        }
+        
+        // Show explanation overlay
+        function showExplanationOverlay(data) {
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            overlay.innerHTML = `
+                <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center">
+                    <div class="text-6xl mb-4">
+                        ${data.is_correct ? '🎉' : '🤔'}
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 ${data.is_correct ? 'text-green-600' : 'text-orange-600'}">
+                        ${data.is_correct ? 'Excellent Report!' : 'Not Quite!'}
+                    </h3>
+                    <p class="text-gray-600 mb-6">${data.explanation}</p>
+                    <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                        <p class="text-sm text-blue-800">
+                            <i class="fas fa-lightbulb mr-2"></i>
+                            ${data.mentor_tip}
+                        </p>
+                    </div>
+                    ${data.badges_earned && data.badges_earned.length > 0 ? 
+                        `<div class="mb-4">
+                            <h4 class="font-bold text-yellow-600 mb-2">🏆 Badge Earned!</h4>
+                            ${data.badges_earned.map(badge => `<span class="badge badge-warning">${badge}</span>`).join(' ')}
+                        </div>` : ''
+                    }
+                    <button onclick="closeOverlay()" class="btn btn-primary btn-lg">
+                        ${data.mission_complete ? 'Mission Complete! 🎉' : 'Continue Mission'}
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            
+            // Speak the explanation
+            speakText(data.explanation);
+        }
+        
+        // Close overlay
+        function closeOverlay() {
+            const overlay = document.querySelector('.fixed.inset-0');
+            if (overlay) {
+                overlay.remove();
+                
+                // Check if mission is complete
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('complete') === 'true') {
+                    window.location.href = `/cyber-city/${sessionCode}/`;
+                } else {
+                    window.location.reload();
+                }
+            }
+        }
+        
+        // Get CSRF cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial mentor greeting
+            if ({{ current_challenge.id|default:'null' }}) {
+                const greeting = "Welcome to Cyber Street! Help me identify the mean messages to keep our community safe!";
+                speakText(greeting);
+            }
+            
+            // Add hover effects
+            document.querySelectorAll('.chat-bubble').forEach(bubble => {
+                bubble.addEventListener('mouseenter', function() {
+                    if (this.classList.contains('bully-bubble')) {
+                        this.style.borderLeft = '5px solid #ef4444';
+                    } else {
+                        this.style.borderLeft = '5px solid #10b981';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

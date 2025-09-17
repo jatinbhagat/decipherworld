@@ -35,9 +35,16 @@ class CyberCityPlayer(BaseGamePlayer):
     ], default='neon_knight')
     suit_color = models.CharField(max_length=7, default='#00FFFF')  # Hex color
     
-    # Mission progress
+    # Mission 1: Password Fortress progress
     current_challenge = models.PositiveIntegerField(default=1)
     challenges_completed = models.PositiveIntegerField(default=0)
+    
+    # Mission 2: Cyberbully Crisis progress  
+    cyberbully_current_challenge = models.PositiveIntegerField(default=1)
+    cyberbully_challenges_completed = models.PositiveIntegerField(default=0)
+    
+    # Overall progress
+    missions_completed = models.JSONField(default=list)  # ['password_fortress', 'cyberbully_crisis']
     badges_earned = models.JSONField(default=list)
     
     # Performance tracking
@@ -69,6 +76,27 @@ class SecurityChallenge(models.Model):
         db_table = 'cyber_city_challenge'
         ordering = ['challenge_number']
 
+class CyberbullyChallenge(models.Model):
+    """Cyberbully identification challenges for Mission 2"""
+    
+    challenge_number = models.PositiveIntegerField()
+    title = models.CharField(max_length=100)
+    background_story = models.TextField()  # Setting description
+    option_a = models.CharField(max_length=300)
+    option_a_type = models.CharField(max_length=20, choices=[('friendly', 'Friendly'), ('bully', 'Bully')])
+    option_b = models.CharField(max_length=300)
+    option_b_type = models.CharField(max_length=20, choices=[('friendly', 'Friendly'), ('bully', 'Bully')])
+    option_c = models.CharField(max_length=300)
+    option_c_type = models.CharField(max_length=20, choices=[('friendly', 'Friendly'), ('bully', 'Bully')])
+    correct_answer = models.CharField(max_length=1, choices=[('A', 'A'), ('B', 'B'), ('C', 'C')])
+    explanation = models.TextField()
+    mentor_tip = models.TextField()  # Mentor's encouraging message
+    mentor_voice_text = models.TextField()  # Text for voice synthesis
+    
+    class Meta:
+        db_table = 'cyber_city_cyberbully_challenge'
+        ordering = ['challenge_number']
+
 class PlayerChallenge(models.Model):
     """Player's response to a security challenge"""
     
@@ -82,6 +110,25 @@ class PlayerChallenge(models.Model):
     
     class Meta:
         db_table = 'cyber_city_player_challenge'
+        unique_together = ['player', 'challenge']
+        indexes = [
+            models.Index(fields=['player', 'answered_at']),
+            models.Index(fields=['challenge', 'is_correct']),
+        ]
+
+class PlayerCyberbullyChallenge(models.Model):
+    """Player's response to a cyberbully challenge"""
+    
+    player = models.ForeignKey(CyberCityPlayer, on_delete=models.CASCADE, related_name='cyberbully_responses')
+    challenge = models.ForeignKey(CyberbullyChallenge, on_delete=models.CASCADE)
+    answer_given = models.CharField(max_length=1, choices=[('A', 'A'), ('B', 'B'), ('C', 'C')])
+    is_correct = models.BooleanField()
+    points_earned = models.PositiveIntegerField(default=0)
+    time_taken = models.PositiveIntegerField(help_text="Seconds taken to answer")
+    answered_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'cyber_city_player_cyberbully_challenge'
         unique_together = ['player', 'challenge']
         indexes = [
             models.Index(fields=['player', 'answered_at']),
