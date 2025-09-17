@@ -25,7 +25,8 @@
       "Bash(az webapp ssh:*)",
       "Bash(az webapp deployment source delete:*)",
       "Bash(az webapp log deployment list:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Read(//Users/jatinbhagat/Desktop/**)"
     ],
     "deny": [],
     "ask": []

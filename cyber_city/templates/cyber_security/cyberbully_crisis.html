@@ -22,7 +22,7 @@
     
     <style>
         body {
-            background: linear-gradient(135deg, #0a0a23 0%, #1a1a3a 50%, #2a2a5a 100%);
+            background: #0a0a23;
             height: 100vh;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: #00ffff;
@@ -32,7 +32,6 @@
         }
         
         .cyber-street {
-            background: linear-gradient(180deg, #0a0a23 0%, #1e1e3f 50%, #2a2a5a 100%);
             background-image: 
                 /* Cyber grid overlay */
                 linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
@@ -64,9 +63,10 @@
         }
         
         .chat-bubble {
-            background: rgba(15, 25, 45, 0.95);
+            background: rgba(15, 25, 45, 0.95) !important;
             backdrop-filter: blur(15px);
-            border: 1px solid rgba(0, 255, 255, 0.2);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid rgba(0, 255, 255, 0.2);
             border-radius: 18px;
             padding: 16px 20px;
             margin: 8px 0;
@@ -94,7 +94,8 @@
         .chat-bubble:hover {
             transform: translateY(-2px) scale(1.01);
             box-shadow: 0 8px 25px rgba(0, 255, 255, 0.15);
-            border-color: rgba(0, 255, 255, 0.5);
+            border-color: rgba(0, 255, 255, 0.5) !important;
+            background: rgba(15, 30, 50, 0.98) !important;
         }
         
         .friendly-bubble {
@@ -110,9 +111,31 @@
             border-left: 2px solid rgba(200, 150, 100, 0.3);
         }
         
+        .chat-bubble.selected {
+            border: 3px solid #00ffff !important;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6) !important;
+            background: rgba(0, 255, 255, 0.1) !important;
+            transform: scale(1.02) !important;
+        }
+        
         .bully-bubble.correct-selection {
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(0, 20, 40, 0.95) 100%);
-            animation: orangeGlow 0.5s ease, reportSuccess 1s ease;
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.3) 0%, rgba(15, 25, 45, 0.95) 100%) !important;
+            border: 3px solid #00ff00 !important;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.6) !important;
+            animation: successGlow 1s ease;
+        }
+        
+        .chat-bubble.wrong-answer {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.3) 0%, rgba(15, 25, 45, 0.95) 100%) !important;
+            border: 3px solid #ff6b35 !important;
+            box-shadow: 0 0 30px rgba(255, 107, 53, 0.6) !important;
+            animation: shake 0.5s ease;
+        }
+        
+        .chat-bubble.correct-answer-shown {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.25) 0%, rgba(15, 25, 45, 0.95) 100%) !important;
+            border: 3px solid #00ff00 !important;
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.5) !important;
         }
         
         .mentor-float {
@@ -393,6 +416,11 @@
         @keyframes cyanGlow {
             0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.2); }
             50% { box-shadow: 0 0 40px rgba(0, 255, 255, 0.6); }
+        }
+        
+        @keyframes successGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.6); }
+            50% { box-shadow: 0 0 50px rgba(0, 255, 0, 0.8); }
         }
         
         @keyframes orangeGlow {
@@ -770,16 +798,21 @@
                 return;
             }
             
-            // Disable all bubbles to prevent multiple clicks
+            // Remove previous selections
             document.querySelectorAll('.chat-bubble').forEach(b => {
+                b.classList.remove('selected');
                 b.style.pointerEvents = 'none';
             });
             
-            bubble.style.transform = 'scale(1.1)';
-            bubble.style.transition = 'transform 0.2s ease';
+            // Mark this bubble as selected
+            bubble.classList.add('selected');
+            
+            // Add selection pulse animation
+            bubble.style.transform = 'scale(1.05)';
+            bubble.style.transition = 'all 0.3s ease';
             
             setTimeout(() => {
-                bubble.style.transform = 'scale(1)';
+                bubble.style.transform = 'scale(1.02)';
             }, 200);
             
             // Send answer to server
@@ -815,8 +848,8 @@
             
             if (data.is_correct) {
                 // Show success effects
+                bubble.classList.remove('selected');
                 bubble.classList.add('correct-selection');
-                
                 
                 // Create sparkle effects
                 createSparkles(bubble);
@@ -849,9 +882,9 @@
                 }
                 
             } else {
-                // Show wrong answer feedback
-                bubble.style.animation = 'shake 0.5s ease';
-                bubble.style.background = 'linear-gradient(135deg, rgba(255, 107, 53, 0.3) 0%, rgba(0, 20, 40, 0.95) 100%)';
+                // Show wrong answer feedback - keep selected state but add wrong styling
+                bubble.classList.remove('selected');
+                bubble.classList.add('wrong-answer');
                 
                 // Show explanation from mentor
                 const explanation = data.explanation || "That's not quite right. Look for the message that might hurt someone's feelings.";
@@ -867,10 +900,7 @@
                     if (data.correct_answer) {
                         const correctBubble = document.querySelector(`[data-option="${data.correct_answer}"]`);
                         if (correctBubble) {
-                            correctBubble.style.background = 'linear-gradient(135deg, rgba(0, 255, 0, 0.3) 0%, rgba(0, 20, 40, 0.95) 100%)';
-                            correctBubble.style.border = '2px solid #00ff00';
-                            correctBubble.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.5)';
-                            
+                            correctBubble.classList.add('correct-answer-shown');
                         }
                         
                         // Update mentor with correct answer explanation
@@ -907,7 +937,7 @@
         
         // Create continue button for wrong answers
         function createContinueButton() {
-            const challengeContent = document.getElementById('challengeContent');
+            const challengeContainer = document.querySelector('.challenge-container');
             
             // Check if button already exists
             if (document.getElementById('continueButton')) {
@@ -916,20 +946,39 @@
             
             const continueBtn = document.createElement('div');
             continueBtn.id = 'continueButton';
-            continueBtn.className = 'text-center mt-6';
+            continueBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50';
             continueBtn.innerHTML = `
                 <button onclick="progressAfterWrongAnswer()" 
-                        class="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-8 py-4 rounded-lg font-bold text-lg hover:from-cyan-300 hover:to-blue-400 transition-all duration-300 transform hover:scale-105" 
-                        style="box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);">
+                        class="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-8 py-4 rounded-lg font-bold text-lg hover:from-cyan-300 hover:to-blue-400 transition-all duration-300 transform hover:scale-105 shadow-lg" 
+                        style="box-shadow: 0 0 30px rgba(0, 255, 255, 0.5); border: 2px solid rgba(0, 255, 255, 0.3);">
                     Continue Learning <span class="cyber-heart">💖</span>
                 </button>
             `;
             
-            challengeContent.appendChild(continueBtn);
+            // Add to body for fixed positioning
+            document.body.appendChild(continueBtn);
+            
+            // Add entrance animation
+            continueBtn.style.opacity = '0';
+            continueBtn.style.transform = 'translate(-50%, 20px)';
+            setTimeout(() => {
+                continueBtn.style.transition = 'all 0.5s ease';
+                continueBtn.style.opacity = '1';
+                continueBtn.style.transform = 'translate(-50%, 0)';
+            }, 100);
         }
         
         // Progress after wrong answer with backend update
         function progressAfterWrongAnswer() {
+            // Remove continue button
+            const continueButton = document.getElementById('continueButton');
+            if (continueButton) {
+                continueButton.style.transition = 'all 0.3s ease';
+                continueButton.style.opacity = '0';
+                continueButton.style.transform = 'translate(-50%, 20px)';
+                setTimeout(() => continueButton.remove(), 300);
+            }
+            
             // Update backend to progress the challenge
             fetch(`/cyber-city/${sessionCode}/action/`, {
                 method: 'POST',
