@@ -1199,8 +1199,64 @@
                             </div>
                         </div>
 
+                        <!-- Game Review Section -->
+                        <div class="review-section bg-pink-900/30 rounded-xl p-8 mb-8 border border-pink-500/50">
+                            <h3 class="text-2xl font-bold text-pink-400 mb-6 text-center">💖 How was your adventure?</h3>
+                            <p class="text-cyan-300 mb-6 text-center max-w-2xl mx-auto">
+                                Help us make Cyber Street even safer! Your rating is required, and a review helps other heroes.
+                            </p>
+                            
+                            <div class="max-w-md mx-auto">
+                                <!-- Star Rating -->
+                                <div class="text-center mb-6">
+                                    <div class="text-lg text-cyan-300 mb-3">Rate your experience:</div>
+                                    <div class="flex justify-center space-x-2" id="starRating">
+                                        <button onclick="setRating(1)" class="star-btn text-4xl transition-all duration-200 hover:scale-110" data-rating="1">⭐</button>
+                                        <button onclick="setRating(2)" class="star-btn text-4xl transition-all duration-200 hover:scale-110" data-rating="2">⭐</button>
+                                        <button onclick="setRating(3)" class="star-btn text-4xl transition-all duration-200 hover:scale-110" data-rating="3">⭐</button>
+                                        <button onclick="setRating(4)" class="star-btn text-4xl transition-all duration-200 hover:scale-110" data-rating="4">⭐</button>
+                                        <button onclick="setRating(5)" class="star-btn text-4xl transition-all duration-200 hover:scale-110" data-rating="5">⭐</button>
+                                    </div>
+                                    <div class="text-cyan-400 text-sm mt-2" id="ratingText">Click a star to rate!</div>
+                                </div>
+                                
+                                <!-- Optional Review Text -->
+                                <div class="mb-6">
+                                    <label class="text-cyan-300 text-sm mb-2 block">Tell us more (optional):</label>
+                                    <textarea 
+                                        id="reviewText"
+                                        placeholder="What did you like? Any suggestions for making it better?"
+                                        class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:border-pink-400 focus:outline-none resize-none"
+                                        rows="3"
+                                        maxlength="500"></textarea>
+                                    <div class="text-right text-xs text-gray-400 mt-1">
+                                        <span id="charCount">0</span>/500 characters
+                                    </div>
+                                </div>
+                                
+                                <!-- Submit Button -->
+                                <div class="text-center">
+                                    <button 
+                                        onclick="submitGameReview()"
+                                        id="submitReviewBtn"
+                                        disabled
+                                        class="bg-gradient-to-r from-pink-400 to-purple-500 text-white px-8 py-3 rounded-lg font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
+                                        style="box-shadow: 0 0 20px rgba(255, 0, 150, 0.3);">
+                                        💖 Submit Review
+                                    </button>
+                                    <div class="text-xs text-cyan-400 mt-2">Rating is required to continue</div>
+                                </div>
+                                
+                                <!-- Success Message -->
+                                <div id="reviewSuccess" class="hidden text-center mt-4 p-4 bg-pink-800/50 rounded-lg border border-pink-500">
+                                    <div class="text-pink-400 font-bold">🎉 Thank you for your review!</div>
+                                    <div class="text-pink-300 text-sm">Your feedback helps us create better adventures!</div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Call to Action -->
-                        <div class="cta-section">
+                        <div class="cta-section" id="ctaSection" style="display: none;">
                             <h3 class="text-2xl font-bold text-cyan-400 mb-6">🚀 Continue Your Journey</h3>
                             <p class="text-cyan-300 mb-8 max-w-2xl mx-auto">
                                 Ready for more cybersecurity adventures? Explore other missions and become the ultimate digital defender!
@@ -1324,6 +1380,104 @@
                 bubble.style.animationDelay = (index * 0.2) + 's';
             });
         });
+
+        // Review System Functions
+        let selectedRating = 0;
+
+        function setRating(rating) {
+            selectedRating = rating;
+            
+            // Update star display
+            const stars = document.querySelectorAll('.star-btn');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.style.opacity = '1';
+                    star.style.transform = 'scale(1.1)';
+                } else {
+                    star.style.opacity = '0.3';
+                    star.style.transform = 'scale(1)';
+                }
+            });
+            
+            // Update rating text
+            const ratingTexts = ['', 'Not Good 😔', 'Okay 😐', 'Good 🙂', 'Great 😊', 'Amazing! 🤩'];
+            document.getElementById('ratingText').textContent = ratingTexts[rating];
+            
+            // Enable submit button
+            document.getElementById('submitReviewBtn').disabled = false;
+            document.getElementById('submitReviewBtn').style.opacity = '1';
+        }
+
+        function submitGameReview() {
+            if (selectedRating === 0) {
+                alert('Please select a rating first!');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitReviewBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Submitting...';
+            
+            const reviewText = document.getElementById('reviewText').value.trim();
+            
+            // Submit review
+            fetch('/submit-game-review/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    game_type: 'cyberbully_crisis',
+                    rating: selectedRating,
+                    review_text: reviewText || null,
+                    session_id: sessionCode
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Show success message
+                    document.querySelector('.review-section').style.display = 'none';
+                    document.getElementById('reviewSuccess').classList.remove('hidden');
+                    document.getElementById('reviewSuccess').style.display = 'block';
+                    
+                    // Show CTA section
+                    setTimeout(() => {
+                        document.getElementById('ctaSection').style.display = 'block';
+                    }, 1000);
+                } else {
+                    alert('Failed to submit review: ' + data.message);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '💖 Submit Review';
+                }
+            })
+            .catch(error => {
+                console.error('Review submission error:', error);
+                alert('Failed to submit review. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '💖 Submit Review';
+            });
+        }
+
+        // Character counter for review text setup
+        setTimeout(() => {
+            const reviewTextarea = document.getElementById('reviewText');
+            const charCount = document.getElementById('charCount');
+            
+            if (reviewTextarea && charCount) {
+                reviewTextarea.addEventListener('input', function() {
+                    const count = this.value.length;
+                    charCount.textContent = count;
+                    
+                    if (count > 450) {
+                        charCount.style.color = '#ff6b6b';
+                    } else {
+                        charCount.style.color = '#9ca3af';
+                    }
+                });
+            }
+        }, 2000); // Wait for completion screen to load
     </script>
 </body>
 </html>

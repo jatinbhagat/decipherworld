@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import sys
 import io
-from .models import DemoRequest, Course, SchoolDemoRequest
+from .models import DemoRequest, Course, SchoolDemoRequest, GameReview
 from .forms import DemoRequestForm, SchoolDemoRequestForm
 
 class HomeView(TemplateView):
@@ -581,4 +581,72 @@ def run_production_migrations(request):
             'status': 'error',
             'message': f'Migration failed: {str(e)}',
             'error_type': type(e).__name__
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def submit_game_review(request):
+    """Submit a game review - unified endpoint for all games"""
+    try:
+        import json
+        
+        # Parse JSON data
+        data = json.loads(request.body)
+        
+        # Extract required fields
+        game_type = data.get('game_type')
+        rating = data.get('rating')
+        
+        # Validate required fields
+        if not game_type or not rating:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Game type and rating are required'
+            }, status=400)
+        
+        # Validate rating
+        if not isinstance(rating, int) or rating < 1 or rating > 5:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Rating must be between 1 and 5'
+            }, status=400)
+        
+        # Extract optional fields
+        session_id = data.get('session_id', '')
+        player_name = data.get('player_name', '')
+        review_text = data.get('review_text', '')
+        
+        # Get IP address
+        ip_address = request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0] or \
+                    request.META.get('REMOTE_ADDR', '')
+        
+        # Create or update review
+        review, created = GameReview.objects.update_or_create(
+            game_type=game_type,
+            session_id=session_id,
+            defaults={
+                'rating': rating,
+                'review_text': review_text or None,
+                'player_name': player_name or None,
+                'ip_address': ip_address
+            }
+        )
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Thank you for your review!',
+            'review_id': review.id,
+            'created': created
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid JSON data'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to submit review: {str(e)}'
         }, status=500)
