@@ -402,43 +402,53 @@ class CyberCityMissionHubView(TemplateView):
         })
         return context
 
-class CyberCityQuickGameView(QuickGameView):
-    """Quick game creation for Cyber City Protection Squad"""
-    
-    session_model = CyberCitySession
-    player_model = CyberCityPlayer
+class CyberCityQuickGameView(TemplateView):
+    """Simple mission starter that creates session and redirects"""
     template_name = 'cyber_security/quick_game.html'
-    game_plugin_class = CyberCityProtectionSquadPlugin
     
-    def get_success_url(self):
-        """Redirect to appropriate mission based on URL parameter"""
-        mission = self.request.GET.get('mission', 'password_fortress')
-        session_code = self.object.session_code
-        
-        if mission == 'cyberbully_crisis':
-            return reverse('cyber_city:cyberbully_crisis', kwargs={'session_code': session_code})
-        else:
-            return reverse('cyber_city:password_fortress', kwargs={'session_code': session_code})
+    def get(self, request, *args, **kwargs):
+        """Show quick start form"""
+        return super().get(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        """Create session and redirect to mission"""
+        try:
+            # Create session
+            from .plugin import CyberCityProtectionSquadPlugin
+            plugin = CyberCityProtectionSquadPlugin()
+            game_config = plugin.get_game_config()
+            
+            session = CyberCitySession.objects.create(
+                max_players=1,
+                session_data=game_config.to_dict() if hasattr(game_config, 'to_dict') else {}
+            )
+            
+            # Create player
+            hero_nickname = request.POST.get('hero_nickname', 'Cyber Guardian')
+            player = CyberCityPlayer.objects.create(
+                session=session,
+                hero_nickname=hero_nickname,
+                suit_color='#00FFFF',
+                suit_style='neon_knight'
+            )
+            
+            # Store in session
+            request.session['player_id'] = player.id
+            request.session['current_session_code'] = session.session_code
+            
+            # Redirect based on mission
+            mission = request.GET.get('mission', 'password_fortress')
+            if mission == 'cyberbully_crisis':
+                return redirect('cyber_city:cyberbully_crisis', session_code=session.session_code)
+            else:
+                return redirect('cyber_city:password_fortress', session_code=session.session_code)
+                
+        except Exception as e:
+            messages.error(request, f'Error starting mission: {str(e)}')
+            return self.get(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Check if session_code is provided in URL kwargs (for existing sessions)
-        session_code = kwargs.get('session_code')
-        if session_code:
-            context['session_code'] = session_code
-        
-        # Add mission selection context
         mission = self.request.GET.get('mission', 'password_fortress')
         context['selected_mission'] = mission
-        
         return context
-    
-    def post(self, request):
-        """Handle quick game creation"""
-        # Create a new game session
-        game_config = self.get_game_config()
-        session = self.create_game_session(game_config)
-        
-        # Redirect to the game page
-        return redirect('cyber_city:game', session_code=session.session_code)
