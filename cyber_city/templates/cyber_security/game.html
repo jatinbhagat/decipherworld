@@ -457,6 +457,44 @@
         100% { transform: rotate(360deg); }
     }
     
+    .voice-indicator {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        width: 20px;
+        height: 20px;
+        background: #00ffff;
+        border-radius: 50%;
+        animation: voicePulse 0.5s ease-in-out infinite;
+        z-index: 10;
+    }
+    
+    @keyframes voicePulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.2); opacity: 0.7; }
+    }
+    
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeOut {
+        0% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-10px); }
+    }
+    
+    @keyframes celebrationFall {
+        0% {
+            transform: translateY(-50px) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(calc(100vh + 50px)) rotate(360deg);
+            opacity: 0;
+        }
+    }
+    
     /* Enhanced animations for better UX */
     @keyframes fadeInScale {
         0% {
@@ -707,10 +745,13 @@
                 <div class="space-y-6">
                     <!-- Captain Tessa -->
                     <div class="tessa-dialogue p-6">
-                        <div class="text-cyan-300">
-                            <strong class="text-orange-400">Captain Tessa:</strong><br>
-                            "Take your time, {{ player.hero_nickname }}. Analyze each option carefully. 
-                            The city's security depends on your knowledge!"
+                        <div class="relative">
+                            <div class="voice-indicator" id="voiceIndicator" style="display: none;"></div>
+                            <div class="text-cyan-300" id="tessaDialogue">
+                                <strong class="text-orange-400">Captain Tessa:</strong><br>
+                                "Take your time, {{ player.hero_nickname }}. Analyze each option carefully. 
+                                The city's security depends on your knowledge!"
+                            </div>
                         </div>
                     </div>
                     
@@ -831,6 +872,70 @@ let selectedAnswer = null;
 let currentChallengeId = {{ current_challenge.id|default:"null" }};
 let sessionCode = '{{ session.session_code }}';
 
+// Voice synthesis function for Captain Tessa
+function speakText(text) {
+    if (speechSynthesis) {
+        // Cancel any ongoing speech
+        speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9; // Slightly slower for clarity
+        utterance.pitch = 1.1; // Slightly higher pitch for friendly tone
+        utterance.volume = 0.8;
+        
+        // Try to use a kid-friendly voice
+        const voices = speechSynthesis.getVoices();
+        const friendlyVoice = voices.find(voice => 
+            voice.name.toLowerCase().includes('female') || 
+            voice.name.toLowerCase().includes('karen') ||
+            voice.name.toLowerCase().includes('zira') ||
+            voice.name.toLowerCase().includes('samantha')
+        );
+        
+        if (friendlyVoice) {
+            utterance.voice = friendlyVoice;
+        }
+        
+        // Show voice indicator
+        const voiceIndicator = document.getElementById('voiceIndicator');
+        if (voiceIndicator) {
+            voiceIndicator.style.display = 'block';
+        }
+        
+        utterance.onend = function() {
+            if (voiceIndicator) {
+                voiceIndicator.style.display = 'none';
+            }
+        };
+        
+        speechSynthesis.speak(utterance);
+    }
+}
+
+// Update Tessa dialogue with voice
+function updateTessaDialogue(message, useVoice = true) {
+    const tessaDialogue = document.getElementById('tessaDialogue');
+    if (tessaDialogue) {
+        tessaDialogue.style.animation = 'fadeOut 0.3s ease';
+        
+        setTimeout(() => {
+            tessaDialogue.innerHTML = `<strong class="text-orange-400">Captain Tessa:</strong><br>${message}`;
+            tessaDialogue.style.animation = 'fadeIn 0.5s ease';
+            
+            if (useVoice) {
+                // Extract just the spoken text without HTML
+                const spokenText = message.replace(/<[^>]*>/g, '');
+                speakText(spokenText);
+            }
+        }, 300);
+    }
+}
+
+// Initialize voices
+speechSynthesis.onvoiceschanged = function() {
+    // Voices are now loaded
+};
+
 function selectOption(option) {
     try {
         // Prevent selection during submission
@@ -844,18 +949,22 @@ function selectOption(option) {
             btn.style.transform = 'scale(1)';
         });
         
-        // Select new option with enhanced visual feedback
-        if (event && event.currentTarget) {
-            event.currentTarget.classList.add('selected');
-            event.currentTarget.style.transform = 'scale(1.02)';
-            event.currentTarget.style.transition = 'all 0.2s ease';
+        // Find and select the clicked option button
+        const optionButtons = document.querySelectorAll('.option-btn');
+        const optionIndex = option === 'A' ? 0 : option === 'B' ? 1 : 2;
+        const selectedBtn = optionButtons[optionIndex];
+        
+        if (selectedBtn) {
+            selectedBtn.classList.add('selected');
+            selectedBtn.style.transform = 'scale(1.02)';
+            selectedBtn.style.transition = 'all 0.2s ease';
         }
         
         selectedAnswer = option;
         console.log('Option selected:', option);
         
-        // Enable submit button if it exists
-        const submitBtn = document.getElementById('submitButton');
+        // Enable submit button with correct ID
+        const submitBtn = document.getElementById('submitBtn');
         if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.style.opacity = '1';
@@ -975,6 +1084,12 @@ function submitAnswer() {
 }
 
 function showResult(data) {
+    // Handle mission completion with enhanced completion screen
+    if (data.mission_complete) {
+        showPasswordGameCompletion(data);
+        return;
+    }
+    
     // Create result overlay with improved readability and error handling
     const overlay = document.createElement('div');
     overlay.className = 'fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4';
@@ -984,7 +1099,15 @@ function showResult(data) {
     const explanation = data.explanation || 'Challenge completed. Continue to learn more!';
     const tessaTip = data.tessa_tip || '';
     const badgesEarned = data.badges_earned || [];
-    const missionComplete = data.mission_complete || false;
+    
+    // Update Tessa's dialogue with voice feedback
+    const tessaMessage = data.is_correct 
+        ? `Great work! You've successfully secured this part of the Password Fortress. ${tessaTip || 'Your cybersecurity knowledge is impressive!'}`
+        : `Not quite right, but that's how we learn! ${tessaTip || 'Let me explain why this is important for password security.'}`;
+    
+    setTimeout(() => {
+        updateTessaDialogue(tessaMessage, true);
+    }, 1000);
     
     overlay.innerHTML = `
         <div style="background: #1f2937; border: 2px solid #3b82f6; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);" class="p-8 max-w-lg mx-4 text-center">
@@ -992,21 +1115,15 @@ function showResult(data) {
                 ${data.is_correct ? '✅' : '❌'}
             </div>
             <h3 class="text-3xl font-bold mb-6 ${data.is_correct ? 'text-green-400' : 'text-red-400'}">
-                ${data.is_correct ? 'CORRECT!' : 'INCORRECT'}
+                ${data.is_correct ? 'FORTRESS SECURED!' : 'TRY AGAIN'}
             </h3>
             <div class="text-white mb-4 text-lg">
                 Points Earned: <span class="text-yellow-400 font-bold">${pointsEarned}</span>
             </div>
             <div class="text-gray-200 mb-6 text-left leading-relaxed">
-                <strong class="text-white">Explanation:</strong><br>
+                <strong class="text-white">Security Analysis:</strong><br>
                 <span class="text-gray-300">${explanation}</span>
             </div>
-            ${tessaTip ? `
-                <div style="background: #374151; border: 1px solid #6b7280; border-radius: 12px;" class="p-4 mb-6 text-left">
-                    <strong class="text-yellow-400">🤖 Captain Tessa:</strong><br>
-                    <span class="text-gray-200">${tessaTip}</span>
-                </div>
-            ` : ''}
             ${badgesEarned.length > 0 ? `
                 <div class="mb-6">
                     <h4 class="text-white font-bold mb-2">🏆 New Badge Unlocked!</h4>
@@ -1015,16 +1132,213 @@ function showResult(data) {
                     </div>
                 </div>
             ` : ''}
-            <button onclick="continueGame(${missionComplete})" 
-                    style="background: linear-gradient(45deg, #3b82f6, #1d4ed8); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);"
-                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.4)'"
-                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'">
-                ${missionComplete ? '🎉 VIEW RESULTS' : '➡️ CONTINUE'}
+            <button onclick="continueGame(false)" 
+                    style="background: linear-gradient(45deg, #00ffff, #0080ff); color: #000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);"
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 255, 255, 0.4)'"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 255, 255, 0.3)'">
+                ➡️ CONTINUE MISSION
             </button>
         </div>
     `;
     
     document.body.appendChild(overlay);
+}
+
+// Password Game Completion Screen with Learning Summary
+function showPasswordGameCompletion(data) {
+    const completionOverlay = document.createElement('div');
+    completionOverlay.className = 'fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4 overflow-y-auto';
+    
+    const finalScore = data.final_score || data.points_earned || 0;
+    const correctAnswers = data.correct_answers || 0;
+    const badgesEarned = data.badges_earned || [];
+    
+    // Captain Tessa's final message with voice
+    const tessaFinalMessage = `Congratulations, hero! You've successfully secured the Password Fortress and protected Cyber City's digital infrastructure. Your cybersecurity skills are now stronger than ever!`;
+    
+    setTimeout(() => {
+        updateTessaDialogue(tessaFinalMessage, true);
+    }, 2000);
+    
+    completionOverlay.innerHTML = `
+        <div style="background: linear-gradient(135deg, #0a0a23 0%, #1a1a3a 100%); border: 2px solid #00ffff; border-radius: 20px; box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);" class="p-8 max-w-4xl mx-4 text-center max-h-screen overflow-y-auto">
+            <!-- Celebration Header -->
+            <div class="celebration-header mb-8">
+                <div class="text-8xl mb-4 animate-bounce">🏆</div>
+                <h2 class="text-4xl font-bold text-cyan-400 mb-4 animate-pulse">
+                    PASSWORD FORTRESS SECURED!
+                </h2>
+                <div class="text-6xl mb-4">🛡️🔐🦸‍♂️</div>
+                <p class="text-2xl text-cyan-300 mb-6">
+                    You've successfully protected Cyber City's digital infrastructure!
+                </p>
+            </div>
+
+            <!-- Achievement Summary -->
+            <div class="achievement-summary bg-cyan-900/30 rounded-xl p-8 mb-8 border border-cyan-500/50">
+                <h3 class="text-2xl font-bold text-cyan-400 mb-6">🎯 Mission Summary</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Stats Column -->
+                    <div class="stats-column">
+                        <h4 class="text-lg font-bold text-orange-400 mb-4">Your Performance</h4>
+                        <div class="space-y-3 text-cyan-300">
+                            <div class="flex justify-between items-center">
+                                <span>🎯 Challenges Completed:</span>
+                                <span class="font-bold text-cyan-400">5/5</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>🏆 Final Score:</span>
+                                <span class="font-bold text-cyan-400">${finalScore}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>✅ Correct Answers:</span>
+                                <span class="font-bold text-cyan-400">${correctAnswers}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>🔐 Fortress Security:</span>
+                                <span class="font-bold text-cyan-400">100%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Badges Column -->
+                    <div class="badges-column">
+                        <h4 class="text-lg font-bold text-orange-400 mb-4">Badges Earned</h4>
+                        <div class="space-y-2 text-cyan-300">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">🔐</span>
+                                <span>Password Guardian</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">🛡️</span>
+                                <span>Cyber Defender</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">🏙️</span>
+                                <span>City Protector</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">⚡</span>
+                                <span>Security Expert</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Summary -->
+            <div class="learning-summary bg-purple-900/30 rounded-xl p-8 mb-8 border border-purple-500/50">
+                <h3 class="text-2xl font-bold text-purple-400 mb-6">📚 What You Learned</h3>
+                <div class="text-left max-w-4xl mx-auto">
+                    <div class="grid md:grid-cols-2 gap-6 text-cyan-300">
+                        <div>
+                            <h4 class="font-bold text-purple-300 mb-3">🔐 Password Security:</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-start space-x-2">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Creating strong, unique passwords for each account</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Understanding password complexity requirements</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Recognizing weak passwords and security risks</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-purple-300 mb-3">🛡️ Digital Safety:</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-start space-x-2">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Multi-factor authentication importance</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Password manager benefits and usage</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <span class="text-green-400 mt-1">✓</span>
+                                    <span>Protecting personal information online</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-cyan-900/20 rounded-lg border border-cyan-500/30">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <span class="text-2xl">🤖</span>
+                            <span class="font-bold text-cyan-400">Final Words from Captain Tessa</span>
+                        </div>
+                        <p class="text-cyan-300 text-sm italic">
+                            "You've mastered the fundamentals of password security and digital protection. Remember, strong passwords are the first line of defense in our digital world. Keep applying these skills to protect yourself and others online. You're now a true Guardian of the Password Fortress! 🔐🛡️"
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="cta-section">
+                <h3 class="text-2xl font-bold text-cyan-400 mb-6">🚀 Continue Your Cyber Journey</h3>
+                <p class="text-cyan-300 mb-8 max-w-2xl mx-auto">
+                    Ready for more cybersecurity missions? Explore other challenges and become the ultimate digital defender!
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/games/cyber-security/" 
+                       class="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-8 py-4 rounded-lg font-bold text-lg hover:from-cyan-300 hover:to-blue-400 transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center space-x-2"
+                       style="box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);">
+                        <span>🎮</span>
+                        <span>More Cyber Games</span>
+                    </a>
+                    
+                    <a href="/cyber-city/{{ session.session_code }}/" 
+                       class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-purple-400 hover:to-pink-400 transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center space-x-2"
+                       style="box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);">
+                        <span>🏙️</span>
+                        <span>Mission Hub</span>
+                    </a>
+                    
+                    <button onclick="window.location.reload()" 
+                            class="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-orange-400 hover:to-red-400 transition-all duration-300 transform hover:scale-105"
+                            style="box-shadow: 0 0 20px rgba(251, 146, 60, 0.3);">
+                        🔄 Play Again
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(completionOverlay);
+    
+    // Add celebration effects
+    createCelebrationEffects();
+}
+
+// Create celebration effects for game completion
+function createCelebrationEffects() {
+    // Create trophy/emoji rain
+    for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+            const celebration = document.createElement('div');
+            celebration.innerHTML = Math.random() > 0.5 ? '🏆' : (Math.random() > 0.5 ? '🎉' : '🔐');
+            celebration.style.cssText = `
+                position: fixed;
+                left: ${Math.random() * 100}%;
+                top: -50px;
+                font-size: 2rem;
+                z-index: 1000;
+                animation: celebrationFall 3s ease-out forwards;
+                pointer-events: none;
+            `;
+            document.body.appendChild(celebration);
+            
+            setTimeout(() => celebration.remove(), 3000);
+        }, i * 100);
+    }
 }
 
 function continueGame(missionComplete) {
