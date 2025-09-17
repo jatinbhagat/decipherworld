@@ -394,7 +394,7 @@ class CyberCityQuickGameView(QuickGameView):
     session_model = CyberCitySession
     player_model = CyberCityPlayer
     template_name = 'cyber_security/quick_game.html'
-    game_url_name = 'cyber_city:avatar'
+    game_url_name = 'cyber_city:game'  # Redirect to Mission Hub instead of avatar
     game_plugin_class = CyberCityProtectionSquadPlugin
     
     def get_context_data(self, **kwargs):
