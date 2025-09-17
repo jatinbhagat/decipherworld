@@ -456,6 +456,42 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+    
+    /* Enhanced animations for better UX */
+    @keyframes fadeInScale {
+        0% {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    .submitting {
+        background: linear-gradient(45deg, #6b7280, #9ca3af) !important;
+        cursor: not-allowed !important;
+        animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    
+    /* Improved button states */
+    .option-btn {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .option-btn.selected {
+        background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+        border-color: #3b82f6;
+        color: white;
+        transform: scale(1.02);
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    }
 </style>
 
 <div class="cyber-grid"></div>
@@ -467,8 +503,8 @@
             <div class="flex items-center space-x-4">
                 <div class="text-3xl">🛡️</div>
                 <div>
-                    <h1 class="text-2xl font-bold text-cyan-400">CYBER CITY PROTECTION SQUAD</h1>
-                    <p class="text-cyan-300">Mission 1: Password Fortress</p>
+                    <h1 class="text-2xl font-bold text-white">CYBER CITY PROTECTION SQUAD</h1>
+                    <p class="text-gray-200">Mission 1: Password Fortress</p>
                 </div>
             </div>
             
@@ -481,8 +517,8 @@
                         {% elif player.suit_style == 'pixel_guard' %}🛡️
                         {% else %}👾{% endif %}
                     </div>
-                    <div class="text-cyan-300 font-bold">{{ player.hero_nickname }}</div>
-                    <div class="text-cyan-500 text-sm">{{ player.get_suit_style_display }}</div>
+                    <div class="text-white font-bold">{{ player.hero_nickname }}</div>
+                    <div class="text-gray-300 text-sm">{{ player.get_suit_style_display }}</div>
                 </div>
                 
                 <!-- Progress -->
@@ -508,11 +544,11 @@
         <!-- Mission Introduction -->
         <div class="max-w-4xl mx-auto">
             <div class="mission-panel p-8 text-center">
-                <h2 class="text-4xl font-bold text-cyan-400 mb-6">🏙️ WELCOME TO CYBER CITY</h2>
+                <h2 class="text-4xl font-bold text-white mb-6">🏙️ WELCOME TO CYBER CITY</h2>
                 
                 <div class="tessa-dialogue p-6 mb-8">
-                    <div class="text-lg text-cyan-300">
-                        <strong class="text-orange-400">Captain Tessa:</strong> 
+                    <div class="text-lg text-gray-200">
+                        <strong class="text-yellow-400">Captain Tessa:</strong> 
                         "Greetings, defender! Our city's digital infrastructure is under attack. 
                         The Password Fortress has been compromised, and we need your expertise to secure it. 
                         Are you ready to join the Cyber City Protection Squad?"
@@ -522,8 +558,8 @@
                 <div class="grid md:grid-cols-3 gap-6 mb-8">
                     <div class="challenge-card p-6">
                         <div class="text-3xl mb-3">🔐</div>
-                        <h3 class="text-cyan-400 font-bold mb-2">5 Security Challenges</h3>
-                        <p class="text-cyan-300 text-sm">Test your password security knowledge</p>
+                        <h3 class="text-white font-bold mb-2">5 Security Challenges</h3>
+                        <p class="text-gray-300 text-sm">Test your password security knowledge</p>
                     </div>
                     
                     <div class="challenge-card p-6">
@@ -796,17 +832,37 @@ let currentChallengeId = {{ current_challenge.id|default:"null" }};
 let sessionCode = '{{ session.session_code }}';
 
 function selectOption(option) {
-    // Remove previous selection
-    document.querySelectorAll('.option-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-    
-    // Select new option
-    event.currentTarget.classList.add('selected');
-    selectedAnswer = option;
-    
-    // Enable submit button
-    document.getElementById('submitBtn').disabled = false;
+    try {
+        // Prevent selection during submission
+        if (document.querySelector('.submitting')) {
+            return;
+        }
+
+        // Remove previous selection with smooth transition
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.classList.remove('selected');
+            btn.style.transform = 'scale(1)';
+        });
+        
+        // Select new option with enhanced visual feedback
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('selected');
+            event.currentTarget.style.transform = 'scale(1.02)';
+            event.currentTarget.style.transition = 'all 0.2s ease';
+        }
+        
+        selectedAnswer = option;
+        console.log('Option selected:', option);
+        
+        // Enable submit button if it exists
+        const submitBtn = document.getElementById('submitButton');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+        }
+    } catch (error) {
+        console.error('Error selecting option:', error);
+    }
 }
 
 function startMission() {
@@ -844,12 +900,33 @@ function startMission() {
 }
 
 function submitAnswer() {
-    if (!selectedAnswer) return;
+    // Enhanced validation and error handling
+    if (!selectedAnswer) {
+        console.warn('No answer selected');
+        return;
+    }
     
-    // Disable submit button
-    document.getElementById('submitBtn').disabled = true;
+    if (!currentChallengeId) {
+        console.error('No challenge ID available');
+        alert('Error: No challenge available. Please refresh the page.');
+        return;
+    }
     
-    // Submit answer
+    // Prevent double submission
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('submitting');
+        submitBtn.innerHTML = '⏳ Submitting...';
+    }
+    
+    console.log('Submitting answer:', {
+        answer: selectedAnswer,
+        challengeId: currentChallengeId,
+        sessionCode: sessionCode
+    });
+    
+    // Submit answer with improved error handling
     fetch(`/cyber-city/${sessionCode}/action/`, {
         method: 'POST',
         headers: {
@@ -878,48 +955,71 @@ function submitAnswer() {
         showResult(data);
     })
     .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('submitBtn').disabled = false;
-        alert('Failed to submit answer. Please try again.');
+        console.error('Submit answer error:', error);
+        
+        // Re-enable submit button
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('submitting');
+            submitBtn.innerHTML = '🚀 SUBMIT ANSWER';
+        }
+        
+        // Show user-friendly error message
+        const errorMsg = error.message.includes('HTTP') 
+            ? 'Server connection failed. Please check your internet and try again.'
+            : 'Failed to submit answer. Please try again.';
+            
+        alert(errorMsg);
     });
 }
 
 function showResult(data) {
-    // Create result overlay
+    // Create result overlay with improved readability and error handling
     const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50';
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4';
+    
+    // Safely extract values with fallbacks to prevent undefined display
+    const pointsEarned = data.points_earned ?? 0;
+    const explanation = data.explanation || 'Challenge completed. Continue to learn more!';
+    const tessaTip = data.tessa_tip || '';
+    const badgesEarned = data.badges_earned || [];
+    const missionComplete = data.mission_complete || false;
     
     overlay.innerHTML = `
-        <div class="challenge-card p-8 max-w-lg mx-4 text-center">
+        <div style="background: #1f2937; border: 2px solid #3b82f6; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);" class="p-8 max-w-lg mx-4 text-center">
             <div class="text-6xl mb-4">
                 ${data.is_correct ? '✅' : '❌'}
             </div>
-            <h3 class="text-2xl font-bold mb-4 ${data.is_correct ? 'text-green-400' : 'text-red-400'}">
+            <h3 class="text-3xl font-bold mb-6 ${data.is_correct ? 'text-green-400' : 'text-red-400'}">
                 ${data.is_correct ? 'CORRECT!' : 'INCORRECT'}
             </h3>
-            <div class="text-cyan-300 mb-4">
-                Points Earned: <span class="text-orange-400 font-bold">${data.points_earned}</span>
+            <div class="text-white mb-4 text-lg">
+                Points Earned: <span class="text-yellow-400 font-bold">${pointsEarned}</span>
             </div>
-            <div class="text-cyan-300 mb-6 text-left">
-                <strong>Explanation:</strong><br>
-                ${data.explanation}
+            <div class="text-gray-200 mb-6 text-left leading-relaxed">
+                <strong class="text-white">Explanation:</strong><br>
+                <span class="text-gray-300">${explanation}</span>
             </div>
-            ${data.tessa_tip ? `
-                <div class="tessa-dialogue p-4 mb-6 text-left">
-                    <strong class="text-orange-400">Captain Tessa:</strong><br>
-                    ${data.tessa_tip}
+            ${tessaTip ? `
+                <div style="background: #374151; border: 1px solid #6b7280; border-radius: 12px;" class="p-4 mb-6 text-left">
+                    <strong class="text-yellow-400">🤖 Captain Tessa:</strong><br>
+                    <span class="text-gray-200">${tessaTip}</span>
                 </div>
             ` : ''}
-            ${data.badges_earned && data.badges_earned.length > 0 ? `
+            ${badgesEarned.length > 0 ? `
                 <div class="mb-6">
-                    <h4 class="text-cyan-400 font-bold mb-2">🏆 New Badge Unlocked!</h4>
-                    <div class="bg-gradient-to-r from-cyan-500 to-orange-500 p-3 rounded-lg">
-                        <span class="text-white font-bold">${data.badges_earned[0]}</span>
+                    <h4 class="text-white font-bold mb-2">🏆 New Badge Unlocked!</h4>
+                    <div style="background: linear-gradient(45deg, #3b82f6, #f59e0b);" class="p-3 rounded-lg">
+                        <span class="text-white font-bold">${badgesEarned[0]}</span>
                     </div>
                 </div>
             ` : ''}
-            <button onclick="continueGame(${data.mission_complete})" class="cyber-btn">
-                ${data.mission_complete ? '🎉 VIEW RESULTS' : '➡️ CONTINUE'}
+            <button onclick="continueGame(${missionComplete})" 
+                    style="background: linear-gradient(45deg, #3b82f6, #1d4ed8); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);"
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.4)'"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'">
+                ${missionComplete ? '🎉 VIEW RESULTS' : '➡️ CONTINUE'}
             </button>
         </div>
     `;
@@ -928,9 +1028,28 @@ function showResult(data) {
 }
 
 function continueGame(missionComplete) {
-    // Remove overlay and reload page
-    document.querySelector('.fixed.inset-0').remove();
-    window.location.reload();
+    try {
+        // Remove overlay safely
+        const overlay = document.querySelector('.fixed.inset-0');
+        if (overlay) {
+            overlay.remove();
+        }
+        
+        // Handle mission completion or continue to next challenge
+        if (missionComplete) {
+            // Redirect to results page or reload with completed state
+            window.location.href = window.location.href;
+        } else {
+            // Continue to next challenge
+            setTimeout(() => {
+                window.location.reload();
+            }, 300);
+        }
+    } catch (error) {
+        console.error('Error in continueGame:', error);
+        // Fallback: just reload the page
+        window.location.reload();
+    }
 }
 
 function getCookie(name) {
