@@ -5,7 +5,6 @@ from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from django.core.management import execute_from_command_line
 import sys
 import io
 from .models import DemoRequest, Course, SchoolDemoRequest
@@ -545,6 +544,8 @@ def run_production_migrations(request):
     Safer alternative to SSH/CLI which doesn't work reliably on Azure.
     """
     try:
+        from django.core.management import execute_from_command_line
+        
         # Capture stdout and stderr
         old_stdout = sys.stdout
         old_stderr = sys.stderr
