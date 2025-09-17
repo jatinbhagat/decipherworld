@@ -1388,22 +1388,65 @@ class ConstitutionFeedbackView(View):
     """Handle feedback submissions for Constitution Challenge games"""
     
     def post(self, request, session_code):
-        session = get_object_or_404(GameSession, session_code=session_code)
-        
-        if session.game.game_type != 'constitution_challenge':
-            return JsonResponse({'error': 'Invalid session'}, status=400)
-        
-        # Get feedback data from request
-        feedback_text = request.POST.get('feedback', '')
-        rating = request.POST.get('rating')
-        
-        # You can save feedback to database here if needed
-        # For now, just return success
-        
-        messages.success(request, 'Thank you for your feedback!')
-        
-        # Redirect back to final results
-        return redirect('group_learning:constitution_final_results', session_code=session_code)
+        try:
+            session = get_object_or_404(GameSession, session_code=session_code)
+            
+            if session.game.game_type != 'constitution_challenge':
+                return JsonResponse({'error': 'Invalid session'}, status=400)
+            
+            # Get feedback data from request
+            overall_rating = request.POST.get('overall_rating')
+            game_level = request.POST.get('game_level', 'basic')  # basic or advanced
+            what_learned = request.POST.get('what_learned', '')
+            additional_comments = request.POST.get('additional_comments', '')
+            recommend = request.POST.get('recommend', '')
+            difficulty = request.POST.get('difficulty', '')
+            team_id = request.POST.get('team_id')
+            
+            # Validate required fields
+            if not overall_rating:
+                return JsonResponse({'error': 'Rating is required'}, status=400)
+            
+            # Save to unified GameReview model
+            from core.models import GameReview
+            
+            # Determine game type based on level
+            game_type = 'constitution_advanced' if game_level == 'advanced' else 'constitution_basic'
+            
+            # Compile review text from various fields
+            review_parts = []
+            if what_learned:
+                review_parts.append(f"Learning: {what_learned}")
+            if recommend:
+                review_parts.append(f"Recommend: {recommend}")
+            if difficulty:
+                review_parts.append(f"Difficulty: {difficulty}")
+            if additional_comments:
+                review_parts.append(f"Comments: {additional_comments}")
+            
+            review_text = " | ".join(review_parts) if review_parts else None
+            
+            # Get IP address
+            ip_address = request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0].split(':')[0] or \
+                        request.META.get('REMOTE_ADDR', '').split(':')[0]
+            if not ip_address or ':' in ip_address:
+                ip_address = '127.0.0.1'
+            
+            # Create or update review
+            review, created = GameReview.objects.update_or_create(
+                game_type=game_type,
+                session_id=session_code,
+                defaults={
+                    'rating': int(overall_rating),
+                    'review_text': review_text,
+                    'ip_address': ip_address
+                }
+            )
+            
+            return JsonResponse({'success': True})
+            
+        except Exception as e:
+            return JsonResponse({'error': f'Failed to save feedback: {str(e)}'}, status=500)
 
 
 class ProductionDiagnosticsAPI(View):

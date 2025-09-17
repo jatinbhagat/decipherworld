@@ -617,9 +617,12 @@ def submit_game_review(request):
         player_name = data.get('player_name', '')
         review_text = data.get('review_text', '')
         
-        # Get IP address
-        ip_address = request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0] or \
-                    request.META.get('REMOTE_ADDR', '')
+        # Get IP address - handle Azure's forwarded format
+        ip_address = request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0].split(':')[0] or \
+                    request.META.get('REMOTE_ADDR', '').split(':')[0]
+        # Fallback to a valid IP if parsing fails
+        if not ip_address or ':' in ip_address:
+            ip_address = '127.0.0.1'
         
         # Create or update review
         review, created = GameReview.objects.update_or_create(
