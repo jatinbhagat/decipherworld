@@ -87,20 +87,20 @@
                         </div>
                         <div>
                             <h4 class="text-xl font-bold">Cyber City Protection Squad</h4>
-                            <p class="text-cyan-300">Password Fortress Mission</p>
+                            <p class="text-cyan-300">Multiple Cybersecurity Missions</p>
                         </div>
                     </div>
                     <p class="text-blue-100 mb-6">
-                        Join Captain Tessa and protect Cyber City from digital threats! Learn password security through an immersive sci-fi adventure.
+                        Join Captain Tessa and protect Cyber City from digital threats! Learn cybersecurity through multiple immersive missions: Password Protection, Cyberbully Crisis, and more. Designed for Grades 1-4.
                     </p>
                     <div class="flex flex-wrap gap-2 mb-6">
                         <span class="bg-cyan-400/20 text-cyan-300 px-3 py-1 rounded-full text-sm">Password Security</span>
-                        <span class="bg-purple-400/20 text-purple-300 px-3 py-1 rounded-full text-sm">Interactive Story</span>
-                        <span class="bg-orange-400/20 text-orange-300 px-3 py-1 rounded-full text-sm">Badge System</span>
+                        <span class="bg-purple-400/20 text-purple-300 px-3 py-1 rounded-full text-sm">Cyberbully Crisis</span>
+                        <span class="bg-orange-400/20 text-orange-300 px-3 py-1 rounded-full text-sm">Grades 1-4</span>
                     </div>
-                    <a href="{% url 'cyber_city:quick_game' %}" 
+                    <a href="{% url 'cyber_city:mission_hub' %}" 
                        class="bg-cyan-400 text-blue-900 px-6 py-3 rounded-lg hover:bg-cyan-300 transition-colors inline-flex items-center font-bold">
-                        Start Mission
+                        Choose Your Mission
                         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
@@ -142,9 +142,9 @@
                 Start your cybersecurity journey with age-appropriate missions that teach real digital safety skills through fun, engaging gameplay.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'cyber_city:quick_game' %}" 
+                <a href="{% url 'cyber_city:mission_hub' %}" 
                    class="bg-white text-red-600 px-8 py-3 rounded-lg hover:bg-red-50 transition-colors font-medium">
-                    Start Your First Mission
+                    Choose Your Mission
                 </a>
                 <a href="/games/" 
                    class="border border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 transition-colors font-medium">

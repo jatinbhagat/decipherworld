@@ -168,6 +168,8 @@ class CyberCityActionAPI(BaseGameActionView):
             return self._start_cyberbully_mission(session, player)
         elif action_type == 'submit_cyberbully_answer':
             return self._process_cyberbully_answer(session, player, action_data)
+        elif action_type == 'progress_after_wrong_answer':
+            return self._progress_after_wrong_answer(session, player, action_data)
         else:
             raise ValueError(f"Unknown action type: {action_type}")
     
@@ -325,6 +327,7 @@ class CyberCityActionAPI(BaseGameActionView):
             'explanation': challenge.explanation,
             'mentor_tip': challenge.mentor_tip,
             'mentor_voice_text': challenge.mentor_voice_text,
+            'correct_answer': challenge.correct_answer,  # Include correct answer for educational feedback
             'badges_earned': badges_earned,
             'mission_complete': player.cyberbully_challenges_completed >= 5
         }
@@ -389,6 +392,26 @@ class CyberCityActionAPI(BaseGameActionView):
             player.save()
         
         return new_badges
+    
+    def _progress_after_wrong_answer(self, session, player, action_data):
+        """Progress the player after they've learned from a wrong answer"""
+        challenge_id = action_data.get('challenge_id')
+        
+        try:
+            challenge = CyberbullyChallenge.objects.get(id=challenge_id)
+        except CyberbullyChallenge.DoesNotExist:
+            return {'error': 'Challenge not found'}
+        
+        # Progress the player after learning from wrong answer
+        player.cyberbully_challenges_completed += 1
+        player.cyberbully_current_challenge += 1
+        player.save()
+        
+        return {
+            'action_result': 'progress_success',
+            'challenges_completed': player.cyberbully_challenges_completed,
+            'current_challenge': player.cyberbully_current_challenge
+        }
 
 class CyberCityMissionHubView(TemplateView):
     """Mission Selection Hub - No session required"""
