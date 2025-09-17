@@ -536,3 +536,48 @@ def populate_cyberbully_challenges_web(request):
             'status': 'error',
             'message': f'Failed to populate cyberbully challenges: {str(e)}'
         }, status=500)
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def run_production_migrations(request):
+    """
+    Web-based endpoint to run Django migrations on production.
+    Safer alternative to SSH/CLI which doesn't work reliably on Azure.
+    """
+    try:
+        # Capture stdout and stderr
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        stdout_capture = io.StringIO()
+        stderr_capture = io.StringIO()
+        
+        sys.stdout = stdout_capture
+        sys.stderr = stderr_capture
+        
+        # Run migrations
+        execute_from_command_line(['manage.py', 'migrate', '--verbosity=2'])
+        
+        # Restore stdout/stderr
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
+        
+        stdout_output = stdout_capture.getvalue()
+        stderr_output = stderr_capture.getvalue()
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Migrations completed successfully',
+            'stdout': stdout_output,
+            'stderr': stderr_output if stderr_output else None
+        })
+        
+    except Exception as e:
+        # Restore stdout/stderr in case of error
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
+        
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Migration failed: {str(e)}',
+            'error_type': type(e).__name__
+        }, status=500)

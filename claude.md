@@ -173,10 +173,17 @@ az webapp config appsettings list --name decipherworld-app --resource-group rg-d
 ```
 
 #### 2. Database Migrations (Production)
+🚨 **CRITICAL: SSH/CLI methods don't work reliably on Azure App Service. Use web-based approach.**
+
 ```bash
-# Run migrations on production (in Azure Cloud Shell)
-az webapp ssh --name decipherworld-app --resource-group rg-decipherworld-prod
-python manage.py migrate --settings=decipherworld.settings.production
+# ❌ DON'T USE: SSH/CLI methods are unreliable
+# az webapp ssh --name decipherworld-app --resource-group rg-decipherworld-prod
+
+# ✅ USE: Web-based migration endpoint (deploy code first, then run)
+curl -X POST https://decipherworld-app.azurewebsites.net/run-production-migrations/
+
+# This endpoint safely runs: python manage.py migrate --verbosity=2
+# Returns JSON with migration output and any errors
 ```
 
 #### 3. Deploy Code Changes
@@ -185,13 +192,23 @@ python manage.py migrate --settings=decipherworld.settings.production
 # Via Git, Azure DevOps, or direct deployment
 ```
 
-#### 4. Post-Deployment Verification (CRITICAL)
+#### 4. Post-Deployment Database Setup (Web-Based)
+```bash
+# After code deployment, populate game challenges via web endpoints
+curl -X POST https://decipherworld-app.azurewebsites.net/populate-cyberbully-challenges/
+
+# Returns JSON confirming challenge creation:
+# {"status": "success", "message": "Successfully populated 5 cyberbully challenges"}
+```
+
+#### 5. Post-Deployment Verification (CRITICAL)
 ```bash
 # Test production URLs immediately after deployment
 python test_urls_simple.py --url https://decipherworld.com
 
 # Key URLs to verify manually:
 # ✅ https://decipherworld.com/ (homepage)
+# ✅ https://decipherworld.com/cyber-city/ (mission hub)
 # ✅ https://decipherworld.com/learn/session/0DWOO2/reflection/ (was 500)
 # ✅ https://decipherworld.com/sitemap.xml
 # ✅ https://decipherworld.com/robots.txt

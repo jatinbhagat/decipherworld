@@ -17,4 +17,5 @@ urlpatterns = [
     path('check-robotic-buddy/', views.check_robotic_buddy, name='check_robotic_buddy'),
     path('populate-cyber-challenges/', views.populate_cyber_challenges, name='populate_cyber_challenges'),
     path('populate-cyberbully-challenges/', views.populate_cyberbully_challenges_web, name='populate_cyberbully_challenges'),
+    path('run-production-migrations/', views.run_production_migrations, name='run_production_migrations'),
 ]
