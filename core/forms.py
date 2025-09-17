@@ -4,7 +4,7 @@ from .models import DemoRequest, SchoolDemoRequest
 class DemoRequestForm(forms.ModelForm):
     class Meta:
         model = DemoRequest
-        fields = ['name', 'email', 'school', 'message']
+        fields = ['name', 'email', 'school', 'country_code', 'mobile_number', 'message']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500',
@@ -17,6 +17,13 @@ class DemoRequestForm(forms.ModelForm):
             'school': forms.TextInput(attrs={
                 'class': 'form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500',
                 'placeholder': 'Your school or institution name'
+            }),
+            'country_code': forms.Select(attrs={
+                'class': 'form-select w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500'
+            }),
+            'mobile_number': forms.TextInput(attrs={
+                'class': 'form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500',
+                'placeholder': '9876543210'
             }),
             'message': forms.Textarea(attrs={
                 'class': 'form-textarea w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500',
@@ -47,7 +54,7 @@ class SchoolDemoRequestForm(forms.ModelForm):
     class Meta:
         model = SchoolDemoRequest
         fields = [
-            'school_name', 'contact_person', 'email', 'phone', 'city', 
+            'school_name', 'contact_person', 'email', 'country_code', 'mobile_number', 'city', 
             'student_count', 'interested_products', 'additional_requirements', 
             'preferred_demo_time'
         ]
@@ -64,9 +71,12 @@ class SchoolDemoRequestForm(forms.ModelForm):
                 'class': 'input input-bordered w-full',
                 'placeholder': 'admin@school.edu'
             }),
-            'phone': forms.TextInput(attrs={
+            'country_code': forms.Select(attrs={
+                'class': 'select select-bordered w-full'
+            }),
+            'mobile_number': forms.TextInput(attrs={
                 'class': 'input input-bordered w-full',
-                'placeholder': '+91 98765 43210'
+                'placeholder': '9876543210'
             }),
             'city': forms.TextInput(attrs={
                 'class': 'input input-bordered w-full',
