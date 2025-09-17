@@ -1,311 +1,362 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber City Protection Squad - Mission Hub</title>
-    {% csrf_token %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block description %}{{ page_description }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white relative overflow-hidden">
+    <!-- Cyber Grid Background -->
+    <div class="absolute inset-0 opacity-20">
+        <div class="grid grid-cols-12 grid-rows-12 h-full w-full">
+            {% for i in "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234" %}
+                <div class="border border-cyan-400/30"></div>
+            {% endfor %}
+        </div>
+    </div>
     
-    <!-- Tailwind CSS with DaisyUI -->
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Background Music -->
-    <audio id="backgroundMusic" loop preload="auto" style="display: none;">
-        <source src="{% static 'audio/cyber-ambient.mp3' %}" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-    
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        
-        .cyber-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .cyber-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-        
-        .mission-card {
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-            color: white;
-            border: 2px solid #3b82f6;
-            transition: all 0.3s ease;
-        }
-        
-        .mission-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 25px 50px rgba(37, 99, 235, 0.3);
-        }
-        
-        .mission-completed {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            border-color: #10b981;
-        }
-        
-        .mission-locked {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            border-color: #9ca3af;
-            opacity: 0.7;
-        }
-        
-        .progress-bar {
-            background: linear-gradient(90deg, #059669 0%, #10b981 100%);
-            height: 8px;
-            border-radius: 4px;
-            transition: width 0.6s ease;
-        }
-        
-        .neon-glow {
-            box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
-        }
-        
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-        
-        @keyframes floating {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .badge-icon {
-            animation: bounce 2s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-    </style>
-</head>
-<body data-theme="light">
-    <div class="min-h-screen">
-        <!-- Header -->
-        <header class="cyber-card rounded-none shadow-lg">
-            <div class="container mx-auto px-6 py-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-shield-alt text-white text-xl"></i>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative">
+        <div class="text-center">
+            <div class="text-6xl sm:text-7xl mb-6 animate-pulse">🏙️</div>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+                Cyber City Protection Squad
+            </h1>
+            <p class="text-xl sm:text-2xl mb-8 max-w-4xl mx-auto opacity-90">
+                Choose your cybersecurity mission and help protect Cyber City from digital threats through interactive adventures
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3 border border-cyan-400/30">
+                    <div class="text-lg font-bold">🎯 Grades 1-4</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3 border border-cyan-400/30">
+                    <div class="text-lg font-bold">👤 Individual Missions</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3 border border-cyan-400/30">
+                    <div class="text-lg font-bold">⏱️ 20-30 min each</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Learning Objectives Section -->
+<div class="py-16 sm:py-24 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                Essential Digital Safety Skills You'll Master
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Age-appropriate cybersecurity education through engaging missions designed for young digital citizens
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-16">
+            <!-- Learning Objective 1 -->
+            <div class="text-center">
+                <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🔐</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Password Creation & Management</h4>
+                <p class="text-gray-600 text-sm">Learn to create strong, unique passwords and understand why they're important for protecting your accounts</p>
+            </div>
+
+            <!-- Learning Objective 2 -->
+            <div class="text-center">
+                <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🚫</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Identifying & Reporting Cyberbullying</h4>
+                <p class="text-gray-600 text-sm">Recognize mean behavior online and learn how to respond appropriately and seek help</p>
+            </div>
+
+            <!-- Learning Objective 3 -->
+            <div class="text-center">
+                <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">👣</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Understanding Digital Footprints</h4>
+                <p class="text-gray-600 text-sm">Discover how your online activities leave traces and learn to make smart digital choices</p>
+            </div>
+
+            <!-- Learning Objective 4 -->
+            <div class="text-center">
+                <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🎨</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Creative Expression vs. Oversharing</h4>
+                <p class="text-gray-600 text-sm">Balance creativity and self-expression with privacy and safety when sharing online</p>
+            </div>
+
+            <!-- Learning Objective 5 -->
+            <div class="text-center">
+                <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">🧠</span>
+                </div>
+                <h4 class="text-lg font-bold text-gray-900 mb-2">Critical Thinking About Online Information</h4>
+                <p class="text-gray-600 text-sm">Develop skills to question what you see online and identify trustworthy sources</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mission Selection Section -->
+<div class="py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">Choose Your Mission</h3>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Each mission teaches different cybersecurity skills through interactive storytelling and hands-on challenges
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+            <!-- Mission 1: Password Fortress -->
+            <div class="bg-gradient-to-br from-blue-900 to-purple-900 rounded-xl shadow-lg overflow-hidden text-white relative">
+                <!-- Animated circuit pattern -->
+                <div class="absolute inset-0 opacity-10">
+                    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <path d="M10,10 L90,10 L90,50 L50,50 L50,90 L90,90" stroke="currentColor" stroke-width="1" fill="none" opacity="0.5"/>
+                        <circle cx="10" cy="10" r="2" fill="currentColor"/>
+                        <circle cx="90" cy="10" r="2" fill="currentColor"/>
+                        <circle cx="90" cy="50" r="2" fill="currentColor"/>
+                        <circle cx="50" cy="50" r="2" fill="currentColor"/>
+                        <circle cx="50" cy="90" r="2" fill="currentColor"/>
+                        <circle cx="90" cy="90" r="2" fill="currentColor"/>
+                    </svg>
+                </div>
+                
+                <div class="p-8 relative">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-cyan-400 text-blue-900 w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 animate-pulse">
+                            🔐
                         </div>
                         <div>
-                            <h1 class="text-2xl font-bold text-gray-800">Cyber City Protection Squad</h1>
-                            <p class="text-gray-600">Mission Hub</p>
+                            <h4 class="text-xl font-bold">Mission 1: Password Fortress</h4>
+                            <p class="text-cyan-300">Defend Cyber City's Digital Gates</p>
+                        </div>
+                    </div>
+                    <p class="text-blue-100 mb-6">
+                        Join Captain Tessa in protecting Cyber City from password hackers! Learn to create unbreakable passwords while defending the city's digital fortress through interactive challenges and mini-games.
+                    </p>
+                    
+                    <!-- Skills Learned -->
+                    <div class="mb-6">
+                        <h5 class="text-sm font-bold text-cyan-300 mb-3">🎯 SKILLS YOU'LL MASTER:</h5>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-cyan-400/20 text-cyan-300 px-3 py-1 rounded-full text-sm">Strong Password Creation</span>
+                            <span class="bg-purple-400/20 text-purple-300 px-3 py-1 rounded-full text-sm">Security Awareness</span>
+                            <span class="bg-orange-400/20 text-orange-300 px-3 py-1 rounded-full text-sm">Digital Protection</span>
                         </div>
                     </div>
                     
-                    <!-- Player Info -->
-                    {% if player %}
-                    <div class="flex items-center space-x-4">
-                        <div class="text-right">
-                            <div class="font-semibold text-gray-800">{{ player.hero_nickname }}</div>
-                            <div class="text-sm text-gray-600">
-                                <i class="fas fa-trophy text-yellow-500"></i>
-                                {{ player.total_score|default:0 }} points
+                    <!-- Mission Stats -->
+                    <div class="bg-white/10 rounded-lg p-4 mb-6 backdrop-blur-sm">
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div>
+                                <div class="text-lg font-bold">5</div>
+                                <div class="text-xs text-blue-300">Challenges</div>
+                            </div>
+                            <div>
+                                <div class="text-lg font-bold">20-25</div>
+                                <div class="text-xs text-blue-300">Minutes</div>
+                            </div>
+                            <div>
+                                <div class="text-lg font-bold">★★☆</div>
+                                <div class="text-xs text-blue-300">Difficulty</div>
                             </div>
                         </div>
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl" 
-                             style="background-color: {{ player.suit_color|default:'#00FFFF' }};">
-                            {% if player.suit_style == 'neon_knight' %}🤖
-                            {% elif player.suit_style == 'pixel_guard' %}🛡️
-                            {% else %}⚡{% endif %}
-                        </div>
                     </div>
-                    {% endif %}
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="container mx-auto px-6 py-8">
-            <!-- Welcome Section -->
-            <div class="cyber-card rounded-2xl p-8 mb-8 text-center">
-                <div class="floating">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">
-                        Welcome back, {{ player.hero_nickname|default:"Cyber Guardian" }}! 🛡️
-                    </h2>
-                    <p class="text-xl text-gray-600 mb-6">
-                        Choose your next mission to protect Cyber City from digital threats.
-                    </p>
+                    
+                    <a href="{% url 'cyber_city:quick_game' %}?mission=password_fortress" 
+                       class="bg-cyan-400 text-blue-900 px-6 py-3 rounded-lg hover:bg-cyan-300 transition-colors inline-flex items-center font-bold w-full justify-center">
+                        🚀 Start Password Fortress Mission
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
                 </div>
             </div>
 
-            <!-- Mission Grid -->
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Mission 1: Password Fortress -->
-                <div class="mission-card {% if 'password_fortress' in player.missions_completed %}mission-completed{% endif %} rounded-2xl p-8 text-center">
-                    <div class="mb-6">
-                        <div class="w-20 h-20 mx-auto bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
-                            <i class="fas fa-lock text-4xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-2">Mission 1: Password Fortress</h3>
-                        <p class="text-lg opacity-90">Defend against weak passwords and security threats</p>
+            <!-- Mission 2: Cyberbully Crisis -->
+            <div class="bg-gradient-to-br from-red-600 to-pink-600 rounded-xl shadow-lg overflow-hidden text-white relative">
+                <!-- Animated heart pattern -->
+                <div class="absolute inset-0 opacity-10">
+                    <div class="flex items-center justify-center h-full">
+                        <div class="text-6xl animate-pulse">💝</div>
                     </div>
-                    
-                    <!-- Progress Bar -->
-                    <div class="mb-6">
-                        <div class="flex justify-between text-sm mb-2">
-                            <span>Progress</span>
-                            <span>{{ player.challenges_completed|default:0 }}/5</span>
-                        </div>
-                        <div class="bg-white bg-opacity-20 rounded-full h-3">
-                            <div class="progress-bar rounded-full" 
-                                 style="width: {% widthratio player.challenges_completed|default:0 5 100 %}%"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Mission Status -->
-                    {% if 'password_fortress' in player.missions_completed %}
-                        <div class="mb-4">
-                            <span class="badge badge-success badge-lg">
-                                <i class="fas fa-check-circle mr-2"></i>Mission Complete!
-                            </span>
-                        </div>
-                        <button onclick="startMission('password_fortress')" 
-                                class="btn btn-outline btn-white btn-lg">
-                            <i class="fas fa-replay mr-2"></i>Play Again
-                        </button>
-                    {% else %}
-                        <button onclick="startMission('password_fortress')" 
-                                class="btn btn-white btn-lg neon-glow">
-                            <i class="fas fa-play mr-2"></i>
-                            {% if player.challenges_completed > 0 %}Continue Mission{% else %}Start Mission{% endif %}
-                        </button>
-                    {% endif %}
                 </div>
-
-                <!-- Mission 2: Cyberbully Crisis -->
-                <div class="mission-card {% if 'cyberbully_crisis' in player.missions_completed %}mission-completed{% elif player.challenges_completed < 5 %}mission-locked{% endif %} rounded-2xl p-8 text-center">
-                    <div class="mb-6">
-                        <div class="w-20 h-20 mx-auto bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
-                            <i class="fas fa-heart text-4xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-2">Mission 2: Cyberbully Crisis</h3>
-                        <p class="text-lg opacity-90">Guardians of Kindness on Cyber Street</p>
-                    </div>
-                    
-                    <!-- Progress Bar -->
-                    <div class="mb-6">
-                        <div class="flex justify-between text-sm mb-2">
-                            <span>Progress</span>
-                            <span>{{ player.cyberbully_challenges_completed|default:0 }}/5</span>
-                        </div>
-                        <div class="bg-white bg-opacity-20 rounded-full h-3">
-                            <div class="progress-bar rounded-full" 
-                                 style="width: {% widthratio player.cyberbully_challenges_completed|default:0 5 100 %}%"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Mission Status -->
-                    {% if player.challenges_completed < 5 %}
-                        <div class="mb-4">
-                            <span class="badge badge-warning badge-lg">
-                                <i class="fas fa-lock mr-2"></i>Complete Mission 1 First
-                            </span>
-                        </div>
-                        <button class="btn btn-disabled btn-lg">
-                            <i class="fas fa-lock mr-2"></i>Locked
-                        </button>
-                    {% elif 'cyberbully_crisis' in player.missions_completed %}
-                        <div class="mb-4">
-                            <span class="badge badge-success badge-lg">
-                                <i class="fas fa-check-circle mr-2"></i>Mission Complete!
-                            </span>
-                        </div>
-                        <button onclick="startMission('cyberbully_crisis')" 
-                                class="btn btn-outline btn-white btn-lg">
-                            <i class="fas fa-replay mr-2"></i>Play Again
-                        </button>
-                    {% else %}
-                        <button onclick="startMission('cyberbully_crisis')" 
-                                class="btn btn-white btn-lg neon-glow">
-                            <i class="fas fa-play mr-2"></i>
-                            {% if player.cyberbully_challenges_completed > 0 %}Continue Mission{% else %}Start Mission{% endif %}
-                        </button>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Badges Section -->
-            {% if player.badges_earned %}
-            <div class="cyber-card rounded-2xl p-8 mt-8">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">
-                    <i class="fas fa-medal text-yellow-500 mr-2"></i>Your Badges
-                </h3>
-                <div class="flex flex-wrap justify-center gap-4">
-                    {% for badge in player.badges_earned %}
-                        <div class="badge-icon bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-2 rounded-full">
-                            <i class="fas fa-shield-alt mr-2"></i>{{ badge }}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-        </main>
-    </div>
-
-    <!-- JavaScript -->
-    <script>
-        // Background music control
-        function toggleMusic() {
-            const music = document.getElementById('backgroundMusic');
-            if (music.paused) {
-                music.play();
-            } else {
-                music.pause();
-            }
-        }
-
-        // Auto-play background music with user interaction
-        document.addEventListener('click', function() {
-            const music = document.getElementById('backgroundMusic');
-            if (music.paused) {
-                music.play().catch(e => console.log('Music play failed:', e));
-            }
-        }, { once: true });
-
-        // Start mission function
-        function startMission(missionType) {
-            const sessionCode = '{{ session.session_code }}';
-            
-            if (missionType === 'password_fortress') {
-                window.location.href = `/cyber-city/${sessionCode}/password-fortress/`;
-            } else if (missionType === 'cyberbully_crisis') {
-                window.location.href = `/cyber-city/${sessionCode}/cyberbully-crisis/`;
-            }
-        }
-
-        // Add visual effects
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add hover effects to mission cards
-            const missionCards = document.querySelectorAll('.mission-card');
-            missionCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    if (!this.classList.contains('mission-locked')) {
-                        this.classList.add('neon-glow');
-                    }
-                });
                 
-                card.addEventListener('mouseleave', function() {
-                    this.classList.remove('neon-glow');
-                });
+                <div class="p-8 relative">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-pink-400 text-red-900 w-12 h-12 rounded-lg flex items-center justify-center text-2xl mr-4 animate-pulse">
+                            💗
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold">Mission 2: Cyberbully Crisis</h4>
+                            <p class="text-pink-300">Guardians of Kindness on Cyber Street</p>
+                        </div>
+                    </div>
+                    <p class="text-red-100 mb-6">
+                        Become a guardian of kindness! Help protect friends on Cyber Street by identifying cyberbullying and learning how to respond with courage and compassion in this heart-warming adventure.
+                    </p>
+                    
+                    <!-- Skills Learned -->
+                    <div class="mb-6">
+                        <h5 class="text-sm font-bold text-pink-300 mb-3">💝 SKILLS YOU'LL MASTER:</h5>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-pink-400/20 text-pink-300 px-3 py-1 rounded-full text-sm">Cyberbully Recognition</span>
+                            <span class="bg-red-400/20 text-red-300 px-3 py-1 rounded-full text-sm">Empathy & Kindness</span>
+                            <span class="bg-orange-400/20 text-orange-300 px-3 py-1 rounded-full text-sm">Help-Seeking</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Mission Stats -->
+                    <div class="bg-white/10 rounded-lg p-4 mb-6 backdrop-blur-sm">
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div>
+                                <div class="text-lg font-bold">5</div>
+                                <div class="text-xs text-red-300">Challenges</div>
+                            </div>
+                            <div>
+                                <div class="text-lg font-bold">25-30</div>
+                                <div class="text-xs text-red-300">Minutes</div>
+                            </div>
+                            <div>
+                                <div class="text-lg font-bold">★★★</div>
+                                <div class="text-xs text-red-300">Emotional</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'cyber_city:quick_game' %}?mission=cyberbully_crisis" 
+                       class="bg-pink-400 text-red-900 px-6 py-3 rounded-lg hover:bg-pink-300 transition-colors inline-flex items-center font-bold w-full justify-center">
+                        💗 Start Cyberbully Crisis Mission
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coming Soon Missions -->
+        <div class="text-center mb-12">
+            <h3 class="text-xl font-bold text-gray-700 mb-8">🚀 More Missions Coming Soon</h3>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Future Mission 1 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-dashed border-gray-300">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-gray-100 text-gray-400 w-10 h-10 rounded-lg flex items-center justify-center text-xl mr-3">
+                            🌐
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900">Digital Footprint Detective</h4>
+                            <p class="text-sm text-orange-600">Coming Soon</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">
+                        Explore how your online activities create digital footprints and learn to manage your online presence responsibly.
+                    </p>
+                    <div class="bg-orange-100 text-orange-800 px-4 py-2 rounded-lg text-sm">
+                        🔍 Track Your Digital Trail
+                    </div>
+                </div>
+            </div>
+
+            <!-- Future Mission 2 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-dashed border-gray-300">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-gray-100 text-gray-400 w-10 h-10 rounded-lg flex items-center justify-center text-xl mr-3">
+                            🎭
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900">Share Smart Challenge</h4>
+                            <p class="text-sm text-orange-600">Coming Soon</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">
+                        Learn the balance between creative expression and privacy when sharing content online.
+                    </p>
+                    <div class="bg-orange-100 text-orange-800 px-4 py-2 rounded-lg text-sm">
+                        🎨 Create & Share Safely
+                    </div>
+                </div>
+            </div>
+
+            <!-- Future Mission 3 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-dashed border-gray-300">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-gray-100 text-gray-400 w-10 h-10 rounded-lg flex items-center justify-center text-xl mr-3">
+                            🕵️
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900">Truth Detective</h4>
+                            <p class="text-sm text-orange-600">Coming Soon</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">
+                        Develop critical thinking skills to evaluate online information and identify reliable sources.
+                    </p>
+                    <div class="bg-orange-100 text-orange-800 px-4 py-2 rounded-lg text-sm">
+                        🧠 Think Critically Online
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Start Guide -->
+<div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white text-center mx-4 sm:mx-8 mb-16">
+    <h3 class="text-2xl font-bold mb-4">Ready to Protect Cyber City? 🛡️</h3>
+    <p class="text-blue-100 mb-6 max-w-2xl mx-auto">
+        Choose a mission above to start your cybersecurity adventure. Each mission teaches important digital safety skills through fun, interactive gameplay designed specifically for young learners.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#missions" 
+           class="bg-white text-blue-600 px-8 py-3 rounded-lg hover:bg-blue-50 transition-colors font-medium">
+            🎯 Choose Your Mission
+        </a>
+        <a href="/games/" 
+           class="border border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 transition-colors font-medium">
+            🎮 Explore All Games
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
             });
         });
-    </script>
-</body>
-</html>
+    });
+    
+    // Add glowing animation to mission cards
+    document.addEventListener('DOMContentLoaded', function() {
+        const missionCards = document.querySelectorAll('.bg-gradient-to-br');
+        missionCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+                this.style.transition = 'transform 0.3s ease';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    });
+</script>
+{% endblock %}

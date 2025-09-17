@@ -5,11 +5,11 @@ from . import views
 app_name = 'cyber_city'
 
 urlpatterns = [
-    # Quick game creation (no session code needed)
-    path('', views.CyberCityQuickGameView.as_view(), name='quick_game'),
+    # Mission Selection Hub (no session needed)
+    path('', views.CyberCityMissionHubView.as_view(), name='mission_hub'),
     
-    # Mission Hub (shows both missions)
-    path('<str:session_code>/', views.CyberCityGameView.as_view(), name='game'),
+    # Quick game creation for missions
+    path('start/', views.CyberCityQuickGameView.as_view(), name='quick_game'),
     
     # Mission 1: Password Fortress
     path('<str:session_code>/password-fortress/', views.PasswordFortressView.as_view(), name='password_fortress'),

@@ -24,7 +24,8 @@
       "Bash(az webapp log tail:*)",
       "Bash(az webapp ssh:*)",
       "Bash(az webapp deployment source delete:*)",
-      "Bash(az webapp log deployment list:*)"
+      "Bash(az webapp log deployment list:*)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []

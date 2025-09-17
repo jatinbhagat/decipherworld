@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
+from django.urls import reverse
 from games.base.views import BaseGameSessionView, BaseGameActionView, QuickGameView
 from .models import CyberCitySession, CyberCityPlayer, SecurityChallenge, PlayerChallenge, CyberBadge, CyberbullyChallenge, PlayerCyberbullyChallenge
 from .plugin import CyberCityProtectionSquadPlugin
@@ -388,14 +390,35 @@ class CyberCityActionAPI(BaseGameActionView):
         
         return new_badges
 
+class CyberCityMissionHubView(TemplateView):
+    """Mission Selection Hub - No session required"""
+    template_name = 'cyber_security/mission_hub.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Cyber City Protection Squad - Choose Your Mission',
+            'page_description': 'Select your cybersecurity mission and start protecting Cyber City from digital threats!',
+        })
+        return context
+
 class CyberCityQuickGameView(QuickGameView):
     """Quick game creation for Cyber City Protection Squad"""
     
     session_model = CyberCitySession
     player_model = CyberCityPlayer
     template_name = 'cyber_security/quick_game.html'
-    game_url_name = 'cyber_city:game'  # Redirect to Mission Hub instead of avatar
     game_plugin_class = CyberCityProtectionSquadPlugin
+    
+    def get_success_url(self):
+        """Redirect to appropriate mission based on URL parameter"""
+        mission = self.request.GET.get('mission', 'password_fortress')
+        session_code = self.object.session_code
+        
+        if mission == 'cyberbully_crisis':
+            return reverse('cyber_city:cyberbully_crisis', kwargs={'session_code': session_code})
+        else:
+            return reverse('cyber_city:password_fortress', kwargs={'session_code': session_code})
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -404,6 +427,10 @@ class CyberCityQuickGameView(QuickGameView):
         session_code = kwargs.get('session_code')
         if session_code:
             context['session_code'] = session_code
+        
+        # Add mission selection context
+        mission = self.request.GET.get('mission', 'password_fortress')
+        context['selected_mission'] = mission
         
         return context
     
