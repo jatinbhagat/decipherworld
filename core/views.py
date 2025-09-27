@@ -227,6 +227,56 @@ def run_migrations(request):
         }, status=500)
 
 @csrf_exempt
+@require_http_methods(["POST"])
+def fix_migration_conflicts(request):
+    """Fix migration conflicts via HTTP request"""
+    try:
+        # Capture stdout and stderr
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        stdout_capture = io.StringIO()
+        stderr_capture = io.StringIO()
+        
+        sys.stdout = stdout_capture
+        sys.stderr = stderr_capture
+        
+        try:
+            # Run the fix migration conflicts command
+            from django.core.management import execute_from_command_line
+            execute_from_command_line(['manage.py', 'fix_migration_conflicts'])
+            
+            stdout_output = stdout_capture.getvalue()
+            stderr_output = stderr_capture.getvalue()
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Migration conflicts fixed successfully',
+                'stdout': stdout_output,
+                'stderr': stderr_output
+            })
+            
+        except Exception as e:
+            stdout_output = stdout_capture.getvalue()
+            stderr_output = stderr_capture.getvalue()
+            
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Migration conflict fix failed: {str(e)}',
+                'stdout': stdout_output,
+                'stderr': stderr_output
+            }, status=500)
+            
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
+            
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to fix migration conflicts: {str(e)}'
+        }, status=500)
+
+@csrf_exempt
 @require_http_methods(["GET"])
 def populate_cyber_challenges(request):
     """Populate Cyber City security challenges"""

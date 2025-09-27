@@ -18,5 +18,6 @@ urlpatterns = [
     path('populate-cyber-challenges/', views.populate_cyber_challenges, name='populate_cyber_challenges'),
     path('populate-cyberbully-challenges/', views.populate_cyberbully_challenges_web, name='populate_cyberbully_challenges'),
     path('run-production-migrations/', views.run_production_migrations, name='run_production_migrations'),
+    path('fix-migration-conflicts/', views.fix_migration_conflicts, name='fix_migration_conflicts'),
     path('submit-game-review/', views.submit_game_review, name='submit_game_review'),
 ]

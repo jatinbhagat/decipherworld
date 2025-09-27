@@ -6,6 +6,10 @@ echo "🚀 Starting Decipherworld Django application with WebSocket support..."
 # Set Django settings module for Azure
 export DJANGO_SETTINGS_MODULE=decipherworld.settings.production
 
+# Fix migration conflicts first
+echo "🔧 Fixing migration conflicts..."
+python manage.py fix_migration_conflicts --settings=decipherworld.settings.production || echo "⚠️ Migration conflict fix failed, continuing..."
+
 # Run database migrations (essential for Django)
 echo "🗄️ Running database migrations..."
 python manage.py migrate --noinput --settings=decipherworld.settings.production || echo "⚠️ Some migrations may have conflicts, continuing..."
