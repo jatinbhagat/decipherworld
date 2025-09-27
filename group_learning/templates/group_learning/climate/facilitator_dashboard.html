@@ -459,10 +459,15 @@ class ClimateGameManager {
   
   scheduleReconnect() {
     if (this.retryCount < this.maxRetries) {
-      const delay = this.baseDelay * Math.pow(2, this.retryCount);
+      // Use faster reconnection for production environments
+      const isProduction = !window.location.hostname.includes('localhost');
+      const baseDelay = isProduction ? 500 : this.baseDelay; // 500ms base for production
+      const maxDelay = isProduction ? 5000 : 16000; // Max 5s for production
+      
+      const delay = Math.min(maxDelay, baseDelay * Math.pow(1.5, this.retryCount)); // Gentler exponential backoff
       this.retryCount++;
       
-      console.log(`Reconnecting in ${delay}ms (attempt ${this.retryCount}/${this.maxRetries})`);
+      console.log(`Reconnecting in ${delay}ms (attempt ${this.retryCount}/${this.maxRetries}) - ${isProduction ? 'Production' : 'Development'} mode`);
       this.updateConnectionStatus('connecting');
       
       this.reconnectTimeout = setTimeout(() => {
@@ -470,11 +475,14 @@ class ClimateGameManager {
       }, delay);
     } else {
       console.error('Max reconnection attempts reached');
-      this.showNotification('Unable to reconnect. Please refresh the page.', 'error');
+      this.showNotification('Connection failed. Please refresh the page to retry.', 'error');
     }
   }
   
   startHeartbeat() {
+    // Use more frequent pings for production (Azure needs shorter intervals)
+    const pingInterval = window.location.hostname.includes('localhost') ? 30000 : 20000;
+    
     this.heartbeatInterval = setInterval(() => {
       if (this.isConnected && this.socket.readyState === WebSocket.OPEN) {
         this.sendMessage({
@@ -482,7 +490,7 @@ class ClimateGameManager {
           timestamp: Date.now()
         });
       }
-    }, 30000); // Send ping every 30 seconds
+    }, pingInterval); // 20 seconds for production, 30 seconds for local
   }
   
   stopHeartbeat() {

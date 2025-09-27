@@ -157,6 +157,26 @@ class ClimateGameConsumer(AsyncWebsocketConsumer):
             'message': event['message']
         }))
 
+    async def timer_started(self, event):
+        """Handle timer started notification"""
+        logger.info(f"🕐 Broadcasting timer_started to {self.session_code} - Connection: {self.connection_id}")
+        await self.send(text_data=json.dumps({
+            'type': 'timer_started',
+            'duration': event.get('duration'),
+            'end_time': event.get('end_time'),
+            'timer_info': event.get('timer_info', {})
+        }))
+
+    async def timer_update(self, event):
+        """Handle timer update notification"""
+        logger.info(f"🕐 Broadcasting timer_update to {self.session_code} - Connection: {self.connection_id}")
+        await self.send(text_data=json.dumps({
+            'type': 'timer_update',
+            'end_time': event.get('end_time'),
+            'timer_info': event.get('timer_info', {}),
+            'remaining_time': event.get('remaining_time')
+        }))
+
     # Database helper methods
     @database_sync_to_async
     def get_session_exists(self, session_code):

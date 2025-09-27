@@ -57,6 +57,39 @@ CORS_ALLOWED_ORIGINS = [
 # Email backend for production
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
 
+# WebSocket Channel Layers - Redis for Production
+# Check for Redis URL in environment
+REDIS_URL = config('REDIS_URL', default='')
+if REDIS_URL:
+    # Use Redis for production WebSocket persistence
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [REDIS_URL],
+                "capacity": 500,  # Maximum messages to store for each channel
+                "expiry": 300,    # 5 minutes before messages expire (good for Azure)
+                "group_expiry": 600,  # 10 minutes for group persistence
+            },
+        },
+    }
+else:
+    # Fallback to InMemory with optimized settings for Azure
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+            'CONFIG': {
+                "capacity": 300,  # Reduce capacity for Azure memory limits
+                "expiry": 60,     # Shorter expiry for Azure App Service
+            },
+        },
+    }
+
+# WebSocket specific settings for Azure App Service
+WEBSOCKET_TIMEOUT = 240  # 4 minutes (Azure typically has 5 min timeout)
+WEBSOCKET_PING_INTERVAL = 20  # More frequent pings for Azure
+WEBSOCKET_PING_TIMEOUT = 10
+
 # Logging
 LOGGING = {
     'version': 1,
