@@ -5,6 +5,7 @@ app_name = 'core'
 
 urlpatterns = [
     path('test-home/', views.simple_home_test, name='test_home'),
+    path('minimal/', views.minimal_home, name='minimal_home'),
     path('', views.HomeView.as_view(), name='home'),
     path('about/', views.about, name='about'),
     path('courses/', views.CoursesView.as_view(), name='courses'),
