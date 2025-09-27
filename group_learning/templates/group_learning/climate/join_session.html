@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Join Climate Game - {{ session.session_code }}{% endblock %}
+
+{% block extra_css %}
+<style>
+input[name="player_name"], 
+input#player_name, 
+#player_name {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-weight: 600 !important;
+    font-size: 18px !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+    -webkit-text-fill-color: #000000 !important;
+    -webkit-opacity: 1 !important;
+}
+
+input[name="player_name"]:focus, 
+input#player_name:focus, 
+#player_name:focus {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+
+input[name="player_name"]::placeholder, 
+input#player_name::placeholder, 
+#player_name::placeholder {
+    color: #666666 !important;
+    opacity: 0.7 !important;
+    -webkit-text-fill-color: #666666 !important;
+}
+</style>
+{% endblock %}
+
+{% block description %}Join the Climate Crisis India simulation game. Experience policy decisions from multiple stakeholder perspectives.{% endblock %}
+
+{% block content %}
+<!-- Climate Game Join Session Page -->
+<div class="bg-gradient-to-br from-green-600 via-emerald-700 to-teal-800 text-white overflow-hidden relative min-h-screen">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="flex items-center justify-center mb-6">
+                <span class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-medium mr-3">
+                    CLIMATE CRISIS SIMULATION
+                </span>
+                <span class="bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                    ROLE-PLAYING GAME
+                </span>
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-bold mb-6">
+                🌍 Climate Crisis India
+            </h1>
+            <p class="text-xl opacity-90 mb-8">
+                Ready to join the simulation? You'll be assigned a role to experience India's climate challenges.
+            </p>
+        </div>
+
+        <!-- Session Info Card -->
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 mb-8">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold mb-4">Session Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div>
+                        <div class="bg-white/20 rounded-lg p-4">
+                            <div class="text-3xl font-black mb-2">{{ session.session_code }}</div>
+                            <div class="text-sm opacity-75">Session Code</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="bg-white/20 rounded-lg p-4">
+                            <div class="text-3xl font-black mb-2">0</div>
+                            <div class="text-sm opacity-75">Players Joined</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="bg-white/20 rounded-lg p-4">
+                            <div class="text-3xl font-black mb-2">{{ session.current_phase|title }}</div>
+                            <div class="text-sm opacity-75">Current Phase</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Join Form -->
+        <div class="bg-white rounded-2xl p-8 shadow-xl max-w-md mx-auto">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Join the Game</h3>
+            
+            {% if session.status == 'waiting' %}
+                <form method="post" action="{% url 'group_learning:join_climate_session' session.session_code %}">
+                    {% csrf_token %}
+                    <div class="mb-6">
+                        <label for="player_name" class="block text-sm font-medium text-gray-900 mb-2">
+                            Your Name
+                        </label>
+                        <input type="text" id="player_name" name="player_name" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                               style="background-color: white !important; color: #1f2937 !important; font-weight: 500 !important;"
+                               placeholder="Enter your name" required maxlength="50">
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium">
+                        🎮 Join Climate Game
+                    </button>
+                </form>
+                
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                    <h4 class="font-semibold text-blue-900 mb-2">What happens next?</h4>
+                    <ul class="text-sm text-blue-800 space-y-1">
+                        <li>• You'll be assigned one of 5 stakeholder roles</li>
+                        <li>• Experience 5 rounds of climate scenarios</li>
+                        <li>• Make decisions that affect India's future</li>
+                        <li>• See real-time impact on society meters</li>
+                    </ul>
+                </div>
+                
+            {% elif session.status == 'in_progress' %}
+                <div class="text-center">
+                    <div class="bg-white rounded-2xl p-8 shadow-xl">
+                        <div class="text-6xl mb-6">🎮</div>
+                        <h4 class="text-2xl font-bold text-gray-900 mb-4">Game Already in Progress</h4>
+                        <p class="text-gray-600 mb-6">
+                            This climate game session has already started. Students can only join before the game begins.
+                        </p>
+                        <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                            <h5 class="font-semibold text-blue-900 mb-2">What can you do?</h5>
+                            <div class="text-sm text-blue-800 space-y-1">
+                                <p>• Wait for the current game to finish</p>
+                                <p>• Ask your teacher to create a new session</p>
+                                <p>• Join a different available session</p>
+                            </div>
+                        </div>
+                        <a href="{% url 'group_learning:climate_game_home' %}" 
+                           class="inline-block bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium">
+                            🏠 Back to Climate Games
+                        </a>
+                    </div>
+                </div>
+                
+            {% else %}
+                <div class="text-center">
+                    <div class="bg-gray-100 text-gray-800 p-6 rounded-lg">
+                        <h4 class="font-semibold text-xl mb-2">Session Not Available</h4>
+                        <p class="text-sm mb-4">This climate game session is no longer accepting players.</p>
+                        <a href="{% url 'group_learning:climate_game_home' %}" 
+                           class="inline-block bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                            Find Another Game
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Role Preview -->
+        <div class="mt-12">
+            <h3 class="text-2xl font-bold text-center mb-8">You'll Play One of These Roles</h3>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="bg-blue-500/20 rounded-lg p-4 text-center">
+                    <div class="text-3xl mb-2">🏛️</div>
+                    <div class="font-semibold text-sm">Government</div>
+                    <div class="text-xs opacity-75">Policy Maker</div>
+                </div>
+                <div class="bg-orange-500/20 rounded-lg p-4 text-center">
+                    <div class="text-3xl mb-2">🏢</div>
+                    <div class="font-semibold text-sm">Business</div>
+                    <div class="text-xs opacity-75">Economic Focus</div>
+                </div>
+                <div class="bg-green-500/20 rounded-lg p-4 text-center">
+                    <div class="text-3xl mb-2">🌾</div>
+                    <div class="font-semibold text-sm">Farmer</div>
+                    <div class="text-xs opacity-75">Rural Voice</div>
+                </div>
+                <div class="bg-purple-500/20 rounded-lg p-4 text-center">
+                    <div class="text-3xl mb-2">🏙️</div>
+                    <div class="font-semibold text-sm">Urban Citizen</div>
+                    <div class="text-xs opacity-75">Daily Impact</div>
+                </div>
+                <div class="bg-red-500/20 rounded-lg p-4 text-center">
+                    <div class="text-3xl mb-2">🤝</div>
+                    <div class="font-semibold text-sm">NGO Worker</div>
+                    <div class="text-xs opacity-75">Environmental Advocate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-focus on name input
+document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.getElementById('player_name');
+    if (nameInput) {
+        nameInput.focus();
+    }
+});
+
+// Form validation
+document.querySelector('form')?.addEventListener('submit', function(e) {
+    const nameInput = document.getElementById('player_name');
+    if (nameInput && nameInput.value.trim().length < 2) {
+        e.preventDefault();
+        alert('Please enter a name with at least 2 characters.');
+        nameInput.focus();
+    }
+});
+</script>
+{% endblock %}

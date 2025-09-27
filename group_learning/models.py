@@ -1312,3 +1312,395 @@ class GameLearningModule(models.Model):
         if was_skipped:
             self.skip_count += 1
         self.save(update_fields=['view_count', 'skip_count'])
+
+
+# ==================================================================================
+# CLIMATE CHANGE SIMULATION GAME MODELS
+# ==================================================================================
+
+class ClimateGame(Game):
+    """
+    Climate Change Simulation Game - extends base Game model
+    Tracks society-level metrics that change based on player decisions
+    """
+    # Society Metrics (0-100 scale)
+    climate_resilience_meter = models.IntegerField(
+        default=50, 
+        help_text="Climate adaptation and mitigation progress (0-100)"
+    )
+    gdp_meter = models.IntegerField(
+        default=50, 
+        help_text="Economic health and growth (0-100)"
+    )
+    public_morale_meter = models.IntegerField(
+        default=50, 
+        help_text="Citizen satisfaction and social cohesion (0-100)"
+    )
+    environmental_health_meter = models.IntegerField(
+        default=50, 
+        help_text="Air, water, and ecosystem quality (0-100)"
+    )
+    
+    class Meta:
+        verbose_name = "Climate Game"
+        verbose_name_plural = "Climate Games"
+
+
+class ClimateScenario(models.Model):
+    """
+    Individual scenarios for each round (Delhi Air Pollution, Mumbai Floods, etc.)
+    """
+    SCENARIO_ROUNDS = [
+        (1, 'Round 1: Delhi Air Pollution Crisis'),
+        (2, 'Round 2: Mumbai Floods'),
+        (3, 'Round 3: Chennai Water Shortage'),
+        (4, 'Round 4: Migration & Heatwave'),
+        (5, 'Round 5: National Election/Policy'),
+    ]
+    
+    game = models.ForeignKey(ClimateGame, on_delete=models.CASCADE, related_name='climate_scenarios')
+    round_number = models.IntegerField(choices=SCENARIO_ROUNDS)
+    title = models.CharField(max_length=200, help_text="e.g., 'Delhi Air Pollution Crisis'")
+    
+    # Scenario Content
+    context_description = models.TextField(help_text="Background situation and stakes")
+    background_image = models.URLField(
+        blank=True, 
+        help_text="URL to India-specific background image"
+    )
+    news_quotes = models.JSONField(
+        default=list,
+        help_text="Array of fake news quotes to set atmosphere"
+    )
+    potential_consequences = models.JSONField(
+        default=list,
+        help_text="2-3 potential consequences if unaddressed"
+    )
+    
+    # Timing
+    presentation_duration = models.IntegerField(
+        default=90, 
+        help_text="Seconds to present scenario"
+    )
+    response_duration = models.IntegerField(
+        default=60, 
+        help_text="Seconds for players to respond"
+    )
+    feedback_duration = models.IntegerField(
+        default=120, 
+        help_text="Seconds to show results and feedback"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = "Climate Scenario"
+        verbose_name_plural = "Climate Scenarios"
+        ordering = ['round_number']
+        unique_together = ['game', 'round_number']
+    
+    def __str__(self):
+        return f"Round {self.round_number}: {self.title}"
+
+
+class ClimateQuestion(models.Model):
+    """
+    Role-specific questions within each scenario
+    Each scenario has 5 questions (one per role)
+    """
+    ROLE_CHOICES = [
+        ('government', 'Government Official'),
+        ('business', 'Business Owner'),
+        ('farmer', 'Farmer'),
+        ('urban_citizen', 'Urban Citizen'),
+        ('ngo_worker', 'NGO Worker'),
+    ]
+    
+    scenario = models.ForeignKey(ClimateScenario, on_delete=models.CASCADE, related_name='questions')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    question_text = models.TextField(help_text="The decision prompt for this role")
+    
+    # Optional: Additional context specific to this role
+    role_context = models.TextField(
+        blank=True, 
+        help_text="Additional background specific to this role's perspective"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = "Climate Question"
+        verbose_name_plural = "Climate Questions"
+        ordering = ['scenario__round_number', 'role']
+        unique_together = ['scenario', 'role']
+    
+    def __str__(self):
+        return f"{self.scenario.title} - {self.get_role_display()}"
+
+
+class ClimateOption(models.Model):
+    """
+    Individual answer options for each role question
+    Each question has 4 options (a, b, c, d)
+    """
+    OPTION_LETTERS = [
+        ('a', 'Option A'),
+        ('b', 'Option B'),
+        ('c', 'Option C'),
+        ('d', 'Option D'),
+    ]
+    
+    question = models.ForeignKey(ClimateQuestion, on_delete=models.CASCADE, related_name='options')
+    option_letter = models.CharField(max_length=1, choices=OPTION_LETTERS)
+    option_text = models.TextField(help_text="The action/decision this option represents")
+    immediate_consequence = models.TextField(help_text="Bold text describing trade-offs and risks")
+    
+    # Outcome Logic - how this choice affects society meters
+    outcome_logic = models.JSONField(
+        default=dict,
+        help_text="Impact on climate_resilience, gdp, public_morale, environmental_health"
+    )
+    
+    # Analytics
+    selection_count = models.IntegerField(default=0, help_text="How many times this option was chosen")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = "Climate Option"
+        verbose_name_plural = "Climate Options"
+        ordering = ['question__scenario__round_number', 'question__role', 'option_letter']
+        unique_together = ['question', 'option_letter']
+    
+    def __str__(self):
+        return f"{self.question} - Option {self.option_letter.upper()}"
+    
+    def increment_selection(self):
+        """Track analytics when this option is selected"""
+        self.selection_count += 1
+        self.save(update_fields=['selection_count'])
+
+
+class ClimateGameSession(GameSession):
+    """
+    Live climate game session - extends base GameSession
+    Tracks real-time society meters and round progress
+    """
+    climate_game = models.ForeignKey(ClimateGame, on_delete=models.CASCADE, related_name='climate_sessions')
+    
+    # Current Game State
+    current_round = models.IntegerField(default=1, help_text="Current scenario round (1-5)")
+    current_phase = models.CharField(
+        max_length=20,
+        choices=[
+            ('lobby', 'Waiting in Lobby'),
+            ('scenario_intro', 'Scenario Introduction'),
+            ('question_phase', 'Question Response'),
+            ('results_feedback', 'Results & Feedback'),
+            ('round_complete', 'Round Complete'),
+            ('game_complete', 'Game Complete'),
+        ],
+        default='lobby'
+    )
+    
+    # Real-time Society Meters (evolve during game)
+    current_climate_resilience = models.IntegerField(default=50)
+    current_gdp = models.IntegerField(default=50)
+    current_public_morale = models.IntegerField(default=50)
+    current_environmental_health = models.IntegerField(default=50)
+    
+    # Round timing
+    round_start_time = models.DateTimeField(null=True, blank=True)
+    phase_start_time = models.DateTimeField(null=True, blank=True)
+    
+    # Timer functionality
+    round_duration_minutes = models.IntegerField(default=10, help_text="Duration for each round in minutes")
+    question_timer_enabled = models.BooleanField(default=True, help_text="Enable timer for question phase")
+    current_timer_end = models.DateTimeField(null=True, blank=True, help_text="When current timer expires")
+    
+    class Meta:
+        verbose_name = "Climate Game Session"
+        verbose_name_plural = "Climate Game Sessions"
+    
+    def start_new_round(self, round_number):
+        """Initialize a new scenario round"""
+        self.current_round = round_number
+        self.current_phase = 'scenario_intro'
+        self.round_start_time = timezone.now()
+        self.phase_start_time = timezone.now()
+        
+        # Don't set current_scenario - it's for base Scenario model, not ClimateScenario
+        # Climate scenarios are accessed via self.climate_game.climate_scenarios.filter(round_number=round_number)
+        
+        self.save()
+    
+    def advance_phase(self, new_phase):
+        """Move to next phase of current round"""
+        self.current_phase = new_phase
+        self.phase_start_time = timezone.now()
+        self.save()
+    
+    def update_meters(self, meter_changes):
+        """Apply meter changes from player decisions"""
+        self.current_climate_resilience = max(0, min(100, 
+            self.current_climate_resilience + meter_changes.get('climate_resilience', 0)))
+        self.current_gdp = max(0, min(100, 
+            self.current_gdp + meter_changes.get('gdp', 0)))
+        self.current_public_morale = max(0, min(100, 
+            self.current_public_morale + meter_changes.get('public_morale', 0)))
+        self.current_environmental_health = max(0, min(100, 
+            self.current_environmental_health + meter_changes.get('environmental_health', 0)))
+        self.save()
+    
+    def get_meter_status(self):
+        """Return current meter values as dict"""
+        return {
+            'climate_resilience': self.current_climate_resilience,
+            'gdp': self.current_gdp,
+            'public_morale': self.current_public_morale,
+            'environmental_health': self.current_environmental_health,
+        }
+    
+    def get_active_player_count(self):
+        """Return count of distinct active players in this session"""
+        return self.climate_responses.values('player_session_id').distinct().count()
+    
+    def get_active_players_list(self):
+        """Return list of active players with their details"""
+        return self.climate_responses.values(
+            'player_name', 'player_session_id', 'assigned_role'
+        ).distinct().order_by('player_name')
+    
+    def start_timer(self, duration_minutes=None):
+        """Start timer for current phase"""
+        if duration_minutes is None:
+            duration_minutes = self.round_duration_minutes
+        
+        self.current_timer_end = timezone.now() + timezone.timedelta(minutes=duration_minutes)
+        self.save()
+    
+    def get_timer_info(self):
+        """Get current timer information"""
+        if not self.current_timer_end:
+            return {
+                'enabled': False,
+                'seconds_remaining': 0,
+                'expired': True
+            }
+        
+        now = timezone.now()
+        seconds_remaining = max(0, (self.current_timer_end - now).total_seconds())
+        
+        return {
+            'enabled': self.question_timer_enabled,
+            'seconds_remaining': int(seconds_remaining),
+            'expired': seconds_remaining <= 0,
+            'end_time': self.current_timer_end.isoformat() if self.current_timer_end else None
+        }
+    
+    def set_timer_duration(self, minutes):
+        """Set timer duration for rounds"""
+        self.round_duration_minutes = minutes
+        self.save()
+
+
+class ClimatePlayerResponse(models.Model):
+    """
+    Individual player responses to climate scenarios
+    Standalone model for climate-specific data
+    """
+    climate_session = models.ForeignKey(ClimateGameSession, on_delete=models.CASCADE, related_name='climate_responses')
+    climate_scenario = models.ForeignKey(ClimateScenario, on_delete=models.CASCADE, null=True, blank=True)
+    selected_option = models.ForeignKey(ClimateOption, on_delete=models.CASCADE, null=True, blank=True)
+    
+    # Player identification (anonymous)
+    player_name = models.CharField(max_length=100, help_text="Player's display name")
+    player_session_id = models.CharField(max_length=100, help_text="Anonymous player ID")
+    
+    # Player assignment for this session
+    assigned_role = models.CharField(
+        max_length=20, 
+        choices=ClimateQuestion.ROLE_CHOICES,
+        help_text="Role assigned to this player for entire game"
+    )
+    
+    # Timing analytics
+    response_time = models.FloatField(help_text="Seconds taken to respond")
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    
+    # Decision context
+    round_number = models.PositiveIntegerField(help_text="Which round this response is for")
+    reasoning = models.TextField(blank=True, help_text="Optional player reasoning")
+    
+    class Meta:
+        verbose_name = "Climate Player Response"
+        verbose_name_plural = "Climate Player Responses"
+        ordering = ['-submitted_at']
+        unique_together = ['climate_session', 'player_session_id', 'climate_scenario']
+    
+    def __str__(self):
+        return f"{self.player_name} ({self.assigned_role}) - {self.climate_scenario.title}"
+    
+    def save(self, *args, **kwargs):
+        """Auto-increment option selection count when response is saved"""
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new and self.selected_option:
+            self.selected_option.increment_selection()
+
+
+class ClimateRoundResult(models.Model):
+    """
+    Aggregated results for each round of climate game
+    Stores outcome calculations and narrative feedback
+    """
+    session = models.ForeignKey(ClimateGameSession, on_delete=models.CASCADE, related_name='round_results')
+    scenario = models.ForeignKey(ClimateScenario, on_delete=models.CASCADE)
+    
+    # Aggregated Response Data
+    response_summary = models.JSONField(
+        default=dict,
+        help_text="Percentage breakdown of choices by role"
+    )
+    
+    # Calculated Outcomes
+    meter_changes = models.JSONField(
+        default=dict,
+        help_text="How meters changed this round"
+    )
+    meters_after = models.JSONField(
+        default=dict,
+        help_text="Meter values after this round"
+    )
+    
+    # Generated Narrative
+    outcome_narrative = models.TextField(
+        help_text="AI-generated or pre-written narrative about consequences"
+    )
+    learning_outcome = models.TextField(
+        help_text="Key learning points from this round"
+    )
+    
+    # Cross-role interactions
+    collaboration_bonus = models.IntegerField(
+        default=0,
+        help_text="Bonus points for complementary choices across roles"
+    )
+    conflict_penalty = models.IntegerField(
+        default=0,
+        help_text="Penalty for contradictory choices"
+    )
+    
+    calculated_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "Climate Round Result"
+        verbose_name_plural = "Climate Round Results"
+        ordering = ['-calculated_at']
+        unique_together = ['session', 'scenario']
+    
+    def __str__(self):
+        return f"{self.session.session_code} - {self.scenario.title} Results"

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Connection Test</h1>
+    <div id="status">Disconnected</div>
+    <div id="messages"></div>
+    <button onclick="connect()">Connect</button>
+    <button onclick="disconnect()">Disconnect</button>
+    <button onclick="sendPing()">Send Ping</button>
+
+    <script>
+        let socket = null;
+        const sessionCode = 'TEST1234'; // Test session code
+        
+        function connect() {
+            const wsUrl = `ws://localhost:8001/ws/climate/${sessionCode}/`;
+            console.log('Connecting to:', wsUrl);
+            
+            socket = new WebSocket(wsUrl);
+            
+            socket.onopen = function(event) {
+                console.log('WebSocket connected');
+                document.getElementById('status').textContent = 'Connected';
+                addMessage('Connected to WebSocket');
+                
+                // Join as facilitator
+                socket.send(JSON.stringify({
+                    type: 'join_as_facilitator'
+                }));
+            };
+            
+            socket.onmessage = function(event) {
+                console.log('Message received:', event.data);
+                const data = JSON.parse(event.data);
+                addMessage('Received: ' + JSON.stringify(data, null, 2));
+            };
+            
+            socket.onclose = function(event) {
+                console.log('WebSocket closed:', event.code, event.reason);
+                document.getElementById('status').textContent = 'Disconnected';
+                addMessage('Disconnected: ' + event.code + ' - ' + event.reason);
+            };
+            
+            socket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                addMessage('Error: ' + JSON.stringify(error));
+            };
+        }
+        
+        function disconnect() {
+            if (socket) {
+                socket.close();
+                socket = null;
+            }
+        }
+        
+        function sendPing() {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({
+                    type: 'ping',
+                    timestamp: Date.now()
+                }));
+                addMessage('Sent ping');
+            } else {
+                addMessage('Not connected');
+            }
+        }
+        
+        function addMessage(message) {
+            const div = document.createElement('div');
+            div.style.margin = '10px 0';
+            div.style.padding = '5px';
+            div.style.border = '1px solid #ccc';
+            div.innerHTML = '<pre>' + message + '</pre>';
+            document.getElementById('messages').appendChild(div);
+        }
+    </script>
+</body>
+</html>

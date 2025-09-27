@@ -1,0 +1,467 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Climate Game Lobby - {{ session.session_code }}{% endblock %}
+
+{% block description %}Climate Crisis India simulation game lobby. Wait for other players to join before starting the game.{% endblock %}
+
+
+{% block content %}
+<!-- Climate Game Lobby Page - Full Screen, Single Page, No Scroll -->
+<div class="bg-gradient-to-br from-green-600 via-emerald-700 to-teal-800 text-white overflow-hidden relative h-screen">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="relative h-full flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        
+        <!-- Connection Status -->
+        <div class="fixed top-4 right-4 px-4 py-2 rounded-full text-sm font-medium z-50 bg-green-100 text-green-800" id="connection-status">
+            🟢 Connected
+        </div>
+
+        <!-- Compact Header -->
+        <div class="text-center mb-4">
+            <div class="flex items-center justify-center mb-2">
+                <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium mr-2">
+                    CLIMATE CRISIS SIMULATION
+                </span>
+                <span class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                    ROLE-PLAYING GAME
+                </span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold mb-2">
+                🌍 Climate Game Lobby
+            </h1>
+            <p class="text-sm opacity-90">
+                Session: {{ session.session_code }} | Facilitator: {{ session.facilitator.username|default:"Teacher" }}
+            </p>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden">
+            
+            <!-- Left Column: Role Assignment -->
+            <div class="bg-white rounded-xl p-4 shadow-xl">
+                <h2 class="text-lg font-bold text-gray-900 mb-3 text-center">🎭 Your Role</h2>
+                
+                <div class="text-center">
+                    {% if assigned_role == 'government' %}
+                        <div class="bg-blue-500/10 rounded-lg p-3 border-l-4 border-blue-500">
+                            <div class="text-2xl mb-2">🏛️</div>
+                            <h3 class="text-lg font-bold text-blue-900 mb-1">Government Official</h3>
+                            <p class="text-sm text-blue-800 mb-2">Policy maker in New Delhi</p>
+                            <p class="text-xs text-gray-700">Focus: National interests, regulations, budget allocation, political stability.</p>
+                        </div>
+                    {% elif assigned_role == 'business' %}
+                        <div class="bg-orange-500/10 rounded-lg p-3 border-l-4 border-orange-500">
+                            <div class="text-2xl mb-2">🏢</div>
+                            <h3 class="text-lg font-bold text-orange-900 mb-1">Business Owner</h3>
+                            <p class="text-sm text-orange-800 mb-2">Growing Indian company</p>
+                            <p class="text-xs text-gray-700">Focus: Profitability, job creation, competitiveness, shareholder value.</p>
+                        </div>
+                    {% elif assigned_role == 'farmer' %}
+                        <div class="bg-green-500/10 rounded-lg p-3 border-l-4 border-green-500">
+                            <div class="text-2xl mb-2">🌾</div>
+                            <h3 class="text-lg font-bold text-green-900 mb-1">Farmer</h3>
+                            <p class="text-sm text-green-800 mb-2">Rural India farming</p>
+                            <p class="text-xs text-gray-700">Focus: Crop yields, weather patterns, traditional practices, family livelihood.</p>
+                        </div>
+                    {% elif assigned_role == 'urban_citizen' %}
+                        <div class="bg-purple-500/10 rounded-lg p-3 border-l-4 border-purple-500">
+                            <div class="text-2xl mb-2">🏙️</div>
+                            <h3 class="text-lg font-bold text-purple-900 mb-1">Urban Citizen</h3>
+                            <p class="text-sm text-purple-800 mb-2">Major city dweller</p>
+                            <p class="text-xs text-gray-700">Focus: Daily commute, air quality, cost of living, family health.</p>
+                        </div>
+                    {% elif assigned_role == 'ngo_worker' %}
+                        <div class="bg-red-500/10 rounded-lg p-3 border-l-4 border-red-500">
+                            <div class="text-2xl mb-2">🤝</div>
+                            <h3 class="text-lg font-bold text-red-900 mb-1">NGO Worker</h3>
+                            <p class="text-sm text-red-800 mb-2">Environmental advocate</p>
+                            <p class="text-xs text-gray-700">Focus: Environmental protection, community welfare, awareness campaigns.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="bg-yellow-50 rounded-lg p-2 border-l-4 border-yellow-400 mt-3">
+                    <h4 class="font-bold text-yellow-900 text-xs mb-1">📢 Remember:</h4>
+                    <p class="text-yellow-800 text-xs">Think from your role's perspective. Every decision has trade-offs!</p>
+                </div>
+            </div>
+
+            <!-- Center Column: Waiting Status -->
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div class="text-center">
+                    <h2 class="text-lg font-bold mb-3">⏳ Waiting to Start</h2>
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <div class="bg-white/20 rounded-lg p-3">
+                                <div class="text-2xl font-black mb-1" id="player-count">{{ player_count|default:0 }}</div>
+                                <div class="text-xs opacity-75">Students Joined</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-white/20 rounded-lg p-3">
+                                <div class="text-2xl font-black mb-1">⏳</div>
+                                <div class="text-xs opacity-75">Ready to Play</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm opacity-90">
+                        Teacher will start when ready
+                        <span class="animate-pulse">...</span>
+                    </p>
+                </div>
+                
+                <!-- Instructions -->
+                <div class="mt-4">
+                    <h3 class="text-sm font-medium mb-2">Quick Tips:</h3>
+                    <ul class="text-xs space-y-1 text-left">
+                        <li class="flex items-start">
+                            <span class="text-green-400 mr-1">•</span>
+                            Stay in character - think from your role's perspective
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-green-400 mr-1">•</span>
+                            60 seconds per question - be ready to decide quickly
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-green-400 mr-1">•</span>
+                            No "perfect" answers - every choice has consequences
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Column: Game Preview -->
+            <div class="bg-white rounded-xl p-4 shadow-xl">
+                <h2 class="text-lg font-bold text-gray-900 mb-3 text-center">🇮🇳 5 Climate Challenges</h2>
+                <p class="text-gray-600 mb-3 text-center text-xs">
+                    Real climate scenarios facing India. 60 seconds per round.
+                </p>
+                
+                <div class="grid grid-cols-1 gap-2">
+                    <div class="bg-red-50 rounded-lg p-2 text-center border border-red-200">
+                        <div class="text-lg mb-1">🌫️</div>
+                        <h4 class="font-bold text-xs text-red-900">Delhi Air Crisis</h4>
+                        <p class="text-xs text-red-600">Round 1</p>
+                    </div>
+                    
+                    <div class="bg-blue-50 rounded-lg p-2 text-center border border-blue-200">
+                        <div class="text-lg mb-1">🌊</div>
+                        <h4 class="font-bold text-xs text-blue-900">Mumbai Floods</h4>
+                        <p class="text-xs text-blue-600">Round 2</p>
+                    </div>
+                    
+                    <div class="bg-orange-50 rounded-lg p-2 text-center border border-orange-200">
+                        <div class="text-lg mb-1">💧</div>
+                        <h4 class="font-bold text-xs text-orange-900">Chennai Water</h4>
+                        <p class="text-xs text-orange-600">Round 3</p>
+                    </div>
+                    
+                    <div class="bg-red-50 rounded-lg p-2 text-center border border-red-200">
+                        <div class="text-lg mb-1">🔥</div>
+                        <h4 class="font-bold text-xs text-red-900">Heat & Migration</h4>
+                        <p class="text-xs text-red-600">Round 4</p>
+                    </div>
+                    
+                    <div class="bg-purple-50 rounded-lg p-2 text-center border border-purple-200">
+                        <div class="text-lg mb-1">🗳️</div>
+                        <h4 class="font-bold text-xs text-purple-900">Elections</h4>
+                        <p class="text-xs text-purple-600">Round 5</p>
+                    </div>
+                </div>
+                
+                <!-- Stats -->
+                <div class="grid grid-cols-2 gap-2 mt-3">
+                    <div class="bg-blue-50 p-2 rounded text-center">
+                        <div class="font-bold text-blue-600 text-xs">5 Rounds</div>
+                        <div class="text-blue-500 text-xs">Crisis scenarios</div>
+                    </div>
+                    <div class="bg-green-50 p-2 rounded text-center">
+                        <div class="font-bold text-green-600 text-xs">Real-time</div>
+                        <div class="text-green-500 text-xs">Collaboration</div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+
+        <!-- Mobile Warning -->
+        <div class="lg:hidden bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 text-center">
+            <div class="text-yellow-400 text-lg mb-1">📱</div>
+            <h3 class="text-sm font-medium mb-1">Mobile Users:</h3>
+            <p class="opacity-90 text-xs">
+                Turn your phone to landscape mode for the best experience.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const SESSION_CODE = '{{ session.session_code }}';
+const PLAYER_SESSION_ID = '{{ player_session_id }}';
+let socket = null;
+let reconnectAttempts = 0;
+const maxReconnectAttempts = 5;
+
+class ClimateGameLobbyManager {
+    constructor(sessionCode) {
+        this.sessionCode = sessionCode;
+        this.socket = null;
+        this.retryCount = 0;
+        this.maxRetries = 5;
+        this.isConnected = false;
+        this.init();
+    }
+
+    init() {
+        this.connectWebSocket();
+        this.setupEventListeners();
+    }
+
+    connectWebSocket() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/ws/climate/${this.sessionCode}/`;
+        
+        console.log('Connecting to unified WebSocket:', wsUrl);
+        this.socket = new WebSocket(wsUrl);
+        
+        this.socket.onopen = () => {
+            console.log('WebSocket connected to unified climate game consumer');
+            this.isConnected = true;
+            this.retryCount = 0;
+            this.updateConnectionStatus(true);
+            
+            // Send player ready status
+            this.socket.send(JSON.stringify({
+                type: 'player_ready',
+                player_name: '{{ player_session_id|default:"Anonymous" }}'
+            }));
+        };
+        
+        this.socket.onmessage = (event) => {
+            this.handleMessage(JSON.parse(event.data));
+        };
+        
+        this.socket.onclose = (event) => {
+            console.warn(`[LOBBY] WebSocket disconnected: Code ${event.code}, Reason: ${event.reason || 'Unknown'}`);
+            this.isConnected = false;
+            this.updateConnectionStatus(false);
+            
+            // Enhanced error reporting
+            if (event.code === 4004) {
+                console.error('[LOBBY] Session not found - redirecting to join page');
+                window.location.href = `/learn/climate/join/${this.sessionCode}/`;
+                return;
+            }
+            
+            if (this.retryCount < this.maxRetries) {
+                this.retryCount++;
+                const delay = Math.min(1000 * Math.pow(2, this.retryCount), 30000);
+                console.info(`[LOBBY] Reconnecting in ${delay}ms (attempt ${this.retryCount}/${this.maxRetries})`);
+                setTimeout(() => this.connectWebSocket(), delay);
+            } else {
+                console.error('[LOBBY] Max reconnection attempts reached - falling back to polling');
+                this.startPollingFallback();
+            }
+        };
+        
+        this.socket.onerror = (error) => {
+            console.error('[LOBBY] WebSocket error:', error);
+            this.updateConnectionStatus(false);
+        };
+    }
+
+    handleMessage(data) {
+        console.log('Received WebSocket message:', data);
+        
+        switch (data.type) {
+            case 'session_status':
+                this.updateGameState(data.data);
+                break;
+            case 'player_joined':
+                this.updatePlayerCount(data.total_players);
+                break;
+            case 'game_starting':
+                this.showGameStartingMessage();
+                break;
+            case 'phase_changed':
+                if (data.new_phase !== 'lobby') {
+                    window.location.href = `/learn/climate/${this.sessionCode}/play/`;
+                }
+                break;
+        }
+    }
+
+    updateGameState(gameData) {
+        if (gameData.total_players !== undefined) {
+            this.updatePlayerCount(gameData.total_players);
+        }
+        
+        if (gameData.current_phase !== 'lobby') {
+            window.location.href = `/learn/climate/${this.sessionCode}/play/`;
+        }
+    }
+
+    updatePlayerCount(count) {
+        const playerCountEl = document.getElementById('player-count');
+        if (playerCountEl) {
+            playerCountEl.textContent = count;
+        }
+    }
+
+    showGameStartingMessage() {
+        // Create a temporary notification
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50';
+        notification.textContent = '🚀 Game is starting! Get ready...';
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    updateConnectionStatus(connected) {
+        const statusEl = document.getElementById('connection-status');
+        if (statusEl) {
+            if (connected) {
+                statusEl.textContent = '🟢 Connected';
+                statusEl.className = 'fixed top-4 right-4 px-4 py-2 rounded-full text-sm font-medium z-50 bg-green-100 text-green-800';
+            } else {
+                statusEl.textContent = '🔴 Disconnected';
+                statusEl.className = 'fixed top-4 right-4 px-4 py-2 rounded-full text-sm font-medium z-50 bg-red-100 text-red-800';
+            }
+        }
+    }
+
+    startPollingFallback() {
+        console.info('[LOBBY] Starting AJAX polling fallback mechanism');
+        if (this.pollingInterval) {
+            clearInterval(this.pollingInterval);
+        }
+        
+        this.pollingInterval = setInterval(() => {
+            fetch(`/learn/api/climate/${this.sessionCode}/status/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('[LOBBY] Polling status:', data);
+                    if (data.status === 'in_progress' || data.current_phase !== 'lobby') {
+                        console.info('[LOBBY] Phase change detected via polling - redirecting');
+                        clearInterval(this.pollingInterval);
+                        window.location.href = `/learn/climate/${this.sessionCode}/play/`;
+                    }
+                    // Update player count if available
+                    if (data.total_players !== undefined) {
+                        this.updatePlayerCount(data.total_players);
+                    }
+                })
+                .catch(error => {
+                    console.error('[LOBBY] Polling error:', error);
+                    // Don't stop polling on error - keep trying
+                });
+        }, 5000); // Poll every 5 seconds as fallback
+    }
+
+    setupEventListeners() {
+        // Handle visibility changes (mobile browsers)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && !this.isConnected) {
+                this.connectWebSocket();
+            }
+        });
+
+        // Handle online/offline events
+        window.addEventListener('online', () => {
+            if (!this.isConnected) {
+                this.connectWebSocket();
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            this.updateConnectionStatus(false);
+        });
+
+        // Handle page unload
+        window.addEventListener('beforeunload', () => {
+            if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                this.socket.close();
+            }
+        });
+    }
+}
+
+// Initialize lobby manager when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Immediate status check via AJAX to catch games already in progress
+    console.info('[LOBBY] Performing initial status check...');
+    fetch(`/learn/api/climate/${SESSION_CODE}/status/`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('[LOBBY] Initial status check result:', data);
+            if (data.status === 'in_progress' || data.current_phase !== 'lobby') {
+                console.info('[LOBBY] Game already started, redirecting to play page...');
+                window.location.href = `/learn/climate/${SESSION_CODE}/play/`;
+                return;
+            }
+            console.info('[LOBBY] Game in lobby phase, initializing WebSocket connection');
+        })
+        .catch(error => {
+            console.error('[LOBBY] Failed initial status check:', error);
+            // Still proceed to initialize lobby manager for WebSocket connection
+        });
+    const lobbyManager = new ClimateGameLobbyManager(SESSION_CODE);
+    
+    // Add screen orientation warning for mobile
+    function checkOrientation() {
+        if (window.innerHeight > window.innerWidth && window.innerWidth < 768) {
+            // Portrait mode on small screen
+            const existingWarning = document.getElementById('orientation-warning');
+            if (!existingWarning) {
+                const orientationWarning = document.createElement('div');
+                orientationWarning.id = 'orientation-warning';
+                orientationWarning.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4';
+                orientationWarning.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg text-center max-w-sm">
+                        <div class="text-4xl mb-4">📱➡️📱</div>
+                        <h3 class="text-lg font-bold mb-2">Rotate Your Phone</h3>
+                        <p class="text-gray-600">For the best experience, please rotate your phone to landscape mode.</p>
+                    </div>
+                `;
+                document.body.appendChild(orientationWarning);
+            }
+        } else {
+            // Landscape mode or desktop, remove warning
+            const warning = document.getElementById('orientation-warning');
+            if (warning) {
+                warning.remove();
+            }
+        }
+    }
+    
+    // Check orientation on load and resize
+    checkOrientation();
+    window.addEventListener('resize', checkOrientation);
+});
+
+// Debug info for teachers
+if (window.location.search.includes('debug=1')) {
+    console.log('Debug mode enabled');
+    console.log('Session Code:', SESSION_CODE);
+    console.log('Player Session ID:', PLAYER_SESSION_ID);
+    console.log('Player Role:', '{{ assigned_role }}');
+}
+</script>
+{% endblock %}

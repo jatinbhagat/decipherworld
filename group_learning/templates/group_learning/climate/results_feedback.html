@@ -1,0 +1,781 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}🎯 Round {{ session.current_round }} Results - Climate Game{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'group_learning/css/climate_game.css' %}">
+<style>
+  .results-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+  
+  .results-header {
+    background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .results-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)" /></svg>');
+    z-index: 1;
+  }
+  
+  .results-content {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .meters-section {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid #f1f5f9;
+  }
+  
+  .section-title h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1f2937;
+    margin: 0;
+  }
+  
+  .meter-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+  
+  .meter-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .meter-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  .meter-card.climate-resilience { 
+    border-color: #10b981; 
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  }
+  .meter-card.gdp { 
+    border-color: #f59e0b; 
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  }
+  .meter-card.public-morale { 
+    border-color: #8b5cf6; 
+    background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%);
+  }
+  .meter-card.environmental-health { 
+    border-color: #06b6d4; 
+    background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+  }
+  
+  .meter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .meter-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #374151;
+  }
+  
+  .meter-score {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .meter-value {
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: #1f2937;
+  }
+  
+  .meter-change {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+  }
+  
+  .change-positive { 
+    color: #059669; 
+    background: #d1fae5;
+  }
+  .change-negative { 
+    color: #dc2626; 
+    background: #fee2e2;
+  }
+  .change-neutral { 
+    color: #6b7280; 
+    background: #f3f4f6;
+  }
+  
+  .meter-bar-container {
+    position: relative;
+    height: 0.75rem;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .meter-bar {
+    height: 100%;
+    border-radius: 0.5rem;
+    position: relative;
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .meter-bar.climate-resilience { background: linear-gradient(90deg, #10b981, #059669); }
+  .meter-bar.gdp { background: linear-gradient(90deg, #f59e0b, #d97706); }
+  .meter-bar.public-morale { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
+  .meter-bar.environmental-health { background: linear-gradient(90deg, #06b6d4, #0891b2); }
+  
+  .choices-section {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .role-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .role-card {
+    border-radius: 1.25rem;
+    padding: 2rem;
+    position: relative;
+    transition: all 0.3s ease;
+    border: 2px solid;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+  
+  .role-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  .role-card.government { 
+    border-color: #3b82f6; 
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  }
+  .role-card.business { 
+    border-color: #f59e0b; 
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  }
+  .role-card.farmer { 
+    border-color: #10b981; 
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  }
+  .role-card.urban_citizen { 
+    border-color: #8b5cf6; 
+    background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%);
+  }
+  .role-card.ngo_worker { 
+    border-color: #ef4444; 
+    background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+  }
+  
+  .role-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .role-icon {
+    font-size: 1.5rem;
+  }
+  
+  .choice-distribution {
+    margin-top: 1rem;
+  }
+  
+  .choice-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    background: white;
+    border-radius: 0.5rem;
+    border: 1px solid #e9ecef;
+  }
+  
+  .choice-popular {
+    border-color: #28a745;
+    background: #d4edda;
+  }
+  
+  .choice-letter {
+    font-weight: bold;
+    color: #667eea;
+    margin-right: 0.5rem;
+  }
+  
+  .choice-percentage {
+    background: #667eea;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  
+  .narrative-section {
+    background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    color: #92400e;
+    border: 2px solid #f59e0b;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .narrative-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="1" fill="rgba(245,158,11,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)" /></svg>');
+    z-index: 1;
+  }
+  
+  .narrative-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .learning-outcomes {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .learning-point {
+    display: flex;
+    align-items: start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f0f9ff;
+    border-radius: 0.5rem;
+    border-left: 3px solid #0284c7;
+  }
+  
+  .learning-icon {
+    background: #0284c7;
+    color: white;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  
+  .continue-section {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .round-progress {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  
+  .round-step {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 3px solid;
+  }
+  
+  .round-completed {
+    background: #d4edda;
+    border-color: #28a745;
+    color: #155724;
+  }
+  
+  .round-current {
+    background: #fff3cd;
+    border-color: #ffc107;
+    color: #856404;
+  }
+  
+  .round-upcoming {
+    background: #f8f9fa;
+    border-color: #6c757d;
+    color: #6c757d;
+  }
+  
+  @media (max-width: 768px) {
+    .results-container {
+      padding: 0.5rem;
+    }
+    
+    .meter-row {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+      text-align: center;
+    }
+    
+    .role-breakdown {
+      grid-template-columns: 1fr;
+    }
+    
+    .round-progress {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .round-step {
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 0.875rem;
+    }
+  }
+  
+  .comparison-highlight {
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    border: 2px solid #667eea;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  
+  .india-context {
+    background: #fff8dc;
+    border: 2px solid #daa520;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin: 1rem 0;
+  }
+  
+  .india-flag {
+    background: linear-gradient(to bottom, #ff9933 33%, #ffffff 33%, #ffffff 66%, #138808 66%);
+    height: 0.5rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- TESTING: NEW UI TEMPLATE LOADING -->
+<div class="results-container">
+  <!-- Results Header -->
+  <div class="results-header">
+    <div class="results-content">
+      <h1 class="text-4xl font-bold mb-2">📊 Round {{ session.current_round }} Results</h1>
+      <h2 class="text-2xl mb-4">{{ scenario.title }}</h2>
+      <p class="text-lg opacity-90">See how your collective decisions affected India's climate resilience</p>
+    </div>
+  </div>
+
+  <!-- Society Meters -->
+  <div class="meters-section">
+    <div class="section-title">
+      <span class="text-3xl">🇮🇳</span>
+      <h2>India's Society Status</h2>
+    </div>
+    
+    <div class="meter-grid">
+      <div class="meter-card climate-resilience">
+        <div class="meter-header">
+          <div class="meter-title">
+            <span>🛡️</span>
+            <span>Climate Resilience</span>
+          </div>
+          <div class="meter-score">
+            <div class="meter-value">{{ round_result.meters_after.climate_resilience }}%</div>
+            <div class="meter-change {% if round_result.meter_changes.climate_resilience > 0 %}change-positive{% elif round_result.meter_changes.climate_resilience < 0 %}change-negative{% else %}change-neutral{% endif %}">
+              {% if round_result.meter_changes.climate_resilience > 0 %}
+                <span>↗</span> +{{ round_result.meter_changes.climate_resilience }}
+              {% elif round_result.meter_changes.climate_resilience < 0 %}
+                <span>↘</span> {{ round_result.meter_changes.climate_resilience }}
+              {% else %}
+                <span>→</span> +0
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="meter-bar-container">
+          <div class="meter-bar climate-resilience" style="width: {{ round_result.meters_after.climate_resilience }}%"></div>
+        </div>
+      </div>
+
+      <div class="meter-card gdp">
+        <div class="meter-header">
+          <div class="meter-title">
+            <span>💰</span>
+            <span>GDP Growth</span>
+          </div>
+          <div class="meter-score">
+            <div class="meter-value">{{ round_result.meters_after.gdp }}%</div>
+            <div class="meter-change {% if round_result.meter_changes.gdp > 0 %}change-positive{% elif round_result.meter_changes.gdp < 0 %}change-negative{% else %}change-neutral{% endif %}">
+              {% if round_result.meter_changes.gdp > 0 %}
+                <span>↗</span> +{{ round_result.meter_changes.gdp }}
+              {% elif round_result.meter_changes.gdp < 0 %}
+                <span>↘</span> {{ round_result.meter_changes.gdp }}
+              {% else %}
+                <span>→</span> +0
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="meter-bar-container">
+          <div class="meter-bar gdp" style="width: {{ round_result.meters_after.gdp }}%"></div>
+        </div>
+      </div>
+
+      <div class="meter-card public-morale">
+        <div class="meter-header">
+          <div class="meter-title">
+            <span>😊</span>
+            <span>Public Morale</span>
+          </div>
+          <div class="meter-score">
+            <div class="meter-value">{{ round_result.meters_after.public_morale }}%</div>
+            <div class="meter-change {% if round_result.meter_changes.public_morale > 0 %}change-positive{% elif round_result.meter_changes.public_morale < 0 %}change-negative{% else %}change-neutral{% endif %}">
+              {% if round_result.meter_changes.public_morale > 0 %}
+                <span>↗</span> +{{ round_result.meter_changes.public_morale }}
+              {% elif round_result.meter_changes.public_morale < 0 %}
+                <span>↘</span> {{ round_result.meter_changes.public_morale }}
+              {% else %}
+                <span>→</span> +0
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="meter-bar-container">
+          <div class="meter-bar public-morale" style="width: {{ round_result.meters_after.public_morale }}%"></div>
+        </div>
+      </div>
+
+      <div class="meter-card environmental-health">
+        <div class="meter-header">
+          <div class="meter-title">
+            <span>🌱</span>
+            <span>Environmental Health</span>
+          </div>
+          <div class="meter-score">
+            <div class="meter-value">{{ round_result.meters_after.environmental_health }}%</div>
+            <div class="meter-change {% if round_result.meter_changes.environmental_health > 0 %}change-positive{% elif round_result.meter_changes.environmental_health < 0 %}change-negative{% else %}change-neutral{% endif %}">
+              {% if round_result.meter_changes.environmental_health > 0 %}
+                <span>↗</span> +{{ round_result.meter_changes.environmental_health }}
+              {% elif round_result.meter_changes.environmental_health < 0 %}
+                <span>↘</span> {{ round_result.meter_changes.environmental_health }}
+              {% else %}
+                <span>→</span> +0
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="meter-bar-container">
+          <div class="meter-bar environmental-health" style="width: {{ round_result.meters_after.environmental_health }}%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How Each Role Voted -->
+  <div class="choices-section">
+    <div class="section-title">
+      <span class="text-3xl">🗳️</span>
+      <h2>How Each Role Responded</h2>
+    </div>
+    <p class="text-gray-600 mb-4">
+      See how different stakeholder groups approached this challenge. Notice the different priorities and perspectives.
+    </p>
+    
+    <div class="role-breakdown">
+      {% for role, data in round_result.response_summary.items %}
+      <div class="role-card {{ role }}">
+        <div class="role-header">
+          <div class="role-icon">
+            {% if role == 'government' %}🏛️
+            {% elif role == 'business' %}🏢
+            {% elif role == 'farmer' %}🌾
+            {% elif role == 'urban_citizen' %}🏙️
+            {% elif role == 'ngo_worker' %}🤝
+            {% endif %}
+          </div>
+          <div>
+            <h3 class="font-bold">
+              {% if role == 'government' %}Government Officials
+              {% elif role == 'business' %}Business Owners
+              {% elif role == 'farmer' %}Farmers
+              {% elif role == 'urban_citizen' %}Urban Citizens
+              {% elif role == 'ngo_worker' %}NGO Workers
+              {% endif %}
+            </h3>
+            <p class="text-sm text-gray-600">{{ data.count }} student{{ data.count|pluralize }}</p>
+          </div>
+        </div>
+        
+        <div class="choice-distribution">
+          {% for choice_letter, percentage in data.choices.items %}
+          <div class="choice-item {% if percentage == data.top_choice_percentage %}choice-popular{% endif %}">
+            <span>
+              <span class="choice-letter">{{ choice_letter|upper }}.</span>
+              <span class="text-sm">{{ choice_letter|upper }} option</span>
+            </span>
+            <span class="choice-percentage">{{ percentage }}%</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Outcome Narrative -->
+  <div class="narrative-section">
+    <div class="india-flag" style="position: relative; z-index: 2;"></div>
+    <h2 class="text-3xl font-bold mb-4" style="position: relative; z-index: 2;">📰 What Happened in India</h2>
+    <div class="narrative-content">
+      {{ round_result.outcome_narrative|linebreaks }}
+    </div>
+    
+    {% if round_result.collaboration_bonus > 0 %}
+    <div class="comparison-highlight">
+      <h4 class="font-bold text-lg mb-2">🤝 Collaboration Bonus: +{{ round_result.collaboration_bonus }} points</h4>
+      <p>Great job! Different roles chose complementary actions that work well together. This shows effective stakeholder collaboration.</p>
+    </div>
+    {% endif %}
+    
+    {% if round_result.conflict_penalty > 0 %}
+    <div class="comparison-highlight">
+      <h4 class="font-bold text-lg mb-2">⚠️ Conflict Penalty: -{{ round_result.conflict_penalty }} points</h4>
+      <p>Some role choices worked against each other, reducing overall effectiveness. In real life, better coordination between stakeholders improves outcomes.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Learning Outcomes -->
+  <div class="learning-outcomes">
+    <div class="section-title">
+      <span class="text-3xl">🎓</span>
+      <h2>Key Learning Points</h2>
+    </div>
+    
+    {% for point in learning_points %}
+    <div class="learning-point">
+      <div class="learning-icon">{{ forloop.counter }}</div>
+      <div>
+        <h4 class="font-semibold mb-1">{{ point.title }}</h4>
+        <p class="text-gray-700">{{ point.description }}</p>
+      </div>
+    </div>
+    {% endfor %}
+    
+    <div class="india-context">
+      <h4 class="font-bold mb-2">🇮🇳 Real India Context:</h4>
+      <p>{{ round_result.learning_outcome }}</p>
+    </div>
+  </div>
+
+  <!-- Continue Section -->
+  <div class="continue-section">
+    <h2 class="text-2xl font-bold mb-4">
+      {% if session.current_round < 5 %}
+        🎯 Ready for Round {{ session.current_round|add:1 }}?
+      {% else %}
+        🏁 Game Complete!
+      {% endif %}
+    </h2>
+    
+    <!-- Round Progress -->
+    <div class="round-progress">
+      {% for round_num in "12345" %}
+        <div class="round-step {% if round_num|add:0 < session.current_round %}round-completed{% elif round_num|add:0 == session.current_round %}round-current{% else %}round-upcoming{% endif %}">
+          {{ round_num }}
+        </div>
+      {% endfor %}
+    </div>
+    
+    {% if session.current_round < 5 %}
+      <p class="text-gray-600 mb-4">
+        Your teacher will advance to the next climate challenge when everyone is ready.
+      </p>
+      <div class="text-lg font-semibold mb-2">
+        Next Up: 
+        {% if session.current_round == 1 %}🌊 Round 2: Mumbai Floods
+        {% elif session.current_round == 2 %}💧 Round 3: Chennai Water Crisis
+        {% elif session.current_round == 3 %}🔥 Round 4: Migration & Heatwave
+        {% elif session.current_round == 4 %}🗳️ Round 5: National Elections
+        {% endif %}
+      </div>
+      
+      <div class="bg-blue-50 p-4 rounded-lg mt-4">
+        <h4 class="font-semibold mb-2">💭 Discussion Questions:</h4>
+        <ul class="text-left text-sm space-y-1">
+          <li>• Which role's perspective surprised you most?</li>
+          <li>• What trade-offs were hardest to accept?</li>
+          <li>• How could different roles have collaborated better?</li>
+          <li>• What would you do differently knowing the results?</li>
+        </ul>
+      </div>
+    {% else %}
+      <p class="text-gray-600 mb-4">
+        Congratulations! You've navigated all 5 climate challenges facing India.
+      </p>
+      
+      <div class="bg-green-50 p-4 rounded-lg">
+        <h4 class="font-semibold mb-2">🎉 Final Reflection:</h4>
+        <p class="text-sm">Think about how India can balance climate action with economic growth, social needs, and political realities. What did this simulation teach you about the complexity of climate policy?</p>
+      </div>
+    {% endif %}
+    
+    <div class="mt-4 text-sm text-gray-500">
+      Waiting for teacher to continue...
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const SESSION_CODE = '{{ session.session_code|default:"" }}';
+let pollInterval;
+
+// Defensive check for SESSION_CODE
+if (!SESSION_CODE) {
+  console.error('SESSION_CODE is empty. API calls will be disabled.');
+}
+
+// Poll for phase changes
+function pollForNext() {
+  if (!SESSION_CODE) {
+    console.warn('pollForNext: SESSION_CODE is empty, skipping API call');
+    return;
+  }
+  fetch(`/learn/api/climate/${SESSION_CODE}/status/`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.current_phase !== 'results_feedback') {
+        clearInterval(pollInterval);
+        window.location.href = `/learn/climate/${SESSION_CODE}/play/`;
+      }
+    })
+    .catch(error => {
+      console.error('Error polling for next phase:', error);
+    });
+}
+
+// Animate meters on page load
+function animateMeters() {
+  const meterBars = document.querySelectorAll('.meter-bar');
+  meterBars.forEach((bar, index) => {
+    const targetWidth = bar.style.width;
+    bar.style.width = '0%';
+    
+    setTimeout(() => {
+      bar.style.width = targetWidth;
+    }, index * 200 + 500);
+  });
+}
+
+// Handle page visibility
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    if (pollInterval) clearInterval(pollInterval);
+  } else {
+    pollInterval = setInterval(pollForNext, 5000);
+  }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Animate meters
+  animateMeters();
+  
+  // Start polling
+  pollInterval = setInterval(pollForNext, 5000);
+  
+  // Add click handlers for learning points
+  document.querySelectorAll('.learning-point').forEach(point => {
+    point.addEventListener('click', function() {
+      this.style.transform = 'scale(1.02)';
+      setTimeout(() => {
+        this.style.transform = 'scale(1)';
+      }, 200);
+    });
+  });
+});
+
+window.addEventListener('beforeunload', function() {
+  if (pollInterval) clearInterval(pollInterval);
+});
+</script>
+{% endblock %}

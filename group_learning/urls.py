@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, climate_views
 
 app_name = 'group_learning'
 
@@ -39,6 +39,30 @@ urlpatterns = [
     path('api/constitution/<str:session_code>/question/', views.ConstitutionQuestionAPI.as_view(), name='constitution_question_api'),
     path('api/constitution/<str:session_code>/answer/', views.ConstitutionAnswerAPI.as_view(), name='constitution_answer_api'),
     path('api/constitution/<str:session_code>/leaderboard/', views.ConstitutionLeaderboardAPI.as_view(), name='constitution_leaderboard_api'),
+    
+    # Climate Change Simulation Game URLs
+    path('climate/', climate_views.climate_game_home, name='climate_game_home'),
+    path('climate/create/', climate_views.create_climate_session, name='create_climate_session'),
+    path('climate/join/<str:session_code>/', climate_views.join_climate_session, name='join_climate_session'),
+    path('climate/<str:session_code>/dashboard/', climate_views.climate_facilitator_dashboard, name='climate_facilitator_dashboard'),
+    path('climate/<str:session_code>/lobby/', climate_views.climate_game_lobby, name='climate_game_lobby'),
+    path('climate/<str:session_code>/play/', climate_views.climate_game_play, name='climate_game_play'),
+    path('climate/<str:session_code>/impact-results/', climate_views.climate_impact_results, name='climate_impact_results'),
+    
+    # Testing URLs for development
+    path('climate/test/create/', climate_views.create_test_climate_session, name='create_test_climate_session'),
+    path('climate/test/<str:session_code>/', climate_views.quick_test_join, name='quick_test_join'),
+    path('climate/test/<str:session_code>/<str:role>/', climate_views.quick_test_join, name='quick_test_join_role'),
+    
+    # Climate Game API endpoints
+    path('api/climate/<str:session_code>/start/', climate_views.start_climate_game, name='start_climate_game'),
+    path('api/climate/<str:session_code>/advance/', climate_views.advance_climate_phase, name='advance_climate_phase'),
+    path('api/climate/<str:session_code>/status/', climate_views.get_climate_session_status, name='get_climate_session_status'),
+    
+    # Timer API endpoints
+    path('api/climate/<str:session_code>/timer/set/', climate_views.set_timer_duration, name='set_timer_duration'),
+    path('api/climate/<str:session_code>/timer/start/', climate_views.start_round_timer, name='start_round_timer'),
+    path('api/climate/<str:session_code>/timer/status/', climate_views.get_timer_status, name='get_timer_status'),
     
     # Production setup endpoints
     path('api/test/', views.ProductionTestAPI.as_view(), name='production_test_api'),

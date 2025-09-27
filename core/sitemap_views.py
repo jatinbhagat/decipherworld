@@ -15,17 +15,24 @@ def simple_sitemap(request):
     urls = [
         # Core pages (highest priority)
         ('', '1.0', 'daily'),
+        ('/about/', '0.8', 'monthly'),
         ('/courses/', '0.9', 'weekly'),
         ('/teachers/', '0.9', 'weekly'),
         ('/schools/', '0.8', 'weekly'),
+        ('/school-presentation/', '0.7', 'monthly'),
         ('/contact/', '0.8', 'monthly'),
         ('/gallery/', '0.7', 'monthly'),
         
         # Games Hub (high discoverability for Indian students)
         ('/games/', '0.9', 'weekly'),
         
-        # Individual Games (CBSE/ICSE focused)
+        # Individual Games - AI Learning (CBSE/ICSE focused)
         ('/games/ai-learning/', '0.8', 'weekly'),
+        ('/games/ai-learning/robotic-buddy/', '0.8', 'weekly'),
+        ('/games/ai-learning/simple-game/', '0.7', 'weekly'),
+        ('/games/ai-learning/drag-drop-game/', '0.7', 'weekly'),
+        
+        # Individual Games - Other Categories
         ('/games/cyber-security/', '0.8', 'weekly'),
         ('/games/financial-literacy/', '0.8', 'weekly'),
         
@@ -40,14 +47,37 @@ def simple_sitemap(request):
         ('/games/stem-challenges/', '0.6', 'monthly'),
         ('/games/language-adventures/', '0.6', 'monthly'),
         
-        # Cyber City Security Games
-        ('/cyber-city/', '0.7', 'weekly'),
+        # Cyber City Security Games (Individual game pages)
+        ('/cyber-city/', '0.8', 'weekly'),
+        
+        # AI Learning Game Pages (Robotic Buddy)
+        ('/buddy/', '0.8', 'weekly'),
+        ('/buddy/activities/', '0.7', 'weekly'),
+        ('/buddy/create-buddy/', '0.7', 'weekly'),
+        ('/buddy/my-buddy/', '0.6', 'weekly'),
+        ('/buddy/classification-game/', '0.7', 'weekly'),
+        ('/buddy/simple-game/', '0.7', 'weekly'),
+        ('/buddy/drag-drop-game/', '0.7', 'weekly'),
+        ('/buddy/emotion-game/', '0.7', 'weekly'),
+        ('/buddy/testing-phase/', '0.6', 'weekly'),
+        ('/buddy/learning-explanation/', '0.6', 'weekly'),
+        ('/buddy/buddy-stats/', '0.5', 'monthly'),
+        ('/buddy/achievements/', '0.5', 'monthly'),
+        
+        # Group Learning Platform (excluding Climate Crisis URLs as requested)
+        ('/learn/', '0.7', 'weekly'),
+        ('/learn/constitution/start/', '0.7', 'weekly'),
     ]
     
-    # Add dynamic Group Learning game pages
+    # Add dynamic Group Learning game pages (excluding Climate Crisis games)
     try:
         from group_learning.models import Game
-        games = Game.objects.filter(is_active=True)
+        # Filter out climate-related games as requested
+        games = Game.objects.filter(is_active=True).exclude(
+            name__icontains='climate'
+        ).exclude(
+            name__icontains='crisis'
+        )
         for game in games:
             game_url = f'/learn/game/{game.id}/'
             game_date = game.updated_at.strftime('%Y-%m-%d') if hasattr(game, 'updated_at') else current_date

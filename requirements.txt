@@ -22,5 +22,10 @@ requests
 redis>=4.5.0
 django-redis>=5.2.0
 
+# Real-time WebSocket support
+channels>=4.0.0
+channels-redis>=4.1.0
+daphne>=4.0.0
+
 # Performance monitoring (optional)
 # django-debug-toolbar  # For development only

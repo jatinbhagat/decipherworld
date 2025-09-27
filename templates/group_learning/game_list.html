@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             {% if game.game_type == 'constitution_challenge' %}
                                 Grades 5-9
                             {% elif game.game_type == 'crisis_management' or game.game_type == 'environmental' %}
-                                Grades 6-10
+                                Grades 7-10
                             {% else %}
                                 Ages {{ game.target_age_min }}-{{ game.target_age_max }}
                             {% endif %}
@@ -165,6 +165,82 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
         {% endfor %}
+        
+        <!-- Climate Crisis India Game (Special Feature) -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-[600px]">
+            <!-- Game Header -->
+            <div class="bg-gradient-to-br from-green-500 to-blue-600 text-white p-4 sm:p-6">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg sm:text-xl font-bold mb-2 truncate">🌍 Climate Crisis India</h3>
+                        <p class="text-green-100 text-sm mb-3 line-clamp-2">Navigate India's climate challenges through role-based decision making</p>
+                    </div>
+                    <span class="bg-white bg-opacity-20 px-2 sm:px-3 py-1 rounded-full text-xs font-medium ml-2 flex-shrink-0">
+                        NEW
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Game Details -->
+            <div class="p-4 sm:p-6 flex-1 flex flex-col">
+                <p class="text-gray-600 mb-4">Experience climate policy decisions from 5 different stakeholder perspectives: Government, Business, Farmer, Urban Citizen, and NGO Worker. Face real India scenarios like Delhi Air Crisis and Mumbai Floods.</p>
+                
+                <div class="space-y-2 mb-6">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                        5-100 players
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        45 minutes
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Intermediate
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        Grades 6-12
+                    </div>
+                </div>
+                
+                <!-- Learning Objectives Preview -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-gray-700 mb-2">What You'll Learn:</h4>
+                    <div class="flex flex-wrap gap-1">
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                            Climate Policy
+                        </span>
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                            Stakeholder Perspectives
+                        </span>
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                            Decision Trade-offs
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3 mt-auto">
+                    <a href="{% url 'group_learning:climate_game_home' %}" 
+                       class="flex-1 bg-green-600 text-white py-3 sm:py-2 px-4 rounded-md hover:bg-green-700 transition-colors text-center font-medium text-sm sm:text-base">
+                        Learn More
+                    </a>
+                    <a href="{% url 'group_learning:create_climate_session' %}" 
+                       class="flex-1 bg-blue-600 text-white py-3 sm:py-2 px-4 rounded-md hover:bg-blue-700 transition-colors text-center font-medium text-sm sm:text-base">
+                        Start Game
+                    </a>
+                </div>
+            </div>
+        </div>
         
         <!-- Entrepreneurship Lemonade Stand Game (External) -->
         <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-[600px]">

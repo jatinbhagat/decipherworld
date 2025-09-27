@@ -1,0 +1,204 @@
+{% extends 'group_learning/base.html' %}
+
+{% block title %}Create Climate Crisis India Session{% endblock %}
+
+{% block content %}
+<!-- Full viewport layout without scrolling -->
+<div class="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-blue-50 pt-16">
+    <div class="container mx-auto px-4 h-full flex items-center justify-center">
+        
+        <!-- Main Creation Card -->
+        <div class="bg-white rounded-2xl shadow-2xl border border-green-100 max-w-4xl w-full max-h-[85vh] overflow-hidden">
+            
+            <!-- Header Section -->
+            <div class="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-globe-americas text-2xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold">Climate Crisis India</h1>
+                            <p class="text-green-100 text-sm">Create a new classroom session</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-lg font-bold">5-35 Students</div>
+                        <div class="text-green-100 text-sm">45-60 minutes</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Content -->
+            <div class="p-6">
+                <form method="post" class="space-y-6" id="createSessionForm">
+                    {% csrf_token %}
+                    
+                    <!-- Hidden game_id field -->
+                    {% for climate_game in climate_games %}
+                        <input type="hidden" name="game_id" value="{{ climate_game.id }}">
+                    {% endfor %}
+                    
+                    <!-- Two Column Layout -->
+                    <div class="grid lg:grid-cols-2 gap-6">
+                        
+                        <!-- Left Column - Session Info -->
+                        <div class="space-y-4">
+                            <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                                <i class="fas fa-cog text-green-600"></i>
+                                Session Setup
+                            </h2>
+                            
+                            <!-- Facilitator Name -->
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Teacher/Facilitator Name</span>
+                                    <span class="label-text-alt text-red-500">Required</span>
+                                </label>
+                                <input type="text" name="facilitator_name" 
+                                       class="input input-bordered input-sm" 
+                                       placeholder="Your name" 
+                                       required>
+                            </div>
+                            
+                            <!-- Session Name -->
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Session Name</span>
+                                    <span class="label-text-alt">Optional</span>
+                                </label>
+                                <input type="text" name="session_name" 
+                                       class="input input-bordered input-sm" 
+                                       placeholder="e.g., Grade 9A Climate Challenge"
+                                       value="Climate Challenge Session">
+                            </div>
+                            
+                            <!-- Expected Players -->
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Expected Students</span>
+                                </label>
+                                <select name="expected_players" class="select select-bordered select-sm" required>
+                                    <option value="">Select class size</option>
+                                    <option value="10">Small Group (5-15 students)</option>
+                                    <option value="25" selected>Medium Class (15-35 students)</option>
+                                    <option value="50">Large Class (35+ students)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column - Quick Preview -->
+                        <div class="space-y-4">
+                            <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                                <i class="fas fa-eye text-green-600"></i>
+                                Game Overview
+                            </h2>
+                            
+                            <!-- Role Preview -->
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h3 class="font-medium text-sm text-gray-700 mb-3">Student Roles:</h3>
+                                <div class="grid grid-cols-5 gap-2 text-xs">
+                                    <div class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-center">
+                                        <i class="fas fa-landmark"></i>
+                                        <div>Govt</div>
+                                    </div>
+                                    <div class="bg-green-100 text-green-700 px-2 py-1 rounded text-center">
+                                        <i class="fas fa-industry"></i>
+                                        <div>Industry</div>
+                                    </div>
+                                    <div class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-center">
+                                        <i class="fas fa-users"></i>
+                                        <div>Citizens</div>
+                                    </div>
+                                    <div class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-center">
+                                        <i class="fas fa-seedling"></i>
+                                        <div>NGO</div>
+                                    </div>
+                                    <div class="bg-red-100 text-red-700 px-2 py-1 rounded text-center">
+                                        <i class="fas fa-newspaper"></i>
+                                        <div>Media</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Info -->
+                            <div class="grid grid-cols-2 gap-3 text-sm">
+                                <div class="bg-blue-50 p-3 rounded-lg text-center">
+                                    <div class="font-bold text-blue-600">5 Rounds</div>
+                                    <div class="text-blue-500">Crisis scenarios</div>
+                                </div>
+                                <div class="bg-green-50 p-3 rounded-lg text-center">
+                                    <div class="font-bold text-green-600">Real-time</div>
+                                    <div class="text-green-500">Collaboration</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                        <a href="{% url 'group_learning:climate_game_home' %}" 
+                           class="btn btn-ghost btn-sm">
+                            <i class="fas fa-arrow-left"></i>
+                            Back
+                        </a>
+                        
+                        <button type="submit" class="btn btn-success btn-lg gap-2" id="createBtn">
+                            <i class="fas fa-play-circle"></i>
+                            Create Session
+                        </button>
+                    </div>
+                    
+                </form>
+            </div>
+            
+        </div>
+        
+    </div>
+</div>
+
+<!-- Success/Error Messages -->
+{% if messages %}
+    <div class="toast toast-top toast-end z-50">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }}">
+                <i class="fas fa-{{ message.tags|default:'info'|yesno:'check-circle,exclamation-triangle,info-circle' }}"></i>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('createSessionForm');
+    const createBtn = document.getElementById('createBtn');
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        const facilitatorName = document.querySelector('[name="facilitator_name"]').value.trim();
+        const expectedPlayers = document.querySelector('[name="expected_players"]').value;
+        
+        if (!facilitatorName) {
+            e.preventDefault();
+            alert('Please enter your name as facilitator');
+            return;
+        }
+        
+        if (!expectedPlayers) {
+            e.preventDefault();
+            alert('Please select expected number of students');
+            return;
+        }
+        
+        // Show loading state
+        createBtn.classList.add('loading');
+        createBtn.disabled = true;
+    });
+    
+    // Auto-focus first input
+    document.querySelector('[name="facilitator_name"]').focus();
+});
+</script>
+
+{% endblock %}

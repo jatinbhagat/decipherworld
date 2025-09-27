@@ -1,0 +1,42 @@
+/* Climate Game CSS - Additional styles for Climate Crisis Game */
+
+.climate-game-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Climate role specific colors */
+.role-government { 
+    background-color: #3498db; 
+    color: white;
+}
+
+.role-business { 
+    background-color: #e67e22; 
+    color: white;
+}
+
+.role-farmer { 
+    background-color: #27ae60; 
+    color: white;
+}
+
+.role-citizen { 
+    background-color: #9b59b6; 
+    color: white;
+}
+
+.role-ngo { 
+    background-color: #e74c3c; 
+    color: white;
+}

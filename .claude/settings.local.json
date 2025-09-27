@@ -1,32 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(az webapp config appsettings list:*)",
-      "WebFetch(domain:www.decipherworld.com)",
-      "Bash(git rm:*)",
-      "Bash(find:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(python manage.py shell:*)",
-      "Bash(python manage.py makemigrations:*)",
-      "Bash(python manage.py migrate:*)",
-      "Bash(python manage.py check:*)",
       "Bash(python manage.py:*)",
-      "Bash(unzip:*)",
-      "WebFetch(domain:decipherworld-app.azurewebsites.net)",
-      "WebFetch(domain:decipherworld.com)",
-      "Bash(az webapp config appsettings set:*)",
-      "Bash(unset:*)",
       "Bash(curl:*)",
-      "Bash(python test_urls.py:*)",
-      "Bash(python test:*)",
-      "WebSearch",
-      "Bash(az webapp log tail:*)",
-      "Bash(az webapp ssh:*)",
-      "Bash(az webapp deployment source delete:*)",
-      "Bash(az webapp log deployment list:*)",
       "Bash(python:*)",
-      "Read(//Users/jatinbhagat/Desktop/**)"
+      "Read(//Users/jatinbhagat/Desktop/**)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ scenario.title }} - Climate Crisis Decision</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+{% load static %}
+<link rel="stylesheet" href="{% static 'group_learning/css/climate_game.css' %}">
+<style>
+  .question-container {
+    width: 100vw;
+    min-height: 100vh;
+    margin: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .scenario-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .scenario-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)" /></svg>');
+    z-index: 1;
+  }
+  
+  .scenario-content {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .timer-section {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .timer-display {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #e53e3e;
+    font-family: monospace;
+    margin: 0.5rem 0;
+  }
+  
+  .timer-warning {
+    animation: pulse 1s infinite;
+  }
+  
+  .timer-critical {
+    animation: flash 0.5s infinite;
+    color: #c53030;
+  }
+  
+  @keyframes flash {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+  }
+  
+  .role-context {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border-left: 6px solid;
+  }
+  
+  .role-government { border-left-color: #3498db; }
+  .role-business { border-left-color: #e67e22; }
+  .role-farmer { border-left-color: #27ae60; }
+  .role-citizen { border-left-color: #9b59b6; }
+  .role-ngo { border-left-color: #e74c3c; }
+  
+  .question-card {
+    background: #f8f9fa;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 3px solid #e9ecef;
+    transition: all 0.3s ease;
+  }
+  
+  .question-card.answered {
+    border-color: #28a745;
+    background: #d4edda;
+  }
+  
+  .options-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .option-card {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .option-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+  }
+  
+  .option-card.selected {
+    border-color: #28a745;
+    background: #d4edda;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.2);
+  }
+  
+  .option-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  .option-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .option-letter {
+    background: #667eea;
+    color: white;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  
+  .option-card.selected .option-letter {
+    background: #28a745;
+  }
+  
+  .option-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+  }
+  
+  .option-consequence {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #856404;
+  }
+  
+  .submit-section {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .submit-button {
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .submit-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .progress-indicators {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border-radius: 1rem;
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+  
+  .round-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+  }
+  
+  .response-count {
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+  
+  .mobile-timer {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(229, 62, 62, 0.9);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: bold;
+    z-index: 1000;
+    font-family: monospace;
+  }
+  
+  @media (max-width: 768px) {
+    .question-container {
+      padding: 0.5rem;
+    }
+    
+    .scenario-header {
+      padding: 1.5rem 1rem;
+    }
+    
+    .timer-display {
+      font-size: 2rem;
+    }
+    
+    .option-card {
+      padding: 1rem;
+    }
+    
+    .options-grid {
+      gap: 0.75rem;
+    }
+  }
+  
+  .news-ticker {
+    background: #2c3e50;
+    color: white;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+  }
+  
+  .news-content {
+    display: inline-block;
+    animation: scroll-left 20s linear infinite;
+  }
+  
+  @keyframes scroll-left {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+  
+</style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen">
+<div class="question-container">
+  <!-- Mobile Timer -->
+  <div class="mobile-timer md:hidden" id="mobile-timer">
+    <span id="mobile-timer-text">--:--</span>
+  </div>
+
+  <!-- News Ticker -->
+  {% if scenario.news_quotes %}
+  <div class="news-ticker">
+    <div class="news-content">
+      <strong>🔴 BREAKING:</strong> {{ scenario.news_quotes.0 }} | <strong>📊 MARKET UPDATE:</strong> Sensex volatile amid climate concerns | <strong>🌡️ WEATHER ALERT:</strong> Extreme conditions expected to continue
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Scenario Header -->
+  <div class="scenario-header">
+    <div class="scenario-content">
+      <div class="flex flex-col md:flex-row justify-between items-start mb-4">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ scenario.title }}</h1>
+          <p class="text-lg opacity-90">Round {{ session.current_round }} of 5</p>
+        </div>
+        <div class="text-right mt-4 md:mt-0">
+          <div class="text-sm opacity-80">Your Role</div>
+          <div class="text-xl font-bold">
+            {% if player_role == 'government' %}🏛️ Government Official
+            {% elif player_role == 'business' %}🏢 Business Owner
+            {% elif player_role == 'farmer' %}🌾 Farmer
+            {% elif player_role == 'urban_citizen' %}🏙️ Urban Citizen
+            {% elif player_role == 'ngo_worker' %}🤝 NGO Worker
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <p class="text-lg">{{ scenario.context_description }}</p>
+    </div>
+  </div>
+
+  <!-- Progress Indicators -->
+  <div class="progress-indicators">
+    <div class="round-indicator">
+      <span class="text-2xl">📍</span>
+      <span>Round {{ session.current_round }}/5</span>
+    </div>
+    
+    <div class="response-count" id="response-count">
+      Waiting for responses...
+    </div>
+    
+    <div class="round-indicator">
+      <span class="text-2xl">⏱️</span>
+      <span id="timer-mode-indicator">Timer Active</span>
+    </div>
+  </div>
+
+  <!-- Timer Section -->
+  <div class="timer-section">
+    <h2 class="text-xl font-bold mb-2">⏰ Time Remaining</h2>
+    <div class="timer-display" id="timer-display">01:00</div>
+    <div class="text-gray-600">Choose your response before time runs out!</div>
+  </div>
+
+  <!-- Role Context -->
+  <div class="role-context role-{{ player_role }}">
+    <h2 class="text-xl font-bold mb-3 flex items-center gap-2">
+      {% if player_role == 'government' %}
+        <span class="text-2xl">🏛️</span> Your Perspective as Government Official
+      {% elif player_role == 'business' %}
+        <span class="text-2xl">🏢</span> Your Perspective as Business Owner
+      {% elif player_role == 'farmer' %}
+        <span class="text-2xl">🌾</span> Your Perspective as Farmer
+      {% elif player_role == 'urban_citizen' %}
+        <span class="text-2xl">🏙️</span> Your Perspective as Urban Citizen
+      {% elif player_role == 'ngo_worker' %}
+        <span class="text-2xl">🤝</span> Your Perspective as NGO Worker
+      {% endif %}
+    </h2>
+    <p class="mb-3">{{ question.role_context }}</p>
+    <div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
+      <p class="font-semibold text-blue-800">{{ question.question_text }}</p>
+    </div>
+  </div>
+
+  <!-- Question Card -->
+  <div class="question-card" id="question-card">
+    <h2 class="text-2xl font-bold mb-4">🤔 What is your decision?</h2>
+    
+    <form id="response-form" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="player_session_id" value="{{ player_session_id }}">
+      <input type="hidden" name="round_number" value="{{ session.current_round }}">
+      
+      <div class="options-grid">
+        {% for option in question.options.all %}
+        <div class="option-card" data-option="{{ option.option_letter }}" onclick="selectOption('{{ option.option_letter }}')">
+          <div class="option-header">
+            <div class="option-letter">{{ option.option_letter|upper }}</div>
+            <div class="option-title">{{ option.option_text }}</div>
+          </div>
+          
+          <div class="option-consequence">
+            <strong>⚖️ Trade-offs:</strong> {{ option.immediate_consequence }}
+          </div>
+          
+          <input type="radio" name="selected_option" value="{{ option.id }}" class="hidden" id="option_{{ option.option_letter }}">
+        </div>
+        {% endfor %}
+      </div>
+    </form>
+  </div>
+
+  <!-- Submit Section -->
+  <div class="submit-section">
+    <button type="button" id="submit-button" class="btn btn-primary submit-button" onclick="submitResponse()" disabled>
+      🚀 Submit My Decision
+    </button>
+    <p class="text-gray-600 mt-2">Select an option above to submit your response</p>
+    
+    <div class="mt-4 text-sm text-gray-500">
+      <p>💡 Remember: Think from your role's perspective. Every choice affects India's future!</p>
+    </div>
+  </div>
+</div>
+
+<!-- Response Submitted Modal -->
+<dialog id="response-submitted" class="modal">
+  <div class="modal-box text-center">
+    <h3 class="font-bold text-lg mb-4">✅ Response Submitted!</h3>
+    <div class="text-6xl mb-4">🎯</div>
+    <p class="mb-4">Your decision has been recorded. Waiting for other students to respond...</p>
+    <div class="loading loading-dots loading-lg"></div>
+    <p class="text-sm text-gray-600 mt-4">You'll see the results when everyone is done or time runs out.</p>
+  </div>
+</dialog>
+</div>
+</body>
+
+<script>
+const SESSION_CODE = '{{ session.session_code|default:"" }}';
+const PLAYER_SESSION_ID = '{{ player_session_id }}';
+const ROUND_NUMBER = {{ session.current_round }};
+const RESPONSE_DURATION = {{ scenario.response_duration|default:60 }};
+
+// Defensive check for SESSION_CODE
+if (!SESSION_CODE) {
+  console.error('SESSION_CODE is empty. API calls will be disabled.');
+}
+
+let timeRemaining = RESPONSE_DURATION;
+let timerInterval;
+let selectedOption = null;
+let responseSubmitted = false;
+let pollInterval;
+let serverTimerActive = false;
+let serverTimerEndTime = null;
+
+// Timer management
+function startTimer() {
+  // First check for server timer
+  checkServerTimer();
+  
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    if (serverTimerActive && serverTimerEndTime) {
+      // Use server timer
+      const now = new Date();
+      const endTime = new Date(serverTimerEndTime);
+      const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
+      
+      if (timeLeft !== timeRemaining) {
+        timeRemaining = timeLeft;
+        updateTimerDisplay();
+      }
+      
+      if (timeLeft <= 0) {
+        handleTimeUp();
+      }
+    } else {
+      // Use local timer as fallback
+      timeRemaining--;
+      updateTimerDisplay();
+      
+      if (timeRemaining <= 0) {
+        handleTimeUp();
+      }
+    }
+  }, 1000);
+}
+
+// Check server timer status
+async function checkServerTimer() {
+  if (!SESSION_CODE) {
+    console.warn('checkServerTimer: SESSION_CODE is empty, skipping API call');
+    return;
+  }
+  try {
+    const response = await fetch(`/learn/api/climate/${SESSION_CODE}/timer/status/`);
+    const data = await response.json();
+    
+    if (data.active && data.end_time) {
+      serverTimerActive = true;
+      serverTimerEndTime = data.end_time;
+      
+      // Calculate time remaining from server timer
+      const now = new Date();
+      const endTime = new Date(data.end_time);
+      const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000));
+      
+      if (timeLeft > 0) {
+        timeRemaining = timeLeft;
+        console.log('Using server timer:', timeLeft, 'seconds remaining');
+        updateTimerModeIndicator('Server Timer');
+      }
+    } else {
+      serverTimerActive = false;
+      console.log('No server timer active, using default duration');
+      updateTimerModeIndicator('Local Timer');
+    }
+  } catch (error) {
+    console.log('Could not fetch server timer status, using local timer');
+    serverTimerActive = false;
+    updateTimerModeIndicator('Local Timer');
+  }
+}
+
+function updateTimerDisplay() {
+  const minutes = Math.floor(timeRemaining / 60);
+  const seconds = timeRemaining % 60;
+  const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  
+  const timerEl = document.getElementById('timer-display');
+  const mobileTimerEl = document.getElementById('mobile-timer-text');
+  
+  timerEl.textContent = timeString;
+  if (mobileTimerEl) mobileTimerEl.textContent = timeString;
+  
+  // Add warning classes
+  timerEl.className = 'timer-display';
+  if (timeRemaining <= 30 && timeRemaining > 10) {
+    timerEl.classList.add('timer-warning');
+  } else if (timeRemaining <= 10) {
+    timerEl.classList.add('timer-critical');
+  }
+  
+  // Update mobile timer color
+  const mobileTimer = document.getElementById('mobile-timer');
+  if (mobileTimer) {
+    if (timeRemaining <= 10) {
+      mobileTimer.style.background = 'rgba(195, 48, 48, 0.95)';
+    } else if (timeRemaining <= 30) {
+      mobileTimer.style.background = 'rgba(245, 158, 11, 0.95)';
+    }
+  }
+}
+
+function handleTimeUp() {
+  clearInterval(timerInterval);
+  
+  if (!responseSubmitted) {
+    // Auto-submit if an option is selected
+    if (selectedOption) {
+      submitResponse();
+    } else {
+      // No option selected, redirect to waiting screen
+      alert('Time is up! You will see results when other students finish.');
+      window.location.href = `/learn/climate/${SESSION_CODE}/play/`;
+    }
+  }
+}
+
+// Option selection
+function selectOption(optionLetter) {
+  if (responseSubmitted) return;
+  
+  // Remove previous selection
+  document.querySelectorAll('.option-card').forEach(card => {
+    card.classList.remove('selected');
+  });
+  
+  // Add selection to clicked option
+  const optionCard = document.querySelector(`[data-option="${optionLetter}"]`);
+  optionCard.classList.add('selected');
+  
+  // Update form
+  document.getElementById(`option_${optionLetter}`).checked = true;
+  selectedOption = optionLetter;
+  
+  // Enable submit button
+  const submitButton = document.getElementById('submit-button');
+  submitButton.disabled = false;
+  submitButton.textContent = '🚀 Submit My Decision';
+  
+  // Update instruction text
+  const instructionText = submitButton.nextElementSibling;
+  instructionText.textContent = `You selected Option ${optionLetter.toUpperCase()}. Click to submit!`;
+  instructionText.className = 'text-green-600 mt-2 font-semibold';
+}
+
+// Submit response
+function submitResponse() {
+  if (!selectedOption || responseSubmitted) return;
+  
+  const submitButton = document.getElementById('submit-button');
+  submitButton.disabled = true;
+  submitButton.innerHTML = '<span class="loading loading-spinner"></span> Submitting...';
+  
+  const formData = new FormData(document.getElementById('response-form'));
+  formData.append('response_time', RESPONSE_DURATION - timeRemaining);
+  
+  fetch(window.location.href, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      responseSubmitted = true;
+      clearInterval(timerInterval);
+      
+      // Disable all options
+      document.querySelectorAll('.option-card').forEach(card => {
+        card.classList.add('disabled');
+      });
+      
+      // Store response for impact display
+      sessionStorage.setItem('selectedOption', data.selected_option);
+      sessionStorage.setItem('responseTime', RESPONSE_DURATION - timeRemaining);
+      
+      // Redirect to impact results page
+      window.location.href = `/learn/climate/${SESSION_CODE}/impact-results/`;
+    } else {
+      console.error('Server error:', data);
+      alert('Error submitting response: ' + (data.error || 'Unknown server error'));
+      submitButton.disabled = false;
+      submitButton.textContent = '🚀 Submit My Decision';
+    }
+  })
+  .catch(error => {
+    console.error('Error submitting response:', error);
+    alert('Network error. Please try again.');
+    submitButton.disabled = false;
+    submitButton.textContent = '🚀 Submit My Decision';
+  });
+}
+
+// Poll for game state changes
+function startPolling() {
+  pollInterval = setInterval(() => {
+    if (!SESSION_CODE) {
+      console.warn('startPolling: SESSION_CODE is empty, skipping API call');
+      return;
+    }
+    fetch(`/learn/api/climate/${SESSION_CODE}/status/`)
+      .then(response => response.json())
+      .then(data => {
+        // Update response count
+        const responseCountEl = document.getElementById('response-count');
+        if (responseCountEl && data.responses_received !== undefined) {
+          responseCountEl.textContent = `${data.responses_received} of ${data.total_players} responded`;
+        }
+        
+        // Check for phase change
+        if (data.current_phase !== 'question_phase') {
+          clearInterval(pollInterval);
+          window.location.href = `/learn/climate/${SESSION_CODE}/play/`;
+        }
+      })
+      .catch(error => {
+        console.error('Error polling game state:', error);
+      });
+  }, 2000);
+}
+
+// WebSocket for real-time timer updates
+let socket = null;
+
+function connectWebSocket() {
+  try {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws/climate/${SESSION_CODE}/`;
+    
+    socket = new WebSocket(wsUrl);
+    
+    socket.onopen = function(e) {
+      console.log('WebSocket connected for timer updates');
+      // Join as student
+      socket.send(JSON.stringify({
+        type: 'join_as_student',
+        player_session_id: PLAYER_SESSION_ID
+      }));
+    };
+    
+    socket.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+      
+      switch (data.type) {
+        case 'timer_started':
+          console.log('Timer started by facilitator');
+          if (data.end_time) {
+            serverTimerActive = true;
+            serverTimerEndTime = data.end_time;
+            updateTimerModeIndicator('Server Timer');
+          }
+          break;
+          
+        case 'timer_update':
+          console.log('Timer update received');
+          if (data.end_time) {
+            serverTimerActive = true;
+            serverTimerEndTime = data.end_time;
+          } else {
+            serverTimerActive = false;
+            serverTimerEndTime = null;
+            updateTimerModeIndicator('Local Timer');
+          }
+          break;
+          
+        case 'phase_changed':
+          if (data.new_phase !== 'question_phase') {
+            window.location.href = `/learn/climate/${SESSION_CODE}/play/`;
+          }
+          break;
+      }
+    };
+    
+    socket.onclose = function(e) {
+      console.log('WebSocket connection closed');
+      setTimeout(() => {
+        if (!responseSubmitted) {
+          connectWebSocket(); // Reconnect
+        }
+      }, 3000);
+    };
+    
+    socket.onerror = function(error) {
+      console.log('WebSocket error:', error);
+    };
+    
+  } catch (error) {
+    console.log('Failed to connect WebSocket:', error);
+  }
+}
+
+function updateTimerModeIndicator(mode) {
+  const indicator = document.getElementById('timer-mode-indicator');
+  if (indicator) {
+    indicator.textContent = mode;
+  }
+}
+
+// Handle page visibility changes
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    // Page hidden, pause timer (mobile optimization)
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+  } else {
+    // Page visible, resume timer
+    if (!responseSubmitted && timeRemaining > 0) {
+      startTimer();
+    }
+  }
+});
+
+// Handle page unload
+window.addEventListener('beforeunload', function() {
+  if (timerInterval) clearInterval(timerInterval);
+  if (pollInterval) clearInterval(pollInterval);
+});
+
+// Prevent accidental page refresh
+window.addEventListener('beforeunload', function(e) {
+  if (!responseSubmitted && timeRemaining > 0) {
+    e.preventDefault();
+    e.returnValue = 'Are you sure you want to leave? Your response has not been submitted.';
+    return e.returnValue;
+  }
+});
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Connect WebSocket for real-time updates
+  connectWebSocket();
+  
+  // Start timer (will check for server timer first)
+  startTimer();
+  
+  // Set initial timer mode indicator
+  updateTimerModeIndicator('Local Timer');
+  
+  // Add keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    if (responseSubmitted) return;
+    
+    if (e.key >= 'a' && e.key <= 'd') {
+      selectOption(e.key);
+    } else if (e.key === 'Enter' && selectedOption) {
+      submitResponse();
+    }
+  });
+  
+  // Mobile optimization: prevent zoom on double tap
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function(event) {
+    const now = (new Date()).getTime();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, false);
+});
+
+// Debug mode for teachers
+if (window.location.search.includes('debug=1')) {
+  console.log('Question Phase Debug Info:');
+  console.log('Session Code:', SESSION_CODE);
+  console.log('Player Session ID:', PLAYER_SESSION_ID);
+  console.log('Round Number:', ROUND_NUMBER);
+  console.log('Response Duration:', RESPONSE_DURATION);
+}
+</script>
+</html>

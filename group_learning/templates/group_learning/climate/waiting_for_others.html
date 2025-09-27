@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Waiting for Others - Climate Crisis Round {{ session.current_round }}{% endblock %}
+
+{% block description %}Waiting for other players to submit their responses in the Climate Crisis India simulation game.{% endblock %}
+
+{% block content %}
+<!-- Climate Game Waiting Screen -->
+<div class="bg-gradient-to-br from-green-600 via-emerald-700 to-teal-800 text-white overflow-hidden relative min-h-screen">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="flex items-center justify-center mb-6">
+                <span class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium mr-3">
+                    RESPONSE SUBMITTED
+                </span>
+                <span class="bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                    ROUND {{ session.current_round }} of 5
+                </span>
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-bold mb-6">
+                ⏳ Waiting for Others
+            </h1>
+            <p class="text-xl opacity-90 mb-8">
+                {{ scenario.title }}
+            </p>
+        </div>
+
+        <!-- Your Response Card -->
+        <div class="bg-white rounded-2xl p-8 shadow-xl mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">✅ Your Response</h2>
+            <div class="bg-green-50 rounded-xl p-6 border-l-4 border-green-500">
+                <h3 class="text-lg font-bold text-green-900 mb-2">You chose:</h3>
+                <p class="text-gray-700 text-lg">{{ selected_option.text }}</p>
+                {% if selected_option.consequence %}
+                <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                    <h4 class="font-bold text-blue-900 mb-2">Expected Impact:</h4>
+                    <p class="text-blue-800">{{ selected_option.consequence }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Waiting Status -->
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 mb-8">
+            <div class="text-center">
+                <div class="animate-spin w-16 h-16 border-4 border-white border-t-transparent rounded-full mx-auto mb-6"></div>
+                <h2 class="text-2xl font-bold mb-4">Waiting for all players to respond...</h2>
+                <p class="text-lg opacity-90 mb-6">
+                    Your teacher will show the results once everyone has made their decision.
+                </p>
+                <!-- Connection Status Indicator -->
+                <div class="mt-4 text-xs opacity-75" id="connection-status">
+                    <span id="ws-status" class="inline-block w-2 h-2 bg-yellow-400 rounded-full mr-1"></span>
+                    <span id="status-text">Connecting...</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="bg-white/20 rounded-lg p-4">
+                            <div class="text-2xl font-black mb-2" id="responses-count">-</div>
+                            <div class="text-sm opacity-75">Responses Received</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="bg-white/20 rounded-lg p-4">
+                            <div class="text-2xl font-black mb-2" id="total-players">-</div>
+                            <div class="text-sm opacity-75">Total Players</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Society Meters -->
+        <div class="bg-white rounded-2xl p-8 shadow-xl mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">📊 Current Society Status</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <div class="bg-green-100 rounded-lg p-4">
+                        <div class="text-2xl mb-2">🌱</div>
+                        <div class="text-sm font-medium text-green-900">Climate Resilience</div>
+                        <div class="text-lg font-bold text-green-700">{{ meter_status.climate_resilience }}%</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="bg-blue-100 rounded-lg p-4">
+                        <div class="text-2xl mb-2">💰</div>
+                        <div class="text-sm font-medium text-blue-900">GDP Growth</div>
+                        <div class="text-lg font-bold text-blue-700">{{ meter_status.gdp }}%</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="bg-purple-100 rounded-lg p-4">
+                        <div class="text-2xl mb-2">😊</div>
+                        <div class="text-sm font-medium text-purple-900">Public Morale</div>
+                        <div class="text-lg font-bold text-purple-700">{{ meter_status.public_morale }}%</div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="bg-emerald-100 rounded-lg p-4">
+                        <div class="text-2xl mb-2">🌍</div>
+                        <div class="text-sm font-medium text-emerald-900">Environment</div>
+                        <div class="text-lg font-bold text-emerald-700">{{ meter_status.environmental_health }}%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips While Waiting -->
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+            <h2 class="text-2xl font-bold mb-6 text-center">💡 Did You Know?</h2>
+            <div class="space-y-4 text-lg opacity-90">
+                <p>• India is home to 18% of the world's population but contributes only 7% of global CO2 emissions</p>
+                <p>• Climate change could reduce India's GDP by 2.8% by 2100 without action</p>
+                <p>• Over 600 million Indians face high to extreme water stress annually</p>
+                <p>• India aims to achieve Net Zero emissions by 2070</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// BULLETPROOF WAITING SCREEN SYSTEM
+// Combines WebSocket + HTTP polling for reliable phase transitions and status updates
+const SESSION_CODE = '{{ session.session_code }}';
+let socket = null;
+let pollingInterval = null;
+let wsConnected = false;
+let reconnectAttempts = 0;
+let maxReconnectAttempts = 10;
+
+// Connection status management
+function updateConnectionStatus(status, text) {
+    const wsStatusEl = document.getElementById('ws-status');
+    const statusTextEl = document.getElementById('status-text');
+    
+    if (wsStatusEl && statusTextEl) {
+        wsStatusEl.className = `inline-block w-2 h-2 rounded-full mr-1 ${status}`;
+        statusTextEl.textContent = text;
+    }
+}
+
+// HTTP Polling for status updates and phase changes
+function startStatusPolling() {
+    if (pollingInterval) return;
+    
+    console.log('🔄 Starting status polling');
+    pollingInterval = setInterval(async () => {
+        try {
+            const response = await fetch(`/learn/api/climate/${SESSION_CODE}/status/`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCsrfToken(),
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('📊 Polling status:', data.current_phase);
+                
+                // Update response counts if available
+                if (data.responses_count !== undefined) {
+                    updateResponseCount(data.responses_count, data.total_players || 0);
+                }
+                
+                // Check for phase transitions
+                if (data.current_phase === 'results_feedback') {
+                    console.log('🎯 POLLING DETECTED RESULTS PHASE -> Redirecting');
+                    clearInterval(pollingInterval);
+                    window.location.href = `/learn/climate/${SESSION_CODE}/play/`;
+                    return;
+                }
+            }
+        } catch (error) {
+            console.error('❌ Status polling error:', error);
+        }
+    }, 2000); // Poll every 2 seconds
+}
+
+function stopPolling() {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+        console.log('🛑 Stopped status polling');
+    }
+}
+
+function connectWebSocket() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws/climate/${SESSION_CODE}/`;
+    
+    console.log(`🔌 Attempting WebSocket connection (attempt ${reconnectAttempts + 1})`);
+    updateConnectionStatus('bg-yellow-400', 'Connecting...');
+    
+    socket = new WebSocket(wsUrl);
+    
+    socket.onopen = function() {
+        console.log('✅ WebSocket connected successfully');
+        wsConnected = true;
+        reconnectAttempts = 0;
+        updateConnectionStatus('bg-green-400', 'Connected');
+        
+        socket.send(JSON.stringify({
+            type: 'request_status'
+        }));
+        
+        // Start polling as backup
+        startStatusPolling();
+    };
+    
+    socket.onmessage = function(event) {
+        try {
+            const data = JSON.parse(event.data);
+            console.log('📨 WebSocket received:', data);
+            
+            if (data.type === 'session_status') {
+                updateStatus(data.data);
+            } else if (data.type === 'response_received') {
+                updateResponseCount(data.responses_count, data.total_players);
+            } else if (data.type === 'phase_changed') {
+                if (data.new_phase === 'results_feedback') {
+                    console.log('🎯 WEBSOCKET DETECTED RESULTS PHASE -> Redirecting');
+                    stopPolling();
+                    window.location.href = `/learn/climate/${SESSION_CODE}/play/`;
+                    return;
+                }
+            }
+        } catch (error) {
+            console.error('❌ Error parsing WebSocket message:', error);
+        }
+    };
+    
+    socket.onerror = function(error) {
+        console.error('❌ WebSocket error:', error);
+        wsConnected = false;
+        updateConnectionStatus('bg-red-400', 'Connection Issues');
+    };
+    
+    socket.onclose = function(event) {
+        console.log(`🔌 WebSocket closed (code: ${event.code}, reason: ${event.reason})`);
+        wsConnected = false;
+        
+        // Start polling immediately when WebSocket fails
+        if (!pollingInterval) {
+            startStatusPolling();
+        }
+        
+        // Attempt reconnection with exponential backoff
+        if (reconnectAttempts < maxReconnectAttempts) {
+            reconnectAttempts++;
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+            console.log(`🔄 Reconnecting in ${delay}ms...`);
+            updateConnectionStatus('bg-orange-400', `Reconnecting (${reconnectAttempts}/${maxReconnectAttempts})...`);
+            setTimeout(connectWebSocket, delay);
+        } else {
+            console.warn('⚠️ Max reconnection attempts reached');
+            updateConnectionStatus('bg-red-400', 'Connection Failed - Using Backup');
+        }
+    };
+}
+
+function updateStatus(data) {
+    if (data.responses_count !== undefined) {
+        document.getElementById('responses-count').textContent = data.responses_count;
+    }
+    if (data.total_players !== undefined) {
+        document.getElementById('total-players').textContent = data.total_players;
+    }
+}
+
+function updateResponseCount(responsesCount, totalPlayers) {
+    document.getElementById('responses-count').textContent = responsesCount;
+    document.getElementById('total-players').textContent = totalPlayers;
+}
+
+// Get CSRF token for API requests
+function getCsrfToken() {
+    const token = document.querySelector('[name=csrfmiddlewaretoken]');
+    return token ? token.value : '';
+}
+
+// Initialize bulletproof waiting system
+function initializeBulletproofWaitingSystem() {
+    console.log('🚀 Initializing bulletproof waiting system');
+    
+    // Start WebSocket connection
+    connectWebSocket();
+    
+    // Start polling as immediate backup
+    startStatusPolling();
+    
+    // Health check every 10 seconds
+    setInterval(() => {
+        if (!wsConnected && !pollingInterval) {
+            console.log('🩺 Health check: Both WebSocket and polling failed, restarting...');
+            connectWebSocket();
+            startStatusPolling();
+        }
+    }, 10000);
+}
+
+// Start the bulletproof system when page loads
+document.addEventListener('DOMContentLoaded', initializeBulletproofWaitingSystem);
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    stopPolling();
+    if (socket) {
+        socket.close();
+    }
+});
+</script>
+{% endblock %}

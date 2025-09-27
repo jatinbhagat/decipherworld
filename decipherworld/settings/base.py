@@ -18,6 +18,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lamb
 
 # Application definition
 INSTALLED_APPS = [
+    'daphne',  # Must be first for ASGI support
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -26,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.sitemaps',
+    'channels',  # WebSocket support
     'corsheaders',
     'core',
     'games',
@@ -136,6 +138,28 @@ CACHES = {
 CACHE_MIDDLEWARE_ALIAS = 'default'
 CACHE_MIDDLEWARE_SECONDS = 600  # 10 minutes
 CACHE_MIDDLEWARE_KEY_PREFIX = 'decipherworld'
+
+# ASGI Configuration for WebSocket support
+ASGI_APPLICATION = 'decipherworld.asgi.application'
+
+# Channel Layers Configuration for WebSocket
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+# For production with Redis (uncomment when Redis is available):
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [REDIS_URL],
+#             "capacity": 300,  # Maximum messages to store for each channel
+#             "expiry": 60,     # Seconds before messages expire
+#         },
+#     },
+# }
 
 # Security settings - production will override these
 SECURE_BROWSER_XSS_FILTER = True

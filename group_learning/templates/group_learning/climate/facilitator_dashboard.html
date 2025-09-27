@@ -1,0 +1,1428 @@
+{% extends "base.html" %}
+{% load static %}
+{% csrf_token %}
+
+{% block title %}Climate Game Dashboard - {{ session_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Custom styles for WebSocket notifications and connection status */
+.connection-status {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  transition: all 200ms ease;
+  z-index: 1000;
+}
+
+.connection-status.connected {
+  background: #10b981;
+  color: white;
+}
+
+.connection-status.disconnected {
+  background: #ef4444;
+  color: white;
+}
+
+.connection-status.connecting {
+  background: #f59e0b;
+  color: white;
+}
+
+.notification {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  padding: 16px 24px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  z-index: 1000;
+  transform: translateX(100%);
+  transition: all 200ms ease;
+  max-width: 400px;
+}
+
+.notification.show {
+  transform: translateX(0);
+}
+
+.notification.success {
+  background: #10b981;
+}
+
+.notification.error {
+  background: #ef4444;
+}
+
+.notification.warning {
+  background: #f59e0b;
+}
+
+.notification.info {
+  background: #3b82f6;
+}
+
+.btn-loading {
+  position: relative;
+  color: transparent !important;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Society Meters Animation */
+.meter-fill {
+  transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes meter-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+.meter-fill {
+  animation: meter-pulse 3s ease-in-out infinite;
+}
+</style>
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+
+{% block content %}
+<!-- Simplified Climate Game Dashboard - Single Viewport Design -->
+<div class="bg-gradient-to-br from-green-600 via-emerald-700 to-teal-800 text-white min-h-screen">
+  <!-- CSRF Token for JavaScript -->
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+  
+  <div class="absolute inset-0 bg-black/20"></div>
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <!-- Header Section - Compact -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-4">
+        <div>
+          <h1 class="text-2xl font-bold">🌍 Climate Game</h1>
+          <div class="flex items-center gap-2 mt-1">
+            <span class="bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-sm" id="phase-indicator">
+              {{ current_phase|title|default:"Lobby" }}
+            </span>
+            <span class="text-sm opacity-90">{{ facilitator_name }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="text-center">
+        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+          <div class="text-3xl font-black font-mono">{{ session_code }}</div>
+          <div class="text-xs opacity-75">Share with students</div>
+        </div>
+      </div>
+      
+      <div class="text-right">
+        <div class="text-2xl font-bold" id="response-progress">
+          <span id="response-count">{{ current_round_responses }}</span>/<span id="student-count">{{ total_players }}</span>
+        </div>
+        <div class="text-sm opacity-75">Students responded</div>
+        <!-- Progress Bar -->
+        <div class="w-32 h-2 bg-white/20 rounded-full mt-1">
+          <div class="h-full bg-yellow-400 rounded-full transition-all duration-500" id="response-progress-bar" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content - Single Viewport Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+      
+      <!-- Left Column - Primary Action & Timer -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-2xl p-6 shadow-xl h-full">
+          
+          <!-- Context-Aware Primary Action -->
+          <div class="text-center mb-8">
+            <button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl text-xl font-bold shadow-lg transition-all duration-200 transform hover:scale-105" onclick="primaryAction()" id="primary-action-btn">
+              🚀 Start Game
+            </button>
+            <div class="text-sm text-gray-600 mt-2" id="primary-action-description">
+              Begin the climate crisis simulation
+            </div>
+          </div>
+
+          <!-- Final Results Section (shown when game complete) -->
+          {% if current_phase == 'game_complete' %}
+          <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6 mb-6 border-2 border-green-200">
+            <div class="text-center mb-4">
+              <h3 class="font-bold text-2xl text-green-800 mb-2">🏆 Game Complete!</h3>
+              <p class="text-green-700 text-sm">All 5 rounds completed successfully</p>
+            </div>
+            
+            <!-- Final Scores Preview -->
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div class="bg-white/70 rounded-lg p-3 text-center">
+                <div class="text-lg font-bold text-green-700">{{ session.current_climate_resilience }}%</div>
+                <div class="text-xs text-gray-600">Climate Resilience</div>
+              </div>
+              <div class="bg-white/70 rounded-lg p-3 text-center">
+                <div class="text-lg font-bold text-blue-700">{{ session.current_gdp }}%</div>
+                <div class="text-xs text-gray-600">Economic Health</div>
+              </div>
+              <div class="bg-white/70 rounded-lg p-3 text-center">
+                <div class="text-lg font-bold text-purple-700">{{ session.current_public_morale }}%</div>
+                <div class="text-xs text-gray-600">Public Morale</div>
+              </div>
+              <div class="bg-white/70 rounded-lg p-3 text-center">
+                <div class="text-lg font-bold text-emerald-700">{{ session.current_environmental_health }}%</div>
+                <div class="text-xs text-gray-600">Environment</div>
+              </div>
+            </div>
+            
+            <!-- View Details Button -->
+            <a href="{% url 'group_learning:climate_game_play' session_code=session.session_code %}" 
+               class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-3 rounded-lg text-sm font-bold shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2">
+              <span>📊</span> View Detailed Final Results
+            </a>
+          </div>
+          {% endif %}
+
+          <!-- Student Decision Timer -->
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-4 mb-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-gray-900">⏱️ Student Decision Timer</h3>
+              <div class="text-lg font-medium text-blue-600" id="timer-display" title="Default timer duration">10 minutes</div>
+            </div>
+            <div class="text-xs text-gray-600 mb-3">Auto-starts with questions • Customize duration below</div>
+            
+            <!-- Timer Duration Selector -->
+            <div class="mb-3">
+              <select class="w-full border border-gray-300 rounded px-3 py-1 text-sm" id="timer-duration-select" onchange="updateTimerDuration()">
+                <option value="5">5 minutes</option>
+                <option value="10" selected>10 minutes (default)</option>
+                <option value="15">15 minutes</option>
+                <option value="20">20 minutes</option>
+                <option value="custom">Custom...</option>
+              </select>
+            </div>
+            
+            <!-- Custom Timer Input (hidden by default) -->
+            <div class="mb-3 hidden" id="custom-timer-input">
+              <input type="number" min="1" max="60" placeholder="Minutes" class="w-full border border-gray-300 rounded px-3 py-1 text-sm" id="custom-minutes" onchange="updateCustomTimerDisplay()" oninput="updateCustomTimerDisplay()">
+            </div>
+            
+            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" onclick="startTimer()" id="quick-timer-btn">
+              Start Timer Manually
+            </button>
+          </div>
+
+          <!-- Society Meters - Compact -->
+          <div class="space-y-3">
+            <h3 class="font-bold text-gray-900 text-sm">📊 India Status</h3>
+            
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-600">🛡️ Climate</span>
+                <span class="text-sm font-bold text-green-600" id="climate-value">50%</span>
+              </div>
+              <div class="w-full h-2 bg-gray-200 rounded-full">
+                <div class="h-full bg-green-500 rounded-full transition-all duration-1000" id="climate-fill" style="width: 50%"></div>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-600">💰 Economy</span>
+                <span class="text-sm font-bold text-blue-600" id="gdp-value">50%</span>
+              </div>
+              <div class="w-full h-2 bg-gray-200 rounded-full">
+                <div class="h-full bg-blue-500 rounded-full transition-all duration-1000" id="gdp-fill" style="width: 50%"></div>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-600">😊 Morale</span>
+                <span class="text-sm font-bold text-purple-600" id="morale-value">50%</span>
+              </div>
+              <div class="w-full h-2 bg-gray-200 rounded-full">
+                <div class="h-full bg-purple-500 rounded-full transition-all duration-1000" id="morale-fill" style="width: 50%"></div>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-600">🌱 Environment</span>
+                <span class="text-sm font-bold text-emerald-600" id="environment-value">50%</span>
+              </div>
+              <div class="w-full h-2 bg-gray-200 rounded-full">
+                <div class="h-full bg-emerald-500 rounded-full transition-all duration-1000" id="environment-fill" style="width: 50%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Secondary Actions -->
+          <div class="mt-6 space-y-2">
+            <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="copyJoinURL()">
+              📋 Copy Join Link
+            </button>
+          </div>
+          
+        </div>
+      </div>
+
+      <!-- Right Column - Students Grid -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-2xl p-6 shadow-xl h-full">
+          <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            👥 Students (<span id="students-title-count">{{ total_players }}</span>)
+          </h2>
+          
+          <div class="h-full overflow-y-auto" id="students-container">
+            <div id="students-list">
+              {% if students %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {% for student in students %}
+                    <div class="flex items-center justify-between p-3 
+                      {% if student.role == 'government' %}bg-blue-50 border-blue-200{% endif %}
+                      {% if student.role == 'business' %}bg-orange-50 border-orange-200{% endif %}
+                      {% if student.role == 'farmer' %}bg-green-50 border-green-200{% endif %}
+                      {% if student.role == 'urban_citizen' %}bg-purple-50 border-purple-200{% endif %}
+                      {% if student.role == 'ngo_worker' %}bg-red-50 border-red-200{% endif %}
+                      rounded-lg border-2" data-student-id="{{ student.player_session_id }}">
+                      <div class="flex items-center gap-2">
+                        <div class="text-lg">
+                          {% if student.role == 'government' %}🏛️{% endif %}
+                          {% if student.role == 'business' %}🏢{% endif %}
+                          {% if student.role == 'farmer' %}🌾{% endif %}
+                          {% if student.role == 'urban_citizen' %}🏙️{% endif %}
+                          {% if student.role == 'ngo_worker' %}🤝{% endif %}
+                        </div>
+                        <div>
+                          <div class="font-semibold text-gray-900 text-sm">{{ student.player_name }}</div>
+                          <div class="text-xs text-gray-600">
+                            {% if student.role == 'government' %}Government{% endif %}
+                            {% if student.role == 'business' %}Business{% endif %}
+                            {% if student.role == 'farmer' %}Farmer{% endif %}
+                            {% if student.role == 'urban_citizen' %}Citizen{% endif %}
+                            {% if student.role == 'ngo_worker' %}NGO{% endif %}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="response-status">
+                        <div class="w-3 h-3 bg-yellow-400 rounded-full" title="Thinking...">⏳</div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="text-center py-12 text-gray-500">
+                  <div class="text-4xl mb-4 opacity-70">🎓</div>
+                  <div class="text-lg font-semibold mb-2">No students joined yet</div>
+                  <div class="text-sm">Share code: <span class="font-mono font-bold text-blue-600">{{ session_code }}</span></div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Connection Status Indicator -->
+<div class="connection-status connected" id="connection-status">
+  🟢 Connected
+</div>
+
+<!-- Confirmation Dialog -->
+<dialog id="confirmDialog" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Start Climate Game?</h3>
+    <p class="py-4">This will begin the first scenario. Students will start seeing questions.</p>
+    <div class="modal-action">
+      <button class="btn btn-primary" onclick="startGame()">Start Game</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('confirmDialog').close()">Cancel</button>
+    </div>
+  </div>
+</dialog>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Professional Game Session Management
+class ClimateGameManager {
+  constructor(sessionCode) {
+    this.sessionCode = sessionCode;
+    this.socket = null;
+    this.retryCount = 0;
+    this.maxRetries = 5;
+    this.baseDelay = 1000;
+    this.isConnected = false;
+    this.heartbeatInterval = null;
+    this.reconnectTimeout = null;
+    
+    // Validate session code
+    if (!sessionCode || sessionCode.trim() === '') {
+      console.error('Invalid session code:', sessionCode);
+      this.showNotification('Invalid session code', 'error');
+      return;
+    }
+    
+    console.log('Climate Game Manager initialized with WebSocket for session:', sessionCode);
+    this.init();
+  }
+  
+  init() {
+    this.connectWebSocket();
+    this.setupEventListeners();
+  }
+  
+  connectWebSocket() {
+    try {
+      // Determine WebSocket protocol (ws:// for development, wss:// for production)
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws/climate/${this.sessionCode}/`;
+      
+      console.log('Connecting to WebSocket:', wsUrl);
+      this.updateConnectionStatus('connecting');
+      
+      this.socket = new WebSocket(wsUrl);
+      
+      this.socket.onopen = (event) => {
+        console.log('WebSocket connected');
+        this.isConnected = true;
+        this.retryCount = 0;
+        this.updateConnectionStatus('connected');
+        
+        // Join as facilitator
+        this.sendMessage({
+          type: 'join_as_facilitator'
+        });
+        
+        // Request initial session status to load student data
+        this.sendMessage({
+          type: 'request_status'
+        });
+        
+        // Start heartbeat
+        this.startHeartbeat();
+        
+        this.showNotification('Connected to real-time updates', 'success');
+      };
+      
+      this.socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          this.handleWebSocketMessage(data);
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+      };
+      
+      this.socket.onclose = (event) => {
+        console.log('WebSocket closed:', event.code, event.reason);
+        this.isConnected = false;
+        this.stopHeartbeat();
+        this.updateConnectionStatus('disconnected');
+        
+        // Only show error if it wasn't a normal closure
+        if (event.code !== 1000 && event.code !== 1001) {
+          this.showNotification('Connection lost', 'warning');
+        }
+        
+        // Attempt to reconnect unless it was a client-initiated close
+        if (event.code !== 1000) {
+          this.scheduleReconnect();
+        }
+      };
+      
+      this.socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        this.updateConnectionStatus('disconnected');
+        this.showNotification('Connection error', 'error');
+      };
+      
+    } catch (error) {
+      console.error('Failed to create WebSocket:', error);
+      this.updateConnectionStatus('disconnected');
+      this.showNotification('Failed to connect to real-time updates', 'error');
+    }
+  }
+  
+  scheduleReconnect() {
+    if (this.retryCount < this.maxRetries) {
+      const delay = this.baseDelay * Math.pow(2, this.retryCount);
+      this.retryCount++;
+      
+      console.log(`Reconnecting in ${delay}ms (attempt ${this.retryCount}/${this.maxRetries})`);
+      this.updateConnectionStatus('connecting');
+      
+      this.reconnectTimeout = setTimeout(() => {
+        this.connectWebSocket();
+      }, delay);
+    } else {
+      console.error('Max reconnection attempts reached');
+      this.showNotification('Unable to reconnect. Please refresh the page.', 'error');
+    }
+  }
+  
+  startHeartbeat() {
+    this.heartbeatInterval = setInterval(() => {
+      if (this.isConnected && this.socket.readyState === WebSocket.OPEN) {
+        this.sendMessage({
+          type: 'ping',
+          timestamp: Date.now()
+        });
+      }
+    }, 30000); // Send ping every 30 seconds
+  }
+  
+  stopHeartbeat() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
+    }
+  }
+  
+  sendMessage(message) {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify(message));
+    } else {
+      console.warn('WebSocket not connected, cannot send message:', message);
+    }
+  }
+  
+  handleWebSocketMessage(data) {
+    console.log('[DASHBOARD] WebSocket message received:', data);
+    
+    try {
+      // Validate message structure
+      if (!data || typeof data !== 'object') {
+        console.error('[DASHBOARD] Invalid WebSocket message format:', data);
+        return;
+      }
+      
+      if (!data.type) {
+        console.error('[DASHBOARD] WebSocket message missing type field:', data);
+        return;
+      }
+      
+      switch (data.type) {
+        case 'session_status':
+        case 'session_update':
+          try {
+            this.updateGameState(data.data);
+          } catch (error) {
+            console.error('[DASHBOARD] Error updating game state:', error, data);
+          }
+          break;
+          
+        case 'phase_changed':
+          try {
+            this.updatePhaseIndicator(data.new_phase);
+            this.updateRoundDisplay(data.current_round);
+            this.showNotification(`Phase changed to: ${data.new_phase}`, 'info');
+            console.log(`[DASHBOARD] Phase changed: ${data.new_phase}, Round: ${data.current_round}`);
+          } catch (error) {
+            console.error('[DASHBOARD] Error handling phase change:', error, data);
+          }
+          break;
+          
+        case 'response_received':
+          try {
+            this.updatePlayerCount(data.responses_count, data.total_players);
+            console.log(`[DASHBOARD] Response received: ${data.responses_count}/${data.total_players}`);
+          } catch (error) {
+            console.error('[DASHBOARD] Error updating player count:', error, data);
+          }
+          break;
+          
+        case 'player_joined':
+          try {
+            this.updatePlayerCount(null, data.total_players);
+            this.showNotification(`${data.player_name} joined the game`, 'info');
+            console.log(`[DASHBOARD] Player joined: ${data.player_name}, Total: ${data.total_players}`);
+            
+            // Request full session status to refresh students list
+            this.sendMessage({
+              type: 'request_status'
+            });
+          } catch (error) {
+            console.error('[DASHBOARD] Error handling player joined:', error, data);
+          }
+          break;
+          
+        case 'game_event':
+          try {
+            this.handleGameEvent(data.event_type, data.data);
+          } catch (error) {
+            console.error('[DASHBOARD] Error handling game event:', error, data);
+          }
+          break;
+          
+        case 'timer_started':
+          try {
+            this.handleTimerStarted(data);
+          } catch (error) {
+            console.error('[DASHBOARD] Error handling timer started:', error, data);
+          }
+          break;
+          
+        case 'timer_update':
+          try {
+            this.handleTimerUpdate(data);
+          } catch (error) {
+            console.error('[DASHBOARD] Error handling timer update:', error, data);
+          }
+          break;
+          
+        case 'error':
+          try {
+            this.showNotification(data.message || 'An error occurred', 'error');
+            console.error('[DASHBOARD] Server error received:', data.message);
+          } catch (error) {
+            console.error('[DASHBOARD] Error displaying server error:', error, data);
+          }
+          break;
+          
+        case 'pong':
+          // Heartbeat response - connection is healthy
+          console.debug('[DASHBOARD] Heartbeat received');
+          break;
+          
+        case 'joined':
+          console.log('[DASHBOARD] Successfully joined as:', data.role);
+          break;
+          
+        default:
+          console.warn('[DASHBOARD] Unknown WebSocket message type:', data.type, data);
+      }
+      
+    } catch (error) {
+      console.error('[DASHBOARD] Critical error in WebSocket message handling:', error, data);
+      // Don't break the entire application - continue functioning
+      this.showNotification('Connection error occurred - please refresh if issues persist', 'warning');
+    }
+  }
+  
+  handleGameEvent(eventType, data) {
+    switch (eventType) {
+      case 'game_started':
+        this.showNotification('Game has started!', 'success');
+        break;
+      case 'round_completed':
+        this.showNotification('Round completed!', 'info');
+        break;
+      case 'game_completed':
+        this.showNotification('Game completed!', 'success');
+        break;
+      default:
+        console.log('Unknown game event:', eventType, data);
+    }
+  }
+  
+  setupEventListeners() {
+    // Handle page visibility changes
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        console.log('Page hidden, WebSocket will continue in background');
+      } else {
+        console.log('Page visible again');
+        // Request status update when page becomes visible
+        if (this.isConnected) {
+          this.sendMessage({ type: 'request_status' });
+        }
+      }
+    });
+    
+    // Handle beforeunload
+    window.addEventListener('beforeunload', () => {
+      this.disconnect();
+    });
+  }
+  
+  disconnect() {
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+    }
+    this.stopHeartbeat();
+    
+    if (this.socket) {
+      this.socket.close(1000, 'Client disconnect');
+      this.socket = null;
+    }
+  }
+  
+  // Game control methods now use HTTP for actions, WebSocket for updates
+  async startGame() {
+    console.log('Starting game...');
+    this.showNotification('Starting game...', 'info');
+    
+    try {
+      const data = await this.makeHttpRequest('/start/', { method: 'POST' });
+      this.showNotification('Game started successfully!', 'success');
+      console.log('Game started:', data);
+    } catch (error) {
+      this.showNotification('Failed to start game', 'error');
+      console.error('Start game error:', error);
+    }
+  }
+  
+  async advancePhase() {
+    console.log('Advancing phase...');
+    this.showNotification('Advancing to next phase...', 'info');
+    
+    try {
+      const data = await this.makeHttpRequest('/advance/', { method: 'POST' });
+      this.showNotification('Advanced to next phase!', 'success');
+      console.log('Phase advanced:', data);
+    } catch (error) {
+      this.showNotification('Failed to advance phase', 'error');
+      console.error('Advance phase error:', error);
+    }
+  }
+  
+  async makeHttpRequest(endpoint, options = {}) {
+    const url = `/learn/api/climate/${this.sessionCode}${endpoint}`;
+    console.log('Making HTTP request to:', url);
+    
+    const defaultOptions = {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': this.getCsrfToken(),
+      },
+    };
+    
+    const finalOptions = { ...defaultOptions, ...options };
+    
+    try {
+      const response = await fetch(url, finalOptions);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      return data;
+      
+    } catch (error) {
+      console.error('HTTP request failed:', error);
+      throw error;
+    }
+  }
+  
+  getCsrfToken() {
+    // Try multiple methods to get CSRF token
+    const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (csrfInput && csrfInput.value) {
+      return csrfInput.value;
+    }
+    
+    const csrfMeta = document.querySelector('meta[name=csrf-token]');
+    if (csrfMeta) {
+      return csrfMeta.getAttribute('content');
+    }
+    
+    const cookieValue = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('csrftoken='));
+    if (cookieValue) {
+      return cookieValue.split('=')[1];
+    }
+    
+    console.error('CSRF token not found!');
+    this.showNotification('Security token missing. Please refresh the page.', 'error');
+    return '';
+  }
+  
+  async startGame() {
+    try {
+      this.setButtonLoading('start-btn', true);
+      const data = await this.makeHttpRequest('/start/', { method: 'POST' });
+      
+      if (data.success) {
+        this.showNotification('Game started successfully!', 'success');
+        this.updateGameState(data);
+      } else {
+        this.showNotification('Error starting game: ' + data.message, 'error');
+      }
+    } catch (error) {
+      this.showNotification('Failed to start game. Please try again.', 'error');
+    } finally {
+      this.setButtonLoading('start-btn', false);
+    }
+  }
+  
+  async advancePhase() {
+    try {
+      this.setButtonLoading('advance-btn', true);
+      const data = await this.makeHttpRequest('/advance/', { method: 'POST' });
+      
+      if (data.success) {
+        this.showNotification('Phase advanced!', 'success');
+        this.updateGameState(data);
+      } else {
+        this.showNotification('Error advancing phase: ' + data.message, 'error');
+      }
+    } catch (error) {
+      this.showNotification('Failed to advance phase. Please try again.', 'error');
+    } finally {
+      this.setButtonLoading('advance-btn', false);
+    }
+  }
+  
+  
+  updateGameState(data) {
+    console.log('Updating game state:', data);
+    
+    // Update student counts and progress
+    const studentCount = data.total_players || 0;
+    const responseCount = data.responses_count || 0;
+    
+    document.getElementById('student-count').textContent = studentCount;
+    document.getElementById('response-count').textContent = responseCount;
+    document.getElementById('students-title-count').textContent = studentCount;
+    
+    // Update progress bar
+    this.updateResponseProgressBar(responseCount, studentCount);
+    
+    // Update student list display with response status
+    if (data.students) {
+      this.updateStudentsList(data.students, data.student_responses);
+    }
+    
+    // Update phase indicator and primary button
+    if (data.current_phase) {
+      this.updatePhaseIndicator(data.current_phase);
+      updatePrimaryActionButton(data.current_phase);
+    }
+    
+    // Update meters
+    if (data.meter_status) {
+      this.updateMeters(data.meter_status);
+    }
+    
+    // Update round display (removed since we're in single viewport)
+    // if (data.current_round) {
+    //   document.getElementById('round-display').textContent = `Round ${data.current_round} of 5`;
+    // }
+  }
+  
+  updateResponseProgressBar(responseCount, totalCount) {
+    const progressBar = document.getElementById('response-progress-bar');
+    if (progressBar && totalCount > 0) {
+      const percentage = (responseCount / totalCount) * 100;
+      progressBar.style.width = `${percentage}%`;
+      
+      // Change color based on progress
+      if (percentage === 100) {
+        progressBar.className = 'h-full bg-green-500 rounded-full transition-all duration-500';
+      } else if (percentage >= 75) {
+        progressBar.className = 'h-full bg-blue-500 rounded-full transition-all duration-500';
+      } else {
+        progressBar.className = 'h-full bg-yellow-400 rounded-full transition-all duration-500';
+      }
+    }
+  }
+  
+  updatePhaseIndicator(phase) {
+    const indicator = document.getElementById('phase-indicator');
+    
+    if (indicator) {
+      // Update text with simplified names
+      const phaseNames = {
+        'lobby': 'Lobby',
+        'scenario_intro': 'Scenario',
+        'question_phase': 'Questions Active',
+        'results_feedback': 'Results',
+        'game_complete': 'Complete'
+      };
+      
+      indicator.textContent = phaseNames[phase] || phase.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+      
+      // Update visual styling based on phase
+      indicator.className = 'bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-sm';
+      
+      // Add phase-specific colors
+      if (phase === 'question_phase') {
+        indicator.className += ' bg-green-500/30';
+      } else if (phase === 'results_feedback') {
+        indicator.className += ' bg-blue-500/30';
+      } else if (phase === 'game_complete') {
+        indicator.className += ' bg-gray-500/30';
+      }
+    }
+  }
+  
+  updateMeters(meterStatus) {
+    const meters = {
+      'climate': meterStatus.climate_resilience || 50,
+      'gdp': meterStatus.gdp_growth || 50,
+      'morale': meterStatus.public_morale || 50,
+      'environment': meterStatus.environmental_health || 50
+    };
+    
+    Object.entries(meters).forEach(([type, value]) => {
+      const fill = document.getElementById(`${type}-fill`);
+      const valueDisplay = document.getElementById(`${type}-value`);
+      
+      if (fill) {
+        fill.style.width = `${Math.max(0, Math.min(100, value))}%`;
+      }
+      if (valueDisplay) {
+        valueDisplay.textContent = `${Math.round(value)}%`;
+      }
+    });
+  }
+  
+  setButtonLoading(buttonId, loading) {
+    const button = document.getElementById(buttonId);
+    if (button) {
+      if (loading) {
+        button.classList.add('btn-loading');
+        button.disabled = true;
+      } else {
+        button.classList.remove('btn-loading');
+        button.disabled = false;
+      }
+    }
+  }
+  
+  updateConnectionStatus(status) {
+    const statusEl = document.getElementById('connection-status');
+    if (statusEl) {
+      statusEl.className = `connection-status ${status}`;
+      
+      const statusTexts = {
+        'connected': '🟢 WebSocket Connected',
+        'connecting': '🟡 Connecting...',
+        'disconnected': '🔴 Disconnected'
+      };
+      
+      statusEl.textContent = statusTexts[status] || status;
+    }
+    
+    this.isConnected = status === 'connected';
+  }
+  
+  updateStudentsList(students, studentResponses = {}) {
+    console.log('Updating students list:', students, 'with responses:', studentResponses);
+    const studentsListEl = document.getElementById('students-list');
+    
+    if (!students || students.length === 0) {
+      // Show empty state
+      studentsListEl.innerHTML = `
+        <div class="text-center py-12 text-gray-500">
+          <div class="text-4xl mb-4 opacity-70">🎓</div>
+          <div class="text-lg font-semibold mb-2">No students joined yet</div>
+          <div class="text-sm">Share code: <span class="font-mono font-bold text-blue-600">${this.sessionCode}</span></div>
+        </div>
+      `;
+      return;
+    }
+    
+    // CRITICAL FIX: Deduplicate students by player_session_id to prevent multiple entries
+    const uniqueStudents = [];
+    const seenPlayerIds = new Set();
+    
+    students.forEach(student => {
+      if (!seenPlayerIds.has(student.player_session_id)) {
+        seenPlayerIds.add(student.player_session_id);
+        uniqueStudents.push(student);
+      }
+    });
+    
+    console.log(`Deduplicated students: ${students.length} -> ${uniqueStudents.length}`);
+    
+    // Create student cards with response status
+    const studentCards = uniqueStudents.map(student => {
+      const roleBgColors = {
+        'government': 'bg-blue-50 border-blue-200',
+        'business': 'bg-orange-50 border-orange-200', 
+        'farmer': 'bg-green-50 border-green-200',
+        'urban_citizen': 'bg-purple-50 border-purple-200',
+        'ngo_worker': 'bg-red-50 border-red-200'
+      };
+      
+      const roleIcons = {
+        'government': '🏛️',
+        'business': '🏢',
+        'farmer': '🌾', 
+        'urban_citizen': '🏙️',
+        'ngo_worker': '🤝'
+      };
+      
+      const roleNames = {
+        'government': 'Government',
+        'business': 'Business',
+        'farmer': 'Farmer',
+        'urban_citizen': 'Citizen', 
+        'ngo_worker': 'NGO'
+      };
+      
+      const bgClass = roleBgColors[student.role] || 'bg-gray-50 border-gray-200';
+      const roleIcon = roleIcons[student.role] || '👤';
+      const roleName = roleNames[student.role] || 'Unknown';
+      
+      // Determine response status
+      const hasResponded = studentResponses && studentResponses[student.player_session_id];
+      let statusIcon, statusTitle, statusClass;
+      
+      if (hasResponded) {
+        statusIcon = '✅';
+        statusTitle = 'Responded';
+        statusClass = 'w-3 h-3 bg-green-500 rounded-full';
+      } else {
+        statusIcon = '⏳';
+        statusTitle = 'Thinking...';
+        statusClass = 'w-3 h-3 bg-yellow-400 rounded-full';
+      }
+      
+      return `
+        <div class="flex items-center justify-between p-3 ${bgClass} rounded-lg border-2" data-student-id="${student.player_session_id}">
+          <div class="flex items-center gap-2">
+            <div class="text-lg">${roleIcon}</div>
+            <div>
+              <div class="font-semibold text-gray-900 text-sm">${student.player_name}</div>
+              <div class="text-xs text-gray-600">${roleName}</div>
+            </div>
+          </div>
+          <div class="response-status" title="${statusTitle}">
+            <div class="${statusClass}"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    studentsListEl.innerHTML = `
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        ${studentCards}
+      </div>
+    `;
+  }
+  
+  updatePlayerCount(responsesCount, totalPlayers) {
+    console.log('[DASHBOARD] Updating player count:', responsesCount, '/', totalPlayers);
+    
+    // Update response counter display
+    const responseCounter = document.getElementById('responses-count');
+    const totalCounter = document.getElementById('total-players');
+    
+    if (responseCounter && responsesCount !== null) {
+      responseCounter.textContent = responsesCount;
+    }
+    if (totalCounter && totalPlayers !== null) {
+      totalCounter.textContent = totalPlayers;
+    }
+    
+    // Update progress indicator if exists
+    this.updateResponseProgress(responsesCount, totalPlayers);
+    
+    // Show notification for response milestones
+    if (responsesCount !== null && totalPlayers && responsesCount > 0) {
+      const percentage = Math.round((responsesCount / totalPlayers) * 100);
+      if (percentage === 100) {
+        this.showNotification('All students have responded!', 'success');
+      } else if (percentage >= 75) {
+        this.showNotification(`${percentage}% of students have responded`, 'info');
+      }
+    }
+  }
+  
+  updateRoundDisplay(currentRound) {
+    console.log('[DASHBOARD] Updating round display:', currentRound);
+    
+    // Update round indicator in dashboard
+    const roundDisplays = document.querySelectorAll('.current-round, .round-number');
+    roundDisplays.forEach(display => {
+      if (display && currentRound) {
+        display.textContent = currentRound;
+      }
+    });
+    
+    // Update phase indicator based on round
+    const phaseIndicator = document.getElementById('round-indicator');
+    if (phaseIndicator && currentRound) {
+      phaseIndicator.textContent = `Round ${currentRound} of 5`;
+    }
+    
+    // Update progress bar if exists
+    if (currentRound) {
+      const progressBar = document.querySelector('.round-progress');
+      if (progressBar) {
+        const percentage = (currentRound / 5) * 100;
+        progressBar.style.width = `${percentage}%`;
+      }
+    }
+  }
+  
+  updateResponseProgress(responsesCount, totalPlayers) {
+    if (responsesCount !== null && totalPlayers && totalPlayers > 0) {
+      const percentage = (responsesCount / totalPlayers) * 100;
+      const progressBar = document.getElementById('response-progress');
+      const progressText = document.getElementById('response-progress-text');
+      
+      if (progressBar) {
+        progressBar.style.width = `${percentage}%`;
+      }
+      if (progressText) {
+        progressText.textContent = `${responsesCount}/${totalPlayers} responses (${Math.round(percentage)}%)`;
+      }
+    }
+  }
+  
+  showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existing = document.querySelectorAll('.notification');
+    existing.forEach(el => el.remove());
+    
+    // Create new notification
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 100);
+    
+    // Remove after 4 seconds
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.remove();
+        }
+      }, 300);
+    }, 4000);
+  }
+  
+  // Timer functionality
+  async setTimerDuration() {
+    const duration = document.getElementById('timer-duration').value;
+    try {
+      this.setButtonLoading('set-timer-btn', true);
+      const data = await this.makeHttpRequest('/timer/set/', { 
+        method: 'POST',
+        body: JSON.stringify({ duration: parseInt(duration) })
+      });
+      
+      if (data.success) {
+        this.showNotification(`Timer duration set to ${duration} minutes`, 'success');
+      } else {
+        this.showNotification('Error setting timer duration: ' + data.message, 'error');
+      }
+    } catch (error) {
+      this.showNotification('Failed to set timer duration', 'error');
+    } finally {
+      this.setButtonLoading('set-timer-btn', false);
+    }
+  }
+  
+  async startTimer(duration = null) {
+    try {
+      this.setButtonLoading('start-timer-btn', true);
+      
+      const requestBody = duration ? { duration: duration } : {};
+      const data = await this.makeHttpRequest('/timer/start/', { 
+        method: 'POST',
+        body: JSON.stringify(requestBody)
+      });
+      
+      if (data.success) {
+        this.showNotification(`Timer started for ${duration || 'default'} minutes!`, 'success');
+        if (data.timer_info && data.timer_info.end_time) {
+          this.startTimerCountdown(data.timer_info.end_time);
+        } else {
+          console.error('Timer started but no end_time provided:', data);
+        }
+      } else {
+        this.showNotification('Error starting timer: ' + data.message, 'error');
+      }
+    } catch (error) {
+      this.showNotification('Failed to start timer', 'error');
+    } finally {
+      this.setButtonLoading('start-timer-btn', false);
+    }
+  }
+  
+  async fetchTimerStatus() {
+    try {
+      const data = await this.makeHttpRequest('/timer/status/', { method: 'GET' });
+      
+      if (data && data.timer_info && data.timer_info.enabled && data.timer_info.end_time && !data.timer_info.expired) {
+        this.startTimerCountdown(data.timer_info.end_time);
+      } else {
+        this.updateTimerDisplay(0, 0, false);
+      }
+    } catch (error) {
+      console.log('Error fetching timer status:', error);
+      // Set timer to default state on error
+      this.updateTimerDisplay(0, 0, false);
+    }
+  }
+  
+  startTimerCountdown(endTimeStr) {
+    const endTime = new Date(endTimeStr);
+    
+    // Validate end time
+    if (isNaN(endTime.getTime())) {
+      console.error('Invalid end time for timer:', endTimeStr);
+      this.updateTimerDisplay(0, 0, false);
+      return;
+    }
+    
+    // Clear any existing timer
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+    
+    this.timerInterval = setInterval(() => {
+      const now = new Date();
+      const timeLeft = endTime - now;
+      
+      if (timeLeft <= 0) {
+        this.updateTimerDisplay(0, 0, false);
+        clearInterval(this.timerInterval);
+        this.showNotification('Timer finished!', 'warning');
+        return;
+      }
+      
+      const minutes = Math.floor(timeLeft / 60000);
+      const seconds = Math.floor((timeLeft % 60000) / 1000);
+      
+      // Validate calculated values
+      if (isNaN(minutes) || isNaN(seconds)) {
+        console.error('Invalid timer calculation:', { timeLeft, minutes, seconds });
+        this.updateTimerDisplay(0, 0, false);
+        return;
+      }
+      
+      this.updateTimerDisplay(minutes, seconds, true);
+    }, 1000);
+  }
+  
+  updateTimerDisplay(minutes, seconds, active) {
+    const display = document.getElementById('timer-display');
+    
+    if (!display) {
+      console.warn('Timer display element not found');
+      return;
+    }
+    
+    if (active && typeof minutes === 'number' && typeof seconds === 'number') {
+      display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      display.className = 'text-2xl font-black text-blue-600';
+      display.title = 'Timer active - time remaining';
+    } else {
+      display.textContent = 'No Timer';
+      display.className = 'text-lg font-medium text-gray-400';
+      display.title = 'No active timer';
+    }
+  }
+  
+  handleTimerStarted(data) {
+    this.showNotification('Timer started by facilitator', 'info');
+    if (data.end_time) {
+      this.startTimerCountdown(data.end_time);
+    }
+  }
+  
+  handleTimerUpdate(data) {
+    if (data.end_time) {
+      this.startTimerCountdown(data.end_time);
+    } else {
+      this.updateTimerDisplay(0, 0, false);
+    }
+  }
+}
+
+// Initialize Game Manager
+const SESSION_CODE = '{{ session_code|escapejs }}';
+let gameManager;
+
+// Ensure DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, initializing with session code:', SESSION_CODE);
+  gameManager = new ClimateGameManager(SESSION_CODE);
+  
+  // Fetch timer status on page load
+  setTimeout(() => {
+    if (gameManager) {
+      gameManager.fetchTimerStatus();
+    }
+  }, 1000);
+});
+
+// Context-Aware Primary Action Handler
+function primaryAction() {
+  if (gameManager) {
+    const phaseIndicator = document.getElementById('phase-indicator');
+    const currentPhase = phaseIndicator ? phaseIndicator.textContent.toLowerCase() : 'lobby';
+    
+    console.log('Primary action triggered for phase:', currentPhase);
+    
+    if (currentPhase.includes('lobby')) {
+      gameManager.startGame();
+    } else if (currentPhase.includes('scenario') || currentPhase.includes('intro')) {
+      gameManager.advancePhase();
+    } else if (currentPhase.includes('question')) {
+      gameManager.advancePhase();
+    } else if (currentPhase.includes('results')) {
+      gameManager.advancePhase();
+    } else {
+      // Fallback to advance
+      gameManager.advancePhase();
+    }
+  }
+}
+
+function updatePrimaryActionButton(phase) {
+  const button = document.getElementById('primary-action-btn');
+  const description = document.getElementById('primary-action-description');
+  
+  if (!button || !description) return;
+  
+  const phaseConfig = {
+    'lobby': {
+      text: '🚀 Start Game',
+      description: 'Begin the climate crisis simulation',
+      color: 'from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
+    },
+    'scenario_intro': {
+      text: '📋 Begin Questions', 
+      description: 'Start the scenario questions',
+      color: 'from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700'
+    },
+    'question_phase': {
+      text: '📊 Reveal Results to Students',
+      description: 'Students will see voting breakdown and impacts',
+      color: 'from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
+    },
+    'results_feedback': {
+      text: '➡️ Next Round',
+      description: 'Continue to the next scenario',
+      color: 'from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700'
+    },
+    'game_complete': {
+      text: '🏁 Game Complete',
+      description: 'All rounds finished',
+      color: 'from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800'
+    }
+  };
+  
+  const config = phaseConfig[phase] || phaseConfig['lobby'];
+  
+  button.innerHTML = config.text;
+  button.className = `w-full bg-gradient-to-r ${config.color} text-white px-8 py-4 rounded-xl text-xl font-bold shadow-lg transition-all duration-200 transform hover:scale-105`;
+  description.textContent = config.description;
+  
+  // Disable button if game is complete
+  button.disabled = phase === 'game_complete';
+}
+
+function resetRound() {
+  if (confirm('Reset current round? This will clear all student responses.')) {
+    gameManager.showNotification('Reset functionality coming soon!', 'info');
+  }
+}
+
+function pauseGame() {
+  gameManager.showNotification('Pause feature coming soon!', 'info');
+}
+
+function copyJoinURL() {
+  const url = `${window.location.origin}/learn/climate/join/${SESSION_CODE}/`;
+  navigator.clipboard.writeText(url).then(() => {
+    gameManager.showNotification('Join URL copied to clipboard!', 'success');
+  }).catch(() => {
+    gameManager.showNotification('Failed to copy URL', 'error');
+  });
+}
+
+function downloadResults() {
+  gameManager.showNotification('Download feature coming soon!', 'info');
+}
+
+function setTimerDuration() {
+  if (gameManager) {
+    gameManager.setTimerDuration();
+  }
+}
+
+function updateTimerDuration() {
+  const select = document.getElementById('timer-duration-select');
+  const customInput = document.getElementById('custom-timer-input');
+  const timerDisplay = document.getElementById('timer-display');
+  
+  if (select.value === 'custom') {
+    customInput.classList.remove('hidden');
+    // Don't update display until custom value is set
+  } else {
+    customInput.classList.add('hidden');
+    
+    // Update timer display to show selected duration
+    const duration = parseInt(select.value);
+    if (timerDisplay && duration) {
+      timerDisplay.textContent = `${duration} minutes`;
+      timerDisplay.title = `Timer set to ${duration} minutes`;
+      timerDisplay.className = 'text-lg font-medium text-blue-600';
+    }
+  }
+}
+
+// Also update display when custom input changes
+function updateCustomTimerDisplay() {
+  const customMinutes = document.getElementById('custom-minutes');
+  const timerDisplay = document.getElementById('timer-display');
+  const customValue = parseInt(customMinutes.value);
+  
+  if (timerDisplay && customValue > 0) {
+    timerDisplay.textContent = `${customValue} minutes`;
+    timerDisplay.title = `Custom timer set to ${customValue} minutes`;
+    timerDisplay.className = 'text-lg font-medium text-blue-600';
+  }
+}
+
+function getSelectedTimerDuration() {
+  const select = document.getElementById('timer-duration-select');
+  const customMinutes = document.getElementById('custom-minutes');
+  
+  if (select.value === 'custom') {
+    return parseInt(customMinutes.value) || 10;
+  } else {
+    return parseInt(select.value);
+  }
+}
+
+function startTimer() {
+  if (gameManager) {
+    const duration = getSelectedTimerDuration();
+    gameManager.startTimer(duration);
+  }
+}
+</script>
+{% endblock %}

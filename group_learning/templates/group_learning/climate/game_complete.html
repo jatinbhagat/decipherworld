@@ -1,0 +1,748 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Climate Game Complete - {{ session.session_name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'group_learning/css/climate_game.css' %}">
+<style>
+  .completion-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .celebration-header {
+    background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .celebration-header::before {
+    content: '🎉🌍🎉🌱🎉🇮🇳🎉';
+    position: absolute;
+    top: -50px;
+    left: 0;
+    right: 0;
+    font-size: 2rem;
+    animation: float 3s ease-in-out infinite;
+    opacity: 0.3;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+  
+  .final-scores {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .score-card {
+    background: #f8f9fa;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-align: center;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  .score-card.excellent {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+  }
+  
+  .score-card.good {
+    border-color: #ffc107;
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+  }
+  
+  .score-card.warning {
+    border-color: #fd7e14;
+    background: linear-gradient(135deg, #ffe8d1, #ffd19a);
+  }
+  
+  .score-card.critical {
+    border-color: #dc3545;
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+  }
+  
+  .score-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .score-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+  }
+  
+  .score-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .score-description {
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+  
+  .journey-recap {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+  
+  .round-timeline {
+    display: flex;
+    justify-content: space-between;
+    margin: 2rem 0;
+    position: relative;
+  }
+  
+  .round-timeline::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    z-index: 1;
+  }
+  
+  .timeline-item {
+    background: white;
+    border: 3px solid #667eea;
+    border-radius: 50%;
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .timeline-item:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+  
+  .timeline-icon {
+    font-size: 1.5rem;
+  }
+  
+  .timeline-number {
+    font-size: 0.75rem;
+    font-weight: bold;
+  }
+  
+  .key-insights {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: #8b4513;
+  }
+  
+  .insight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .insight-card {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border-left: 4px solid #d2691e;
+  }
+  
+  .insight-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .role-performance {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+  
+  .role-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .role-stat-card {
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+    border-left: 4px solid;
+  }
+  
+  .role-stat-card.government { border-left-color: #3498db; }
+  .role-stat-card.business { border-left-color: #e67e22; }
+  .role-stat-card.farmer { border-left-color: #27ae60; }
+  .role-stat-card.citizen { border-left-color: #9b59b6; }
+  .role-stat-card.ngo { border-left-color: #e74c3c; }
+  
+  .next-steps {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  
+  .action-card {
+    background: #f8f9fa;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .action-card:hover {
+    border-color: #667eea;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+  }
+  
+  .action-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .reflection-questions {
+    background: #f0f9ff;
+    border: 2px solid #0ea5e9;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+  
+  .question-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+  }
+  
+  .question-item {
+    background: white;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 3px solid #0ea5e9;
+  }
+  
+  @media (max-width: 768px) {
+    .completion-container {
+      padding: 0.5rem;
+    }
+    
+    .round-timeline {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+    
+    .round-timeline::before {
+      display: none;
+    }
+    
+    .timeline-item {
+      width: 3rem;
+      height: 3rem;
+    }
+    
+    .timeline-icon {
+      font-size: 1.2rem;
+    }
+  }
+  
+  .certificate-preview {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .certificate-border {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    position: relative;
+  }
+  
+  .certificate-seal {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    padding: 0.5rem;
+    font-size: 2rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="completion-container">
+  <!-- Celebration Header -->
+  <div class="celebration-header">
+    <h1 class="text-5xl font-bold mb-4">🎉 Mission Accomplished!</h1>
+    <h2 class="text-3xl mb-4">Climate Crisis India - Complete</h2>
+    <p class="text-xl mb-4">{{ session.session_name }}</p>
+    <p class="text-lg opacity-90">You've successfully navigated 5 critical climate challenges facing India</p>
+  </div>
+
+  <!-- Final Scores -->
+  <div class="final-scores">
+    <h2 class="text-2xl font-bold mb-4 text-center">🏆 India's Final Climate Report Card</h2>
+    <p class="text-center text-gray-600 mb-4">
+      Based on your collective decisions across all 5 rounds
+    </p>
+    
+    <div class="score-grid">
+      <div class="score-card {% if session.current_climate_resilience >= 70 %}excellent{% elif session.current_climate_resilience >= 50 %}good{% elif session.current_climate_resilience >= 30 %}warning{% else %}critical{% endif %}">
+        <div class="score-icon">🛡️</div>
+        <div class="score-value">{{ session.current_climate_resilience }}%</div>
+        <div class="score-label">Climate Resilience</div>
+        <div class="score-description">
+          {% if session.current_climate_resilience >= 70 %}India is well-prepared for climate impacts
+          {% elif session.current_climate_resilience >= 50 %}Moderate climate adaptation progress
+          {% elif session.current_climate_resilience >= 30 %}Climate vulnerability remains high
+          {% else %}Critical climate adaptation needed{% endif %}
+        </div>
+      </div>
+      
+      <div class="score-card {% if session.current_gdp >= 70 %}excellent{% elif session.current_gdp >= 50 %}good{% elif session.current_gdp >= 30 %}warning{% else %}critical{% endif %}">
+        <div class="score-icon">💰</div>
+        <div class="score-value">{{ session.current_gdp }}%</div>
+        <div class="score-label">Economic Health</div>
+        <div class="score-description">
+          {% if session.current_gdp >= 70 %}Strong economic growth maintained
+          {% elif session.current_gdp >= 50 %}Balanced economic development
+          {% elif session.current_gdp >= 30 %}Economic challenges emerging
+          {% else %}Economic stress from climate policies{% endif %}
+        </div>
+      </div>
+      
+      <div class="score-card {% if session.current_public_morale >= 70 %}excellent{% elif session.current_public_morale >= 50 %}good{% elif session.current_public_morale >= 30 %}warning{% else %}critical{% endif %}">
+        <div class="score-icon">😊</div>
+        <div class="score-value">{{ session.current_public_morale }}%</div>
+        <div class="score-label">Public Morale</div>
+        <div class="score-description">
+          {% if session.current_public_morale >= 70 %}Citizens satisfied with progress
+          {% elif session.current_public_morale >= 50 %}Mixed public sentiment
+          {% elif session.current_public_morale >= 30 %}Growing public dissatisfaction
+          {% else %}Widespread public discontent{% endif %}
+        </div>
+      </div>
+      
+      <div class="score-card {% if session.current_environmental_health >= 70 %}excellent{% elif session.current_environmental_health >= 50 %}good{% elif session.current_environmental_health >= 30 %}warning{% else %}critical{% endif %}">
+        <div class="score-icon">🌱</div>
+        <div class="score-value">{{ session.current_environmental_health }}%</div>
+        <div class="score-label">Environmental Health</div>
+        <div class="score-description">
+          {% if session.current_environmental_health >= 70 %}Clean air, water, and ecosystems
+          {% elif session.current_environmental_health >= 50 %}Environmental improvements ongoing
+          {% elif session.current_environmental_health >= 30 %}Environmental degradation continues
+          {% else %}Severe environmental crisis{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Journey Recap -->
+  <div class="journey-recap">
+    <h2 class="text-2xl font-bold mb-4 text-center">🛤️ Your Climate Journey</h2>
+    <p class="text-center text-gray-600 mb-4">
+      Tap each round to see what happened
+    </p>
+    
+    <div class="round-timeline">
+      <div class="timeline-item" onclick="showRoundDetails(1)" title="Delhi Air Crisis">
+        <div class="timeline-icon">🌫️</div>
+        <div class="timeline-number">R1</div>
+      </div>
+      
+      <div class="timeline-item" onclick="showRoundDetails(2)" title="Mumbai Floods">
+        <div class="timeline-icon">🌊</div>
+        <div class="timeline-number">R2</div>
+      </div>
+      
+      <div class="timeline-item" onclick="showRoundDetails(3)" title="Chennai Water Crisis">
+        <div class="timeline-icon">💧</div>
+        <div class="timeline-number">R3</div>
+      </div>
+      
+      <div class="timeline-item" onclick="showRoundDetails(4)" title="Heat & Migration">
+        <div class="timeline-icon">🔥</div>
+        <div class="timeline-number">R4</div>
+      </div>
+      
+      <div class="timeline-item" onclick="showRoundDetails(5)" title="National Elections">
+        <div class="timeline-icon">🗳️</div>
+        <div class="timeline-number">R5</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Insights -->
+  <div class="key-insights">
+    <h2 class="text-2xl font-bold mb-4">💡 Key Insights from Your Simulation</h2>
+    
+    <div class="insight-grid">
+      <div class="insight-card">
+        <div class="insight-title">
+          <span>⚖️</span>
+          Trade-offs Are Real
+        </div>
+        <p class="text-sm">Every climate action has costs. Balancing environment, economy, and society requires tough choices with no perfect answers.</p>
+      </div>
+      
+      <div class="insight-card">
+        <div class="insight-title">
+          <span>🤝</span>
+          Collaboration Matters
+        </div>
+        <p class="text-sm">When different stakeholders work together toward common goals, India achieves better outcomes than when they work against each other.</p>
+      </div>
+      
+      <div class="insight-card">
+        <div class="insight-title">
+          <span>⏰</span>
+          Time Pressure Is Real
+        </div>
+        <p class="text-sm">Climate decisions often must be made quickly during crises. Having clear priorities and values helps guide rapid decision-making.</p>
+      </div>
+      
+      <div class="insight-card">
+        <div class="insight-title">
+          <span>🇮🇳</span>
+          Local Context Matters
+        </div>
+        <p class="text-sm">India's unique geography, population, economy, and culture shape what climate solutions will actually work in practice.</p>
+      </div>
+      
+      <div class="insight-card">
+        <div class="insight-title">
+          <span>📊</span>
+          Multiple Metrics Matter
+        </div>
+        <p class="text-sm">Success isn't just environmental - it also depends on economic health, public support, and long-term resilience.</p>
+      </div>
+      
+      <div class="insight-card">
+        <div class="insight-title">
+          <span>🔄</span>
+          Decisions Have Consequences
+        </div>
+        <p class="text-sm">Early decisions affect later options. Short-term thinking can create bigger problems down the road.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Role Performance -->
+  <div class="role-performance">
+    <h2 class="text-2xl font-bold mb-4">👥 How Each Role Performed</h2>
+    <p class="text-gray-600 mb-4">
+      See how different stakeholder groups approached India's climate challenges
+    </p>
+    
+    <div class="role-stats">
+      {% for role, stats in role_performance.items %}
+      <div class="role-stat-card {{ role }}">
+        <div class="text-xl mb-2">
+          {% if role == 'government' %}🏛️ Government
+          {% elif role == 'business' %}🏢 Business
+          {% elif role == 'farmer' %}🌾 Farmers
+          {% elif role == 'urban_citizen' %}🏙️ Citizens
+          {% elif role == 'ngo_worker' %}🤝 NGOs
+          {% endif %}
+        </div>
+        <div class="text-sm text-gray-600">
+          Most chosen: {{ stats.top_choice }}<br>
+          Consistency: {{ stats.consistency }}%<br>
+          {{ stats.player_count }} students
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Certificate Preview -->
+  <div class="certificate-preview">
+    <div class="certificate-border">
+      <div class="certificate-seal">🏆</div>
+      <h3 class="text-2xl font-bold mb-2">Certificate of Completion</h3>
+      <p class="mb-4">This certifies that the students of</p>
+      <h4 class="text-xl font-bold mb-4">{{ session.session_name }}</h4>
+      <p class="mb-4">have successfully completed the</p>
+      <h4 class="text-lg font-bold mb-4">Climate Crisis India Simulation</h4>
+      <p class="text-sm opacity-80">Understanding the complexities of climate action through collaborative decision-making</p>
+    </div>
+  </div>
+
+  <!-- Reflection Questions -->
+  <div class="reflection-questions">
+    <h2 class="text-xl font-bold mb-4">🤔 Final Reflection Questions</h2>
+    <p class="text-gray-700 mb-4">
+      Discuss these questions as a class to deepen your understanding:
+    </p>
+    
+    <ul class="question-list">
+      <li class="question-item">
+        <strong>1. Perspective Taking:</strong> Which role's perspective was most different from your own views? What did you learn from thinking like that stakeholder?
+      </li>
+      
+      <li class="question-item">
+        <strong>2. Hardest Decisions:</strong> Which round presented the most difficult trade-offs? Why was it challenging to balance competing priorities?
+      </li>
+      
+      <li class="question-item">
+        <strong>3. Collaboration vs Conflict:</strong> When did different roles work well together? When did they conflict? What does this teach us about real-world climate negotiations?
+      </li>
+      
+      <li class="question-item">
+        <strong>4. Real-World Application:</strong> How do these simulated challenges reflect actual climate issues India faces today? What examples from news or current events come to mind?
+      </li>
+      
+      <li class="question-item">
+        <strong>5. Solutions and Innovation:</strong> What creative solutions emerged that you hadn't considered before? How might technology, policy, or behavior change help address these challenges?
+      </li>
+      
+      <li class="question-item">
+        <strong>6. Your Role as Citizens:</strong> As young Indians, what role can you play in addressing climate change? What actions feel most meaningful and achievable?
+      </li>
+    </ul>
+  </div>
+
+  <!-- Next Steps -->
+  <div class="next-steps">
+    <h2 class="text-2xl font-bold mb-4">🚀 Continue Your Climate Journey</h2>
+    <p class="text-gray-600 mb-4">
+      This simulation is just the beginning. Here's how to keep learning and taking action:
+    </p>
+    
+    <div class="action-grid">
+      <div class="action-card" onclick="window.open('https://www.climatecoalition.in/', '_blank')">
+        <div class="action-icon">🌍</div>
+        <h3 class="font-bold mb-2">Learn More</h3>
+        <p class="text-sm">Explore India Climate Portal for the latest climate science, policy, and solutions</p>
+      </div>
+      
+      <div class="action-card" onclick="showActionIdeas()">
+        <div class="action-icon">🎯</div>
+        <h3 class="font-bold mb-2">Take Action</h3>
+        <p class="text-sm">Discover concrete steps you can take as students to address climate change</p>
+      </div>
+      
+      <div class="action-card" onclick="showGameMenu()">
+        <div class="action-icon">🎮</div>
+        <h3 class="font-bold mb-2">Play Again</h3>
+        <p class="text-sm">Try the simulation again with different strategies or explore other DecipherWorld games</p>
+      </div>
+      
+      <div class="action-card" onclick="shareExperience()">
+        <div class="action-icon">📱</div>
+        <h3 class="font-bold mb-2">Share Experience</h3>
+        <p class="text-sm">Tell others about what you learned and encourage them to try the simulation</p>
+      </div>
+    </div>
+    
+    <div class="mt-6">
+      <a href="{% url 'group_learning:climate_game_home' %}" class="btn btn-primary btn-lg">
+        🏠 Return to Climate Game Home
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Round Details Modal -->
+<dialog id="round-details-modal" class="modal">
+  <div class="modal-box max-w-2xl">
+    <h3 class="font-bold text-lg mb-4" id="modal-title">Round Details</h3>
+    <div id="modal-content">
+      <!-- Content will be dynamically loaded -->
+    </div>
+    <div class="modal-action">
+      <button class="btn" onclick="document.getElementById('round-details-modal').close()">Close</button>
+    </div>
+  </div>
+</dialog>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const SESSION_CODE = '{{ session.session_code }}';
+
+const roundData = {
+  1: {
+    title: '🌫️ Round 1: Delhi Air Crisis',
+    description: 'AQI hits 500+. Schools close, hospitals overflow. Emergency measures needed.',
+    outcome: 'Your decisions shaped how India balanced immediate public health with long-term economic impacts.'
+  },
+  2: {
+    title: '🌊 Round 2: Mumbai Floods',
+    description: 'Financial capital underwater. Infrastructure collapses, markets panic.',
+    outcome: 'Your choices determined how India invested in flood protection versus emergency response.'
+  },
+  3: {
+    title: '💧 Round 3: Chennai Water Crisis', 
+    description: 'Day Zero approaches. Reservoirs empty, groundwater depleted.',
+    outcome: 'Your decisions affected how water was allocated between agriculture, industry, and urban needs.'
+  },
+  4: {
+    title: '🔥 Round 4: Heat & Migration',
+    description: '50°C temperatures trigger mass migration from rural to urban areas.',
+    outcome: 'Your choices shaped how India managed climate migration and rural adaptation.'
+  },
+  5: {
+    title: '🗳️ Round 5: National Elections',
+    description: 'Climate vs economy debate dominates campaign. Voters must choose.',
+    outcome: 'Your votes determined India\'s long-term climate policy direction and political priorities.'
+  }
+};
+
+function showRoundDetails(roundNumber) {
+  const round = roundData[roundNumber];
+  if (!round) return;
+  
+  document.getElementById('modal-title').textContent = round.title;
+  document.getElementById('modal-content').innerHTML = `
+    <div class="space-y-4">
+      <div class="bg-blue-50 p-4 rounded-lg">
+        <h4 class="font-semibold mb-2">The Challenge:</h4>
+        <p>${round.description}</p>
+      </div>
+      <div class="bg-green-50 p-4 rounded-lg">
+        <h4 class="font-semibold mb-2">Your Impact:</h4>
+        <p>${round.outcome}</p>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('round-details-modal').showModal();
+}
+
+function showActionIdeas() {
+  alert('Action ideas:\n\n• Reduce energy use at home and school\n• Advocate for renewable energy projects\n• Support sustainable transportation\n• Engage in tree planting and conservation\n• Stay informed about climate policy\n• Vote when you\'re eligible\n• Influence family and friends');
+}
+
+function showGameMenu() {
+  if (confirm('Return to DecipherWorld game menu?')) {
+    window.location.href = '/games/';
+  }
+}
+
+function shareExperience() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'Climate Crisis India - Educational Game',
+      text: 'I just completed an amazing climate simulation game! Try DecipherWorld\'s Climate Crisis India to experience the tough decisions facing our country.',
+      url: window.location.origin + '{% url "group_learning:climate_game_home" %}'
+    });
+  } else {
+    // Fallback for browsers without Web Share API
+    const url = window.location.origin + '{% url "group_learning:climate_game_home" %}';
+    navigator.clipboard.writeText(url).then(() => {
+      alert('Game URL copied to clipboard! Share it with others to let them try the Climate Crisis India simulation.');
+    });
+  }
+}
+
+// Animate score cards on load
+document.addEventListener('DOMContentLoaded', function() {
+  const scoreCards = document.querySelectorAll('.score-card');
+  scoreCards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+      card.style.transition = 'all 0.5s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, index * 200 + 500);
+  });
+  
+  // Add celebration effects
+  setTimeout(() => {
+    document.querySelectorAll('.score-card.excellent, .score-card.good').forEach(card => {
+      card.style.animation = 'pulse 2s infinite';
+    });
+  }, 2000);
+});
+
+// Add some fun interactions
+document.querySelectorAll('.action-card').forEach(card => {
+  card.addEventListener('mouseenter', function() {
+    this.style.transform = 'translateY(-5px) scale(1.02)';
+  });
+  
+  card.addEventListener('mouseleave', function() {
+    this.style.transform = 'translateY(0) scale(1)';
+  });
+});
+
+// Debug info
+console.log('Climate Game Complete - Session:', SESSION_CODE);
+console.log('Final Scores:', {
+  climate_resilience: {{ session.current_climate_resilience }},
+  gdp: {{ session.current_gdp }},
+  public_morale: {{ session.current_public_morale }},
+  environmental_health: {{ session.current_environmental_health }}
+});
+</script>
+{% endblock %}

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ scenario.title }} - Decision Impact Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+{% load static %}
+<link rel="stylesheet" href="{% static 'group_learning/css/climate_game.css' %}">
+<style>
+  .results-container {
+    width: 100vw;
+    min-height: 100vh;
+    margin: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .results-header {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .results-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)" /></svg>');
+    z-index: 1;
+  }
+  
+  .results-content {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .your-choice-card {
+    background: #d1fae5;
+    border: 3px solid #10b981;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+  
+  .your-choice-badge {
+    position: absolute;
+    top: -10px;
+    left: 2rem;
+    background: #10b981;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+  
+  .option-analysis-card {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .option-analysis-card.selected {
+    border-color: #10b981;
+    background: #f0fdf4;
+  }
+  
+  .option-analysis-card.alternative {
+    background: #f9fafb;
+    border-color: #d1d5db;
+  }
+  
+  .option-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  
+  .option-letter {
+    background: #6b7280;
+    color: white;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  
+  .option-analysis-card.selected .option-letter {
+    background: #10b981;
+  }
+  
+  .impact-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .impact-category {
+    background: #f8fafc;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid;
+  }
+  
+  .impact-environmental {
+    border-left-color: #10b981;
+  }
+  
+  .impact-economic {
+    border-left-color: #f59e0b;
+  }
+  
+  .impact-social {
+    border-left-color: #8b5cf6;
+  }
+  
+  .meter-impacts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  
+  .meter-impact-badge {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 2rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  
+  .continue-section {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-top: 2rem;
+  }
+  
+  .continue-button {
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .learning-insight {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  @media (max-width: 768px) {
+    .results-container {
+      padding: 0.5rem;
+    }
+    
+    .results-header {
+      padding: 1.5rem 1rem;
+    }
+    
+    .option-analysis-card {
+      padding: 1.5rem 1rem;
+    }
+  }
+</style>
+</head>
+<body class="bg-gradient-to-br from-green-50 via-emerald-50 to-blue-50 min-h-screen">
+<div class="results-container">
+  <!-- Results Header -->
+  <div class="results-header">
+    <div class="results-content">
+      <div class="flex flex-col md:flex-row justify-between items-start mb-4">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold mb-2">📊 Decision Impact Analysis</h1>
+          <p class="text-lg opacity-90">{{ scenario.title }} - Round {{ session.current_round }}</p>
+        </div>
+        <div class="text-right mt-4 md:mt-0">
+          <div class="text-sm opacity-80">Your Role</div>
+          <div class="text-xl font-bold">
+            {% if assigned_role == 'government' %}🏛️ Government Official
+            {% elif assigned_role == 'business' %}🏢 Business Owner
+            {% elif assigned_role == 'farmer' %}🌾 Farmer
+            {% elif assigned_role == 'urban_citizen' %}🏙️ Urban Citizen
+            {% elif assigned_role == 'ngo_worker' %}🤝 NGO Worker
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <p class="text-lg">Understanding the consequences of your choice and alternative scenarios</p>
+    </div>
+  </div>
+
+  <!-- Learning Insight -->
+  <div class="learning-insight">
+    <h2 class="text-xl font-bold mb-3 flex items-center gap-2">
+      <span class="text-2xl">💡</span> Key Learning
+    </h2>
+    <p class="text-gray-800">Each decision in climate policy creates ripple effects across environmental, economic, and social dimensions. Understanding these trade-offs helps you make more informed choices as a stakeholder in India's climate future.</p>
+  </div>
+
+  <!-- Your Choice Analysis -->
+  {% for analysis in impact_analysis %}
+    {% if analysis.is_selected %}
+    <div class="your-choice-card">
+      <div class="your-choice-badge">✅ Your Choice</div>
+      
+      <div class="option-header">
+        <div class="option-letter">{{ analysis.option.option_letter|upper }}</div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-800">{{ analysis.option.option_text }}</h3>
+          <p class="text-gray-600 mt-1">{{ analysis.option.immediate_consequence }}</p>
+        </div>
+      </div>
+
+      <div class="impact-section">
+        <h4 class="text-lg font-bold mb-3 text-gray-800">🎯 Why This Matters - Detailed Impact Analysis</h4>
+        
+        <div class="impact-category impact-environmental">
+          <h5 class="font-bold text-green-700 mb-2">🌍 Environmental Impact</h5>
+          <p class="text-gray-700">{{ analysis.reasoning.environmental }}</p>
+        </div>
+        
+        <div class="impact-category impact-economic">
+          <h5 class="font-bold text-yellow-700 mb-2">💰 Economic Impact</h5>
+          <p class="text-gray-700">{{ analysis.reasoning.economic }}</p>
+        </div>
+        
+        <div class="impact-category impact-social">
+          <h5 class="font-bold text-purple-700 mb-2">👥 Social Impact</h5>
+          <p class="text-gray-700">{{ analysis.reasoning.social }}</p>
+        </div>
+        
+        <div class="meter-impacts">
+          <h5 class="w-full font-bold text-gray-800 mb-2">📈 Meter Changes:</h5>
+          {% for impact in analysis.reasoning.meter_impacts %}
+            <span class="meter-impact-badge">{{ impact }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  {% endfor %}
+
+  <!-- Alternative Options Analysis -->
+  <div class="mb-4">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">🤔 What Would Have Happened with Other Choices?</h2>
+    <p class="text-gray-600 mb-6">Learning from alternative scenarios helps you understand the full range of possibilities and their consequences.</p>
+  </div>
+
+  {% for analysis in impact_analysis %}
+    {% if not analysis.is_selected %}
+    <div class="option-analysis-card alternative">
+      <div class="option-header">
+        <div class="option-letter">{{ analysis.option.option_letter|upper }}</div>
+        <div>
+          <h3 class="text-lg font-bold text-gray-800">{{ analysis.option.option_text }}</h3>
+          <p class="text-gray-600 mt-1">{{ analysis.option.immediate_consequence }}</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="impact-category impact-environmental">
+          <h5 class="font-bold text-green-700 mb-2">🌍 Environmental</h5>
+          <p class="text-gray-700 text-sm">{{ analysis.reasoning.environmental }}</p>
+        </div>
+        
+        <div class="impact-category impact-economic">
+          <h5 class="font-bold text-yellow-700 mb-2">💰 Economic</h5>
+          <p class="text-gray-700 text-sm">{{ analysis.reasoning.economic }}</p>
+        </div>
+        
+        <div class="impact-category impact-social">
+          <h5 class="font-bold text-purple-700 mb-2">👥 Social</h5>
+          <p class="text-gray-700 text-sm">{{ analysis.reasoning.social }}</p>
+        </div>
+      </div>
+      
+      <div class="meter-impacts">
+        {% for impact in analysis.reasoning.meter_impacts %}
+          <span class="meter-impact-badge">{{ impact }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  {% endfor %}
+
+  <!-- Continue Section -->
+  <div class="continue-section">
+    <h3 class="text-xl font-bold mb-4">Ready to Continue?</h3>
+    <p class="text-gray-600 mb-6">You've learned about the consequences of your decision. Now wait for other students to complete their analysis, then see how all decisions combine to shape India's climate future.</p>
+    
+    <button onclick="continueToNextPhase()" class="btn btn-success continue-button" id="continue-btn">
+      🚀 Continue to Group Results
+    </button>
+    
+    <div class="mt-4 text-sm text-gray-500">
+      <p>💭 Reflect: How would you approach similar decisions in real life?</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const SESSION_CODE = '{{ session.session_code|default:"" }}';
+let pollInterval;
+
+function continueToNextPhase() {
+  const btn = document.getElementById('continue-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading loading-spinner"></span> Waiting for others...';
+  
+  // Start polling for phase changes
+  startPolling();
+}
+
+function startPolling() {
+  pollInterval = setInterval(() => {
+    if (!SESSION_CODE) {
+      console.warn('SESSION_CODE is empty, skipping polling');
+      return;
+    }
+    
+    fetch(`/learn/api/climate/${SESSION_CODE}/status/`)
+      .then(response => response.json())
+      .then(data => {
+        // Check for phase change - if we're no longer in question phase, redirect to game play
+        if (data.current_phase !== 'question_phase') {
+          clearInterval(pollInterval);
+          window.location.href = `/learn/climate/${SESSION_CODE}/play/`;
+        }
+      })
+      .catch(error => {
+        console.error('Error polling game state:', error);
+      });
+  }, 3000);
+}
+
+// Auto-start polling if session is not in question phase
+document.addEventListener('DOMContentLoaded', function() {
+  // Check current phase and auto-continue if appropriate
+  setTimeout(() => {
+    if (!pollInterval) {
+      startPolling();
+    }
+  }, 5000); // Give student time to read before auto-polling
+});
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', function() {
+  if (pollInterval) clearInterval(pollInterval);
+});
+</script>
+</body>
+</html>
