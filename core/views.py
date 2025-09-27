@@ -621,7 +621,13 @@ def run_production_migrations(request):
         except Exception as conflict_error:
             pass  # Continue even if conflict fix fails
         
-        # Run migrations
+        # Run core migrations specifically (for Course model fix)
+        try:
+            execute_from_command_line(['manage.py', 'migrate', 'core', '--verbosity=2'])
+        except Exception as core_error:
+            pass  # Continue even if core migration fails
+        
+        # Run all migrations
         execute_from_command_line(['manage.py', 'migrate', '--verbosity=2'])
         
         # Restore stdout/stderr
