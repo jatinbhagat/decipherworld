@@ -2022,15 +2022,13 @@ class ProductionSetupAPI(View):
                     ).first()
                     
                     if not climate_game:
-                        # Create the climate game
+                        # Create the climate game (base Game fields first)
                         climate_game = ClimateGame.objects.create(
                             title='Climate Crisis India – Monsoon Mayhem',
                             description='Students take on different roles to make decisions during India\'s climate crises. Experience real trade-offs between economic growth, environmental protection, and social needs.',
                             game_type='climate_simulation',
                             is_active=True,
-                            recommended_players=25,
-                            session_duration_minutes=45,
-                            # Climate-specific meters
+                            # Climate-specific meters (these are the only fields ClimateGame adds)
                             climate_resilience_meter=50,
                             gdp_meter=50,
                             public_morale_meter=50,
