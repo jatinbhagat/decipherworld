@@ -16,7 +16,12 @@ class HomeView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['courses'] = Course.objects.all()[:4]
+        try:
+            context['courses'] = Course.objects.filter(is_active=True)[:4]
+        except Exception as e:
+            # Fallback if Course queries fail
+            context['courses'] = []
+            print(f"Error loading courses: {e}")
         return context
 
 class CoursesView(ListView):
@@ -112,7 +117,12 @@ def about(request):
 
 def courses(request):
     """Course offerings with detailed descriptions"""
-    courses = Course.objects.filter(is_active=True)
+    try:
+        courses = Course.objects.filter(is_active=True)
+    except Exception as e:
+        # Fallback if Course queries fail
+        courses = []
+        print(f"Error loading courses: {e}")
     return render(request, 'home/courses.html', {'courses': courses})
 
 def teachers(request):

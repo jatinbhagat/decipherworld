@@ -215,6 +215,7 @@ COUNTRY_CODES = [
 class Course(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
+    is_active = models.BooleanField(default=True, help_text="Whether this course is actively offered")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
