@@ -3,85 +3,91 @@ from django.utils import timezone
 
 
 def simple_sitemap(request):
-    """Enhanced sitemap with SEO-friendly URLs for Indian educational market"""
+    """Enhanced sitemap with SEO best practices for DecipherWorld educational platform"""
     
     scheme = 'https' if request.is_secure() else 'http'
     domain = request.get_host()
     base_url = f"{scheme}://{domain}"
-    # Use Indian timezone for timestamps
+    # Use timezone-aware timestamp
     current_date = timezone.now().strftime('%Y-%m-%d')
     
-    # Essential URLs with SEO priorities for Indian education
+    # CORE EDUCATIONAL PAGES (Highest Priority - 0.9-1.0)
     urls = [
-        # Core pages (highest priority)
-        ('', '1.0', 'daily'),
+        ('', '1.0', 'weekly'),  # Homepage - realistic update frequency
+        ('/courses/', '0.9', 'weekly'),  # Primary educational content
+        ('/teachers/', '0.9', 'weekly'),  # AI teacher training - high value
         ('/about/', '0.8', 'monthly'),
-        ('/courses/', '0.9', 'weekly'),
-        ('/teachers/', '0.9', 'weekly'),
-        ('/schools/', '0.8', 'weekly'),
-        ('/school-presentation/', '0.7', 'monthly'),
+        ('/schools/', '0.8', 'monthly'),
         ('/contact/', '0.8', 'monthly'),
+        ('/school-presentation/', '0.7', 'monthly'),
         ('/gallery/', '0.7', 'monthly'),
         
-        # Games Hub (high discoverability for Indian students)
-        ('/games/', '0.9', 'weekly'),
+        # GAMES HUB & MAIN CATEGORIES (High Priority - 0.8-0.9)
+        ('/games/', '0.9', 'weekly'),  # Main games portal
         
-        # Individual Games - AI Learning (CBSE/ICSE focused)
-        ('/games/ai-learning/', '0.8', 'weekly'),
-        ('/games/ai-learning/robotic-buddy/', '0.8', 'weekly'),
-        ('/games/ai-learning/simple-game/', '0.7', 'weekly'),
-        ('/games/ai-learning/drag-drop-game/', '0.7', 'weekly'),
+        # INDIVIDUAL GAME CATEGORIES (High-Medium Priority - 0.8)
+        ('/games/ai-learning/', '0.8', 'monthly'),  # CBSE/ICSE AI curriculum
+        ('/games/cyber-security/', '0.8', 'monthly'),  # Digital literacy
+        ('/games/financial-literacy/', '0.8', 'monthly'),  # Life skills
+        ('/games/constitution-basic/', '0.8', 'monthly'),  # Civics education
+        ('/games/constitution-advanced/', '0.8', 'monthly'),
+        ('/games/entrepreneurship/', '0.8', 'monthly'),
+        ('/games/group-learning/', '0.8', 'monthly'),  # Collaborative learning
         
-        # Individual Games - Other Categories
-        ('/games/cyber-security/', '0.8', 'weekly'),
-        ('/games/financial-literacy/', '0.8', 'weekly'),
+        # SPECIFIC GAME EXPERIENCES (Medium Priority - 0.7)
+        ('/games/ai-learning/robotic-buddy/', '0.7', 'monthly'),
+        ('/games/ai-learning/simple-game/', '0.7', 'monthly'),
+        ('/games/ai-learning/drag-drop-game/', '0.7', 'monthly'),
+        ('/games/group-learning/monsoon-mayhem/', '0.7', 'monthly'),
         
-        # Team Games (Constitutional & Environmental Education)
-        ('/games/constitution-basic/', '0.8', 'weekly'),
-        ('/games/constitution-advanced/', '0.8', 'weekly'),
-        ('/games/entrepreneurship/', '0.8', 'weekly'),
-        ('/games/group-learning/', '0.7', 'weekly'),
-        ('/games/group-learning/monsoon-mayhem/', '0.7', 'weekly'),
-        
-        # Future categories
+        # FUTURE CATEGORIES (Lower Priority - 0.6)
         ('/games/stem-challenges/', '0.6', 'monthly'),
         ('/games/language-adventures/', '0.6', 'monthly'),
         
-        # Cyber City Security Games (Individual game pages)
-        ('/cyber-city/', '0.8', 'weekly'),
+        # CYBER CITY SECURITY GAMES (Medium Priority - 0.7-0.8)
+        ('/cyber-city/', '0.8', 'monthly'),
         
-        # AI Learning Game Pages (Robotic Buddy)
-        ('/buddy/', '0.8', 'weekly'),
-        ('/buddy/activities/', '0.7', 'weekly'),
-        ('/buddy/create-buddy/', '0.7', 'weekly'),
-        ('/buddy/my-buddy/', '0.6', 'weekly'),
-        ('/buddy/classification-game/', '0.7', 'weekly'),
-        ('/buddy/simple-game/', '0.7', 'weekly'),
-        ('/buddy/drag-drop-game/', '0.7', 'weekly'),
-        ('/buddy/emotion-game/', '0.7', 'weekly'),
-        ('/buddy/testing-phase/', '0.6', 'weekly'),
-        ('/buddy/learning-explanation/', '0.6', 'weekly'),
-        ('/buddy/buddy-stats/', '0.5', 'monthly'),
-        ('/buddy/achievements/', '0.5', 'monthly'),
+        # AI LEARNING GAME PAGES - Robotic Buddy (Medium Priority - 0.6-0.7)
+        ('/buddy/', '0.7', 'monthly'),
+        ('/buddy/activities/', '0.6', 'monthly'),
+        ('/buddy/create-buddy/', '0.6', 'monthly'),
+        ('/buddy/my-buddy/', '0.5', 'monthly'),
+        ('/buddy/classification-game/', '0.6', 'monthly'),
+        ('/buddy/simple-game/', '0.6', 'monthly'),
+        ('/buddy/drag-drop-game/', '0.6', 'monthly'),
+        ('/buddy/emotion-game/', '0.6', 'monthly'),
+        ('/buddy/testing-phase/', '0.5', 'monthly'),
+        ('/buddy/learning-explanation/', '0.5', 'monthly'),
+        ('/buddy/buddy-stats/', '0.4', 'yearly'),
+        ('/buddy/achievements/', '0.4', 'yearly'),
         
-        # Group Learning Platform (excluding Climate Crisis URLs as requested)
-        ('/learn/', '0.7', 'weekly'),
-        ('/learn/constitution/start/', '0.7', 'weekly'),
+        # GROUP LEARNING PLATFORM (Medium Priority - 0.7-0.8)
+        ('/learn/', '0.8', 'monthly'),  # Main group learning hub
+        ('/learn/constitution/start/', '0.7', 'monthly'),
+        
+        # CLIMATE CRISIS INDIA GAME (Medium-High Priority - 0.7-0.8)
+        # Recently fixed and deployed - important for environmental education
+        ('/learn/climate/', '0.8', 'monthly'),  # Climate game homepage
+        ('/learn/climate/create/', '0.7', 'monthly'),  # Session creation
     ]
     
-    # Add dynamic Group Learning game pages (excluding Climate Crisis games)
+    # DYNAMIC GROUP LEARNING GAMES (Medium Priority - 0.6-0.7)
+    # Include all active games including Climate Crisis games
     try:
         from group_learning.models import Game
-        # Filter out climate-related games as requested
-        games = Game.objects.filter(is_active=True).exclude(
-            name__icontains='climate'
-        ).exclude(
-            name__icontains='crisis'
-        )
+        games = Game.objects.filter(is_active=True)
         for game in games:
             game_url = f'/learn/game/{game.id}/'
+            # Use actual update time if available for better SEO
             game_date = game.updated_at.strftime('%Y-%m-%d') if hasattr(game, 'updated_at') else current_date
-            urls.append((game_url, '0.7', 'weekly'))
+            
+            # Higher priority for climate/environmental education games
+            if any(keyword in game.name.lower() for keyword in ['climate', 'environment', 'crisis', 'monsoon']):
+                priority = '0.7'  # Environmental education is important
+            else:
+                priority = '0.6'  # Other educational games
+                
+            urls.append((game_url, priority, 'monthly'))
     except Exception:
         # Continue without dynamic URLs if there's an error (e.g., in testing)
         pass
