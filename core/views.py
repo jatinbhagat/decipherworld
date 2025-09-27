@@ -12,6 +12,10 @@ import io
 from .models import DemoRequest, Course, SchoolDemoRequest, GameReview
 from .forms import DemoRequestForm, SchoolDemoRequestForm
 
+def simple_home_test(request):
+    """Simple test view for debugging"""
+    return JsonResponse({'status': 'success', 'message': 'Simple home test working'})
+
 class HomeView(TemplateView):
     """Homepage with hero section and product highlights"""
     template_name = 'home/index.html'
@@ -19,11 +23,18 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
+            # Test database connection first
+            course_count = Course.objects.count()
+            print(f"Total courses in database: {course_count}")
+            
             context['courses'] = Course.objects.filter(is_active=True)[:4]
+            print(f"Active courses loaded: {len(context['courses'])}")
         except Exception as e:
             # Fallback if Course queries fail
             context['courses'] = []
             print(f"Error loading courses: {e}")
+            import traceback
+            print(f"Full traceback: {traceback.format_exc()}")
         return context
 
 class CoursesView(ListView):
@@ -286,6 +297,60 @@ def fix_migration_conflicts(request):
         return JsonResponse({
             'status': 'error',
             'message': f'Failed to fix migration conflicts: {str(e)}'
+        }, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def create_sample_courses(request):
+    """Create sample Course objects for testing"""
+    try:
+        # Check if courses already exist
+        existing_count = Course.objects.count()
+        if existing_count > 0:
+            return JsonResponse({
+                'status': 'info',
+                'message': f'Courses already exist: {existing_count} courses found'
+            })
+        
+        # Create sample courses
+        courses_data = [
+            {
+                'title': 'AI & Machine Learning for Students',
+                'description': 'Learn artificial intelligence and machine learning concepts through interactive games and projects.',
+                'is_active': True
+            },
+            {
+                'title': 'Financial Literacy & Entrepreneurship',
+                'description': 'Master personal finance, investing, and entrepreneurship skills for the 21st century.',
+                'is_active': True
+            },
+            {
+                'title': 'Climate Change & Sustainability',
+                'description': 'Understand climate science and develop solutions for environmental challenges.',
+                'is_active': True
+            },
+            {
+                'title': 'Digital Citizenship & Ethics',
+                'description': 'Navigate the digital world responsibly with ethics, privacy, and security awareness.',
+                'is_active': True
+            }
+        ]
+        
+        created_courses = []
+        for course_data in courses_data:
+            course = Course.objects.create(**course_data)
+            created_courses.append(course.title)
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': f'Created {len(created_courses)} sample courses',
+            'courses': created_courses
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to create courses: {str(e)}'
         }, status=500)
 
 @csrf_exempt
