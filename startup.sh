@@ -34,7 +34,7 @@ python manage.py create_advanced_learning_modules --settings=decipherworld.setti
 echo "📁 Collecting static files..."
 python manage.py collectstatic --noinput --settings=decipherworld.settings.production
 
-echo "✅ Startup tasks completed. Starting ASGI server..."
+echo "✅ Startup tasks completed. Starting ASGI server with Course model fix..."
 
 # Start Daphne ASGI server for WebSocket support
 # Azure App Service will set PORT environment variable
