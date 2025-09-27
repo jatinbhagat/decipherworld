@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Azure App Service runtime script for Django
-echo "🚀 Starting Decipherworld Django application..."
+# Azure App Service startup script for Django with ASGI/WebSocket support
+echo "🚀 Starting Decipherworld Django application with WebSocket support..."
 
 # Set Django settings module for Azure
 export DJANGO_SETTINGS_MODULE=decipherworld.settings.production
@@ -30,4 +30,13 @@ python manage.py create_advanced_learning_modules --settings=decipherworld.setti
 echo "📁 Collecting static files..."
 python manage.py collectstatic --noinput --settings=decipherworld.settings.production
 
-echo "✅ Startup tasks completed. Application ready."
+echo "✅ Startup tasks completed. Starting ASGI server..."
+
+# Start Daphne ASGI server for WebSocket support
+# Azure App Service will set PORT environment variable
+exec daphne \
+    --bind 0.0.0.0 \
+    --port ${PORT:-8000} \
+    --access-log - \
+    --proxy-headers \
+    decipherworld.asgi:application
