@@ -2018,17 +2018,26 @@ class ProductionSetupAPI(View):
                     # Check if climate game already exists
                     climate_game = Game.objects.filter(
                         title='Climate Crisis India – Monsoon Mayhem',
-                        game_type='climate_simulation'
+                        game_type='environmental'
                     ).first()
                     
                     if not climate_game:
-                        # Create the climate game (base Game fields first)
+                        # Create the climate game with all required base Game fields
                         climate_game = ClimateGame.objects.create(
                             title='Climate Crisis India – Monsoon Mayhem',
+                            subtitle='Role-playing simulation for climate education',
                             description='Students take on different roles to make decisions during India\'s climate crises. Experience real trade-offs between economic growth, environmental protection, and social needs.',
-                            game_type='climate_simulation',
+                            context='India faces mounting climate challenges including air pollution, floods, droughts, and extreme weather. Students explore policy decisions from multiple stakeholder perspectives.',
+                            game_type='environmental',  # Use existing environmental game type
                             is_active=True,
-                            # Climate-specific meters (these are the only fields ClimateGame adds)
+                            # Base Game configuration fields (required)
+                            min_players=5,
+                            max_players=35,
+                            estimated_duration=45,  # 45 minutes
+                            target_age_min=12,      # Grade 7+
+                            target_age_max=18,      # Grade 12
+                            difficulty_level=2,     # Intermediate
+                            # Climate-specific meters
                             climate_resilience_meter=50,
                             gdp_meter=50,
                             public_morale_meter=50,
