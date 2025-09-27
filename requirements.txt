@@ -1,31 +1,32 @@
 # Core Django
-Django>=4.2
-gunicorn
+Django==4.2.16
+gunicorn==21.2.0
 
 # Database
-psycopg2-binary
-dj-database-url
+psycopg2-binary==2.9.9
+dj-database-url==2.1.0
 
 # Configuration
-python-decouple
+python-decouple==3.8
 
 # Static Files
-whitenoise
+whitenoise==6.6.0
 
 # CORS (for API access if needed)
-django-cors-headers
+django-cors-headers==4.3.1
 
 # HTTP Requests (if needed by games)
-requests
+requests==2.31.0
 
 # Caching
-redis>=4.5.0
-django-redis>=5.2.0
+redis==5.0.1
+django-redis==5.4.0
 
 # Real-time WebSocket support
-channels>=4.0.0
-channels-redis>=4.1.0
-daphne>=4.0.0
+channels==4.0.0
+channels-redis==4.2.0
+daphne==4.1.0
 
-# Performance monitoring (optional)
-# django-debug-toolbar  # For development only
+# ASGI dependencies
+asgiref==3.7.2
+twisted==23.10.0

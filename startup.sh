@@ -1,14 +1,10 @@
 #!/bin/bash
 
-# Azure App Service startup script for Django
+# Azure App Service runtime script for Django
 echo "🚀 Starting Decipherworld Django application..."
 
 # Set Django settings module for Azure
 export DJANGO_SETTINGS_MODULE=decipherworld.settings.production
-
-# Install dependencies
-echo "📦 Installing dependencies..."
-pip install -r requirements.txt
 
 # Run database migrations (essential for Django)
 echo "🗄️ Running database migrations..."
@@ -16,7 +12,7 @@ python manage.py migrate --noinput --settings=decipherworld.settings.production 
 
 # Fix missing ConstitutionOption columns (production fix)
 echo "🔧 Fixing Constitution game columns..."
-python manage.py fix_constitution_columns --settings=decipherworld.settings.production
+python manage.py fix_constitution_columns --settings=decipherworld.settings.production || echo "⚠️ Constitution columns fix failed, continuing..."
 
 # Populate learning modules for Constitution game
 echo "📚 Populating Constitution game learning modules..."
@@ -34,11 +30,4 @@ python manage.py create_advanced_learning_modules --settings=decipherworld.setti
 echo "📁 Collecting static files..."
 python manage.py collectstatic --noinput --settings=decipherworld.settings.production
 
-# Start Daphne ASGI server for WebSocket support
-echo "🌐 Starting Daphne ASGI server with WebSocket support..."
-exec daphne \
-    --bind 0.0.0.0 \
-    --port ${PORT:-8000} \
-    --access-log - \
-    --proxy-headers \
-    decipherworld.asgi:application
+echo "✅ Startup tasks completed. Application ready."

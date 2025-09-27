@@ -59,3 +59,4 @@ jobs:
           app-name: 'decipherworld-app'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4DC0B73207804061912E883CA4923B56 }}
+          startup-command: 'daphne --bind 0.0.0.0 --port $PORT --access-log - --proxy-headers decipherworld.asgi:application'
