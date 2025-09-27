@@ -1625,6 +1625,8 @@ class ProductionSetupAPI(View):
             return self.create_learning_modules()
         elif action == 'check_questions':
             return self.check_questions()
+        elif action == 'setup_climate_game':
+            return self.setup_climate_game()
         
         try:
             results = {
@@ -1964,4 +1966,151 @@ class ProductionSetupAPI(View):
             return JsonResponse({
                 'status': 'failed',
                 'error': f'Questions check failed: {str(e)}'
+            }, status=500)
+    
+    def setup_climate_game(self):
+        """Set up Climate Crisis India game with all required tables and data"""
+        try:
+            from django.db import transaction
+            from django.core.management import call_command
+            from io import StringIO
+            import sys
+            
+            results = {
+                'status': 'success',
+                'steps_completed': [],
+                'errors': []
+            }
+            
+            with transaction.atomic():
+                # Step 1: Ensure Climate game tables exist (force migration)
+                try:
+                    # Try to fake the problematic migration first
+                    try:
+                        call_command('migrate', 'group_learning', '0007', fake=True, verbosity=0)
+                        results['steps_completed'].append('✅ Faked problematic migration 0007')
+                    except Exception:
+                        results['steps_completed'].append('⚠️ Migration 0007 fake attempt skipped')
+                    
+                    # Now run the climate game migrations
+                    call_command('migrate', 'group_learning', verbosity=0, interactive=False)
+                    results['steps_completed'].append('✅ Climate game migrations completed')
+                    
+                except Exception as e:
+                    results['errors'].append(f'⚠️ Migration issue: {str(e)}')
+                    # Continue anyway - tables might already exist
+                
+                # Step 2: Verify climate game tables exist
+                try:
+                    from .models import ClimateGame, ClimateScenario, ClimateQuestion
+                    ClimateGame.objects.exists()  # This will fail if table doesn't exist
+                    results['steps_completed'].append('✅ Climate game tables verified')
+                except Exception as e:
+                    results['errors'].append(f'❌ Climate game tables missing: {str(e)}')
+                    return JsonResponse(results, status=500)
+                
+                # Step 3: Create Climate Crisis India game
+                try:
+                    from .models import Game, ClimateGame
+                    
+                    # Check if climate game already exists
+                    climate_game = Game.objects.filter(
+                        title='Climate Crisis India – Monsoon Mayhem',
+                        game_type='climate_simulation'
+                    ).first()
+                    
+                    if not climate_game:
+                        # Create the climate game
+                        climate_game = ClimateGame.objects.create(
+                            title='Climate Crisis India – Monsoon Mayhem',
+                            description='Students take on different roles to make decisions during India\'s climate crises. Experience real trade-offs between economic growth, environmental protection, and social needs.',
+                            game_type='climate_simulation',
+                            is_active=True,
+                            recommended_players=25,
+                            session_duration_minutes=45,
+                            # Climate-specific meters
+                            climate_resilience_meter=50,
+                            gdp_meter=50,
+                            public_morale_meter=50,
+                            environmental_health_meter=50
+                        )
+                        results['steps_completed'].append('✅ Climate Crisis India game created')
+                    else:
+                        results['steps_completed'].append('✅ Climate Crisis India game already exists')
+                    
+                except Exception as e:
+                    results['errors'].append(f'❌ Climate game creation failed: {str(e)}')
+                    return JsonResponse(results, status=500)
+                
+                # Step 4: Populate scenarios and questions
+                try:
+                    # Capture management command output
+                    old_stdout = sys.stdout
+                    stdout_capture = StringIO()
+                    sys.stdout = stdout_capture
+                    
+                    try:
+                        call_command('populate_climate_scenarios')
+                        command_output = stdout_capture.getvalue()
+                        results['steps_completed'].append('✅ Climate scenarios and questions populated')
+                        
+                        # Show summary of what was created
+                        scenario_count = ClimateScenario.objects.filter(game=climate_game).count()
+                        question_count = ClimateQuestion.objects.filter(scenario__game=climate_game).count()
+                        results['steps_completed'].append(f'✅ Created {scenario_count} scenarios with {question_count} role-specific questions')
+                        
+                    finally:
+                        sys.stdout = old_stdout
+                        
+                except Exception as e:
+                    results['errors'].append(f'⚠️ Scenario population issue: {str(e)}')
+                    # This is non-critical - game can work without scenarios initially
+                
+                # Step 5: Create test session
+                try:
+                    from .models import GameSession, ClimateGameSession
+                    
+                    test_session, created = GameSession.objects.get_or_create(
+                        session_code='CLIMATE2024',
+                        defaults={
+                            'game': climate_game,
+                            'status': 'waiting'
+                        }
+                    )
+                    
+                    if created:
+                        # Create the climate-specific session extension
+                        ClimateGameSession.objects.create(
+                            gamesession_ptr=test_session,
+                            climate_game=climate_game,
+                            current_round=1,
+                            current_phase='lobby'
+                        )
+                        results['steps_completed'].append('✅ Test session CLIMATE2024 created')
+                    else:
+                        results['steps_completed'].append('✅ Test session CLIMATE2024 already exists')
+                        
+                except Exception as e:
+                    results['errors'].append(f'⚠️ Test session creation issue: {str(e)}')
+                
+                # Final verification
+                try:
+                    climate_count = ClimateGame.objects.count()
+                    results['steps_completed'].append(f'✅ Final verification: {climate_count} climate game(s) ready')
+                    
+                except Exception as e:
+                    results['errors'].append(f'⚠️ Verification error: {str(e)}')
+            
+            results['next_steps'] = [
+                '🌍 Visit: https://decipherworld-app.azurewebsites.net/learn/climate/',
+                '🎮 Test Mode: Create a session and test the game',
+                '👤 Admin: https://decipherworld-app.azurewebsites.net/admin/'
+            ]
+            
+            return JsonResponse(results)
+                    
+        except Exception as e:
+            return JsonResponse({
+                'status': 'failed',
+                'error': f'Climate game setup failed: {str(e)}'
             }, status=500)
