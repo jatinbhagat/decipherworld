@@ -1627,6 +1627,8 @@ class ProductionSetupAPI(View):
             return self.check_questions()
         elif action == 'setup_climate_game':
             return self.setup_climate_game()
+        elif action == 'populate_climate_scenarios':
+            return self.populate_climate_scenarios_only()
         
         try:
             results = {
@@ -2122,4 +2124,40 @@ class ProductionSetupAPI(View):
             return JsonResponse({
                 'status': 'failed',
                 'error': f'Climate game setup failed: {str(e)}'
+            }, status=500)
+    
+    def populate_climate_scenarios_only(self):
+        """Just run the populate climate scenarios management command"""
+        try:
+            from django.core.management import call_command
+            from io import StringIO
+            import sys
+            
+            results = {
+                'status': 'success',
+                'steps_completed': [],
+                'errors': []
+            }
+            
+            # Capture command output
+            old_stdout = sys.stdout
+            stdout_capture = StringIO()
+            sys.stdout = stdout_capture
+            
+            try:
+                # Run the populate command
+                call_command('populate_climate_scenarios')
+                command_output = stdout_capture.getvalue()
+                results['steps_completed'].append('✅ Climate scenarios populated via management command')
+                results['command_output'] = command_output
+                
+            finally:
+                sys.stdout = old_stdout
+            
+            return JsonResponse(results)
+                    
+        except Exception as e:
+            return JsonResponse({
+                'status': 'failed',
+                'error': f'Climate scenarios population failed: {str(e)}'
             }, status=500)
