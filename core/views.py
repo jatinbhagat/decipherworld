@@ -605,6 +605,12 @@ def run_production_migrations(request):
         sys.stdout = stdout_capture
         sys.stderr = stderr_capture
         
+        # First, fix migration conflicts
+        try:
+            execute_from_command_line(['manage.py', 'fix_migration_conflicts'])
+        except Exception as conflict_error:
+            pass  # Continue even if conflict fix fails
+        
         # Run migrations
         execute_from_command_line(['manage.py', 'migrate', '--verbosity=2'])
         
