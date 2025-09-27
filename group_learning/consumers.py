@@ -26,23 +26,45 @@ class ClimateGameConsumer(AsyncWebsocketConsumer):
         self.user_type = None  # Will be set based on authentication
         self.connection_id = self.channel_name[-8:]  # Last 8 chars for logging
         
+        # Detailed connection logging for production debugging
         logger.info(f"🔌 WebSocket CONNECT attempt - Session: {self.session_code}, Connection: {self.connection_id}")
+        logger.info(f"📊 Channel Layer Backend: {self.channel_layer.__class__.__name__}")
+        logger.info(f"🌐 Request Headers: {dict(self.scope.get('headers', []))}")
+        logger.info(f"🔗 WebSocket Path: {self.scope.get('path', 'Unknown')}")
         
         # Validate session exists
-        session_exists = await self.get_session_exists(self.session_code)
+        try:
+            session_exists = await self.get_session_exists(self.session_code)
+            logger.info(f"✅ Session existence check: {session_exists} for {self.session_code}")
+        except Exception as e:
+            logger.error(f"💥 Database error during session check: {str(e)}")
+            await self.close(code=4003)
+            return
+            
         if not session_exists:
             logger.error(f"❌ WebSocket connection rejected: Session {self.session_code} not found (Connection: {self.connection_id})")
             await self.close(code=4004)
             return
         
         # Join room group
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
+        try:
+            logger.info(f"🔄 Attempting to join group: {self.room_group_name}")
+            await self.channel_layer.group_add(
+                self.room_group_name,
+                self.channel_name
+            )
+            logger.info(f"✅ Successfully joined group: {self.room_group_name}")
+        except Exception as e:
+            logger.error(f"💥 Failed to join group {self.room_group_name}: {str(e)}")
+            await self.close(code=4002)
+            return
         
-        await self.accept()
-        logger.info(f"✅ WebSocket ACCEPTED - Session: {self.session_code}, Connection: {self.connection_id}")
+        try:
+            await self.accept()
+            logger.info(f"✅ WebSocket ACCEPTED - Session: {self.session_code}, Connection: {self.connection_id}")
+        except Exception as e:
+            logger.error(f"💥 Failed to accept WebSocket connection: {str(e)}")
+            return
         
         # Send initial session state
         session_data = await self.get_session_status(self.session_code)

@@ -11,7 +11,7 @@ import os
 import django
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'decipherworld.settings.base')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'decipherworld.settings.production')
 django.setup()
 
 # Import Django ASGI application early to ensure AppRegistry is populated
