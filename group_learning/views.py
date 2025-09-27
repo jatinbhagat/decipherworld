@@ -1985,14 +1985,16 @@ class ProductionSetupAPI(View):
             with transaction.atomic():
                 # Step 1: Ensure Climate game tables exist (force migration)
                 try:
-                    # Try to fake the problematic migration first
-                    try:
-                        call_command('migrate', 'group_learning', '0007', fake=True, verbosity=0)
-                        results['steps_completed'].append('✅ Faked problematic migration 0007')
-                    except Exception:
-                        results['steps_completed'].append('⚠️ Migration 0007 fake attempt skipped')
+                    # Try to fake problematic migrations that already exist in production
+                    problematic_migrations = ['0007', '0008']  # These add columns that already exist
+                    for migration in problematic_migrations:
+                        try:
+                            call_command('migrate', 'group_learning', migration, fake=True, verbosity=0)
+                            results['steps_completed'].append(f'✅ Faked problematic migration {migration}')
+                        except Exception:
+                            results['steps_completed'].append(f'⚠️ Migration {migration} fake attempt skipped')
                     
-                    # Now run the climate game migrations
+                    # Now run the climate game migrations (should apply 0009-0012)
                     call_command('migrate', 'group_learning', verbosity=0, interactive=False)
                     results['steps_completed'].append('✅ Climate game migrations completed')
                     
