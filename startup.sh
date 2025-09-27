@@ -34,11 +34,11 @@ python manage.py create_advanced_learning_modules --settings=decipherworld.setti
 echo "📁 Collecting static files..."
 python manage.py collectstatic --noinput --settings=decipherworld.settings.production
 
-# Start Gunicorn server
-echo "🌐 Starting Gunicorn server..."
-exec gunicorn decipherworld.wsgi:application \
-    --bind 0.0.0.0:${PORT:-8000} \
-    --workers ${WORKERS:-2} \
-    --timeout ${TIMEOUT:-60} \
-    --access-logfile - \
-    --error-logfile -
+# Start Daphne ASGI server for WebSocket support
+echo "🌐 Starting Daphne ASGI server with WebSocket support..."
+exec daphne \
+    --bind 0.0.0.0 \
+    --port ${PORT:-8000} \
+    --access-log - \
+    --proxy-headers \
+    decipherworld.asgi:application
