@@ -12,10 +12,6 @@ import io
 from .models import DemoRequest, Course, SchoolDemoRequest, GameReview
 from .forms import DemoRequestForm, SchoolDemoRequestForm
 
-def simple_home_test(request):
-    """Simple test view for debugging"""
-    return JsonResponse({'status': 'success', 'message': 'Simple home test working'})
-
 class HomeView(TemplateView):
     """Homepage with hero section and product highlights"""
     template_name = 'home/index.html'
@@ -23,18 +19,10 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            # Test database connection first
-            course_count = Course.objects.count()
-            print(f"Total courses in database: {course_count}")
-            
             context['courses'] = Course.objects.filter(is_active=True)[:4]
-            print(f"Active courses loaded: {len(context['courses'])}")
         except Exception as e:
             # Fallback if Course queries fail
             context['courses'] = []
-            print(f"Error loading courses: {e}")
-            import traceback
-            print(f"Full traceback: {traceback.format_exc()}")
         return context
 
 class CoursesView(ListView):

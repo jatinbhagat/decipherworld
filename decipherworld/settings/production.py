@@ -6,8 +6,8 @@ Extends base settings with production-specific configurations.
 from .base import *
 from decouple import config
 
-# Production overrides - temporarily enable DEBUG for error diagnosis
-DEBUG = True  # TEMPORARY: Enable detailed error messages
+# Production overrides
+DEBUG = False
 SECRET_KEY = config('SECRET_KEY')
 
 # Production hosts
