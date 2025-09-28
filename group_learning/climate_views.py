@@ -135,19 +135,14 @@ def climate_facilitator_dashboard(request, session_code):
             round_number=session.current_round
         ).first()
     
-    # Get player statistics
-    responses = ClimatePlayerResponse.objects.filter(climate_session=session)
-    total_players = responses.values('player_session_id').distinct().count()
+    # Get player statistics using unified model methods for consistency with WebSocket broadcasts
+    total_players = session.get_active_player_count()
     
-    logger.info(f"Dashboard for session {session_code}: Found {responses.count()} total responses, {total_players} unique players")
+    logger.info(f"Dashboard for session {session_code}: {total_players} unique players")
     
-    # Get actual student list with roles for display
+    # Get actual student list with roles using unified model method
     students = []
-    unique_players = responses.values('player_session_id', 'assigned_role', 'player_name').distinct()
-    
-    logger.info(f"Dashboard unique players query result: {list(unique_players)}")
-    
-    for player in unique_players:
+    for player in session.get_active_players_list():
         student_data = {
             'player_session_id': player['player_session_id'],
             'player_name': player['player_name'] or player['player_session_id'],
@@ -159,11 +154,12 @@ def climate_facilitator_dashboard(request, session_code):
     logger.info(f"Final dashboard students list: {students}")
     
     # Role distribution
+    responses = ClimatePlayerResponse.objects.filter(climate_session=session)
     role_counts = responses.values('assigned_role').annotate(count=Count('player_session_id', distinct=True))
     
-    # Current round progress
-    current_round_responses = responses.filter(round_number=session.current_round)
-    current_round_completed = current_round_responses.values('player_session_id').distinct().count()
+    # Current round progress - count responses for current round only
+    current_round_responses = responses.filter(round_number=session.current_round).count()
+    current_round_completed = responses.filter(round_number=session.current_round).values('player_session_id').distinct().count()
     
     # Get session metadata from session_data
     session_data = session.session_data or {}
@@ -181,7 +177,7 @@ def climate_facilitator_dashboard(request, session_code):
         'total_players': total_players,
         'students': students,  # Add actual student list for template rendering
         'role_counts': role_counts,
-        'current_round_responses': current_round_completed,
+        'current_round_responses': current_round_responses,  # Fix: Use actual response count, not completed count
         'session_url': request.build_absolute_uri(f'/learn/climate/join/{session_code}/'),
         'meter_status': session.get_meter_status(),
     }
