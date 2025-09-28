@@ -16,20 +16,25 @@ def simple_home_test(request):
     """Simple test view for debugging"""
     return JsonResponse({'status': 'success', 'message': 'Simple home test working'})
 
-def minimal_home(request):
-    """Minimal homepage without Course queries"""
-    from django.http import HttpResponse
-    return HttpResponse("<h1>Minimal Homepage Working</h1><p>This is a test to isolate the issue.</p>")
-
 class HomeView(TemplateView):
     """Homepage with hero section and product highlights"""
     template_name = 'home/index.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Temporarily disable Course queries to isolate issue
-        context['courses'] = []
-        print("HomeView: Skipping Course queries for debugging")
+        try:
+            # Test database connection first
+            course_count = Course.objects.count()
+            print(f"Total courses in database: {course_count}")
+            
+            context['courses'] = Course.objects.filter(is_active=True)[:4]
+            print(f"Active courses loaded: {len(context['courses'])}")
+        except Exception as e:
+            # Fallback if Course queries fail
+            context['courses'] = []
+            print(f"Error loading courses: {e}")
+            import traceback
+            print(f"Full traceback: {traceback.format_exc()}")
         return context
 
 class CoursesView(ListView):
