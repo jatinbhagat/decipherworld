@@ -1,0 +1,212 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+  <!-- Realistic Delhi India Gate Scene - Simplified for Lottie Animation -->
+  
+  <!-- Background Sky with Pollution -->
+  <defs>
+    <linearGradient id="pollutedSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B7355;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#A0956B;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#D2B48C;stop-opacity:0.8" />
+    </linearGradient>
+    
+    <radialGradient id="smogLayer" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.3" />
+      <stop offset="50%" style="stop-color:#D3D3D3;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#A9A9A9;stop-opacity:0.8" />
+    </radialGradient>
+    
+    <linearGradient id="gateGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#CD853F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B4513;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Polluted Sky Background -->
+  <rect width="1024" height="768" fill="url(#pollutedSky)"/>
+  
+  <!-- Smog Layers -->
+  <ellipse cx="512" cy="150" rx="600" ry="100" fill="url(#smogLayer)" opacity="0.7"/>
+  <ellipse cx="300" cy="250" rx="400" ry="80" fill="url(#smogLayer)" opacity="0.5"/>
+  <ellipse cx="700" cy="200" rx="350" ry="60" fill="url(#smogLayer)" opacity="0.6"/>
+  
+  <!-- Ground/Road -->
+  <rect x="0" y="600" width="1024" height="168" fill="#696969" opacity="0.8"/>
+  <rect x="0" y="650" width="1024" height="118" fill="#2F4F4F" opacity="0.6"/>
+  
+  <!-- Rajpath (Central Avenue) -->
+  <polygon points="512,600 412,768 612,768" fill="#708090" opacity="0.7"/>
+  
+  <!-- Delhi Skyline (Simplified Buildings) -->
+  <g id="buildings" opacity="0.6">
+    <!-- Background Buildings -->
+    <rect x="50" y="400" width="80" height="250" fill="#2F2F2F"/>
+    <rect x="150" y="380" width="60" height="270" fill="#404040"/>
+    <rect x="230" y="420" width="70" height="230" fill="#2F2F2F"/>
+    <rect x="750" y="390" width="75" height="260" fill="#404040"/>
+    <rect x="850" y="410" width="85" height="240" fill="#2F2F2F"/>
+    <rect x="950" y="385" width="65" height="265" fill="#404040"/>
+    
+    <!-- Building Windows (Lights) -->
+    <g fill="#FFD700" opacity="0.4">
+      <rect x="65" y="420" width="8" height="12"/>
+      <rect x="85" y="440" width="8" height="12"/>
+      <rect x="65" y="480" width="8" height="12"/>
+      <rect x="160" y="400" width="7" height="10"/>
+      <rect x="175" y="430" width="7" height="10"/>
+      <rect x="760" y="410" width="8" height="12"/>
+      <rect x="780" y="450" width="8" height="12"/>
+    </g>
+  </g>
+  
+  <!-- India Gate (Prominent Central Monument) -->
+  <g id="indiaGate" transform="translate(400, 250)">
+    <!-- Main Arch Structure -->
+    <path d="M0 200 L0 40 Q0 0 40 0 L184 0 Q224 0 224 40 L224 200 Z" 
+          fill="url(#gateGradient)" stroke="#654321" stroke-width="3"/>
+    
+    <!-- Inner Arch Opening -->
+    <path d="M40 200 L40 80 Q40 50 70 50 L154 50 Q184 50 184 80 L184 200 Z" 
+          fill="#000000" opacity="0.9"/>
+    
+    <!-- Top Structure -->
+    <rect x="-20" y="0" width="264" height="45" fill="url(#gateGradient)" stroke="#654321" stroke-width="2"/>
+    
+    <!-- Central Dome -->
+    <ellipse cx="112" cy="-10" rx="35" ry="15" fill="#D2691E" stroke="#654321" stroke-width="2"/>
+    
+    <!-- Spire -->
+    <rect x="105" y="-30" width="14" height="25" fill="#654321"/>
+    
+    <!-- Side Pillars -->
+    <rect x="15" y="60" width="20" height="140" fill="#A0522D"/>
+    <rect x="189" y="60" width="20" height="140" fill="#A0522D"/>
+    
+    <!-- Inscription Plaque -->
+    <rect x="60" y="100" width="104" height="30" fill="#000000" opacity="0.8"/>
+    <text x="112" y="120" text-anchor="middle" fill="#FFFFFF" font-family="serif" font-size="14" font-weight="bold">INDIA GATE</text>
+  </g>
+  
+  <!-- People with Masks (For Animation) -->
+  <g id="people">
+    <!-- Person 1 - Jogging Left to Right -->
+    <g id="person1" transform="translate(150, 550)">
+      <ellipse cx="0" cy="20" rx="12" ry="25" fill="#333333"/>
+      <circle cx="0" cy="-5" r="10" fill="#D2B48C"/>
+      <!-- N95 Mask -->
+      <ellipse cx="0" cy="-5" rx="8" ry="6" fill="#FFFFFF" stroke="#808080" stroke-width="1"/>
+      <!-- Arms (for running motion) -->
+      <ellipse cx="-15" cy="5" rx="4" ry="12" fill="#333333" transform="rotate(-20)"/>
+      <ellipse cx="15" cy="5" rx="4" ry="12" fill="#333333" transform="rotate(20)"/>
+      <!-- Legs (for running motion) -->
+      <ellipse cx="-8" cy="35" rx="5" ry="15" fill="#1a1a1a"/>
+      <ellipse cx="8" cy="35" rx="5" ry="15" fill="#1a1a1a"/>
+    </g>
+    
+    <!-- Person 2 - Walking -->
+    <g id="person2" transform="translate(300, 560)">
+      <ellipse cx="0" cy="15" rx="10" ry="20" fill="#4A4A4A"/>
+      <circle cx="0" cy="-3" r="8" fill="#F5DEB3"/>
+      <!-- Surgical Mask -->
+      <rect x="-6" y="-6" width="12" height="8" rx="3" fill="#87CEEB" stroke="#4682B4" stroke-width="1"/>
+      <!-- Arms -->
+      <ellipse cx="-12" cy="8" rx="3" ry="10" fill="#4A4A4A"/>
+      <ellipse cx="12" cy="8" rx="3" ry="10" fill="#4A4A4A"/>
+      <!-- Legs -->
+      <ellipse cx="-6" cy="28" rx="4" ry="12" fill="#2F2F2F"/>
+      <ellipse cx="6" cy="28" rx="4" ry="12" fill="#2F2F2F"/>
+    </g>
+    
+    <!-- Person 3 - Child -->
+    <g id="person3" transform="translate(450, 570)">
+      <ellipse cx="0" cy="12" rx="8" ry="15" fill="#666666"/>
+      <circle cx="0" cy="-2" r="6" fill="#FDBCB4"/>
+      <!-- Colorful Child Mask -->
+      <ellipse cx="0" cy="-2" rx="5" ry="4" fill="#FF69B4" stroke="#FF1493" stroke-width="1"/>
+      <!-- Small Arms -->
+      <ellipse cx="-8" cy="6" rx="2" ry="8" fill="#666666"/>
+      <ellipse cx="8" cy="6" rx="2" ry="8" fill="#666666"/>
+      <!-- Small Legs -->
+      <ellipse cx="-4" cy="22" rx="3" ry="8" fill="#404040"/>
+      <ellipse cx="4" cy="22" rx="3" ry="8" fill="#404040"/>
+    </g>
+    
+    <!-- Person 4 - Elderly with Walking Stick -->
+    <g id="person4" transform="translate(600, 555)">
+      <ellipse cx="0" cy="18" rx="11" ry="22" fill="#5A5A5A"/>
+      <circle cx="0" cy="-4" r="9" fill="#E6E6FA"/>
+      <!-- Medical Mask -->
+      <ellipse cx="0" cy="-4" rx="7" ry="5" fill="#FFFFFF" stroke="#C0C0C0" stroke-width="1"/>
+      <!-- Walking Stick -->
+      <line x1="18" y1="-5" x2="18" y2="35" stroke="#8B4513" stroke-width="3"/>
+      <!-- Arms -->
+      <ellipse cx="-10" cy="10" rx="3" ry="9" fill="#5A5A5A"/>
+      <ellipse cx="10" cy="10" rx="3" ry="9" fill="#5A5A5A"/>
+      <!-- Legs -->
+      <ellipse cx="-5" cy="32" rx="4" ry="10" fill="#3A3A3A"/>
+      <ellipse cx="5" cy="32" rx="4" ry="10" fill="#3A3A3A"/>
+    </g>
+  </g>
+  
+  <!-- Vehicles with Exhaust -->
+  <g id="vehicles">
+    <!-- Car 1 -->
+    <g id="car1" transform="translate(200, 680)">
+      <rect x="0" y="0" width="60" height="25" rx="8" fill="#2F4F4F"/>
+      <rect x="5" y="-8" width="50" height="15" rx="6" fill="#1C1C1C"/>
+      <!-- Wheels -->
+      <circle cx="12" cy="25" r="8" fill="#000000"/>
+      <circle cx="48" cy="25" r="8" fill="#000000"/>
+      <!-- Exhaust Smoke -->
+      <g id="exhaust1">
+        <circle cx="-5" cy="15" r="3" fill="#D3D3D3" opacity="0.6"/>
+        <circle cx="-12" cy="12" r="4" fill="#C0C0C0" opacity="0.5"/>
+        <circle cx="-18" cy="8" r="3" fill="#B8B8B8" opacity="0.4"/>
+      </g>
+    </g>
+    
+    <!-- Car 2 -->
+    <g id="car2" transform="translate(500, 690)">
+      <rect x="0" y="0" width="70" height="28" rx="10" fill="#4A4A4A"/>
+      <rect x="8" y="-10" width="54" height="18" rx="7" fill="#2C2C2C"/>
+      <!-- Wheels -->
+      <circle cx="15" cy="28" r="9" fill="#000000"/>
+      <circle cx="55" cy="28" r="9" fill="#000000"/>
+      <!-- Exhaust Smoke -->
+      <g id="exhaust2">
+        <circle cx="-8" cy="18" r="4" fill="#D3D3D3" opacity="0.6"/>
+        <circle cx="-16" cy="14" r="5" fill="#C0C0C0" opacity="0.5"/>
+        <circle cx="-25" cy="9" r="4" fill="#B8B8B8" opacity="0.4"/>
+      </g>
+    </g>
+    
+    <!-- Auto Rickshaw -->
+    <g id="rickshaw" transform="translate(750, 685)">
+      <rect x="0" y="0" width="45" height="20" rx="6" fill="#FFD700"/>
+      <rect x="15" y="-6" width="25" height="12" rx="4" fill="#FFA500"/>
+      <!-- Wheels -->
+      <circle cx="8" cy="20" r="6" fill="#000000"/>
+      <circle cx="32" cy="20" r="6" fill="#000000"/>
+      <!-- Small Exhaust -->
+      <g id="exhaust3">
+        <circle cx="-3" cy="12" r="2" fill="#D3D3D3" opacity="0.5"/>
+        <circle cx="-8" cy="10" r="3" fill="#C0C0C0" opacity="0.4"/>
+      </g>
+    </g>
+  </g>
+  
+  <!-- Floating Pollution Particles (For Animation) -->
+  <g id="pollutionParticles">
+    <circle id="particle1" cx="100" cy="200" r="3" fill="#A9A9A9" opacity="0.4"/>
+    <circle id="particle2" cx="300" cy="150" r="2" fill="#D3D3D3" opacity="0.3"/>
+    <circle id="particle3" cx="500" cy="180" r="4" fill="#C0C0C0" opacity="0.5"/>
+    <circle id="particle4" cx="700" cy="160" r="2" fill="#B0B0B0" opacity="0.3"/>
+    <circle id="particle5" cx="850" cy="190" r="3" fill="#A9A9A9" opacity="0.4"/>
+    <circle id="particle6" cx="200" cy="250" r="2" fill="#D3D3D3" opacity="0.3"/>
+    <circle id="particle7" cx="600" cy="220" r="3" fill="#C0C0C0" opacity="0.4"/>
+    <circle id="particle8" cx="400" cy="140" r="2" fill="#B8B8B8" opacity="0.3"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="512" y="50" text-anchor="middle" fill="#8B4513" font-family="Arial, sans-serif" 
+        font-size="24" font-weight="bold" opacity="0.8">Delhi Morning Smog Crisis</text>
+</svg>

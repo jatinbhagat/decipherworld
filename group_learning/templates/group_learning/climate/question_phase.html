@@ -19,36 +19,19 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'group_learning/css/climate_game.css' %}">
 <style>
-  .question-container {
-    width: 100vw;
-    min-height: 100vh;
-    margin: 0;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
   
   .scenario-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(8px);
     color: white;
-    padding: 2rem;
-    border-radius: 1rem;
-    margin-bottom: 2rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
     position: relative;
     overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
   
-  .scenario-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)" /></svg>');
-    z-index: 1;
-  }
   
   .scenario-content {
     position: relative;
@@ -56,20 +39,22 @@
   }
   
   .timer-section {
-    background: #fff;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
   
   .timer-display {
-    font-size: 3rem;
+    font-size: 1.2rem;
     font-weight: bold;
     color: #e53e3e;
     font-family: monospace;
-    margin: 0.5rem 0;
+    margin: 0.1rem 0;
   }
   
   .timer-warning {
@@ -87,12 +72,14 @@
   }
   
   .role-context {
-    background: white;
-    border-radius: 1rem;
-    padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    border-left: 6px solid;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5rem;
+    border-left: 4px solid;
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
   
   .role-government { border-left-color: #3498db; }
@@ -102,12 +89,14 @@
   .role-ngo { border-left-color: #e74c3c; }
   
   .question-card {
-    background: #f8f9fa;
-    border-radius: 1rem;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border: 3px solid #e9ecef;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
     transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
   .question-card.answered {
@@ -117,19 +106,21 @@
   
   .options-grid {
     display: grid;
-    gap: 1rem;
-    margin-top: 2rem;
+    gap: 0.5rem;
+    margin-top: 1rem;
   }
   
   .option-card {
-    background: white;
-    border: 2px solid #e9ecef;
-    border-radius: 0.75rem;
-    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
   }
   
   .option-card:hover {
@@ -154,21 +145,21 @@
   .option-header {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
   }
   
   .option-letter {
     background: #667eea;
     color: white;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2rem;
+    height: 2rem;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 1rem;
     flex-shrink: 0;
   }
   
@@ -177,7 +168,7 @@
   }
   
   .option-title {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #2d3748;
   }
@@ -186,25 +177,27 @@
     background: #fff3cd;
     border: 1px solid #ffeaa7;
     border-radius: 0.5rem;
-    padding: 1rem;
-    margin-top: 1rem;
-    font-size: 0.9rem;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
     color: #856404;
   }
   
   .submit-section {
-    background: white;
-    border-radius: 1rem;
-    padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
   
   .submit-button {
-    font-size: 1.2rem;
-    padding: 1rem 2rem;
-    border-radius: 0.75rem;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
     font-weight: 600;
     transition: all 0.3s ease;
   }
@@ -218,11 +211,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: white;
-    border-radius: 1rem;
-    padding: 1rem 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px);
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
   
   .round-indicator {
@@ -294,12 +289,89 @@
   
 </style>
 </head>
-<body class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen">
-<div class="question-container">
-  <!-- Mobile Timer -->
-  <div class="mobile-timer md:hidden" id="mobile-timer">
-    <span id="mobile-timer-text">--:--</span>
-  </div>
+<body class="min-h-screen overflow-y-auto">
+<!-- Round-Specific CSS Background -->
+<div class="fixed inset-0 w-full h-full z-0" id="question-background">
+    {% if session.current_round == 1 %}
+        <!-- Delhi Air Pollution: Smoggy brown/orange gradients -->
+        <div class="w-full h-full" style="background: linear-gradient(135deg, #8B4513 0%, #CD853F 25%, #DEB887 50%, #F4A460 75%, #D2691E 100%);"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-amber-900/40 via-orange-800/20 to-yellow-700/30"></div>
+    {% elif session.current_round == 2 %}
+        <!-- Mumbai Floods: Blue/grey rain gradients -->
+        <div class="w-full h-full" style="background: linear-gradient(135deg, #2C3E50 0%, #3498DB 25%, #5DADE2 50%, #85C1E9 75%, #AED6F1 100%);"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-blue-900/40 via-blue-700/20 to-slate-600/30"></div>
+    {% elif session.current_round == 3 %}
+        <!-- Chennai Drought: Yellow/brown drought gradients -->
+        <div class="w-full h-full" style="background: linear-gradient(135deg, #B7950B 0%, #D4AC0D 25%, #F1C40F 50%, #F7DC6F 75%, #FCF3CF 100%);"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-yellow-800/40 via-amber-600/20 to-orange-500/30"></div>
+    {% elif session.current_round == 4 %}
+        <!-- Heatwave: Red/orange heat gradients -->
+        <div class="w-full h-full" style="background: linear-gradient(135deg, #922B21 0%, #CB4335 25%, #E74C3C 50%, #F1948A 75%, #FADBD8 100%);"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-red-900/40 via-orange-700/20 to-yellow-600/30"></div>
+    {% elif session.current_round == 5 %}
+        <!-- Election: Blue/white political gradients -->
+        <div class="w-full h-full" style="background: linear-gradient(135deg, #1B4F72 0%, #2874A6 25%, #3498DB 50%, #AED6F1 75%, #EBF5FB 100%);"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-blue-800/40 via-indigo-600/20 to-blue-400/30"></div>
+    {% endif %}
+    
+    <!-- Floating particles animation for all rounds -->
+    <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute w-2 h-2 bg-white/20 rounded-full animate-pulse" style="left: 12%; top: 15%; animation-delay: 0.5s; animation-duration: 4s;"></div>
+        <div class="absolute w-2 h-2 bg-white/20 rounded-full animate-pulse" style="left: 24%; top: 30%; animation-delay: 1s; animation-duration: 5s;"></div>
+        <div class="absolute w-2 h-2 bg-white/20 rounded-full animate-pulse" style="left: 36%; top: 45%; animation-delay: 1.5s; animation-duration: 6s;"></div>
+        <div class="absolute w-2 h-2 bg-white/20 rounded-full animate-pulse" style="left: 48%; top: 60%; animation-delay: 2s; animation-duration: 7s;"></div>
+        <div class="absolute w-2 h-2 bg-white/20 rounded-full animate-pulse" style="left: 60%; top: 75%; animation-delay: 2.5s; animation-duration: 8s;"></div>
+        <div class="absolute w-2 h-2 bg-white/20 rounded-full animate-pulse" style="left: 72%; top: 20%; animation-delay: 3s; animation-duration: 9s;"></div>
+        <div class="absolute w-2 h-2 bg-white/20 rounded-full animate-pulse" style="left: 84%; top: 35%; animation-delay: 3.5s; animation-duration: 10s;"></div>
+        <div class="absolute w-2 h-2 bg-white/20 rounded-full animate-pulse" style="left: 16%; top: 80%; animation-delay: 4s; animation-duration: 11s;"></div>
+    </div>
+</div>
+
+<!-- Light overlay for text readability -->
+<div class="fixed inset-0 bg-black/20 z-10"></div>
+
+<!-- Round-Specific Status Indicator -->
+<div class="fixed top-4 right-4 z-30 rounded-lg border-2 shadow-lg px-3 py-1.5 text-white" id="status-indicator">
+    {% if session.current_round == 1 %}
+        <div class="bg-red-900/90 border-red-500 p-1 rounded">
+            <div class="text-xs font-bold text-center">AQI DELHI</div>
+            <div class="text-lg font-bold text-red-300 text-center">450+</div>
+            <div class="text-xs font-bold text-red-300 text-center">SEVERE</div>
+        </div>
+    {% elif session.current_round == 2 %}
+        <div class="bg-blue-900/90 border-blue-500 p-1 rounded">
+            <div class="text-xs font-bold text-center">MUMBAI RAIN</div>
+            <div class="text-lg font-bold text-blue-300 text-center">300mm</div>
+            <div class="text-xs font-bold text-blue-300 text-center">FLOOD ALERT</div>
+        </div>
+    {% elif session.current_round == 3 %}
+        <div class="bg-yellow-900/90 border-yellow-500 p-1 rounded">
+            <div class="text-xs font-bold text-center">CHENNAI WATER</div>
+            <div class="text-lg font-bold text-yellow-300 text-center">15%</div>
+            <div class="text-xs font-bold text-yellow-300 text-center">CRITICAL</div>
+        </div>
+    {% elif session.current_round == 4 %}
+        <div class="bg-orange-900/90 border-orange-500 p-1 rounded">
+            <div class="text-xs font-bold text-center">TEMPERATURE</div>
+            <div class="text-lg font-bold text-orange-300 text-center">48°C</div>
+            <div class="text-xs font-bold text-orange-300 text-center">EXTREME</div>
+        </div>
+    {% elif session.current_round == 5 %}
+        <div class="bg-purple-900/90 border-purple-500 p-1 rounded">
+            <div class="text-xs font-bold text-center">ELECTION</div>
+            <div class="text-lg font-bold text-purple-300 text-center">72%</div>
+            <div class="text-xs font-bold text-purple-300 text-center">TURNOUT</div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Question Content -->
+<div class="relative z-20 flex items-start justify-center min-h-screen py-2 px-1">
+  <div class="w-full max-w-3xl">
+    <!-- Mobile Timer -->
+    <div class="mobile-timer md:hidden" id="mobile-timer">
+      <span id="mobile-timer-text">--:--</span>
+    </div>
 
   <!-- News Ticker -->
   {% if scenario.news_quotes %}
@@ -313,14 +385,14 @@
   <!-- Scenario Header -->
   <div class="scenario-header">
     <div class="scenario-content">
-      <div class="flex flex-col md:flex-row justify-between items-start mb-4">
+      <div class="flex flex-col md:flex-row justify-between items-start mb-2">
         <div>
-          <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ scenario.title }}</h1>
-          <p class="text-lg opacity-90">Round {{ session.current_round }} of 5</p>
+          <h1 class="text-xl md:text-2xl font-bold mb-1">{{ scenario.title }}</h1>
+          <p class="text-sm opacity-90">Round {{ session.current_round }} of 5</p>
         </div>
-        <div class="text-right mt-4 md:mt-0">
-          <div class="text-sm opacity-80">Your Role</div>
-          <div class="text-xl font-bold">
+        <div class="text-right mt-2 md:mt-0">
+          <div class="text-xs opacity-80">Your Role</div>
+          <div class="text-sm font-bold">
             {% if player_role == 'government' %}🏛️ Government Official
             {% elif player_role == 'business' %}🏢 Business Owner
             {% elif player_role == 'farmer' %}🌾 Farmer
@@ -330,58 +402,58 @@
           </div>
         </div>
       </div>
-      <p class="text-lg">{{ scenario.context_description }}</p>
+      <p class="text-sm">{{ scenario.context_description }}</p>
     </div>
   </div>
 
   <!-- Progress Indicators -->
   <div class="progress-indicators">
     <div class="round-indicator">
-      <span class="text-2xl">📍</span>
-      <span>Round {{ session.current_round }}/5</span>
+      <span class="text-lg">📍</span>
+      <span class="text-xs">Round {{ session.current_round }}/5</span>
     </div>
     
-    <div class="response-count" id="response-count">
+    <div class="response-count text-xs" id="response-count">
       Waiting for responses...
     </div>
     
     <div class="round-indicator">
-      <span class="text-2xl">⏱️</span>
-      <span id="timer-mode-indicator">Timer Active</span>
+      <span class="text-lg">⏱️</span>
+      <span class="text-xs" id="timer-mode-indicator">Timer Active</span>
     </div>
   </div>
 
   <!-- Timer Section -->
   <div class="timer-section">
-    <h2 class="text-xl font-bold mb-2">⏰ Time Remaining</h2>
+    <h2 class="text-sm font-bold mb-1">⏰ Time Remaining</h2>
     <div class="timer-display" id="timer-display">01:00</div>
-    <div class="text-gray-600">Choose your response before time runs out!</div>
+    <div class="text-gray-600 text-xs">Choose your response before time runs out!</div>
   </div>
 
   <!-- Role Context -->
   <div class="role-context role-{{ player_role }}">
-    <h2 class="text-xl font-bold mb-3 flex items-center gap-2">
+    <h2 class="text-sm font-bold mb-2 flex items-center gap-1">
       {% if player_role == 'government' %}
-        <span class="text-2xl">🏛️</span> Your Perspective as Government Official
+        <span class="text-lg">🏛️</span> Your Perspective as Government Official
       {% elif player_role == 'business' %}
-        <span class="text-2xl">🏢</span> Your Perspective as Business Owner
+        <span class="text-lg">🏢</span> Your Perspective as Business Owner
       {% elif player_role == 'farmer' %}
-        <span class="text-2xl">🌾</span> Your Perspective as Farmer
+        <span class="text-lg">🌾</span> Your Perspective as Farmer
       {% elif player_role == 'urban_citizen' %}
-        <span class="text-2xl">🏙️</span> Your Perspective as Urban Citizen
+        <span class="text-lg">🏙️</span> Your Perspective as Urban Citizen
       {% elif player_role == 'ngo_worker' %}
-        <span class="text-2xl">🤝</span> Your Perspective as NGO Worker
+        <span class="text-lg">🤝</span> Your Perspective as NGO Worker
       {% endif %}
     </h2>
-    <p class="mb-3">{{ question.role_context }}</p>
-    <div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
-      <p class="font-semibold text-blue-800">{{ question.question_text }}</p>
+    <p class="mb-2 text-xs">{{ question.role_context }}</p>
+    <div class="bg-blue-50 p-2 rounded-lg border-l-4 border-blue-400">
+      <p class="font-semibold text-blue-800 text-xs">{{ question.question_text }}</p>
     </div>
   </div>
 
   <!-- Question Card -->
   <div class="question-card" id="question-card">
-    <h2 class="text-2xl font-bold mb-4">🤔 What is your decision?</h2>
+    <h2 class="text-lg font-bold mb-2">🤔 What is your decision?</h2>
     
     <form id="response-form" method="post">
       {% csrf_token %}
@@ -418,6 +490,7 @@
       <p>💡 Remember: Think from your role's perspective. Every choice affects India's future!</p>
     </div>
   </div>
+  </div>
 </div>
 
 <!-- Response Submitted Modal -->
@@ -431,6 +504,30 @@
   </div>
 </dialog>
 </div>
+
+<!-- Simple Background Animation Script -->
+<script>
+// Simple floating particles animation for enhanced visual appeal
+function initializeParticleAnimation() {
+    const backgroundDiv = document.getElementById('question-background');
+    if (!backgroundDiv) return;
+    
+    // Add some gentle movement to particles
+    const particles = backgroundDiv.querySelectorAll('.animate-pulse');
+    particles.forEach((particle, index) => {
+        // Add gentle floating movement
+        setInterval(() => {
+            const randomX = Math.sin(Date.now() / (1000 + index * 100)) * 10;
+            const randomY = Math.cos(Date.now() / (1500 + index * 150)) * 5;
+            particle.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        }, 50);
+    });
+}
+
+// Initialize particles when page loads
+document.addEventListener('DOMContentLoaded', initializeParticleAnimation);
+</script>
+
 </body>
 
 <script>

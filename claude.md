@@ -260,6 +260,60 @@ If deployment fails:
 # 5. Fix issues locally first, then redeploy following full process
 ```
 
+## ✅ STABLE PRODUCTION CONFIGURATION (Current)
+
+**Last Verified**: September 28, 2025 10:00 UTC  
+**Stable Commit**: `c8fb4eb` - Revert "Clean up production code: Remove debugging artifacts"  
+**Status**: ✅ ALL PAGES WORKING (200 OK) - VERIFIED PRODUCTION
+
+### Working Features (Verified Production URLs):
+- ✅ **Homepage**: https://decipherworld-app.azurewebsites.net/ (200 OK - 78,654 bytes)
+- ✅ **Games Hub**: https://decipherworld-app.azurewebsites.net/games/ (200 OK - 63,282 bytes)
+- ✅ **Teachers**: https://decipherworld-app.azurewebsites.net/teachers/ (200 OK - 64,276 bytes)
+- ✅ **About**: https://decipherworld-app.azurewebsites.net/about/ (200 OK - 49,700 bytes)
+- ✅ **WebSocket/Real-time**: https://decipherworld-app.azurewebsites.net/learn/ (200 OK - 48,021 bytes)
+- ✅ **ASGI Server**: Daphne running correctly with WebSocket support
+- ✅ **Database**: All migrations applied, Course model with is_active field
+- ✅ **Core Functionality**: All imports working, error handling in place
+
+### Key Fixes Applied:
+1. **Missing Imports**: Added `send_mail`, `settings` imports to core/views.py
+2. **Course Model**: Added `is_active` field with migration `core.0005_course_is_active`
+3. **Migration Conflicts**: Resolution system for database sync issues
+4. **ASGI/WebSocket**: Daphne server with proper startup configuration
+5. **Error Handling**: Defensive programming in HomeView
+
+### 🚨 CRITICAL: What NOT to Change
+- **DO NOT** remove any functions from core/views.py without checking URL mappings first
+- **DO NOT** change DEBUG setting without testing immediately
+- **DO NOT** remove URL patterns without verifying no references exist
+- **DO NOT** make multiple changes in one commit
+
+### 🔧 Safe Cleanup Opportunities (Future)
+- **DEBUG = True** → can be changed to False (security improvement)
+- **Test endpoints** `/test-home/`, `/create-sample-courses/` → can be removed carefully
+- **Verbose logging** in HomeView → can be simplified (keep error handling)
+- **Print statements** → can be removed or converted to proper logging
+
+### Safe Development Workflow Going Forward:
+```bash
+# 1. Always create feature branches
+git checkout -b feature/new-feature
+
+# 2. Test locally first - MANDATORY
+python manage.py runserver
+python test_urls_simple.py  # Run URL health check
+
+# 3. ONE change at a time (not multiple)
+# Make one small change, test, commit, deploy, verify
+
+# 4. Test in production immediately after deploy
+curl -I https://decipherworld-app.azurewebsites.net/
+
+# 5. Have rollback plan ready
+git log --oneline -3  # Note working commit before changes
+```
+
 ---
 
 ## Original Deployment Checklist

@@ -1,0 +1,160 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="droughtSkyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD54F;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#FFCA28;stop-opacity:0.9" />
+      <stop offset="70%" style="stop-color:#FFB74D;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#FF8F00;stop-opacity:0.9" />
+    </linearGradient>
+    <linearGradient id="crackedEarthGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#D7CCC8;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#BCAAA4;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#8D6E63;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="harshSunGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFDE7;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#FFF59D;stop-opacity:0.9" />
+      <stop offset="60%" style="stop-color:#FFEB3B;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#FF8F00;stop-opacity:0.7" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Drought sky background -->
+  <rect width="800" height="600" fill="url(#droughtSkyGradient)"/>
+  
+  <!-- Harsh sun -->
+  <circle cx="650" cy="100" r="80" fill="url(#harshSunGradient)"/>
+  
+  <!-- Sun rays -->
+  <g stroke="#FFEB3B" stroke-width="4" opacity="0.7">
+    <line x1="650" y1="20" x2="650" y2="-10"/>
+    <line x1="650" y1="180" x2="650" y2="210"/>
+    <line x1="570" y1="100" x2="540" y2="100"/>
+    <line x1="730" y1="100" x2="760" y2="100"/>
+    <line x1="593" y1="43" x2="572" y2="22"/>
+    <line x1="707" y1="43" x2="728" y2="22"/>
+    <line x1="593" y1="157" x2="572" y2="178"/>
+    <line x1="707" y1="157" x2="728" y2="178"/>
+  </g>
+  
+  <!-- Cracked earth landscape -->
+  <rect x="0" y="350" width="800" height="250" fill="url(#crackedEarthGradient)"/>
+  
+  <!-- Extensive crack patterns -->
+  <g stroke="#5D4037" stroke-width="3" fill="none" opacity="0.8">
+    <!-- Major cracks -->
+    <path d="M0 450 Q100 430 200 450 T400 440 T600 460 T800 450"/>
+    <path d="M50 500 Q150 480 250 500 T450 490 T650 510 T800 500"/>
+    <path d="M0 530 Q120 510 240 530 T480 520 T720 540 T800 530"/>
+    
+    <!-- Cross cracks -->
+    <path d="M100 400 L120 480 M180 410 L200 490"/>
+    <path d="M300 420 L320 500 M380 400 L400 480"/>
+    <path d="M500 410 L520 490 M580 420 L600 500"/>
+    <path d="M700 400 L720 480"/>
+    
+    <!-- Small surface cracks -->
+    <path d="M150 460 L170 470 M160 450 L175 465"/>
+    <path d="M350 470 L370 480 M360 460 L375 475"/>
+    <path d="M550 480 L570 490 M560 470 L575 485"/>
+  </g>
+  
+  <!-- Dried water bodies -->
+  <!-- Empty reservoir/tank -->
+  <ellipse cx="300" cy="500" rx="120" ry="40" fill="#6D4C41" opacity="0.9"/>
+  <ellipse cx="300" cy="490" rx="100" ry="30" fill="#5D4037"/>
+  <ellipse cx="300" cy="485" rx="80" ry="20" fill="#3E2723"/>
+  
+  <!-- Dried well -->
+  <circle cx="600" cy="480" r="25" fill="#3E2723"/>
+  <circle cx="600" cy="475" r="18" fill="#2E2016"/>
+  
+  <!-- Dead and dying vegetation -->
+  <g stroke="#6D4C41" stroke-width="3" fill="none" opacity="0.7">
+    <!-- Dead trees -->
+    <path d="M150 380 L130 320 M140 350 L115 335 M140 350 L165 335"/>
+    <path d="M450 390 L430 330 M440 360 L415 345 M440 360 L465 345"/>
+    <path d="M750 370 L730 310 M740 340 L715 325"/>
+    
+    <!-- Withered bushes -->
+    <circle cx="200" cy="420" r="15" fill="none"/>
+    <circle cx="380" cy="430" r="18" fill="none"/>
+    <circle cx="680" cy="410" r="12" fill="none"/>
+  </g>
+  
+  <!-- Chennai cityscape (hazy in distance) -->
+  <g opacity="0.4">
+    <rect x="100" y="250" width="30" height="100" fill="#8D6E63"/>
+    <rect x="140" y="240" width="25" height="110" fill="#A1887F"/>
+    <rect x="180" y="260" width="35" height="90" fill="#8D6E63"/>
+    <rect x="230" y="230" width="40" height="120" fill="#A1887F"/>
+    <rect x="500" y="270" width="30" height="80" fill="#8D6E63"/>
+    <rect x="540" y="250" width="35" height="100" fill="#A1887F"/>
+  </g>
+  
+  <!-- Heat distortion waves -->
+  <g stroke="#FFD54F" stroke-width="2" fill="none" opacity="0.6">
+    <path d="M50 300 Q70 295 90 300 T130 300 T170 300"/>
+    <path d="M200 320 Q220 315 240 320 T280 320 T320 320"/>
+    <path d="M350 340 Q370 335 390 340 T430 340 T470 340"/>
+    <path d="M500 360 Q520 355 540 360 T580 360 T620 360"/>
+    <path d="M650 380 Q670 375 690 380 T730 380"/>
+  </g>
+  
+  <!-- Empty water pots -->
+  <g opacity="0.8">
+    <ellipse cx="400" cy="420" rx="12" ry="15" fill="#8D6E63"/>
+    <ellipse cx="400" cy="415" rx="10" ry="3" fill="#6D4C41"/>
+    
+    <ellipse cx="520" cy="440" rx="10" ry="12" fill="#8D6E63"/>
+    <ellipse cx="520" cy="436" rx="8" ry="2" fill="#6D4C41"/>
+  </g>
+  
+  <!-- Desperate people searching for water -->
+  <g fill="#5D4037" opacity="0.7">
+    <!-- Person 1 digging -->
+    <circle cx="180" cy="470" r="8"/>
+    <ellipse cx="180" cy="490" rx="10" ry="18"/>
+    <ellipse cx="170" cy="485" rx="6" ry="15"/>
+    <ellipse cx="195" cy="480" rx="8" ry="12"/>
+    
+    <!-- Person 2 carrying pot -->
+    <circle cx="650" cy="450" r="7"/>
+    <ellipse cx="650" cy="470" rx="8" ry="16"/>
+    <ellipse cx="640" cy="465" rx="5" ry="12"/>
+    <ellipse cx="665" cy="460" rx="6" ry="10"/>
+    <circle cx="672" cy="455" r="4" fill="#8D6E63"/>
+  </g>
+  
+  <!-- Water scarcity indicator -->
+  <g transform="translate(50, 50)">
+    <rect x="0" y="0" width="150" height="100" fill="#000" opacity="0.8" rx="10"/>
+    <text x="75" y="25" text-anchor="middle" fill="#FFF" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Chennai Water Crisis</text>
+    <text x="75" y="50" text-anchor="middle" fill="#FF5722" font-family="Arial, sans-serif" font-size="18" font-weight="bold">Day Zero</text>
+    <text x="75" y="70" text-anchor="middle" fill="#FF5722" font-family="Arial, sans-serif" font-size="12">Reservoirs: 0.2%</text>
+    <text x="75" y="90" text-anchor="middle" fill="#FF5722" font-family="Arial, sans-serif" font-size="11">CRITICAL SHORTAGE</text>
+  </g>
+  
+  <!-- Temperature indicator -->
+  <g transform="translate(680, 250)">
+    <rect x="0" y="0" width="15" height="80" rx="7" fill="#FF5722"/>
+    <circle cx="7" cy="90" r="12" fill="#FF5722"/>
+    <rect x="3" y="10" width="8" height="65" fill="#FFF"/>
+    <rect x="3" y="50" width="8" height="25" fill="#FF5722"/>
+    <text x="25" y="60" fill="#333" font-family="Arial, sans-serif" font-size="14" font-weight="bold">47°C</text>
+  </g>
+  
+  <!-- Dust particles -->
+  <g fill="#D7CCC8" opacity="0.3">
+    <circle cx="120" cy="280" r="2"/>
+    <circle cx="280" cy="290" r="1.5"/>
+    <circle cx="420" cy="270" r="2"/>
+    <circle cx="580" cy="285" r="1"/>
+    <circle cx="320" cy="260" r="1.5"/>
+    <circle cx="480" cy="275" r="2"/>
+    <circle cx="650" cy="265" r="1"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="400" y="580" text-anchor="middle" fill="#5D4037" font-family="Arial, sans-serif" font-size="28" font-weight="bold" opacity="0.9" text-shadow="2px 2px 4px rgba(255,255,255,0.3)">Chennai Water Scarcity</text>
+</svg>
