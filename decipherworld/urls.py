@@ -15,6 +15,7 @@ urlpatterns = [
     path('', include('core.urls')),
     path('games/', include('games.urls')),
     path('cyber-city/', include('cyber_city.urls')),
+    path('articles/', include('articles.urls')),
     
     # Keep the apps but they're now accessed through games/ namespace
     # These are needed for internal template references

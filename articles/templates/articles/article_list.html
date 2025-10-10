@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles | DecipherWorld</title>
+    <meta name="description" content="Browse our latest articles on education, teaching strategies, and EdTech news from DecipherWorld.">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Articles</h1>
+        
+        {% if articles %}
+            <div class="articles-list">
+                {% for article in articles %}
+                    <article class="article-preview">
+                        <h2><a href="{% url 'articles:article_detail' article.slug %}">{{ article.title }}</a></h2>
+                        <div class="article-meta">
+                            <span class="author">By {{ article.author.get_full_name|default:article.author.username }}</span>
+                            <span class="date">{{ article.created_on|date:"F d, Y" }}</span>
+                            <span class="category">{{ article.category.name }}</span>
+                        </div>
+                        <p class="meta-description">{{ article.meta_description }}</p>
+                    </article>
+                {% endfor %}
+            </div>
+            
+            {% if is_paginated %}
+                <div class="pagination">
+                    <span class="pagination-links">
+                        {% if page_obj.has_previous %}
+                            <a href="?page=1">&laquo; first</a>
+                            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                        {% endif %}
+                        
+                        <span class="current">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </span>
+                        
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}">next</a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+            {% endif %}
+        {% else %}
+            <p>No articles have been published yet.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

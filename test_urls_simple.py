@@ -47,6 +47,9 @@ def test_urls():
         ('/learn/session/create/1/', 200, "Start Session (was 500)"),
         ('/learn/session/0DWOO2/reflection/', 200, "Reflection page (was 500)"),
         
+        # Articles
+        ('/articles/', 200, "Articles List"),
+        
         # System URLs
         ('/sitemap.xml', 200, "Sitemap"),
         ('/robots.txt', 200, "Robots.txt"),

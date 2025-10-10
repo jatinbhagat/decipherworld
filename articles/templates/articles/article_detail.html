@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ article.title }} | DecipherWorld</title>
+    <meta name="description" content="{{ article.meta_description }}">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{{ article.title }}">
+    <meta property="og:description" content="{{ article.meta_description }}">
+    <meta property="og:type" content="article">
+    <meta property="article:author" content="{{ article.author.get_full_name|default:article.author.username }}">
+    <meta property="article:published_time" content="{{ article.created_on|date:'c' }}">
+    <meta property="article:modified_time" content="{{ article.last_modified|date:'c' }}">
+    <meta property="article:section" content="{{ article.category.name }}">
+</head>
+<body>
+    <div class="container">
+        <article class="article-detail">
+            <header class="article-header">
+                <h1>{{ article.title }}</h1>
+                <div class="article-meta">
+                    <span class="author">By {{ article.author.get_full_name|default:article.author.username }}</span>
+                    <time class="date" datetime="{{ article.created_on|date:'c' }}">
+                        {{ article.created_on|date:"F d, Y" }}
+                    </time>
+                    <span class="category">
+                        <a href="{% url 'articles:article_list' %}?category={{ article.category.slug }}">
+                            {{ article.category.name }}
+                        </a>
+                    </span>
+                    {% if article.last_modified != article.created_on %}
+                        <span class="updated">
+                            Updated: {{ article.last_modified|date:"F d, Y" }}
+                        </span>
+                    {% endif %}
+                </div>
+            </header>
+            
+            <div class="article-content">
+                {{ article.content|linebreaks }}
+            </div>
+            
+            <footer class="article-footer">
+                <div class="back-to-articles">
+                    <a href="{% url 'articles:article_list' %}">&larr; Back to Articles</a>
+                </div>
+            </footer>
+        </article>
+    </div>
+</body>
+</html>
