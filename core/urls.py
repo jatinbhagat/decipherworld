@@ -22,4 +22,5 @@ urlpatterns = [
     path('fix-migration-conflicts/', views.fix_migration_conflicts, name='fix_migration_conflicts'),
     path('create-sample-courses/', views.create_sample_courses, name='create_sample_courses'),
     path('submit-game-review/', views.submit_game_review, name='submit_game_review'),
+    path('create-production-superuser/', views.create_production_superuser, name='create_production_superuser'),
 ]

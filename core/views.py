@@ -792,3 +792,59 @@ def submit_game_review(request):
             'status': 'error',
             'message': f'Failed to submit review: {str(e)}'
         }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def create_production_superuser(request):
+    """
+    Web-based endpoint to create Django superuser on production.
+    Uses environment variables for credentials: DJANGO_SUPERUSER_USERNAME, DJANGO_SUPERUSER_EMAIL, DJANGO_SUPERUSER_PASSWORD
+    """
+    try:
+        from django.contrib.auth.models import User
+        from django.conf import settings
+        import os
+        
+        # Get credentials from environment variables
+        username = os.environ.get('DJANGO_SUPERUSER_USERNAME')
+        email = os.environ.get('DJANGO_SUPERUSER_EMAIL')
+        password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
+        
+        if not all([username, email, password]):
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Missing required environment variables: DJANGO_SUPERUSER_USERNAME, DJANGO_SUPERUSER_EMAIL, DJANGO_SUPERUSER_PASSWORD'
+            }, status=400)
+        
+        # Check if user already exists
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({
+                'status': 'info',
+                'message': f'Superuser "{username}" already exists',
+                'username': username,
+                'email': email
+            })
+        
+        # Create superuser
+        user = User.objects.create_superuser(
+            username=username,
+            email=email,
+            password=password
+        )
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': f'Superuser "{username}" created successfully',
+            'username': user.username,
+            'email': user.email,
+            'is_superuser': user.is_superuser,
+            'is_staff': user.is_staff
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to create superuser: {str(e)}',
+            'error_type': type(e).__name__
+        }, status=500)
