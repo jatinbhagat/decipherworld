@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'group_learning',
     'cyber_city',
     'articles',
+    'tinymce',
 ]
 
 MIDDLEWARE = [
@@ -166,3 +167,37 @@ CHANNEL_LAYERS = {
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_SSL_REDIRECT = False  # Override in production
+
+# TinyMCE Configuration (Secure Alternative to CKEditor)
+TINYMCE_DEFAULT_CONFIG = {
+    'height': 400,
+    'width': '100%',
+    'cleanup_on_startup': True,
+    'custom_undo_redo_levels': 20,
+    'selector': 'textarea',
+    'theme': 'silver',
+    'plugins': '''
+        textcolor save link image media preview codesample contextmenu
+        table code lists fullscreen insertdatetime nonbreaking
+        contextmenu directionality searchreplace wordcount visualblocks
+        visualchars code fullscreen autolink lists charmap print hr
+        anchor pagebreak
+    ''',
+    'toolbar1': '''
+        fullscreen preview bold italic underline | fontselect,
+        fontsizeselect | forecolor backcolor | alignleft alignright |
+        aligncenter alignjustify | indent outdent | bullist numlist table |
+        | link image media | codesample |
+    ''',
+    'toolbar2': '''
+        visualblocks visualchars |
+        charmap hr pagebreak nonbreaking anchor | code |
+    ''',
+    'contextmenu': 'formats | link image',
+    'menubar': True,
+    'statusbar': True,
+}
+
+# File upload settings for TinyMCE
+TINYMCE_SPELLCHECKER = True
+TINYMCE_COMPRESSOR = False

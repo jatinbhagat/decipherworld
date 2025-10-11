@@ -92,15 +92,49 @@ def simple_sitemap(request):
         # Continue without dynamic URLs if there's an error (e.g., in testing)
         pass
     
+    # ARTICLES & BLOG CONTENT (High Priority for SEO - 0.7-0.8)
+    try:
+        from articles.models import Article
+        
+        # Articles list page
+        urls.append(('/articles/', '0.8', 'weekly'))
+        
+        # Individual articles
+        articles = Article.objects.all().order_by('-created_on')
+        for article in articles:
+            article_url = f'/articles/{article.slug}/'
+            # Use article's last modified date for better SEO
+            article_date = article.last_modified.strftime('%Y-%m-%d')
+            
+            # Higher priority for recent articles (within 30 days)
+            from datetime import datetime, timedelta
+            if article.created_on >= timezone.now() - timedelta(days=30):
+                priority = '0.8'  # Recent content gets higher priority
+                changefreq = 'weekly'  # Recent articles might be updated more frequently
+            else:
+                priority = '0.7'  # Older content still valuable for SEO
+                changefreq = 'monthly'
+                
+            urls.append((article_url, priority, changefreq, article_date))
+    except Exception:
+        # Continue without dynamic URLs if there's an error (e.g., in testing)
+        pass
+    
     # Generate XML
     xml_content = '''<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'''
     
-    for url, priority, changefreq in urls:
+    for url_data in urls:
+        if len(url_data) == 4:
+            url, priority, changefreq, lastmod = url_data
+        else:
+            url, priority, changefreq = url_data
+            lastmod = current_date
+            
         xml_content += f'''
     <url>
         <loc>{base_url}{url}</loc>
-        <lastmod>{current_date}</lastmod>
+        <lastmod>{lastmod}</lastmod>
         <changefreq>{changefreq}</changefreq>
         <priority>{priority}</priority>
     </url>'''

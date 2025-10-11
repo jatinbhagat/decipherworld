@@ -16,7 +16,8 @@
       "Read(//Users/jatinbhagat/Downloads/**)",
       "Bash(svgo:*)",
       "Bash(sqlite3:*)",
-      "Bash(az webapp config appsettings list:*)"
+      "Bash(az webapp config appsettings list:*)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": []

@@ -30,3 +30,7 @@ daphne==4.1.0
 # ASGI dependencies
 asgiref==3.7.2
 twisted==23.10.0
+
+# Rich Text Editor (Secure Alternative to CKEditor)
+django-tinymce==4.1.0
+Pillow==10.0.1

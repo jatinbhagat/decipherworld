@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.text import slugify
+from tinymce.models import HTMLField
 
 
 class Category(models.Model):
@@ -26,7 +27,7 @@ class Article(models.Model):
     slug = models.SlugField(max_length=200, unique=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='articles')
-    content = models.TextField()
+    content = HTMLField()
     meta_description = models.CharField(
         max_length=160, 
         help_text="SEO meta description (max 160 characters)"
