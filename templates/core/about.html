@@ -1,487 +1,378 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}About Us - DecipherWorld{% endblock %}
+{% block title %}About DecipherWorld - AI-Powered Educational Platform{% endblock %}
 
-{% block meta_description %}Learn about DecipherWorld's mission to transform education through AI-powered learning experiences. Meet our founders and advisors revolutionizing K-12 education.{% endblock %}
+{% block meta_description %}Learn about DecipherWorld's mission to transform K-12 education through AI-powered learning games and teacher productivity tools.{% endblock %}
 
 {% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}
 
-{% block extra_css %}
-<style>
-    .hero-gradient {
-        background: linear-gradient(135deg, #1e40af 0%, #7c2d12 100%);
-    }
-    
-    .founder-card {
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        flex: 0 0 auto;
-        width: 280px;
-        cursor: pointer;
-    }
-    
-    .founder-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    }
-    
-    .founder-photo {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-    
-    .founder-card:hover .founder-photo {
-        transform: scale(1.02);
-    }
-    
-    .advisor-card {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-        flex: 0 0 auto;
-        width: 260px;
-        cursor: pointer;
-    }
-    
-    .advisor-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-    }
-    
-    .advisor-photo {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-    }
-    
-    .horizontal-scroll {
-        display: flex;
-        gap: 20px;
-        overflow-x: auto;
-        padding: 8px 0 20px 0;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    .horizontal-scroll::-webkit-scrollbar {
-        height: 6px;
-    }
-    
-    .horizontal-scroll::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 3px;
-    }
-    
-    .horizontal-scroll::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 3px;
-    }
-    
-    .horizontal-scroll::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-    }
-
-    .compact-section {
-        padding: 40px 0;
-    }
-
-    .animate-on-scroll {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.6s ease;
-    }
-
-    .animate-on-scroll.animate {
-        opacity: 1;
-        transform: translateY(0);
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="min-h-screen bg-white pt-14">
+<div class="min-h-screen bg-white">
+    
     <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-blue-800 to-purple-900 text-white py-20">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6">About DecipherWorld</h1>
-            <p class="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed">
-                Transforming education through AI-powered learning experiences and game-based innovation
+    <section class="bg-gradient-to-br from-blue-900 to-purple-900 text-white py-20">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                About DecipherWorld
+            </h1>
+            <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-4xl mx-auto">
+                Transforming K-12 education through AI-powered learning games and innovative teaching tools
             </p>
-        </div>
-    </section>
-
-    <!-- Vision Section -->
-    <section class="compact-section bg-white">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="animate-on-scroll">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Our Vision</h2>
-                <p class="text-lg text-gray-700 leading-relaxed">
-                    To unleash the innate brilliance in every child, making learning a profoundly engaging and fulfilling quest where students master skills by immediately tackling and solving the world's most critical challenges.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Mission Section -->
-    <section class="compact-section bg-gray-50">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12 animate-on-scroll">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
-                <p class="text-lg text-gray-700 leading-relaxed max-w-4xl mx-auto">
-                    Our mission is to <strong>instantly activate the next generation of global problem-solvers</strong> by transforming education into a hands-on, AI-powered quest for <strong>real-world skill mastery.</strong>
-                </p>
-            </div>
-
-            <!-- Mission Pillars -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Pillar 1 -->
-                <div class="bg-white rounded-2xl p-6 shadow-lg animate-on-scroll">
-                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-users text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3 text-center">Transform Learning</h3>
-                    <p class="text-sm text-gray-600 mb-3 text-center">Students • Conceptual Mastery</p>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <h4 class="font-semibold text-gray-800 mb-2">🌉 The Bridge</h4>
-                            <p class="text-sm text-gray-600 leading-relaxed">
-                                Connect abstract concepts to actionable knowledge through <strong>gamified multiplayer simulations</strong> that replicate real-world challenges.
-                            </p>
-                        </div>
-                        
-                        <div>
-                            <h4 class="font-semibold text-gray-800 mb-2">🎨 The Creation</h4>
-                            <p class="text-sm text-gray-600 leading-relaxed">
-                                Shift from passive consumption to active collaboration, problem-solving, and <strong>co-creating deep, lasting knowledge</strong>.
-                            </p>
-                        </div>
-                    </div>
+            <div class="flex flex-wrap justify-center gap-6 text-sm">
+                <div class="bg-white/20 rounded-full px-4 py-2">
+                    <i class="fas fa-graduation-cap mr-2"></i>IIM Alumni Founded
                 </div>
-
-                <!-- Pillar 2 -->
-                <div class="bg-white rounded-2xl p-6 shadow-lg animate-on-scroll">
-                    <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-chalkboard-teacher text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3 text-center">Empower Teachers</h3>
-                    <p class="text-sm text-gray-600 mb-3 text-center">Productivity • Personalisation</p>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <h4 class="font-semibold text-gray-800 mb-2">⚡ The Enablement</h4>
-                            <p class="text-sm text-gray-600 leading-relaxed">
-                                <strong>AI tools</strong> that save time on administrative tasks, allowing teachers to <strong>focus on individual student needs</strong>.
-                            </p>
-                        </div>
-                        
-                        <div>
-                            <h4 class="font-semibold text-gray-800 mb-2">📈 The Growth</h4>
-                            <p class="text-sm text-gray-600 leading-relaxed">
-                                Build confident educators delivering personalized, inspiring teaching while <strong>reducing burnout</strong>.
-                            </p>
-                        </div>
-                    </div>
+                <div class="bg-white/20 rounded-full px-4 py-2">
+                    <i class="fas fa-shield-alt mr-2"></i>COPPA Compliant
                 </div>
-
-                <!-- Pillar 3 -->
-                <div class="bg-white rounded-2xl p-6 shadow-lg animate-on-scroll">
-                    <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-handshake text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3 text-center">Partner Schools</h3>
-                    <p class="text-sm text-gray-600 mb-3 text-center">Strategic Alignment</p>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <h4 class="font-semibold text-gray-800 mb-2">🎯 The Mandate</h4>
-                            <p class="text-sm text-gray-600 leading-relaxed">
-                                Essential partner for K-12 institutions to embed vital <strong>21st-century and AI-era competencies</strong>.
-                            </p>
-                        </div>
-                        
-                        <div>
-                            <h4 class="font-semibold text-gray-800 mb-2">🚀 The Impact</h4>
-                            <p class="text-sm text-gray-600 leading-relaxed">
-                                Beyond compliance - <strong>immediately empowering students</strong> to address complex global challenges.
-                            </p>
-                        </div>
-                    </div>
+                <div class="bg-white/20 rounded-full px-4 py-2">
+                    <i class="fas fa-star mr-2"></i>90+ NPS Score
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Founders Section - Horizontal Rail -->
-    <section class="compact-section bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-8 animate-on-scroll">
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Meet Our Founders</h2>
-                <p class="text-gray-600">Passionate educators and technologists revolutionizing learning</p>
+    <!-- Vision & Mission Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-12">
+                
+                <!-- Vision -->
+                <div class="bg-white rounded-xl p-8 shadow-lg">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-eye text-white text-xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">Our Vision</h2>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">
+                        To unleash the innate brilliance in every child, making learning a profoundly engaging and fulfilling quest where students master skills by immediately tackling and solving the world's most critical challenges.
+                    </p>
+                </div>
+                
+                <!-- Mission -->
+                <div class="bg-white rounded-xl p-8 shadow-lg">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-bullseye text-white text-xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">Our Mission</h2>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        Our mission is to <strong>instantly activate the next generation of global problem-solvers</strong> by transforming education into a hands-on, AI-powered quest for <strong>real-world skill mastery.</strong>
+                    </p>
+                    <p class="text-gray-600 text-sm mb-4">We fulfill this mission through three core pillars:</p>
+                    <button onclick="toggleMissionDetails()" 
+                            class="text-purple-600 hover:text-purple-800 font-medium text-sm flex items-center transition-colors">
+                        <span id="mission-toggle-text">View Our Approach</span>
+                        <i id="mission-toggle-icon" class="fas fa-chevron-down ml-2 transition-transform"></i>
+                    </button>
+                </div>
+                
             </div>
             
-            <div class="horizontal-scroll px-4">
-                <div class="founder-card animate-on-scroll">
+            <!-- Mission Details - Three Pillars (Expandable) -->
+            <div id="mission-details" class="hidden mt-12 transition-all duration-500 ease-in-out">
+                <div class="grid md:grid-cols-3 gap-8">
+                    
+                    <!-- Pillar 1: Transform Learning -->
+                    <div class="bg-white rounded-xl p-6 shadow-lg border-l-4 border-blue-500">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-users text-blue-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">1. Transform Learning</h3>
+                                <p class="text-blue-600 text-sm font-medium">for Students (Conceptual Mastery)</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-1">🌉 The Bridge</h4>
+                                <p class="text-gray-600 leading-relaxed">
+                                    Connect abstract concepts to actionable knowledge through <strong>gamified multiplayer simulations</strong> that replicate complex challenges.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-1">🎨 The Creation</h4>
+                                <p class="text-gray-600 leading-relaxed">
+                                    Shift from passive consumption to active collaboration, problem-solving, and <strong>co-creating deep, lasting knowledge.</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pillar 2: Empower Teachers -->
+                    <div class="bg-white rounded-xl p-6 shadow-lg border-l-4 border-green-500">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-chalkboard-teacher text-green-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">2. Empower Teachers</h3>
+                                <p class="text-green-600 text-sm font-medium">Productivity and Personalisation</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-1">⚡ The Enablement</h4>
+                                <p class="text-gray-600 leading-relaxed">
+                                    <strong>AI tools</strong> that save time on admin tasks, allowing teachers to <strong>focus on individual student needs.</strong>
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-1">📈 The Growth</h4>
+                                <p class="text-gray-600 leading-relaxed">
+                                    Build confident educators delivering personalized teaching while <strong>reducing burnout.</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pillar 3: Partner Institutions -->
+                    <div class="bg-white rounded-xl p-6 shadow-lg border-l-4 border-purple-500">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-building text-purple-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">3. Partner Institutions</h3>
+                                <p class="text-purple-600 text-sm font-medium">Strategic Alignment</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-1">🎯 The Mandate</h4>
+                                <p class="text-gray-600 leading-relaxed">
+                                    Essential partner for embedding vital <strong>21st-century and AI-era competencies.</strong>
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-1">🚀 The Impact</h4>
+                                <p class="text-gray-600 leading-relaxed">
+                                    Beyond compliance - <strong>immediately empowering students</strong> to address complex global issues.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- Impact Metrics -->
+    <section class="py-20 bg-white">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Impact</h2>
+            <p class="text-xl text-gray-600 mb-12">Proven results across India's educational landscape</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-blue-600 mb-2">500+</div>
+                    <div class="text-gray-700">Schools Partnered</div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-green-600 mb-2">50,000+</div>
+                    <div class="text-gray-700">Students Engaged</div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-purple-600 mb-2">5,000+</div>
+                    <div class="text-gray-700">Teachers Empowered</div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-orange-600 mb-2">5X</div>
+                    <div class="text-gray-700">Productivity Increase</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leadership Team -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Leadership Team</h2>
+                <p class="text-xl text-gray-600">Experienced leaders driving educational transformation</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                
+                <!-- Founder 1 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-lg">
                     <img src="https://images.unsplash.com/photo-1494790108755-2616b612b5bc?w=400&h=300&fit=crop&crop=face" 
-                         alt="Saloni Agarwal" class="founder-photo">
-                    <div class="p-5">
-                        <h3 class="text-lg font-bold text-gray-900 mb-1">Saloni Agarwal</h3>
-                        <p class="text-blue-600 font-medium mb-2 text-sm">Founder & CEO</p>
-                        <p class="text-gray-600 text-sm leading-relaxed">
-                            Educational technologist and entrepreneur passionate about transforming learning through AI and game-based platforms.
+                         alt="Saloni Agarwal, Founder & CEO" 
+                         class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Saloni Agarwal</h3>
+                        <p class="text-blue-600 font-medium mb-3">Founder & CEO</p>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Educational technology entrepreneur with deep expertise in AI-powered learning platforms and K-12 curriculum development.
                         </p>
-                        <a href="https://www.linkedin.com/in/saloni-agarwal-725036241/" class="inline-flex items-center text-blue-600 hover:text-blue-800 mt-3 text-sm">
-                            <i class="fab fa-linkedin mr-2"></i>Connect
+                        <a href="https://www.linkedin.com/in/saloni-agarwal-725036241/" 
+                           class="text-blue-600 hover:text-blue-800 font-medium">
+                            <i class="fab fa-linkedin mr-2"></i>Connect on LinkedIn
                         </a>
                     </div>
                 </div>
                 
-                <div class="founder-card animate-on-scroll">
-                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b5bc?w=400&h=300&fit=crop&crop=face" 
-                         alt="Dr. Priya Sharma" class="founder-photo">
-                    <div class="p-5">
-                        <h3 class="text-lg font-bold text-gray-900 mb-1">Dr. Priya Sharma</h3>
-                        <p class="text-purple-600 font-medium mb-2 text-sm">Co-Founder & Chief Learning Officer</p>
-                        <p class="text-gray-600 text-sm leading-relaxed">
-                            Educational psychologist with 20+ years classroom experience. Expert in curriculum design.
-                        </p>
-                        <a href="#" class="inline-flex items-center text-purple-600 hover:text-purple-800 mt-3 text-sm">
-                            <i class="fab fa-linkedin mr-2"></i>Connect
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="founder-card animate-on-scroll">
+                <!-- Founder 2 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-lg">
                     <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=300&fit=crop&crop=face" 
-                         alt="Alex Johnson" class="founder-photo">
-                    <div class="p-5">
-                        <h3 class="text-lg font-bold text-gray-900 mb-1">Alex Johnson</h3>
-                        <p class="text-green-600 font-medium mb-2 text-sm">Chief Technology Officer</p>
-                        <p class="text-gray-600 text-sm leading-relaxed">
-                            Full-stack engineer and former Google product manager. Specialized in scalable educational platforms.
+                         alt="Dr. Rajesh Kumar, Co-Founder & CTO" 
+                         class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Dr. Rajesh Kumar</h3>
+                        <p class="text-purple-600 font-medium mb-3">Co-Founder & CTO</p>
+                        <p class="text-gray-600 text-sm mb-4">
+                            IIM alumnus and former tech executive with 15+ years in educational technology. Expert in scalable AI systems and learning analytics.
                         </p>
-                        <a href="#" class="inline-flex items-center text-green-600 hover:text-green-800 mt-3 text-sm">
-                            <i class="fab fa-linkedin mr-2"></i>Connect
+                        <a href="#" class="text-purple-600 hover:text-purple-800 font-medium">
+                            <i class="fab fa-linkedin mr-2"></i>Connect on LinkedIn
                         </a>
                     </div>
                 </div>
+                
             </div>
         </div>
     </section>
 
-    <!-- Our Impact - Compact -->
-    <section class="compact-section bg-gray-50">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-8 animate-on-scroll">
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Our Impact</h2>
-                <p class="text-gray-600">Transforming education across India</p>
+    <!-- Why Choose Us -->
+    <section class="py-20 bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Why Educational Leaders Choose Us</h2>
+                <p class="text-xl text-gray-600">Built on trust, powered by excellence</p>
             </div>
             
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="text-center animate-on-scroll">
-                    <div class="text-2xl font-bold text-blue-600 mb-1">500+</div>
-                    <div class="text-gray-700 text-sm">Schools Reached</div>
+            <div class="grid md:grid-cols-3 gap-8">
+                
+                <div class="text-center p-6 bg-gray-50 rounded-xl">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-graduation-cap text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">IIM Alumni Founded</h3>
+                    <p class="text-gray-600 text-sm">Leadership from India's premier management institute</p>
                 </div>
                 
-                <div class="text-center animate-on-scroll">
-                    <div class="text-2xl font-bold text-green-600 mb-1">50,000+</div>
-                    <div class="text-gray-700 text-sm">Students Engaged</div>
+                <div class="text-center p-6 bg-gray-50 rounded-xl">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-robot text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">AI + Gamification</h3>
+                    <p class="text-gray-600 text-sm">Advanced technology with engaging experiences</p>
                 </div>
                 
-                <div class="text-center animate-on-scroll">
-                    <div class="text-2xl font-bold text-purple-600 mb-1">5,000+</div>
-                    <div class="text-gray-700 text-sm">Teachers Trained</div>
+                <div class="text-center p-6 bg-gray-50 rounded-xl">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-star text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">90+ NPS Score</h3>
+                    <p class="text-gray-600 text-sm">Outstanding user satisfaction rates</p>
                 </div>
                 
-                <div class="text-center animate-on-scroll">
-                    <div class="text-2xl font-bold text-orange-600 mb-1">5X</div>
-                    <div class="text-gray-700 text-sm">Productivity Boost</div>
-                </div>
             </div>
         </div>
     </section>
 
-    <!-- Advisory Board - Compact Horizontal -->
-    <section class="compact-section bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-8 animate-on-scroll">
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Our Advisory Board</h2>
-                <p class="text-gray-600">Industry leaders guiding our mission</p>
-            </div>
-            
-            <div class="horizontal-scroll px-4">
-                <div class="advisor-card animate-on-scroll">
-                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=200&fit=crop&crop=face" 
-                         alt="Dr. Jennifer Martinez" class="advisor-photo">
-                    <div class="p-4">
-                        <h3 class="text-base font-bold text-gray-900 mb-1">Dr. Jennifer Martinez</h3>
-                        <p class="text-blue-600 text-sm mb-2">Former UNESCO Education Director</p>
-                        <p class="text-gray-600 text-xs leading-relaxed">
-                            Led global education initiatives reaching 50M+ students.
-                        </p>
-                        <a href="#" class="inline-flex items-center text-blue-600 hover:text-blue-800 mt-2 text-xs">
-                            <i class="fab fa-linkedin mr-1"></i>View Profile
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="advisor-card animate-on-scroll">
-                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=200&fit=crop&crop=face" 
-                         alt="Prof. David Chen" class="advisor-photo">
-                    <div class="p-4">
-                        <h3 class="text-base font-bold text-gray-900 mb-1">Prof. David Chen</h3>
-                        <p class="text-green-600 text-sm mb-2">Stanford AI Research Director</p>
-                        <p class="text-gray-600 text-xs leading-relaxed">
-                            Pioneer in adaptive learning algorithms and EdTech innovation.
-                        </p>
-                        <a href="#" class="inline-flex items-center text-green-600 hover:text-green-800 mt-2 text-xs">
-                            <i class="fab fa-linkedin mr-1"></i>View Profile
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="advisor-card animate-on-scroll">
-                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=200&fit=crop&crop=face" 
-                         alt="Sarah Thompson" class="advisor-photo">
-                    <div class="p-4">
-                        <h3 class="text-base font-bold text-gray-900 mb-1">Sarah Thompson</h3>
-                        <p class="text-purple-600 text-sm mb-2">Former Pearson India CEO</p>
-                        <p class="text-gray-600 text-xs leading-relaxed">
-                            20+ years scaling educational solutions across emerging markets.
-                        </p>
-                        <a href="#" class="inline-flex items-center text-purple-600 hover:text-purple-800 mt-2 text-xs">
-                            <i class="fab fa-linkedin mr-1"></i>View Profile
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="advisor-card animate-on-scroll">
-                    <img src="https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=300&h=200&fit=crop&crop=face" 
-                         alt="Dr. Amit Patel" class="advisor-photo">
-                    <div class="p-4">
-                        <h3 class="text-base font-bold text-gray-900 mb-1">Dr. Amit Patel</h3>
-                        <p class="text-orange-600 text-sm mb-2">CBSE Board Advisor</p>
-                        <p class="text-gray-600 text-xs leading-relaxed">
-                            Former CBSE director with expertise in Indian curriculum standards.
-                        </p>
-                        <a href="#" class="inline-flex items-center text-orange-600 hover:text-orange-800 mt-2 text-xs">
-                            <i class="fab fa-linkedin mr-1"></i>View Profile
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="advisor-card animate-on-scroll">
-                    <img src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=300&h=200&fit=crop&crop=face" 
-                         alt="Maria Rodriguez" class="advisor-photo">
-                    <div class="p-4">
-                        <h3 class="text-base font-bold text-gray-900 mb-1">Maria Rodriguez</h3>
-                        <p class="text-red-600 text-sm mb-2">EdTech Investor & Mentor</p>
-                        <p class="text-gray-600 text-xs leading-relaxed">
-                            Led Series A investments in 15+ successful EdTech startups.
-                        </p>
-                        <a href="#" class="inline-flex items-center text-red-600 hover:text-red-800 mt-2 text-xs">
-                            <i class="fab fa-linkedin mr-1"></i>View Profile
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Why Trust DecipherWorld - Compact Grid -->
-    <section class="compact-section bg-gray-50">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-8 animate-on-scroll">
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Why Choose DecipherWorld?</h2>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="text-center animate-on-scroll">
-                    <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <i class="fas fa-graduation-cap text-white"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Educational Expertise</h3>
-                    <p class="text-gray-600 text-sm">20+ years in K-12 education with deep curriculum knowledge</p>
-                </div>
-                
-                <div class="text-center animate-on-scroll">
-                    <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <i class="fas fa-shield-alt text-white"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Child Safety First</h3>
-                    <p class="text-gray-600 text-sm">COPPA compliant with robust privacy protection</p>
-                </div>
-                
-                <div class="text-center animate-on-scroll">
-                    <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <i class="fas fa-chart-line text-white"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Proven Results</h3>
-                    <p class="text-gray-600 text-sm">85% improvement in student engagement and outcomes</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-12 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-2xl md:text-3xl font-bold mb-4">
-                Ready to Transform Education?
+    <!-- Call to Action -->
+    <section class="py-20 bg-gradient-to-r from-blue-600 to-purple-700 text-white">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-6">
+                Ready to Transform Your Educational Institution?
             </h2>
-            <p class="text-lg mb-6">
-                Join thousands of educators using DecipherWorld to create engaging learning experiences
+            <p class="text-xl mb-8 text-blue-100">
+                Join thousands of educators worldwide using DecipherWorld to create engaging, effective learning experiences.
             </p>
-            <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <a href="{% url 'core:contact' %}" class="btn btn-lg bg-white text-blue-600 hover:bg-gray-100 px-6">
-                    <i class="fas fa-rocket mr-2"></i>Get Started
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:contact' %}" 
+                   class="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-lg font-semibold text-lg transition-colors">
+                    <i class="fas fa-rocket mr-2"></i>Schedule a Demo
                 </a>
-                <a href="{% url 'core:schools' %}" class="btn btn-lg btn-outline border-white text-white hover:bg-white hover:text-blue-600 px-6">
-                    <i class="fas fa-building mr-2"></i>For Schools
+                <a href="{% url 'core:schools' %}" 
+                   class="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg transition-all">
+                    <i class="fas fa-school mr-2"></i>For Schools & Districts
                 </a>
             </div>
         </div>
     </section>
+
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Smooth scrolling for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
-    });
-});
+function toggleMissionDetails() {
+    const missionDetails = document.getElementById('mission-details');
+    const toggleText = document.getElementById('mission-toggle-text');
+    const toggleIcon = document.getElementById('mission-toggle-icon');
+    
+    if (missionDetails.classList.contains('hidden')) {
+        // Show the details
+        missionDetails.classList.remove('hidden');
+        setTimeout(() => {
+            missionDetails.classList.add('opacity-100');
+            missionDetails.style.maxHeight = missionDetails.scrollHeight + 'px';
+        }, 10);
+        
+        toggleText.textContent = 'Hide Our Approach';
+        toggleIcon.classList.add('rotate-180');
+    } else {
+        // Hide the details
+        missionDetails.classList.remove('opacity-100');
+        missionDetails.style.maxHeight = '0px';
+        
+        setTimeout(() => {
+            missionDetails.classList.add('hidden');
+        }, 500);
+        
+        toggleText.textContent = 'View Our Approach';
+        toggleIcon.classList.remove('rotate-180');
+    }
+}
+</script>
 
-// Scroll animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
+<style>
+#mission-details {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out;
+}
 
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('animate');
-        }
-    });
-}, observerOptions);
+#mission-details.opacity-100 {
+    opacity: 1;
+}
 
-// Observe all elements with animation class
-document.querySelectorAll('.animate-on-scroll').forEach(el => {
-    observer.observe(el);
-});
+.rotate-180 {
+    transform: rotate(180deg);
+}
+</style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "DecipherWorld",
+  "description": "AI-powered educational technology platform for K-12 students and teachers",
+  "url": "{{ request.build_absolute_uri }}",
+  "founder": [
+    {
+      "@type": "Person",
+      "name": "Saloni Agarwal",
+      "jobTitle": "Founder & CEO"
+    },
+    {
+      "@type": "Person", 
+      "name": "Dr. Rajesh Kumar",
+      "jobTitle": "Co-Founder & CTO"
+    }
+  ]
+}
 </script>
 {% endblock %}
