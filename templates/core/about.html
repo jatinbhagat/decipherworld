@@ -66,8 +66,9 @@
         display: flex;
         gap: 20px;
         overflow-x: auto;
-        padding: 8px 0;
+        padding: 8px 0 20px 0;
         scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
     }
     
     .horizontal-scroll::-webkit-scrollbar {
@@ -146,7 +147,7 @@
                 <p class="text-gray-600">Passionate educators and technologists revolutionizing learning</p>
             </div>
             
-            <div class="horizontal-scroll">
+            <div class="horizontal-scroll px-4">
                 <div class="founder-card animate-on-scroll">
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&crop=face" 
                          alt="Dr. Rajesh Kumar" class="founder-photo">
@@ -235,7 +236,7 @@
                 <p class="text-gray-600">Industry leaders guiding our mission</p>
             </div>
             
-            <div class="horizontal-scroll">
+            <div class="horizontal-scroll px-4">
                 <div class="advisor-card animate-on-scroll">
                     <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=200&fit=crop&crop=face" 
                          alt="Dr. Jennifer Martinez" class="advisor-photo">

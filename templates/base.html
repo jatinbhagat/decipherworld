@@ -203,7 +203,7 @@
 <body data-theme="modern" class="bg-base-100">
     
     <!-- Mobile-First Navigation Header -->
-    <div class="navbar bg-white shadow-lg border-b border-base-200 fixed top-0 z-50 backdrop-blur-sm min-h-16 px-2 sm:px-4 max-w-full">
+    <div class="navbar bg-white shadow-lg border-b border-base-200 fixed top-0 z-50 backdrop-blur-sm min-h-14 px-3 sm:px-6 max-w-full">
         <div class="navbar-start">
             <!-- Mobile Menu -->
             <div class="dropdown">
@@ -331,9 +331,9 @@
             </div>
             
             <!-- Professional Logo -->
-            <a href="{% url 'core:home' %}" class="btn btn-ghost text-lg font-bold p-2 flex-none hover:bg-slate-50">
-                <div class="flex items-center gap-3 lg:gap-4">
-                    <div class="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 flex items-center justify-center flex-shrink-0">
+            <a href="{% url 'core:home' %}" class="btn btn-ghost text-lg font-bold py-1 px-2 flex-none hover:bg-slate-50">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 flex items-center justify-center flex-shrink-0">
                         <img src="{% static 'images/decipherworld-logo.svg' %}" 
                              alt="DecipherWorld Logo" 
                              class="w-full h-full object-contain drop-shadow-sm align-middle"
@@ -508,7 +508,7 @@
     </div>
     
     <!-- Main Content -->
-    <main class="pt-16">
+    <main class="pt-14">
         {% if messages %}
             <div class="container mx-auto px-4 py-4">
                 {% for message in messages %}
