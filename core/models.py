@@ -2,6 +2,9 @@ from django.db import models
 from django.utils.html import mark_safe
 from PIL import Image
 import os
+import requests
+import json
+from urllib.parse import urlparse, parse_qs
 
 
 # Country codes for mobile number field
@@ -534,6 +537,25 @@ class VideoTestimonial(models.Model):
         null=True,
         help_text="Video duration (auto-detected when possible)"
     )
+    aspect_ratio = models.CharField(
+        max_length=20,
+        blank=True,
+        help_text="Video aspect ratio (e.g., '16:9', '9:16' for portrait)"
+    )
+    video_width = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text="Video width in pixels"
+    )
+    video_height = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text="Video height in pixels"
+    )
+    auto_thumbnail = models.URLField(
+        blank=True,
+        help_text="Auto-generated thumbnail URL (YouTube, etc.)"
+    )
     order = models.PositiveIntegerField(
         default=0,
         help_text="Order for display (lower numbers first)"
@@ -608,3 +630,114 @@ class VideoTestimonial(models.Model):
             return f"https://player.vimeo.com/video/{video_id}"
         
         return self.video_url
+    
+    def extract_youtube_video_id(self):
+        """Extract YouTube video ID from URL"""
+        if not self.video_url:
+            return None
+            
+        if 'youtube.com/watch?v=' in self.video_url:
+            return self.video_url.split('v=')[1].split('&')[0]
+        elif 'youtu.be/' in self.video_url:
+            return self.video_url.split('youtu.be/')[1].split('?')[0]
+        return None
+    
+    def get_youtube_thumbnail_url(self, quality='hqdefault'):
+        """Get YouTube thumbnail URL with different quality options"""
+        video_id = self.extract_youtube_video_id()
+        if not video_id:
+            return None
+        
+        # Quality options: default, mqdefault, hqdefault, sddefault, maxresdefault
+        return f"https://img.youtube.com/vi/{video_id}/{quality}.jpg"
+    
+    def get_vimeo_thumbnail_url(self):
+        """Get Vimeo thumbnail URL via API"""
+        if not self.video_url or 'vimeo.com' not in self.video_url:
+            return None
+            
+        try:
+            video_id = self.video_url.split('vimeo.com/')[1].split('?')[0]
+            api_url = f"https://vimeo.com/api/v2/video/{video_id}.json"
+            response = requests.get(api_url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if data and len(data) > 0:
+                    return data[0].get('thumbnail_large', data[0].get('thumbnail_medium'))
+        except:
+            pass
+        return None
+    
+    def auto_generate_thumbnail(self):
+        """Automatically generate thumbnail based on video source"""
+        if self.video_url:
+            # Try YouTube first
+            youtube_thumb = self.get_youtube_thumbnail_url('hqdefault')
+            if youtube_thumb:
+                self.auto_thumbnail = youtube_thumb
+                return youtube_thumb
+            
+            # Try Vimeo
+            vimeo_thumb = self.get_vimeo_thumbnail_url()
+            if vimeo_thumb:
+                self.auto_thumbnail = vimeo_thumb
+                return vimeo_thumb
+        
+        return None
+    
+    def get_best_thumbnail(self):
+        """Get the best available thumbnail (custom > auto > fallback)"""
+        if self.thumbnail:
+            return self.thumbnail.url
+        elif self.auto_thumbnail:
+            return self.auto_thumbnail
+        else:
+            # Auto-generate if not exists
+            auto_thumb = self.auto_generate_thumbnail()
+            if auto_thumb:
+                return auto_thumb
+        return None
+    
+    def calculate_aspect_ratio(self):
+        """Calculate and store aspect ratio"""
+        if self.video_width and self.video_height:
+            # Calculate ratio
+            from math import gcd
+            common_divisor = gcd(self.video_width, self.video_height)
+            ratio_w = self.video_width // common_divisor
+            ratio_h = self.video_height // common_divisor
+            self.aspect_ratio = f"{ratio_w}:{ratio_h}"
+            return self.aspect_ratio
+        return None
+    
+    def is_portrait(self):
+        """Check if video is in portrait orientation"""
+        if self.video_width and self.video_height:
+            return self.video_height > self.video_width
+        elif self.aspect_ratio:
+            if ':' in self.aspect_ratio:
+                w, h = map(int, self.aspect_ratio.split(':'))
+                return h > w
+        return False
+    
+    def is_landscape(self):
+        """Check if video is in landscape orientation"""
+        if self.video_width and self.video_height:
+            return self.video_width > self.video_height
+        elif self.aspect_ratio:
+            if ':' in self.aspect_ratio:
+                w, h = map(int, self.aspect_ratio.split(':'))
+                return w > h
+        return True  # Default assumption
+    
+    def save(self, *args, **kwargs):
+        """Auto-process video on save"""
+        # Generate thumbnail if not exists
+        if not self.auto_thumbnail and self.video_url:
+            self.auto_generate_thumbnail()
+        
+        # Calculate aspect ratio if dimensions available
+        if self.video_width and self.video_height and not self.aspect_ratio:
+            self.calculate_aspect_ratio()
+        
+        super().save(*args, **kwargs)

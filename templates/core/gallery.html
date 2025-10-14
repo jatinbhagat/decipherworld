@@ -88,6 +88,26 @@
         gap: 1.5rem;
     }
     
+    .video-carousel {
+        position: relative;
+        overflow: hidden;
+        margin: 0 -1rem;
+    }
+    
+    .video-carousel-container {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        padding: 1rem;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
+    }
+    
+    .video-carousel-container::-webkit-scrollbar {
+        display: none; /* Chrome/Safari/Opera */
+    }
+    
     .video-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -138,29 +158,51 @@
     
     .video-card {
         background: white;
-        border-radius: 12px;
+        border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        flex: 0 0 auto;
+        cursor: pointer;
     }
     
     .video-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .video-card.portrait {
+        width: 280px;
+    }
+    
+    .video-card.landscape {
+        width: 380px;
     }
     
     .video-thumbnail {
         position: relative;
-        aspect-ratio: 16/9;
-        background: #f3f4f6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         overflow: hidden;
         cursor: pointer;
+    }
+    
+    .video-thumbnail.portrait {
+        aspect-ratio: 9/16;
+    }
+    
+    .video-thumbnail.landscape {
+        aspect-ratio: 16/9;
     }
     
     .video-thumbnail img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+    
+    .video-card:hover .video-thumbnail img {
+        transform: scale(1.05);
     }
     
     .play-button {
@@ -168,21 +210,78 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 60px;
-        height: 60px;
-        background: rgba(255, 255, 255, 0.9);
+        width: 80px;
+        height: 80px;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        border: 3px solid rgba(255, 255, 255, 0.3);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
-        color: #3b82f6;
-        transition: all 0.3s ease;
+        font-size: 28px;
+        color: white;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        opacity: 0.9;
     }
     
     .video-thumbnail:hover .play-button {
+        background: rgba(0, 0, 0, 0.9);
+        border-color: rgba(255, 255, 255, 0.6);
+        transform: translate(-50%, -50%) scale(1.15);
+        opacity: 1;
+    }
+    
+    .carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: #374151;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    .video-carousel:hover .carousel-nav {
+        opacity: 1;
+        pointer-events: all;
+    }
+    
+    .carousel-nav:hover {
         background: white;
-        transform: translate(-50%, -50%) scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-50%) scale(1.1);
+    }
+    
+    .carousel-nav.prev {
+        left: 1rem;
+    }
+    
+    .carousel-nav.next {
+        right: 1rem;
+    }
+    
+    .video-duration {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
     }
     
     .category-filter {
@@ -209,6 +308,20 @@
         border-color: #3b82f6;
         background: #3b82f6;
         color: white;
+    }
+    
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 </style>
 {% endblock %}
@@ -323,42 +436,56 @@
             {% if featured_videos %}
             <div class="mb-12">
                 <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Featured Testimonials</h3>
-                <div class="video-grid">
-                    {% for video in featured_videos %}
-                    <div class="video-card">
-                        <div class="video-thumbnail" onclick="openVideoModal('{{ video.pk }}')">
-                            {% if video.thumbnail %}
-                                <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}">
-                            {% else %}
-                                <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                                    <i class="fas fa-video text-white text-4xl"></i>
+                <div class="video-carousel" id="featured-carousel">
+                    <button class="carousel-nav prev" onclick="scrollCarousel('featured-carousel', -1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-nav next" onclick="scrollCarousel('featured-carousel', 1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <div class="video-carousel-container">
+                        {% for video in featured_videos %}
+                        <div class="video-card {{ video.is_portrait|yesno:'portrait,landscape' }}" onclick="openVideoModal('{{ video.pk }}')">
+                            <div class="video-thumbnail {{ video.is_portrait|yesno:'portrait,landscape' }}">
+                                {% if video.get_best_thumbnail %}
+                                    <img src="{{ video.get_best_thumbnail }}" alt="{{ video.title }}" loading="lazy">
+                                {% else %}
+                                    <div class="w-full h-full bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 flex items-center justify-center">
+                                        <div class="text-center text-white">
+                                            <i class="fas fa-video text-5xl mb-3 opacity-80"></i>
+                                            <p class="text-sm font-medium opacity-90">{{ video.student_name }}</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <div class="play-button">
+                                    <i class="fas fa-play"></i>
                                 </div>
-                            {% endif %}
-                            <div class="play-button">
-                                <i class="fas fa-play"></i>
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <h4 class="font-bold text-xl text-gray-900 mb-2">{{ video.title }}</h4>
-                            <div class="flex items-center text-gray-600 mb-3">
-                                <i class="fas fa-user text-blue-500 mr-2"></i>
-                                <span class="font-medium">{{ video.student_name }}</span>
-                                {% if video.student_grade %}
-                                <span class="ml-2 text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ video.student_grade }}</span>
+                                {% if video.duration %}
+                                <div class="video-duration">{{ video.duration }}</div>
                                 {% endif %}
                             </div>
-                            {% if video.school_name %}
-                            <div class="flex items-center text-gray-600 mb-3">
-                                <i class="fas fa-school text-green-500 mr-2"></i>
-                                <span>{{ video.school_name }}</span>
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-gray-900 mb-2 line-clamp-2">{{ video.title }}</h4>
+                                <div class="flex items-center text-gray-600 mb-2">
+                                    <i class="fas fa-user text-blue-500 mr-2 text-sm"></i>
+                                    <span class="font-medium text-sm">{{ video.student_name }}</span>
+                                    {% if video.student_grade %}
+                                    <span class="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ video.student_grade }}</span>
+                                    {% endif %}
+                                </div>
+                                {% if video.school_name %}
+                                <div class="flex items-center text-gray-600 mb-2">
+                                    <i class="fas fa-school text-green-500 mr-2 text-sm"></i>
+                                    <span class="text-sm">{{ video.school_name|truncatechars:25 }}</span>
+                                </div>
+                                {% endif %}
+                                {% if video.summary %}
+                                <p class="text-gray-700 text-xs line-clamp-3">{{ video.summary|truncatewords:15 }}</p>
+                                {% endif %}
                             </div>
-                            {% endif %}
-                            {% if video.summary %}
-                            <p class="text-gray-700 text-sm">{{ video.summary|truncatewords:20 }}</p>
-                            {% endif %}
                         </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
             </div>
             {% endif %}
@@ -366,42 +493,56 @@
             {% if other_videos %}
             <div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">More Testimonials</h3>
-                <div class="video-grid">
-                    {% for video in other_videos %}
-                    <div class="video-card">
-                        <div class="video-thumbnail" onclick="openVideoModal('{{ video.pk }}')">
-                            {% if video.thumbnail %}
-                                <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}">
-                            {% else %}
-                                <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                                    <i class="fas fa-video text-white text-4xl"></i>
+                <div class="video-carousel" id="other-carousel">
+                    <button class="carousel-nav prev" onclick="scrollCarousel('other-carousel', -1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-nav next" onclick="scrollCarousel('other-carousel', 1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <div class="video-carousel-container">
+                        {% for video in other_videos %}
+                        <div class="video-card {{ video.is_portrait|yesno:'portrait,landscape' }}" onclick="openVideoModal('{{ video.pk }}')">
+                            <div class="video-thumbnail {{ video.is_portrait|yesno:'portrait,landscape' }}">
+                                {% if video.get_best_thumbnail %}
+                                    <img src="{{ video.get_best_thumbnail }}" alt="{{ video.title }}" loading="lazy">
+                                {% else %}
+                                    <div class="w-full h-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
+                                        <div class="text-center text-white">
+                                            <i class="fas fa-video text-5xl mb-3 opacity-80"></i>
+                                            <p class="text-sm font-medium opacity-90">{{ video.student_name }}</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <div class="play-button">
+                                    <i class="fas fa-play"></i>
                                 </div>
-                            {% endif %}
-                            <div class="play-button">
-                                <i class="fas fa-play"></i>
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <h4 class="font-bold text-xl text-gray-900 mb-2">{{ video.title }}</h4>
-                            <div class="flex items-center text-gray-600 mb-3">
-                                <i class="fas fa-user text-blue-500 mr-2"></i>
-                                <span class="font-medium">{{ video.student_name }}</span>
-                                {% if video.student_grade %}
-                                <span class="ml-2 text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ video.student_grade }}</span>
+                                {% if video.duration %}
+                                <div class="video-duration">{{ video.duration }}</div>
                                 {% endif %}
                             </div>
-                            {% if video.school_name %}
-                            <div class="flex items-center text-gray-600 mb-3">
-                                <i class="fas fa-school text-green-500 mr-2"></i>
-                                <span>{{ video.school_name }}</span>
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-gray-900 mb-2 line-clamp-2">{{ video.title }}</h4>
+                                <div class="flex items-center text-gray-600 mb-2">
+                                    <i class="fas fa-user text-blue-500 mr-2 text-sm"></i>
+                                    <span class="font-medium text-sm">{{ video.student_name }}</span>
+                                    {% if video.student_grade %}
+                                    <span class="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ video.student_grade }}</span>
+                                    {% endif %}
+                                </div>
+                                {% if video.school_name %}
+                                <div class="flex items-center text-gray-600 mb-2">
+                                    <i class="fas fa-school text-green-500 mr-2 text-sm"></i>
+                                    <span class="text-sm">{{ video.school_name|truncatechars:25 }}</span>
+                                </div>
+                                {% endif %}
+                                {% if video.summary %}
+                                <p class="text-gray-700 text-xs line-clamp-3">{{ video.summary|truncatewords:15 }}</p>
+                                {% endif %}
                             </div>
-                            {% endif %}
-                            {% if video.summary %}
-                            <p class="text-gray-700 text-sm">{{ video.summary|truncatewords:20 }}</p>
-                            {% endif %}
                         </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
             </div>
             {% endif %}
@@ -610,6 +751,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         });
+    });
+});
+
+// Carousel navigation
+function scrollCarousel(carouselId, direction) {
+    const carousel = document.querySelector(`#${carouselId} .video-carousel-container`);
+    if (!carousel) return;
+    
+    const cardWidth = carousel.children[0]?.offsetWidth || 300;
+    const scrollAmount = cardWidth + 24; // card width + gap
+    
+    carousel.scrollBy({
+        left: direction * scrollAmount,
+        behavior: 'smooth'
+    });
+}
+
+// Touch/swipe support for mobile
+document.querySelectorAll('.video-carousel-container').forEach(carousel => {
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    carousel.addEventListener('mousedown', (e) => {
+        isDown = true;
+        carousel.classList.add('active');
+        startX = e.pageX - carousel.offsetLeft;
+        scrollLeft = carousel.scrollLeft;
+    });
+
+    carousel.addEventListener('mouseleave', () => {
+        isDown = false;
+        carousel.classList.remove('active');
+    });
+
+    carousel.addEventListener('mouseup', () => {
+        isDown = false;
+        carousel.classList.remove('active');
+    });
+
+    carousel.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - carousel.offsetLeft;
+        const walk = (x - startX) * 2;
+        carousel.scrollLeft = scrollLeft - walk;
     });
 });
 

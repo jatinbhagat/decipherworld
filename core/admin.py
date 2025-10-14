@@ -332,17 +332,17 @@ class PhotoGalleryAdmin(admin.ModelAdmin):
 @admin.register(VideoTestimonial)
 class VideoTestimonialAdmin(admin.ModelAdmin):
     list_display = [
-        'video_preview', 'title', 'student_info', 'school_name',
+        'video_preview', 'title', 'student_info', 'school_name', 'aspect_ratio_display',
         'duration', 'order', 'is_featured', 'is_active', 'created_at'
     ]
     list_filter = [
-        'is_featured', 'is_active', 'created_at', 'school_name'
+        'is_featured', 'is_active', 'created_at', 'school_name', 'aspect_ratio'
     ]
     search_fields = [
         'title', 'student_name', 'school_name', 'summary', 'transcript'
     ]
     list_editable = ['order', 'is_featured', 'is_active']
-    readonly_fields = ['video_preview', 'created_at', 'updated_at']
+    readonly_fields = ['video_preview', 'aspect_ratio_display', 'auto_thumbnail', 'created_at', 'updated_at']
     ordering = ['order', '-created_at']
     
     fieldsets = (
@@ -358,13 +358,35 @@ class VideoTestimonialAdmin(admin.ModelAdmin):
         ('Display Settings', {
             'fields': ('order', 'is_featured', 'is_active')
         }),
+        ('Video Analysis', {
+            'fields': ('aspect_ratio_display', 'video_width', 'video_height', 'auto_thumbnail'),
+            'classes': ('collapse',)
+        }),
         ('System Information', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
     
-    actions = ['mark_as_featured', 'mark_as_active', 'mark_as_inactive']
+    actions = ['mark_as_featured', 'mark_as_active', 'mark_as_inactive', 'generate_thumbnails']
+    
+    def aspect_ratio_display(self, obj):
+        """Display aspect ratio with portrait/landscape indicator"""
+        if obj.aspect_ratio:
+            orientation = "📱 Portrait" if obj.is_portrait() else "🖥️ Landscape"
+            return format_html('{}<br><small style="color: #666;">{}</small>', obj.aspect_ratio, orientation)
+        return '-'
+    aspect_ratio_display.short_description = 'Aspect Ratio'
+    
+    def generate_thumbnails(self, request, queryset):
+        """Generate thumbnails for selected videos"""
+        count = 0
+        for video in queryset:
+            if video.auto_generate_thumbnail():
+                video.save()
+                count += 1
+        self.message_user(request, f'Generated thumbnails for {count} videos.')
+    generate_thumbnails.short_description = "Generate auto thumbnails"
     
     def student_info(self, obj):
         """Display student name and grade together"""
