@@ -325,6 +325,7 @@
                     <li><a href="{% url 'core:teachers' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-robot text-secondary"></i>AI for Teachers</a></li>
                     <li><a href="{% url 'core:schools' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-building text-accent"></i>Schools</a></li>
                     <li><a href="{% url 'core:gallery' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-images text-info"></i>Gallery</a></li>
+                    <li><a href="{% url 'core:about' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-users text-purple-500"></i>About Us</a></li>
                     <li><a href="{% url 'core:contact' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-envelope text-success"></i>Get Started</a></li>
                 </ul>
             </div>
@@ -339,10 +340,10 @@
                              style="vertical-align: middle;"
                              onerror="this.onerror=null; this.src='{% static 'images/decipherworld-logo.png' %}';">
                     </div>
-                    <span class="text-neutral font-bold text-lg sm:text-xl lg:text-2xl whitespace-nowrap">
+                    <span class="text-neutral font-bold text-base sm:text-lg lg:text-xl whitespace-nowrap">
                         Decipherworld
                     </span>
-                    <div class="badge badge-primary badge-xs sm:badge-sm hidden md:inline-flex ml-1 font-semibold">AI EdTech</div>
+                    <div class="badge badge-primary badge-xs hidden lg:inline-flex ml-1 font-medium opacity-75">AI EdTech</div>
                 </div>
             </a>
         </div>
@@ -487,6 +488,11 @@
                 <li>
                     <a href="{% url 'core:gallery' %}" class="btn btn-ghost btn-sm text-slate-700 hover:text-info">
                         <i class="fas fa-images text-info"></i>Gallery
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'core:about' %}" class="btn btn-ghost btn-sm text-slate-700 hover:text-purple-500">
+                        <i class="fas fa-users text-purple-500"></i>About
                     </a>
                 </li>
             </ul>
