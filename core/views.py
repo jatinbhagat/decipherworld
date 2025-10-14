@@ -161,17 +161,8 @@ class ContactView(FormView):
         return super().form_invalid(form)
 
 def about(request):
-    """Mission statement and company info"""
-    context = {
-        'mission_statement': '''
-        At Decipherworld, we transform classrooms into dynamic learning ecosystems 
-        where students thrive through game-based collaboration and hyper-personalized 
-        AI guidance. We empower educators with intelligent tools that simplify teaching 
-        while amplifying impact, creating future-ready learning communities where 
-        creativity, critical thinking, and collaboration flourish naturally.
-        '''
-    }
-    return render(request, 'home/about.html', context)
+    """Comprehensive About Us page with team, advisors, vision and mission"""
+    return render(request, 'core/about.html')
 
 def courses(request):
     """Course offerings with detailed descriptions"""
