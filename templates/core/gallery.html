@@ -1,0 +1,624 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gallery - DecipherWorld{% endblock %}
+
+{% block meta_description %}Explore our gallery of successful implementations at schools worldwide and watch student testimonials about their learning experiences with DecipherWorld.{% endblock %}
+
+{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .lightbox {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+    }
+    
+    .lightbox-content {
+        margin: auto;
+        display: block;
+        width: 90%;
+        max-width: 800px;
+        max-height: 90%;
+        object-fit: contain;
+    }
+    
+    .lightbox-caption {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+        text-align: center;
+        color: #ccc;
+        padding: 10px 0;
+        height: 150px;
+    }
+    
+    .lightbox:target {
+        outline: none;
+        display: block;
+    }
+    
+    .video-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+    }
+    
+    .video-modal-content {
+        position: relative;
+        margin: 5% auto;
+        width: 90%;
+        max-width: 800px;
+        background: #000;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        z-index: 10000;
+        cursor: pointer;
+    }
+    
+    .close:hover {
+        color: white;
+    }
+    
+    .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .video-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+    
+    .photo-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        aspect-ratio: 4/3;
+    }
+    
+    .photo-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .photo-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .photo-card:hover img {
+        transform: scale(1.05);
+    }
+    
+    .photo-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        color: white;
+        padding: 1rem;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .photo-card:hover .photo-overlay {
+        transform: translateY(0);
+    }
+    
+    .video-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .video-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .video-thumbnail {
+        position: relative;
+        aspect-ratio: 16/9;
+        background: #f3f4f6;
+        overflow: hidden;
+        cursor: pointer;
+    }
+    
+    .video-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: #3b82f6;
+        transition: all 0.3s ease;
+    }
+    
+    .video-thumbnail:hover .play-button {
+        background: white;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    
+    .category-filter {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        justify-content: center;
+    }
+    
+    .category-btn {
+        padding: 0.5rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 25px;
+        background: white;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    
+    .category-btn.active,
+    .category-btn:hover {
+        border-color: #3b82f6;
+        background: #3b82f6;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
+        <div class="absolute inset-0 bg-black opacity-20"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                Success Stories & Testimonials
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                Discover how DecipherWorld transforms learning experiences across schools worldwide
+            </p>
+        </div>
+    </section>
+
+    <!-- Photo Gallery Section -->
+    <section class="py-16 bg-white" id="photo-gallery">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    School Success Stories
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Witness the transformation in classrooms where DecipherWorld has been successfully implemented
+                </p>
+            </div>
+
+            <!-- Category Filter -->
+            {% if photos_by_category %}
+            <div class="category-filter">
+                <button class="category-btn active" data-category="all">All Photos</button>
+                {% for category, photos in photos_by_category.items %}
+                <button class="category-btn" data-category="{{ category.name|slugify }}">{{ category.name }}</button>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Featured Photos -->
+            {% if featured_photos %}
+            <div class="mb-12">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Featured Highlights</h3>
+                <div class="photo-grid">
+                    {% for photo in featured_photos %}
+                    <div class="photo-card" onclick="openLightbox('{{ photo.image.url }}', '{{ photo.title }}', '{{ photo.caption }}')">
+                        <img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">
+                        <div class="photo-overlay">
+                            <h4 class="font-bold text-lg">{{ photo.title }}</h4>
+                            {% if photo.school_name %}
+                            <p class="text-sm opacity-90">{{ photo.school_name }}</p>
+                            {% endif %}
+                            {% if photo.caption %}
+                            <p class="text-sm mt-2">{{ photo.caption|truncatewords:15 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Photos by Category -->
+            {% for category, photos in photos_by_category.items %}
+            <div class="category-section mb-12" data-category="{{ category.name|slugify }}">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">{{ category.name }}</h3>
+                <div class="photo-grid">
+                    {% for photo in photos %}
+                    <div class="photo-card" onclick="openLightbox('{{ photo.image.url }}', '{{ photo.title }}', '{{ photo.caption }}')">
+                        <img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">
+                        <div class="photo-overlay">
+                            <h4 class="font-bold text-lg">{{ photo.title }}</h4>
+                            {% if photo.school_name %}
+                            <p class="text-sm opacity-90">{{ photo.school_name }}</p>
+                            {% endif %}
+                            {% if photo.caption %}
+                            <p class="text-sm mt-2">{{ photo.caption|truncatewords:15 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if not featured_photos and not photos_by_category %}
+            <div class="text-center py-12">
+                <div class="text-gray-500 text-lg">
+                    <i class="fas fa-images text-4xl mb-4"></i>
+                    <p>Photo gallery coming soon!</p>
+                    <p class="text-sm mt-2">We're preparing amazing success stories from schools worldwide.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Video Testimonials Section -->
+    <section class="py-16 bg-gray-50" id="video-testimonials">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Student Testimonials
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Hear directly from students about their learning journey with DecipherWorld
+                </p>
+            </div>
+
+            {% if featured_videos %}
+            <div class="mb-12">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Featured Testimonials</h3>
+                <div class="video-grid">
+                    {% for video in featured_videos %}
+                    <div class="video-card">
+                        <div class="video-thumbnail" onclick="openVideoModal('{{ video.pk }}')">
+                            {% if video.thumbnail %}
+                                <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}">
+                            {% else %}
+                                <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                                    <i class="fas fa-video text-white text-4xl"></i>
+                                </div>
+                            {% endif %}
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="font-bold text-xl text-gray-900 mb-2">{{ video.title }}</h4>
+                            <div class="flex items-center text-gray-600 mb-3">
+                                <i class="fas fa-user text-blue-500 mr-2"></i>
+                                <span class="font-medium">{{ video.student_name }}</span>
+                                {% if video.student_grade %}
+                                <span class="ml-2 text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ video.student_grade }}</span>
+                                {% endif %}
+                            </div>
+                            {% if video.school_name %}
+                            <div class="flex items-center text-gray-600 mb-3">
+                                <i class="fas fa-school text-green-500 mr-2"></i>
+                                <span>{{ video.school_name }}</span>
+                            </div>
+                            {% endif %}
+                            {% if video.summary %}
+                            <p class="text-gray-700 text-sm">{{ video.summary|truncatewords:20 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if other_videos %}
+            <div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">More Testimonials</h3>
+                <div class="video-grid">
+                    {% for video in other_videos %}
+                    <div class="video-card">
+                        <div class="video-thumbnail" onclick="openVideoModal('{{ video.pk }}')">
+                            {% if video.thumbnail %}
+                                <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}">
+                            {% else %}
+                                <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                                    <i class="fas fa-video text-white text-4xl"></i>
+                                </div>
+                            {% endif %}
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="font-bold text-xl text-gray-900 mb-2">{{ video.title }}</h4>
+                            <div class="flex items-center text-gray-600 mb-3">
+                                <i class="fas fa-user text-blue-500 mr-2"></i>
+                                <span class="font-medium">{{ video.student_name }}</span>
+                                {% if video.student_grade %}
+                                <span class="ml-2 text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ video.student_grade }}</span>
+                                {% endif %}
+                            </div>
+                            {% if video.school_name %}
+                            <div class="flex items-center text-gray-600 mb-3">
+                                <i class="fas fa-school text-green-500 mr-2"></i>
+                                <span>{{ video.school_name }}</span>
+                            </div>
+                            {% endif %}
+                            {% if video.summary %}
+                            <p class="text-gray-700 text-sm">{{ video.summary|truncatewords:20 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if not featured_videos and not other_videos %}
+            <div class="text-center py-12">
+                <div class="text-gray-500 text-lg">
+                    <i class="fas fa-video text-4xl mb-4"></i>
+                    <p>Video testimonials coming soon!</p>
+                    <p class="text-sm mt-2">We're collecting amazing stories from our student community.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">
+                Ready to Create Your Own Success Story?
+            </h2>
+            <p class="text-xl mb-8">
+                Join thousands of schools worldwide that have transformed their learning experience with DecipherWorld
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:contact' %}" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-300">
+                    Request Demo
+                </a>
+                <a href="{% url 'core:courses' %}" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition duration-300">
+                    Explore Courses
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" class="lightbox">
+    <span class="close" onclick="closeLightbox()">&times;</span>
+    <img class="lightbox-content" id="lightbox-img">
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+</div>
+
+<!-- Video Modal -->
+<div id="videoModal" class="video-modal">
+    <div class="video-modal-content">
+        <span class="close" onclick="closeVideoModal()">&times;</span>
+        <div id="video-container"></div>
+    </div>
+</div>
+
+<!-- Hidden video data for JavaScript -->
+<script type="application/json" id="video-data">
+{
+    {% for video in featured_videos %}
+    "{{ video.pk }}": {
+        "title": "{{ video.title|escapejs }}",
+        "student_name": "{{ video.student_name|escapejs }}",
+        "school_name": "{{ video.school_name|escapejs }}",
+        "video_file": "{% if video.video_file %}{{ video.video_file.url }}{% endif %}",
+        "video_url": "{{ video.video_url|escapejs }}",
+        "summary": "{{ video.summary|escapejs }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+    {% if other_videos %}
+    {% if featured_videos %},{% endif %}
+    {% for video in other_videos %}
+    "{{ video.pk }}": {
+        "title": "{{ video.title|escapejs }}",
+        "student_name": "{{ video.student_name|escapejs }}",
+        "school_name": "{{ video.school_name|escapejs }}",
+        "video_file": "{% if video.video_file %}{{ video.video_file.url }}{% endif %}",
+        "video_url": "{{ video.video_url|escapejs }}",
+        "summary": "{{ video.summary|escapejs }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+    {% endif %}
+}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Lightbox functionality
+function openLightbox(imageSrc, title, caption) {
+    const lightbox = document.getElementById('lightbox');
+    const img = document.getElementById('lightbox-img');
+    const captionElement = document.getElementById('lightbox-caption');
+    
+    img.src = imageSrc;
+    captionElement.innerHTML = `<h3 style="color: white; font-size: 1.2em; margin-bottom: 10px;">${title}</h3><p>${caption || ''}</p>`;
+    lightbox.style.display = 'block';
+    
+    // Close on click outside
+    lightbox.onclick = function(event) {
+        if (event.target === lightbox) {
+            closeLightbox();
+        }
+    };
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').style.display = 'none';
+}
+
+// Video modal functionality
+function openVideoModal(videoId) {
+    const videoData = JSON.parse(document.getElementById('video-data').textContent);
+    const video = videoData[videoId];
+    
+    if (!video) return;
+    
+    const modal = document.getElementById('videoModal');
+    const container = document.getElementById('video-container');
+    
+    let videoHTML = '';
+    
+    if (video.video_file) {
+        // Local video file
+        videoHTML = `
+            <video controls autoplay style="width: 100%; height: auto;">
+                <source src="${video.video_file}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div style="padding: 20px; background: white; color: #333;">
+                <h3 style="margin: 0 0 10px 0; font-size: 1.3em;">${video.title}</h3>
+                <p style="margin: 0 0 10px 0; color: #666;"><strong>${video.student_name}</strong> - ${video.school_name}</p>
+                ${video.summary ? `<p style="margin: 0; line-height: 1.5;">${video.summary}</p>` : ''}
+            </div>
+        `;
+    } else if (video.video_url) {
+        // External video URL (YouTube, Vimeo, etc.)
+        let embedUrl = video.video_url;
+        
+        // Convert YouTube URLs to embed format
+        if (video.video_url.includes('youtube.com/watch')) {
+            const videoId = video.video_url.split('v=')[1]?.split('&')[0];
+            embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        } else if (video.video_url.includes('youtu.be/')) {
+            const videoId = video.video_url.split('youtu.be/')[1]?.split('?')[0];
+            embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        } else if (video.video_url.includes('vimeo.com')) {
+            const videoId = video.video_url.split('/').pop();
+            embedUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1`;
+        }
+        
+        videoHTML = `
+            <iframe src="${embedUrl}" 
+                    style="width: 100%; height: 450px; border: none;" 
+                    allowfullscreen 
+                    allow="autoplay; encrypted-media">
+            </iframe>
+            <div style="padding: 20px; background: white; color: #333;">
+                <h3 style="margin: 0 0 10px 0; font-size: 1.3em;">${video.title}</h3>
+                <p style="margin: 0 0 10px 0; color: #666;"><strong>${video.student_name}</strong> - ${video.school_name}</p>
+                ${video.summary ? `<p style="margin: 0; line-height: 1.5;">${video.summary}</p>` : ''}
+            </div>
+        `;
+    }
+    
+    container.innerHTML = videoHTML;
+    modal.style.display = 'block';
+    
+    // Close on click outside
+    modal.onclick = function(event) {
+        if (event.target === modal) {
+            closeVideoModal();
+        }
+    };
+}
+
+function closeVideoModal() {
+    const modal = document.getElementById('videoModal');
+    const container = document.getElementById('video-container');
+    
+    modal.style.display = 'none';
+    container.innerHTML = ''; // Stop video playback
+}
+
+// Category filtering
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryButtons = document.querySelectorAll('.category-btn');
+    const categorySections = document.querySelectorAll('.category-section');
+    
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const category = this.dataset.category;
+            
+            // Update active button
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show/hide sections
+            if (category === 'all') {
+                categorySections.forEach(section => {
+                    section.style.display = 'block';
+                });
+            } else {
+                categorySections.forEach(section => {
+                    if (section.dataset.category === category) {
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+            }
+        });
+    });
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeLightbox();
+        closeVideoModal();
+    }
+});
+</script>
+{% endblock %}

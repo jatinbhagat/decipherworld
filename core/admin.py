@@ -2,7 +2,10 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.db.models import Avg, Count
 from django.utils.safestring import mark_safe
-from .models import DemoRequest, Course, SchoolDemoRequest, GameReview
+from .models import (
+    DemoRequest, Course, SchoolDemoRequest, GameReview,
+    PhotoCategory, PhotoGallery, VideoTestimonial
+)
 
 @admin.register(DemoRequest)
 class DemoRequestAdmin(admin.ModelAdmin):
@@ -224,6 +227,206 @@ class GameReviewAdmin(admin.ModelAdmin):
         css = {
             'all': ('admin/css/custom_game_review.css',)
         }
+
+
+# Gallery Admin Classes
+
+@admin.register(PhotoCategory)
+class PhotoCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'photo_count', 'order', 'is_active', 'created_at']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['name', 'description']
+    list_editable = ['order', 'is_active']
+    ordering = ['order', 'name']
+    
+    fieldsets = (
+        ('Category Information', {
+            'fields': ('name', 'description')
+        }),
+        ('Display Settings', {
+            'fields': ('order', 'is_active')
+        }),
+    )
+    
+    def photo_count(self, obj):
+        """Show number of photos in this category"""
+        count = obj.photogallery_set.filter(is_active=True).count()
+        if count == 0:
+            return format_html('<span style="color: #999;">0 photos</span>')
+        elif count < 5:
+            return format_html('<span style="color: #f0ad4e;">{} photos</span>', count)
+        else:
+            return format_html('<span style="color: #5cb85c;">{} photos</span>', count)
+    photo_count.short_description = 'Active Photos'
+    photo_count.admin_order_field = 'photogallery__count'
+
+
+@admin.register(PhotoGallery)
+class PhotoGalleryAdmin(admin.ModelAdmin):
+    list_display = [
+        'image_preview', 'title', 'category', 'school_name', 
+        'date_taken', 'order', 'is_featured', 'is_active', 'created_at'
+    ]
+    list_filter = [
+        'category', 'is_featured', 'is_active', 'created_at', 'date_taken'
+    ]
+    search_fields = ['title', 'school_name', 'caption']
+    list_editable = ['order', 'is_featured', 'is_active']
+    readonly_fields = ['image_preview', 'created_at', 'updated_at']
+    ordering = ['order', '-created_at']
+    
+    fieldsets = (
+        ('Photo Information', {
+            'fields': ('title', 'image', 'image_preview', 'category')
+        }),
+        ('Details', {
+            'fields': ('caption', 'school_name', 'date_taken')
+        }),
+        ('Display Settings', {
+            'fields': ('order', 'is_featured', 'is_active')
+        }),
+        ('System Information', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    actions = ['mark_as_featured', 'mark_as_active', 'mark_as_inactive']
+    
+    def mark_as_featured(self, request, queryset):
+        """Mark selected photos as featured"""
+        count = queryset.update(is_featured=True)
+        self.message_user(request, f'Marked {count} photos as featured.')
+    mark_as_featured.short_description = "Mark selected photos as featured"
+    
+    def mark_as_active(self, request, queryset):
+        """Mark selected photos as active"""
+        count = queryset.update(is_active=True)
+        self.message_user(request, f'Marked {count} photos as active.')
+    mark_as_active.short_description = "Mark selected photos as active"
+    
+    def mark_as_inactive(self, request, queryset):
+        """Mark selected photos as inactive"""
+        count = queryset.update(is_active=False)
+        self.message_user(request, f'Marked {count} photos as inactive.')
+    mark_as_inactive.short_description = "Mark selected photos as inactive"
+    
+    def image_preview(self, obj):
+        """Display image preview for admin"""
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="max-width: 100px; max-height: 100px; object-fit: cover; border-radius: 8px;" />',
+                obj.image.url
+            )
+        return 'No image'
+    image_preview.short_description = 'Preview'
+    image_preview.admin_order_field = 'image'
+    
+    class Media:
+        css = {
+            'all': ('admin/css/gallery_admin.css',)
+        }
+        js = ('admin/js/gallery_admin.js',)
+
+
+@admin.register(VideoTestimonial)
+class VideoTestimonialAdmin(admin.ModelAdmin):
+    list_display = [
+        'video_preview', 'title', 'student_info', 'school_name',
+        'duration', 'order', 'is_featured', 'is_active', 'created_at'
+    ]
+    list_filter = [
+        'is_featured', 'is_active', 'created_at', 'school_name'
+    ]
+    search_fields = [
+        'title', 'student_name', 'school_name', 'summary', 'transcript'
+    ]
+    list_editable = ['order', 'is_featured', 'is_active']
+    readonly_fields = ['video_preview', 'created_at', 'updated_at']
+    ordering = ['order', '-created_at']
+    
+    fieldsets = (
+        ('Video Information', {
+            'fields': ('title', 'video_file', 'video_url', 'video_preview', 'thumbnail')
+        }),
+        ('Student Details', {
+            'fields': ('student_name', 'student_grade', 'school_name')
+        }),
+        ('Content', {
+            'fields': ('summary', 'transcript', 'duration')
+        }),
+        ('Display Settings', {
+            'fields': ('order', 'is_featured', 'is_active')
+        }),
+        ('System Information', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    actions = ['mark_as_featured', 'mark_as_active', 'mark_as_inactive']
+    
+    def student_info(self, obj):
+        """Display student name and grade together"""
+        if obj.student_grade:
+            return format_html(
+                '<strong>{}</strong><br><small style="color: #666;">{}</small>',
+                obj.student_name, obj.student_grade
+            )
+        return obj.student_name
+    student_info.short_description = 'Student'
+    student_info.admin_order_field = 'student_name'
+    
+    def mark_as_featured(self, request, queryset):
+        """Mark selected videos as featured"""
+        count = queryset.update(is_featured=True)
+        self.message_user(request, f'Marked {count} videos as featured.')
+    mark_as_featured.short_description = "Mark selected videos as featured"
+    
+    def mark_as_active(self, request, queryset):
+        """Mark selected videos as active"""
+        count = queryset.update(is_active=True)
+        self.message_user(request, f'Marked {count} videos as active.')
+    mark_as_active.short_description = "Mark selected videos as active"
+    
+    def mark_as_inactive(self, request, queryset):
+        """Mark selected videos as inactive"""
+        count = queryset.update(is_active=False)
+        self.message_user(request, f'Marked {count} videos as inactive.')
+    mark_as_inactive.short_description = "Mark selected videos as inactive"
+    
+    def get_form(self, request, obj=None, **kwargs):
+        """Customize form help text"""
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['video_file'].help_text = (
+            'Upload MP4 video file (max 50MB recommended). '
+            'Leave blank if using video_url instead.'
+        )
+        form.base_fields['video_url'].help_text = (
+            'Paste YouTube, Vimeo, or other video URL. '
+            'Leave blank if uploading video file instead.'
+        )
+        return form
+    
+    def video_preview(self, obj):
+        """Display video preview for admin"""
+        if obj.thumbnail:
+            return format_html(
+                '<img src="{}" style="max-width: 100px; max-height: 60px; object-fit: cover; border-radius: 8px;" />',
+                obj.thumbnail.url
+            )
+        elif obj.video_file:
+            return format_html(
+                '<div style="width: 100px; height: 60px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #666;"><i class="fas fa-video"></i></div>'
+            )
+        return 'No preview'
+    video_preview.short_description = 'Preview'
+    
+    class Media:
+        css = {
+            'all': ('admin/css/gallery_admin.css',)
+        }
+        js = ('admin/js/video_admin.js',)
 
 
 # Add custom admin site configuration for better branding

@@ -1,4 +1,7 @@
 from django.db import models
+from django.utils.html import mark_safe
+from PIL import Image
+import os
 
 
 # Country codes for mobile number field
@@ -382,3 +385,226 @@ class GameReview(models.Model):
     def get_game_display(self):
         """Return human-readable game name"""
         return dict(self.GAME_CHOICES).get(self.game_type, self.game_type)
+
+
+# Gallery Models
+class PhotoCategory(models.Model):
+    """Categories for organizing photos in the gallery"""
+    name = models.CharField(max_length=100, help_text="Category name (e.g., School Events, Workshops)")
+    description = models.TextField(blank=True, help_text="Optional description of this category")
+    order = models.PositiveIntegerField(default=0, help_text="Order for display (lower numbers first)")
+    is_active = models.BooleanField(default=True, help_text="Whether this category is visible")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "Photo Category"
+        verbose_name_plural = "Photo Categories"
+        ordering = ['order', 'name']
+    
+    def __str__(self):
+        return self.name
+
+
+class PhotoGallery(models.Model):
+    """Photo gallery items showcasing school success stories"""
+    title = models.CharField(max_length=200, help_text="Photo title or caption")
+    image = models.ImageField(
+        upload_to='gallery/photos/', 
+        help_text="Upload high-quality image (recommended: 1200x800px or larger)"
+    )
+    thumbnail = models.ImageField(
+        upload_to='gallery/thumbnails/', 
+        blank=True, 
+        help_text="Auto-generated thumbnail (leave blank)"
+    )
+    category = models.ForeignKey(
+        PhotoCategory, 
+        on_delete=models.CASCADE,
+        help_text="Select the appropriate category"
+    )
+    caption = models.TextField(
+        blank=True, 
+        help_text="Detailed description or story behind the photo"
+    )
+    school_name = models.CharField(
+        max_length=200, 
+        blank=True,
+        help_text="Name of the school featured in this photo"
+    )
+    date_taken = models.DateField(
+        blank=True, 
+        null=True,
+        help_text="When was this photo taken?"
+    )
+    order = models.PositiveIntegerField(
+        default=0, 
+        help_text="Order for display within category (lower numbers first)"
+    )
+    is_featured = models.BooleanField(
+        default=False,
+        help_text="Show in featured photos section"
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Whether this photo is visible on the website"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Photo Gallery Item"
+        verbose_name_plural = "Photo Gallery Items"
+        ordering = ['order', '-created_at']
+    
+    def __str__(self):
+        return self.title
+    
+    def image_preview(self):
+        """Return HTML for admin image preview"""
+        if self.image:
+            return mark_safe(f'<img src="{self.image.url}" style="max-width: 150px; max-height: 100px; object-fit: cover; border-radius: 8px;" />')
+        return "No image"
+    image_preview.short_description = "Preview"
+    
+    def save(self, *args, **kwargs):
+        """Auto-generate thumbnail when saving"""
+        super().save(*args, **kwargs)
+        
+        if self.image and not self.thumbnail:
+            # Create thumbnail
+            img = Image.open(self.image.path)
+            img.thumbnail((400, 300), Image.Resampling.LANCZOS)
+            
+            # Save thumbnail
+            thumb_name = f"thumb_{os.path.basename(self.image.name)}"
+            thumb_path = os.path.join('gallery/thumbnails/', thumb_name)
+            full_thumb_path = os.path.join('media', thumb_path)
+            
+            # Ensure directory exists
+            os.makedirs(os.path.dirname(full_thumb_path), exist_ok=True)
+            
+            img.save(full_thumb_path, optimize=True, quality=85)
+            self.thumbnail = thumb_path
+            super().save(update_fields=['thumbnail'])
+
+
+class VideoTestimonial(models.Model):
+    """Video testimonials from students and schools"""
+    title = models.CharField(
+        max_length=200, 
+        help_text="Testimonial title (e.g., 'Amazing AI Learning Experience')"
+    )
+    student_name = models.CharField(
+        max_length=100,
+        help_text="Name of the student giving testimonial"
+    )
+    student_grade = models.CharField(
+        max_length=50, 
+        blank=True,
+        help_text="Student's grade/class (e.g., 'Grade 5', 'Class 10')"
+    )
+    school_name = models.CharField(
+        max_length=200,
+        help_text="Name of the school"
+    )
+    video_file = models.FileField(
+        upload_to='gallery/videos/', 
+        blank=True,
+        help_text="Upload MP4 video file (recommended: under 50MB)"
+    )
+    video_url = models.URLField(
+        blank=True,
+        help_text="Or paste YouTube/Vimeo URL instead of uploading file"
+    )
+    thumbnail = models.ImageField(
+        upload_to='gallery/video_thumbnails/', 
+        blank=True,
+        help_text="Custom thumbnail image (auto-generated if left blank)"
+    )
+    transcript = models.TextField(
+        blank=True,
+        help_text="Full transcript of the video (for accessibility)"
+    )
+    summary = models.TextField(
+        blank=True,
+        help_text="Brief summary of what the student says"
+    )
+    duration = models.DurationField(
+        blank=True, 
+        null=True,
+        help_text="Video duration (auto-detected when possible)"
+    )
+    order = models.PositiveIntegerField(
+        default=0,
+        help_text="Order for display (lower numbers first)"
+    )
+    is_featured = models.BooleanField(
+        default=False,
+        help_text="Show in featured testimonials section"
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Whether this testimonial is visible on the website"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Video Testimonial"
+        verbose_name_plural = "Video Testimonials"
+        ordering = ['order', '-created_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.student_name} ({self.school_name})"
+    
+    def video_preview(self):
+        """Return HTML for admin video preview"""
+        if self.video_file:
+            return mark_safe(f'''
+                <video width="200" height="150" controls style="border-radius: 8px;">
+                    <source src="{self.video_file.url}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            ''')
+        elif self.video_url:
+            if 'youtube.com' in self.video_url or 'youtu.be' in self.video_url:
+                # Extract YouTube video ID
+                video_id = None
+                if 'youtube.com/watch?v=' in self.video_url:
+                    video_id = self.video_url.split('v=')[1].split('&')[0]
+                elif 'youtu.be/' in self.video_url:
+                    video_id = self.video_url.split('youtu.be/')[1].split('?')[0]
+                
+                if video_id:
+                    return mark_safe(f'''
+                        <iframe width="200" height="150" 
+                                src="https://www.youtube.com/embed/{video_id}" 
+                                frameborder="0" allowfullscreen
+                                style="border-radius: 8px;">
+                        </iframe>
+                    ''')
+            
+            return mark_safe(f'<a href="{self.video_url}" target="_blank">🎥 View Video</a>')
+        
+        return "No video"
+    video_preview.short_description = "Preview"
+    
+    def get_video_embed_url(self):
+        """Convert regular YouTube/Vimeo URLs to embed URLs"""
+        if not self.video_url:
+            return None
+            
+        if 'youtube.com' in self.video_url or 'youtu.be' in self.video_url:
+            if 'youtube.com/watch?v=' in self.video_url:
+                video_id = self.video_url.split('v=')[1].split('&')[0]
+            elif 'youtu.be/' in self.video_url:
+                video_id = self.video_url.split('youtu.be/')[1].split('?')[0]
+            else:
+                return None
+            return f"https://www.youtube.com/embed/{video_id}"
+        
+        elif 'vimeo.com' in self.video_url:
+            video_id = self.video_url.split('vimeo.com/')[1].split('?')[0]
+            return f"https://player.vimeo.com/video/{video_id}"
+        
+        return self.video_url

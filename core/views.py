@@ -9,7 +9,10 @@ from django.core.mail import send_mail
 from django.conf import settings
 import sys
 import io
-from .models import DemoRequest, Course, SchoolDemoRequest, GameReview
+from .models import (
+    DemoRequest, Course, SchoolDemoRequest, GameReview,
+    PhotoCategory, PhotoGallery, VideoTestimonial
+)
 from .forms import DemoRequestForm, SchoolDemoRequestForm
 
 def simple_home_test(request):
@@ -83,12 +86,54 @@ class SchoolPresentationView(TemplateView):
 
 
 class GalleryView(TemplateView):
-    """Gallery showcasing AI-based student courses and teacher training"""
-    template_name = 'home/gallery.html'
+    """Enhanced Gallery with photo success stories and video testimonials"""
+    template_name = 'core/gallery.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['page_title'] = 'Success Stories & Gallery'
+        context['page_title'] = 'Success Stories & Gallery - DecipherWorld'
+        context['page_description'] = 'Explore success stories from schools using DecipherWorld AI education platform and watch student testimonials.'
+        
+        # Photo Gallery Data
+        context['photo_categories'] = PhotoCategory.objects.filter(is_active=True).order_by('order', 'name')
+        context['featured_photos'] = PhotoGallery.objects.filter(
+            is_featured=True, 
+            is_active=True
+        ).select_related('category').order_by('order', '-created_at')[:12]
+        
+        context['recent_photos'] = PhotoGallery.objects.filter(
+            is_active=True
+        ).select_related('category').order_by('-created_at')[:20]
+        
+        # Group photos by category for filtering
+        context['photos_by_category'] = {}
+        for category in context['photo_categories']:
+            context['photos_by_category'][category.id] = PhotoGallery.objects.filter(
+                category=category,
+                is_active=True
+            ).order_by('order', '-created_at')
+        
+        # Video Testimonials Data
+        context['featured_videos'] = VideoTestimonial.objects.filter(
+            is_featured=True,
+            is_active=True
+        ).order_by('order', '-created_at')[:6]
+        
+        context['recent_videos'] = VideoTestimonial.objects.filter(
+            is_active=True
+        ).order_by('-created_at')[:12]
+        
+        # Statistics for display
+        context['total_photos'] = PhotoGallery.objects.filter(is_active=True).count()
+        context['total_videos'] = VideoTestimonial.objects.filter(is_active=True).count()
+        context['total_schools'] = PhotoGallery.objects.filter(
+            is_active=True, 
+            school_name__isnull=False
+        ).exclude(school_name='').values('school_name').distinct().count()
+        
+        # SEO and metadata
+        context['canonical_url'] = self.request.build_absolute_uri()
+        
         return context
 
 
