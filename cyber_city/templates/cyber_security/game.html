@@ -88,7 +88,7 @@
         "name": "DecipherWorld",
         "description": "Game-based education platform transforming learning through AI tools and collaborative experiences",
         "url": "://",
-        "logo": ":///static/images/decipherworld-logo.png",
+        "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/decipherworld-logo.png' %}",
         "sameAs": [
             "https://twitter.com/decipherworld",
             "https://linkedin.com/company/decipherworld"

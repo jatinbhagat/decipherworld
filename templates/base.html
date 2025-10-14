@@ -186,9 +186,9 @@
     
     <!-- Favicon and App Icons -->
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
     <link rel="manifest" href="{% static 'site.webmanifest' %}">
     
     <!-- Performance and SEO Enhancements -->
@@ -330,15 +330,19 @@
             </div>
             
             <!-- Professional Logo -->
-            <a href="{% url 'core:home' %}" class="btn btn-ghost text-lg font-bold p-2 flex-none">
-                <div class="flex items-center gap-2 lg:gap-3">
-                    <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-atom text-white text-sm"></i>
+            <a href="{% url 'core:home' %}" class="btn btn-ghost text-lg font-bold p-2 flex-none hover:bg-slate-50">
+                <div class="flex items-center gap-3 lg:gap-4">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 flex items-center justify-center flex-shrink-0">
+                        <img src="{% static 'images/decipherworld-logo.svg' %}" 
+                             alt="DecipherWorld Logo" 
+                             class="w-full h-full object-contain drop-shadow-sm align-middle"
+                             style="vertical-align: middle;"
+                             onerror="this.onerror=null; this.src='{% static 'images/decipherworld-logo.png' %}';">
                     </div>
-                    <span class="text-neutral font-bold text-base sm:text-lg lg:text-xl whitespace-nowrap">
+                    <span class="text-neutral font-bold text-lg sm:text-xl lg:text-2xl whitespace-nowrap">
                         Decipherworld
                     </span>
-                    <div class="badge badge-primary badge-xs hidden md:inline-flex ml-1">AI EdTech</div>
+                    <div class="badge badge-primary badge-xs sm:badge-sm hidden md:inline-flex ml-1 font-semibold">AI EdTech</div>
                 </div>
             </a>
         </div>
@@ -519,8 +523,12 @@
             <div class="grid grid-flow-col gap-4">
                 <!-- Mobile-Optimized Company Info -->
                 <div class="text-center">
-                    <div class="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-                        <div class="text-2xl sm:text-3xl">🤖</div>
+                    <div class="flex items-center justify-center gap-3 mb-3 sm:mb-4">
+                        <img src="{% static 'images/decipherworld-logo.svg' %}" 
+                             alt="DecipherWorld Logo" 
+                             class="w-11 h-11 sm:w-12 sm:h-12 object-contain drop-shadow-sm align-middle"
+                             style="vertical-align: middle;"
+                             onerror="this.onerror=null; this.src='{% static 'images/decipherworld-logo.png' %}';">
                         <span class="text-xl sm:text-2xl font-bold text-slate-800">
                             Decipherworld
                         </span>
