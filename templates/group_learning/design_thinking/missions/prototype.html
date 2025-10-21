@@ -1,9 +1,7 @@
-{% extends '../../../../base.html' %}
 {% load static %}
 
-{% block title %}Prototype Mission - Design Thinking{% endblock %}
-
-{% block extra_head %}
+<!-- Prototype Mission Template - Included as Fragment -->
+<!-- Mission CSS styles -->
 <style>
     .mission-phase {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -116,9 +114,9 @@
         margin: 1rem 0;
     }
 </style>
-{% endblock %}
 
-{% block content %}
+
+<!-- Mission Content Starts Here -->
 <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Mission Header -->
     <div class="mission-phase">
@@ -957,4 +955,3 @@ window.selectIdea = selectIdea;
 window.chooseIdea = chooseIdea;
 window.closeIdeaModal = closeIdeaModal;
 </script>
-{% endblock %}

@@ -1,9 +1,7 @@
-{% extends '../../../../base.html' %}
 {% load static %}
 
-{% block title %}Showcase Mission - Design Thinking{% endblock %}
-
-{% block extra_head %}
+<!-- Showcase Mission Template - Included as Fragment -->
+<!-- Mission CSS styles -->
 <style>
     .mission-phase {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -109,9 +107,9 @@
         100% { transform: scale(1.05) rotate(2deg); }
     }
 </style>
-{% endblock %}
 
-{% block content %}
+
+<!-- Mission Content Starts Here -->
 <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Mission Header -->
     <div class="mission-phase">
@@ -915,4 +913,3 @@ window.editPresentation = editPresentation;
 window.clearPresentation = clearPresentation;
 window.celebrateCompletion = celebrateCompletion;
 </script>
-{% endblock %}

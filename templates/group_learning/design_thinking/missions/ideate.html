@@ -1,9 +1,7 @@
-{% extends '../../../../base.html' %}
 {% load static %}
 
-{% block title %}Ideate Mission - Design Thinking{% endblock %}
-
-{% block extra_head %}
+<!-- Ideate Mission Template - Included as Fragment -->
+<!-- Mission CSS styles -->
 <style>
     .mission-phase {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -111,9 +109,9 @@
         margin: 0.5rem 0;
     }
 </style>
-{% endblock %}
 
-{% block content %}
+
+<!-- Mission Content Starts Here -->
 <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Mission Header -->
     <div class="mission-phase">
@@ -843,4 +841,3 @@ window.saveAllIdeas = saveAllIdeas;
 window.removeIdea = removeIdea;
 window.addMoreIdeas = addMoreIdeas;
 </script>
-{% endblock %}

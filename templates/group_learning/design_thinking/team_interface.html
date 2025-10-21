@@ -495,6 +495,7 @@ console.log("DEBUG: This should show MAIN site header, not Group Learning header
             </div>
             
             <div id="mission-interface" class="space-y-4">
+                <script>console.log("DEBUG: About to include mission template:", "{{ current_mission.mission_type }}");</script>
                 {% if current_mission.mission_type == 'kickoff' %}
                     {% include 'group_learning/design_thinking/missions/kickoff.html' %}
                 {% elif current_mission.mission_type == 'empathy' %}
@@ -508,6 +509,7 @@ console.log("DEBUG: This should show MAIN site header, not Group Learning header
                 {% elif current_mission.mission_type == 'showcase' %}
                     {% include 'group_learning/design_thinking/missions/showcase.html' %}
                 {% endif %}
+                <script>console.log("DEBUG: Mission template included successfully");</script>
             </div>
         </div>
         {% else %}
@@ -829,6 +831,7 @@ class AutoSaveManager {
         this.statusElement = document.getElementById('auto-save-status');
         this.spinnerElement = document.getElementById('save-spinner');
         this.messageElement = document.getElementById('save-message');
+        this.isUserActive = false; // Track if user is actively typing
     }
     
     showStatus(type, message) {
@@ -852,6 +855,9 @@ class AutoSaveManager {
     }
     
     scheduleSave(formData) {
+        // Mark that user is actively typing
+        this.isUserActive = true;
+        
         if (this.saveTimeout) {
             clearTimeout(this.saveTimeout);
         }
@@ -862,15 +868,22 @@ class AutoSaveManager {
     }
     
     saveData(formData) {
-        this.showStatus('saving', 'Saving draft...');
+        // Only show save status if user is actively typing (not on page load)
+        if (this.isUserActive) {
+            this.showStatus('saving', 'Saving draft...');
+        }
         
         // Save to localStorage for offline support
         try {
             localStorage.setItem('design_thinking_draft', JSON.stringify(formData));
-            this.showStatus('saved', 'Draft saved');
+            if (this.isUserActive) {
+                this.showStatus('saved', 'Draft saved');
+            }
         } catch (error) {
             console.error('Auto-save failed:', error);
-            this.showStatus('error', 'Save failed');
+            if (this.isUserActive) {
+                this.showStatus('error', 'Save failed');
+            }
         }
     }
     
@@ -917,9 +930,12 @@ function openSubmissionModal(type, title = 'Add Submission') {
     // Load draft if available
     const draft = autoSaveManager.loadDraft();
     if (draft && draft.type === type) {
+        // Temporarily disable user activity tracking to prevent "Draft saved" message
+        autoSaveManager.isUserActive = false;
         if (draft.title) document.getElementById('submission_title').value = draft.title;
         if (draft.content) document.getElementById('submission_content').value = draft.content;
         if (draft.submittedBy) document.getElementById('submitted_by').value = draft.submittedBy;
+        console.log('DEBUG: Draft loaded without showing save status');
     }
     
     // Focus first field for accessibility
@@ -1214,6 +1230,21 @@ function showVaniMessage(message) {
     setTimeout(() => {
         document.getElementById('vani-mentor').classList.add('hidden');
     }, 10000);
+}
+
+// Add manual refresh button for students
+function addManualRefreshButton() {
+    console.log('DEBUG: Adding manual refresh button');
+    const refreshButton = document.createElement('button');
+    refreshButton.innerHTML = '<i class="fas fa-sync-alt"></i>';
+    refreshButton.className = 'fixed bottom-6 right-6 z-50 w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center';
+    refreshButton.title = 'Refresh to see latest updates from teacher';
+    refreshButton.onclick = function() {
+        console.log('Manual refresh triggered by student');
+        window.location.reload();
+    };
+    document.body.appendChild(refreshButton);
+    console.log('DEBUG: Manual refresh button added to DOM');
 }
 
 // Auto-refresh status
@@ -1678,8 +1709,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize WebSocket
     initializeTeamWebSocket();
     
-    // Update status every 5 seconds
-    setInterval(updateTeamStatus, 5000);
+    // Update status every 3 seconds for more responsive updates
+    setInterval(updateTeamStatus, 3000);
+    
+    // Add fallback refresh button functionality
+    addManualRefreshButton();
     
     // Form submission handler
     const submissionForm = document.getElementById('submission-form');
@@ -1953,7 +1987,7 @@ function handleQuickPhotoUpload(input) {
 }
 
 // Structured Empathy Observation System
-let observationCount = 0;
+// observationCount already declared above - reusing existing variable
 const targetObservations = 5;
 
 function addStructuredObservation() {
