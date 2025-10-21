@@ -273,6 +273,17 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="{% url 'group_learning:design_thinking_start' %}" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-lightbulb text-yellow-500 w-4"></i>
+                                            <span class="font-medium text-slate-700">Classroom Innovators</span>
+                                        </div>
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-xs font-medium text-slate-500 bg-white px-2 py-0.5 rounded-full">Grades 3-12</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="{% url 'games:entrepreneurship' %}" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white transition-colors">
                                         <div class="flex items-center gap-3">
                                             <i class="fas fa-rocket text-orange-500 w-4"></i>
@@ -330,17 +341,17 @@
                 </ul>
             </div>
             
-            <!-- Professional Logo -->
-            <a href="{% url 'core:home' %}" class="btn btn-ghost text-lg font-bold py-1 px-2 flex-none hover:bg-slate-50">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 flex items-center justify-center flex-shrink-0">
+            <!-- Enhanced Prominent Logo -->
+            <a href="{% url 'core:home' %}" class="btn btn-ghost text-lg font-bold py-2 px-3 flex-none hover:bg-slate-50">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 flex items-center justify-center flex-shrink-0">
                         <img src="{% static 'images/decipherworld-logo.svg' %}" 
                              alt="DecipherWorld Logo" 
-                             class="w-full h-full object-contain drop-shadow-sm align-middle"
+                             class="w-full h-full object-contain drop-shadow-md align-middle"
                              style="vertical-align: middle;"
                              onerror="this.onerror=null; this.src='{% static 'images/decipherworld-logo.png' %}';">
                     </div>
-                    <span class="text-neutral font-bold text-base sm:text-lg lg:text-xl whitespace-nowrap">
+                    <span class="text-neutral font-bold text-sm sm:text-base lg:text-lg whitespace-nowrap">
                         Decipherworld
                     </span>
                     <div class="badge badge-primary badge-xs hidden lg:inline-flex ml-1 font-medium opacity-75">AI EdTech</div>
@@ -420,6 +431,17 @@
                                     </div>
                                     <div class="flex items-center gap-1">
                                         <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">Grades 7-10</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'group_learning:design_thinking_start' %}" class="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-slate-50 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-lightbulb text-yellow-500 w-4"></i>
+                                        <span class="font-medium text-slate-700">Classroom Innovators</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">Grades 3-12</span>
                                     </div>
                                 </a>
                             </li>

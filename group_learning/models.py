@@ -1704,3 +1704,504 @@ class ClimateRoundResult(models.Model):
     
     def __str__(self):
         return f"{self.session.session_code} - {self.scenario.title} Results"
+
+
+# ==================================================================================
+# DESIGN THINKING / CLASSROOM INNOVATORS CHALLENGE MODELS
+# ==================================================================================
+
+class DesignThinkingGame(Game):
+    """
+    Design Thinking Game - "The Classroom Innovators Challenge"
+    Extends base Game model for facilitator-controlled Design Thinking sessions
+    """
+    # Facilitator Control Settings
+    auto_advance_missions = models.BooleanField(
+        default=False,
+        help_text="Automatically advance missions when all teams complete"
+    )
+    default_mission_duration = models.IntegerField(
+        default=15,
+        help_text="Default duration for each mission in minutes"
+    )
+    require_all_teams_complete = models.BooleanField(
+        default=False,
+        help_text="Require all teams to complete before advancing to next mission"
+    )
+    
+    # Virtual Mentor (Vani) Configuration
+    enable_mentor_prompts = models.BooleanField(
+        default=True,
+        help_text="Enable Vani (Virtual Mentor) prompts during gameplay"
+    )
+    mentor_prompt_frequency = models.CharField(
+        max_length=20,
+        choices=[
+            ('low', 'Minimal prompts'),
+            ('medium', 'Regular prompts'),
+            ('high', 'Frequent prompts')
+        ],
+        default='medium',
+        help_text="How frequently Vani provides guidance"
+    )
+    
+    class Meta:
+        verbose_name = "Design Thinking Game"
+        verbose_name_plural = "Design Thinking Games"
+
+
+class DesignMission(models.Model):
+    """
+    Individual missions within the Design Thinking process
+    (Kickoff, Empathy, Define, Ideate, Prototype)
+    """
+    MISSION_TYPES = [
+        ('kickoff', 'Energizing Kickoff'),
+        ('empathy', 'Empathy Mission'),
+        ('define', 'Define Mission'),
+        ('ideate', 'Ideate Mission'),
+        ('prototype', 'Prototype Mission'),
+        ('showcase', 'Final Showcase'),
+    ]
+    
+    game = models.ForeignKey(DesignThinkingGame, on_delete=models.CASCADE, related_name='missions')
+    mission_type = models.CharField(max_length=20, choices=MISSION_TYPES)
+    order = models.PositiveIntegerField(help_text="Mission sequence order")
+    
+    # Mission Content
+    title = models.CharField(max_length=200, help_text="Mission title")
+    description = models.TextField(help_text="What students will do in this mission")
+    instructions = models.TextField(help_text="Step-by-step instructions for teams")
+    
+    # Timing Configuration
+    estimated_duration = models.IntegerField(
+        default=15,
+        help_text="Estimated duration in minutes"
+    )
+    minimum_time = models.IntegerField(
+        default=5,
+        help_text="Minimum time before mission can be advanced"
+    )
+    
+    # Mission-Specific Configuration
+    requires_file_upload = models.BooleanField(
+        default=False,
+        help_text="Teams must upload files/photos during this mission"
+    )
+    requires_text_submission = models.BooleanField(
+        default=True,
+        help_text="Teams must submit text responses"
+    )
+    max_submissions = models.IntegerField(
+        default=1,
+        help_text="Maximum submissions per team for this mission"
+    )
+    
+    # Learning Objectives
+    learning_focus = models.TextField(
+        blank=True,
+        help_text="What students will learn from this mission"
+    )
+    success_criteria = models.TextField(
+        blank=True,
+        help_text="How to measure mission success"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = "Design Mission"
+        verbose_name_plural = "Design Missions"
+        ordering = ['game', 'order']
+        unique_together = ['game', 'order']
+    
+    def __str__(self):
+        return f"{self.game.title} - {self.get_mission_type_display()}"
+
+
+class DesignThinkingSession(GameSession):
+    """
+    Live Design Thinking session - extends base GameSession
+    Tracks current mission, facilitator controls, and team progress
+    """
+    design_game = models.ForeignKey(DesignThinkingGame, on_delete=models.CASCADE, related_name='design_sessions')
+    
+    # Current Mission State
+    current_mission = models.ForeignKey(
+        DesignMission,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="Currently active mission"
+    )
+    mission_start_time = models.DateTimeField(null=True, blank=True)
+    mission_end_time = models.DateTimeField(null=True, blank=True)
+    
+    # Facilitator Control State
+    is_facilitator_controlled = models.BooleanField(
+        default=True,
+        help_text="Whether facilitator controls mission advancement"
+    )
+    facilitator_notes = models.TextField(
+        blank=True,
+        help_text="Private notes for the facilitator"
+    )
+    
+    # Session Configuration
+    enable_peer_viewing = models.BooleanField(
+        default=True,
+        help_text="Allow teams to see other teams' submissions"
+    )
+    enable_live_feedback = models.BooleanField(
+        default=True,
+        help_text="Enable real-time feedback and spotlighting"
+    )
+    
+    # Virtual Mentor State
+    mentor_active = models.BooleanField(
+        default=True,
+        help_text="Whether Vani mentor is currently active"
+    )
+    last_mentor_prompt = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        verbose_name = "Design Thinking Session"
+        verbose_name_plural = "Design Thinking Sessions"
+    
+    def get_teams_count(self):
+        """Get number of active teams in session"""
+        return self.design_teams.count()
+    
+    def get_mission_progress(self):
+        """Get overall mission progress for all teams"""
+        if not self.current_mission:
+            return {'completed': 0, 'total': 0, 'percentage': 0}
+        
+        total_teams = self.get_teams_count()
+        completed_teams = TeamProgress.objects.filter(
+            session=self,
+            mission=self.current_mission,
+            is_completed=True
+        ).count()
+        
+        return {
+            'completed': completed_teams,
+            'total': total_teams,
+            'percentage': (completed_teams / total_teams * 100) if total_teams > 0 else 0
+        }
+    
+    def can_advance_mission(self):
+        """Check if mission can be advanced based on completion criteria"""
+        if not self.current_mission:
+            return True
+        
+        if self.design_game.require_all_teams_complete:
+            progress = self.get_mission_progress()
+            return progress['percentage'] >= 100
+        
+        return True
+    
+    def complete_session(self):
+        """Mark session as completed and expire it"""
+        self.status = 'completed'
+        self.save()
+        
+        # Set mission end time if current mission exists
+        if self.current_mission and not self.mission_end_time:
+            from django.utils import timezone
+            self.mission_end_time = timezone.now()
+            self.save()
+    
+    def is_expired(self):
+        """Check if session has expired"""
+        return self.status in ['completed', 'abandoned']
+    
+    def get_all_missions(self):
+        """Get all missions for this design game in order"""
+        return DesignMission.objects.filter(game=self.design_game).order_by('order')
+    
+    def is_final_mission(self):
+        """Check if current mission is the final mission"""
+        if not self.current_mission:
+            return False
+        
+        all_missions = self.get_all_missions()
+        return self.current_mission == all_missions.last()
+
+
+class DesignTeam(models.Model):
+    """
+    Team participating in Design Thinking session
+    """
+    session = models.ForeignKey(DesignThinkingSession, on_delete=models.CASCADE, related_name='design_teams')
+    
+    # Team Identity
+    team_name = models.CharField(max_length=100, help_text="Team's chosen name")
+    team_emoji = models.CharField(
+        max_length=10,
+        default='💡',
+        help_text="Team's chosen emoji"
+    )
+    team_color = models.CharField(
+        max_length=7,
+        default='#3B82F6',
+        help_text="Team's chosen color (hex code)"
+    )
+    
+    # Team Members (stored as JSON for flexibility)
+    team_members = models.JSONField(
+        default=list,
+        help_text="List of team member names and roles"
+    )
+    
+    # Team Progress
+    current_mission = models.ForeignKey(
+        DesignMission,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="Team's current mission"
+    )
+    missions_completed = models.PositiveIntegerField(default=0)
+    total_submissions = models.PositiveIntegerField(default=0)
+    
+    # Problem Focus (developed during Define mission)
+    problem_statement = models.TextField(
+        blank=True,
+        help_text="Team's defined problem statement (POV)"
+    )
+    target_user = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Target user identified by team"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Design Team"
+        verbose_name_plural = "Design Teams"
+        ordering = ['team_name']
+    
+    def __str__(self):
+        return f"{self.team_name} ({self.session.session_code})"
+    
+    def get_progress_percentage(self):
+        """Calculate team's overall progress percentage based on actual completed missions"""
+        total_missions = self.session.design_game.missions.filter(is_active=True).count()
+        if total_missions == 0:
+            return 0
+        
+        # Count actually completed missions from TeamProgress records
+        completed_missions = self.mission_progress.filter(is_completed=True).count()
+        return (completed_missions / total_missions) * 100
+
+
+class TeamProgress(models.Model):
+    """
+    Track individual team progress through each mission
+    """
+    session = models.ForeignKey(DesignThinkingSession, on_delete=models.CASCADE, related_name='team_progress')
+    team = models.ForeignKey(DesignTeam, on_delete=models.CASCADE, related_name='mission_progress')
+    mission = models.ForeignKey(DesignMission, on_delete=models.CASCADE)
+    
+    # Progress Tracking
+    started_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    is_completed = models.BooleanField(default=False)
+    
+    # Mission-Specific Data
+    submission_count = models.PositiveIntegerField(default=0)
+    time_spent_seconds = models.PositiveIntegerField(default=0)
+    
+    # Facilitator Feedback
+    facilitator_spotlight = models.BooleanField(
+        default=False,
+        help_text="Highlighted by facilitator for good work"
+    )
+    facilitator_notes = models.TextField(
+        blank=True,
+        help_text="Private facilitator notes about team's progress"
+    )
+    
+    class Meta:
+        verbose_name = "Team Progress"
+        verbose_name_plural = "Team Progress Records"
+        ordering = ['-started_at']
+        unique_together = ['session', 'team', 'mission']
+    
+    def __str__(self):
+        return f"{self.team.team_name} - {self.mission.get_mission_type_display()}"
+    
+    def mark_completed(self):
+        """Mark mission as completed for this team"""
+        self.is_completed = True
+        self.completed_at = timezone.now()
+        self.save()
+        
+        # Update team's overall progress
+        self.team.missions_completed = self.team.mission_progress.filter(is_completed=True).count()
+        self.team.save()
+
+
+class TeamSubmission(models.Model):
+    """
+    Individual submissions from teams during missions
+    (observations, problem statements, ideas, prototypes)
+    """
+    SUBMISSION_TYPES = [
+        ('observation', 'Empathy Observation'),
+        ('photo', 'Photo Evidence'),
+        ('voice_note', 'Voice Note'),
+        ('problem_statement', 'Problem Statement (POV)'),
+        ('idea', 'Generated Idea'),
+        ('prototype_description', 'Prototype Description'),
+        ('prototype_photo', 'Prototype Photo'),
+        ('reflection', 'Mission Reflection'),
+    ]
+    
+    team = models.ForeignKey(DesignTeam, on_delete=models.CASCADE, related_name='submissions')
+    mission = models.ForeignKey(DesignMission, on_delete=models.CASCADE)
+    submission_type = models.CharField(max_length=30, choices=SUBMISSION_TYPES)
+    
+    # Submission Content
+    title = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Optional title for submission"
+    )
+    content = models.TextField(help_text="Text content of submission")
+    
+    # File Attachments
+    uploaded_file = models.FileField(
+        upload_to='design_thinking_submissions/',
+        blank=True,
+        null=True,
+        help_text="Uploaded photo, audio, or document"
+    )
+    file_type = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        choices=[
+            ('image', 'Image/Photo'),
+            ('audio', 'Audio Recording'),
+            ('document', 'Document'),
+        ]
+    )
+    
+    # Submission Metadata
+    submitted_by = models.CharField(
+        max_length=100,
+        help_text="Name of team member who submitted"
+    )
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    
+    # Engagement Tracking
+    view_count = models.PositiveIntegerField(default=0)
+    peer_likes = models.PositiveIntegerField(default=0)
+    facilitator_featured = models.BooleanField(
+        default=False,
+        help_text="Featured by facilitator during showcase"
+    )
+    
+    # Mission-Specific Fields
+    empathy_target_user = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Target user for empathy observation"
+    )
+    idea_category = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Category for ideation submissions"
+    )
+    
+    class Meta:
+        verbose_name = "Team Submission"
+        verbose_name_plural = "Team Submissions"
+        ordering = ['-submitted_at']
+    
+    def __str__(self):
+        return f"{self.team.team_name} - {self.get_submission_type_display()}"
+    
+    def increment_view_count(self):
+        """Track when submission is viewed"""
+        self.view_count += 1
+        self.save(update_fields=['view_count'])
+
+
+class MentorNudge(models.Model):
+    """
+    Virtual Mentor (Vani) prompts and guidance for teams
+    """
+    NUDGE_TRIGGERS = [
+        ('mission_start', 'Mission Start'),
+        ('time_based', 'Time-based'),
+        ('progress_based', 'Progress-based'),
+        ('facilitator_triggered', 'Facilitator Triggered'),
+        ('team_specific', 'Team-specific'),
+    ]
+    
+    NUDGE_TYPES = [
+        ('encouragement', 'Encouragement'),
+        ('instruction', 'Instruction/Guidance'),
+        ('prompt', 'Thinking Prompt'),
+        ('celebration', 'Celebration'),
+        ('refocus', 'Refocus/Redirect'),
+    ]
+    
+    mission = models.ForeignKey(DesignMission, on_delete=models.CASCADE, related_name='mentor_nudges')
+    
+    # Nudge Content
+    title = models.CharField(max_length=200, help_text="Nudge title/header")
+    message = models.TextField(help_text="Vani's message to teams")
+    nudge_type = models.CharField(max_length=20, choices=NUDGE_TYPES)
+    
+    # Trigger Configuration
+    trigger_type = models.CharField(max_length=25, choices=NUDGE_TRIGGERS)
+    trigger_time_seconds = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Seconds after mission start to trigger (for time-based)"
+    )
+    trigger_condition = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Conditions for triggering this nudge"
+    )
+    
+    # Display Configuration
+    display_duration = models.PositiveIntegerField(
+        default=10,
+        help_text="How long to display nudge in seconds"
+    )
+    is_dismissible = models.BooleanField(
+        default=True,
+        help_text="Can teams dismiss this nudge"
+    )
+    
+    # Visual Style
+    emoji = models.CharField(
+        max_length=10,
+        default='💡',
+        help_text="Emoji for Vani's expression"
+    )
+    background_color = models.CharField(
+        max_length=7,
+        default='#10B981',
+        help_text="Background color for nudge (hex)"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = "Mentor Nudge"
+        verbose_name_plural = "Mentor Nudges"
+        ordering = ['mission', 'trigger_time_seconds']
+    
+    def __str__(self):
+        return f"{self.mission.get_mission_type_display()} - {self.title}"

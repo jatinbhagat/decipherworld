@@ -20,7 +20,7 @@
             <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
                 <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r from-blue-400 to-blue-600" 
                      data-score="{{ governance_scores.democracy|default:5 }}"
-                     style="width: {{ governance_scores.democracy|default:5|mul:10 }}%">
+                     style="width: {% widthratio governance_scores.democracy|default:5 1 10 %}%">
                 </div>
                 <!-- Shine effect -->
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transform -skew-x-12 animate-shine"></div>
@@ -39,7 +39,7 @@
             <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
                 <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r from-green-400 to-green-600" 
                      data-score="{{ governance_scores.fairness|default:5 }}"
-                     style="width: {{ governance_scores.fairness|default:5|mul:10 }}%">
+                     style="width: {% widthratio governance_scores.fairness|default:5 1 10 %}%">
                 </div>
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transform -skew-x-12 animate-shine"></div>
             </div>
@@ -57,7 +57,7 @@
             <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
                 <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r from-purple-400 to-purple-600" 
                      data-score="{{ governance_scores.freedom|default:5 }}"
-                     style="width: {{ governance_scores.freedom|default:5|mul:10 }}%">
+                     style="width: {% widthratio governance_scores.freedom|default:5 1 10 %}%">
                 </div>
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transform -skew-x-12 animate-shine"></div>
             </div>
@@ -75,7 +75,7 @@
             <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
                 <div class="governance-meter-fill h-2 rounded-full transition-all duration-800 bg-gradient-to-r from-orange-400 to-orange-600" 
                      data-score="{{ governance_scores.stability|default:5 }}"
-                     style="width: {{ governance_scores.stability|default:5|mul:10 }}%">
+                     style="width: {% widthratio governance_scores.stability|default:5 1 10 %}%">
                 </div>
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 transform -skew-x-12 animate-shine"></div>
             </div>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Observation UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .suggestion-pill {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: #4b5563;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .suggestion-pill:hover {
+            background: #e5e7eb;
+            border-color: #9ca3af;
+            transform: translateY(-1px);
+        }
+
+        .observation-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            animation: slideInFromTop 0.3s ease-out;
+        }
+
+        .observation-item.new {
+            background: #ecfdf5;
+            border-color: #10b981;
+            animation: bounceIn 0.5s ease-out;
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto space-y-6">
+        <!-- Quick Add Observation -->
+        <div class="bg-white border-2 border-blue-200 rounded-xl p-6 shadow-sm">
+            <div class="flex items-center mb-4">
+                <div class="text-2xl mr-3">👀</div>
+                <h3 class="text-xl font-bold text-gray-900">Quick Add Observations</h3>
+                <div class="ml-auto text-sm text-gray-500" id="observation-counter">0 observations</div>
+            </div>
+            
+            <!-- Super Fast Input -->
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="quick-observation-input"
+                    placeholder="Type what you notice and press Enter to add instantly..."
+                    class="w-full px-4 py-3 pr-20 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                    maxlength="200"
+                    autocomplete="off"
+                >
+                <button 
+                    onclick="addQuickObservation()"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+                >
+                    Add
+                </button>
+            </div>
+            
+            <!-- Instant Suggestions -->
+            <div class="mt-3">
+                <div class="text-sm text-gray-600 mb-2">💡 Quick suggestions (click to add):</div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="addSuggestion('Students can\'t see the board clearly')" class="suggestion-pill">Can't see board</button>
+                    <button onclick="addSuggestion('Chairs are uncomfortable for long periods')" class="suggestion-pill">Uncomfortable chairs</button>
+                    <button onclick="addSuggestion('Too noisy to concentrate')" class="suggestion-pill">Too noisy</button>
+                    <button onclick="addSuggestion('Not enough storage space')" class="suggestion-pill">No storage</button>
+                    <button onclick="addSuggestion('Poor lighting in corners')" class="suggestion-pill">Poor lighting</button>
+                    <button onclick="addSuggestion('Difficult to move around freely')" class="suggestion-pill">Hard to move</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Live Observations List (Todo Style) -->
+        <div id="observations-list-container" class="hidden">
+            <div class="bg-white border rounded-xl p-6 shadow-sm">
+                <div class="flex items-center mb-4">
+                    <div class="text-lg font-bold text-gray-900">Your Team's Observations</div>
+                    <div class="ml-auto text-sm text-green-600 font-medium" id="live-count">0 added</div>
+                </div>
+                <div id="observations-list" class="space-y-2">
+                    <!-- Observations will appear here dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Photo Upload (Optional) -->
+        <div class="bg-purple-50 border-2 border-purple-200 rounded-xl p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="text-xl mr-2">📸</div>
+                    <span class="font-medium text-purple-800">Add photo (optional)</span>
+                </div>
+                <button onclick="alert('Photo upload would work here!')" 
+                        class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm">
+                    Choose Photo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let observationCount = 0;
+
+        function addQuickObservation() {
+            const input = document.getElementById('quick-observation-input');
+            const text = input.value.trim();
+            
+            if (!text) {
+                input.focus();
+                return;
+            }
+            
+            addObservationToList(text, true);
+            updateObservationCounter();
+            showQuickSuccess('✅ Observation added!');
+            
+            input.value = '';
+            input.focus();
+        }
+
+        function addSuggestion(suggestionText) {
+            addObservationToList(suggestionText, true);
+            updateObservationCounter();
+            showQuickSuccess('✅ Observation added!');
+        }
+
+        function addObservationToList(text, isNew = false) {
+            const container = document.getElementById('observations-list-container');
+            const list = document.getElementById('observations-list');
+            
+            // Show container if hidden
+            container.classList.remove('hidden');
+            
+            // Create observation item
+            const item = document.createElement('div');
+            item.className = `observation-item${isNew ? ' new' : ''}`;
+            item.innerHTML = `
+                <div class="flex items-center w-full">
+                    <div class="text-blue-600 mr-3">•</div>
+                    <div class="flex-1 text-gray-800">${text}</div>
+                    <div class="text-xs text-gray-500">Just now</div>
+                </div>
+            `;
+            
+            // Add at the top
+            list.insertBefore(item, list.firstChild);
+            
+            // Remove 'new' class after animation
+            if (isNew) {
+                setTimeout(() => {
+                    item.classList.remove('new');
+                }, 500);
+            }
+            
+            observationCount++;
+        }
+
+        function updateObservationCounter() {
+            const counter = document.getElementById('observation-counter');
+            const liveCount = document.getElementById('live-count');
+            
+            counter.textContent = `${observationCount} observations`;
+            if (liveCount) {
+                liveCount.textContent = `${observationCount} added`;
+            }
+        }
+
+        function showQuickSuccess(message) {
+            showQuickNotification(message, 'success');
+        }
+
+        function showQuickNotification(message, type) {
+            // Remove existing notifications
+            const existing = document.querySelector('.quick-notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `quick-notification fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-sm font-medium ${
+                type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 
+                'bg-red-100 text-red-800 border border-red-200'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 2 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        // Enable Enter key for quick add
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('quick-observation-input');
+            if (input) {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addQuickObservation();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

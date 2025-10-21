@@ -19,7 +19,7 @@
             <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-4xl mx-auto">
                 Transforming K-12 education through AI-powered learning games and innovative teaching tools
             </p>
-            <div class="flex flex-wrap justify-center gap-6 text-sm">
+           <!-- <div class="flex flex-wrap justify-center gap-6 text-sm">
                 <div class="bg-white/20 rounded-full px-4 py-2">
                     <i class="fas fa-graduation-cap mr-2"></i>IIM Alumni Founded
                 </div>
@@ -29,7 +29,7 @@
                 <div class="bg-white/20 rounded-full px-4 py-2">
                     <i class="fas fa-star mr-2"></i>90+ NPS Score
                 </div>
-            </div>
+            </div>-->
         </div>
     </section>
 
@@ -203,17 +203,23 @@
             
             <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 
-                <!-- Founder 1 -->
+                <!-- Co-Founder -->
                 <div class="bg-white rounded-xl overflow-hidden shadow-lg">
-                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b5bc?w=400&h=300&fit=crop&crop=face" 
-                         alt="Saloni Agarwal, Founder & CEO" 
-                         class="w-full h-64 object-cover">
+                    <img src="{% static 'images/saloni-agarwal.jpeg' %}" 
+                         alt="Saloni Agarwal, Co-Founder" 
+                         class="w-full h-80 object-contain bg-gray-50">
                     <div class="p-6">
                         <h3 class="text-xl font-bold text-gray-900 mb-2">Saloni Agarwal</h3>
-                        <p class="text-blue-600 font-medium mb-3">Founder & CEO</p>
+                        <p class="text-blue-600 font-medium mb-3">Co-Founder</p>
                         <p class="text-gray-600 text-sm mb-4">
-                            Educational technology entrepreneur with deep expertise in AI-powered learning platforms and K-12 curriculum development.
+                            As Co-Founder of DecipherWorld, I am a strategic leader with 13+ years of global experience in driving transformational learning and organizational excellence across top-tier technology and healthcare companies. I have led initiatives that turn learning into a catalyst for innovation, performance, and measurable impact, bridging human potential with real-world problem-solving.
                         </p>
+                        <p class="text-gray-600 text-sm mb-4">
+                            I am passionate about redefining education and workforce development — creating AI-powered, human-centered ecosystems that empower students and educators to master future-ready skills, innovate with confidence, and shape the next generation of global problem-solvers.
+                        </p>
+                        <div class="text-gray-600 text-sm mb-4 italic">
+                            "I don't just build learning programs — I design experiences that activate brilliance and transform potential into impact."
+                        </div>
                         <a href="https://www.linkedin.com/in/saloni-agarwal-725036241/" 
                            class="text-blue-600 hover:text-blue-800 font-medium">
                             <i class="fab fa-linkedin mr-2"></i>Connect on LinkedIn
@@ -221,18 +227,27 @@
                     </div>
                 </div>
                 
-                <!-- Founder 2 -->
+                <!-- Strategic Advisor -->
                 <div class="bg-white rounded-xl overflow-hidden shadow-lg">
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=300&fit=crop&crop=face" 
-                         alt="Dr. Rajesh Kumar, Co-Founder & CTO" 
-                         class="w-full h-64 object-cover">
+                    <img src="{% static 'images/jatin-bhagat.jpg' %}" 
+                         alt="Jatin Bhagat, Strategic Advisor" 
+                         class="w-full h-80 object-contain bg-gray-50">
                     <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Dr. Rajesh Kumar</h3>
-                        <p class="text-purple-600 font-medium mb-3">Co-Founder & CTO</p>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Jatin Bhagat</h3>
+                        <p class="text-blue-600 font-medium mb-3">Strategic Advisor</p>
                         <p class="text-gray-600 text-sm mb-4">
-                            IIM alumnus and former tech executive with 15+ years in educational technology. Expert in scalable AI systems and learning analytics.
+                            As a Strategic Advisor of DecipherWorld, I am passionate about transforming education into a truly fun, immersive, and social experience. My vision is anchored in making learning highly active—where every learner grows by doing, exploring, and collaborating with others. Drawing on my experience across leading EdTech and internet businesses in India and the US—like MakeMyTrip, SplashLearn, Goibibo, and Paytm—I bring a product-minded approach to building digital solutions that scale and inspire.
                         </p>
-                        <a href="#" class="text-purple-600 hover:text-purple-800 font-medium">
+                        <p class="text-gray-600 text-sm mb-4">
+                            At DecipherWorld, I focus on empowering learners and educators through game-based, hands-on experiences that spark real curiosity and teamwork. I believe the richest learning happens when classrooms become arenas for creativity and engagement, not just information delivery. My mission is to ensure every student is an active participant—solving problems, playing roles, and embracing challenge as they learn.
+                        </p>
+                        <p class="text-gray-600 text-sm mb-4">
+                            I'm committed to guiding innovation, team leadership, and building impactful solutions that make learning meaningful, memorable, and lifelong.
+                        </p>
+                        <div class="text-gray-600 text-sm mb-4 italic">
+                            "Because to me, education should be an unforgettable adventure—one that brings out the very best in every learner."
+                        </div>
+                        <a href="https://www.linkedin.com/in/jatinbhagat/" class="text-blue-600 hover:text-blue-800 font-medium">
                             <i class="fab fa-linkedin mr-2"></i>Connect on LinkedIn
                         </a>
                     </div>
@@ -365,12 +380,14 @@ function toggleMissionDetails() {
     {
       "@type": "Person",
       "name": "Saloni Agarwal",
-      "jobTitle": "Founder & CEO"
-    },
+      "jobTitle": "Co-Founder"
+    }
+  ],
+  "employee": [
     {
       "@type": "Person", 
-      "name": "Dr. Rajesh Kumar",
-      "jobTitle": "Co-Founder & CTO"
+      "name": "Jatin Bhagat",
+      "jobTitle": "Strategic Advisor"
     }
   ]
 }

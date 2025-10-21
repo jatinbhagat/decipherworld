@@ -1,0 +1,220 @@
+<!-- POV Statement Builder Component -->
+<div id="pov-builder" class="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200 rounded-xl p-6 mb-8">
+    <div class="flex items-center mb-4">
+        <div class="text-2xl mr-4">🔧</div>
+        <div>
+            <h3 class="text-xl font-bold text-gray-900">POV Statement Builder Practice</h3>
+            <div class="text-gray-600">Practice building Point of View statements with guided examples</div>
+        </div>
+        <div class="ml-auto bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+            5 min practice
+        </div>
+    </div>
+    
+    <!-- POV Formula Introduction -->
+    <div class="bg-white p-4 rounded-lg mb-6">
+        <div class="font-semibold text-purple-900 mb-2">📐 The POV Formula:</div>
+        <div class="text-purple-800 text-lg font-medium mb-2">
+            [USER] needs [NEED] because [INSIGHT]
+        </div>
+        <div class="text-sm text-purple-600">
+            This formula turns observations into actionable problem statements that focus on real user needs.
+        </div>
+    </div>
+    
+    <!-- Interactive Example Builder -->
+    <div class="bg-white border border-purple-200 rounded-lg p-4 mb-4">
+        <div class="font-semibold text-gray-900 mb-3">🎯 Try Building a POV Statement:</div>
+        
+        <!-- Example Scenario -->
+        <div class="bg-yellow-50 p-3 rounded-lg mb-4">
+            <div class="font-medium text-yellow-800 mb-1">Example Scenario:</div>
+            <div class="text-yellow-700 text-sm">
+                You observed students in the library constantly getting distracted by noise from group study areas, 
+                causing them to lose focus and take longer to complete their homework.
+            </div>
+        </div>
+        
+        <!-- Step-by-step Builder -->
+        <div class="space-y-4">
+            <div>
+                <label class="block font-medium text-gray-700 mb-1">1. WHO is the user?</label>
+                <select id="practice-user" class="w-full p-2 border border-gray-300 rounded-lg">
+                    <option value="">Choose the best option...</option>
+                    <option value="Students">Students (too broad)</option>
+                    <option value="Students in the library">Students in the library (better)</option>
+                    <option value="Students trying to focus in noisy areas">Students trying to focus in noisy areas (specific!)</option>
+                    <option value="Everyone">Everyone (too broad)</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block font-medium text-gray-700 mb-1">2. WHAT do they need?</label>
+                <select id="practice-need" class="w-full p-2 border border-gray-300 rounded-lg">
+                    <option value="">Choose the best option...</option>
+                    <option value="headphones">need headphones (that's a solution!)</option>
+                    <option value="quiet space">need a quiet space to concentrate (good need!)</option>
+                    <option value="better library">need a better library (too vague)</option>
+                    <option value="no noise">need no noise (impossible!)</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block font-medium text-gray-700 mb-1">3. WHY do they need this?</label>
+                <select id="practice-insight" class="w-full p-2 border border-gray-300 rounded-lg">
+                    <option value="">Choose the best option...</option>
+                    <option value="noise is annoying">because noise is annoying (opinion, not evidence)</option>
+                    <option value="it would be nice">because it would be nice (no evidence)</option>
+                    <option value="distractions slow their work">because distractions slow their work and reduce focus (evidence-based!)</option>
+                    <option value="they asked for it">because they asked for it (not your observation)</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Practice POV Preview -->
+        <div class="mt-4 bg-purple-50 p-3 rounded-lg">
+            <div class="font-medium text-purple-800 mb-1">Your Practice POV Statement:</div>
+            <div id="practice-pov-preview" class="text-purple-700 italic">
+                Make your selections above to see your POV statement
+            </div>
+        </div>
+        
+        <!-- Feedback -->
+        <div id="practice-feedback" class="mt-3 hidden">
+            <div class="p-3 rounded-lg" id="feedback-container">
+                <!-- Feedback will appear here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quality Indicators -->
+    <div class="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+        <div class="font-semibold text-gray-900 mb-3">✅ Good POV Statements:</div>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+                <div class="flex items-start">
+                    <div class="text-green-500 mr-2 text-sm">✓</div>
+                    <span class="text-sm text-gray-700">Focus on specific users, not "everyone"</span>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-green-500 mr-2 text-sm">✓</div>
+                    <span class="text-sm text-gray-700">Describe real needs, not solutions</span>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <div class="flex items-start">
+                    <div class="text-green-500 mr-2 text-sm">✓</div>
+                    <span class="text-sm text-gray-700">Base insights on your observations</span>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-green-500 mr-2 text-sm">✓</div>
+                    <span class="text-sm text-gray-700">Point toward actionable solutions</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Common Mistakes -->
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div class="font-semibold text-red-800 mb-3">❌ Common Mistakes to Avoid:</div>
+        <div class="grid md:grid-cols-2 gap-2 text-sm">
+            <div class="space-y-1">
+                <div class="text-red-700">• "People need phones" (solution, not need)</div>
+                <div class="text-red-700">• "Everyone needs..." (too broad)</div>
+            </div>
+            <div class="space-y-1">
+                <div class="text-red-700">• "...because it's cool" (no evidence)</div>
+                <div class="text-red-700">• "Users need better X" (vague)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Practice POV Builder functionality
+function updatePracticePOV() {
+    const user = document.getElementById('practice-user').value;
+    const need = document.getElementById('practice-need').value;
+    const insight = document.getElementById('practice-insight').value;
+    
+    const preview = document.getElementById('practice-pov-preview');
+    const feedback = document.getElementById('practice-feedback');
+    const feedbackContainer = document.getElementById('feedback-container');
+    
+    if (user || need || insight) {
+        const userText = user || '[USER]';
+        const needText = need || '[NEED]';
+        const insightText = insight || '[INSIGHT]';
+        
+        preview.textContent = `${userText} needs ${needText} because ${insightText}`;
+    } else {
+        preview.textContent = 'Make your selections above to see your POV statement';
+    }
+    
+    // Provide feedback when all selections are made
+    if (user && need && insight) {
+        const correctUser = user === 'Students trying to focus in noisy areas';
+        const correctNeed = need === 'quiet space';
+        const correctInsight = insight === 'distractions slow their work';
+        
+        let feedbackClass, feedbackText;
+        
+        if (correctUser && correctNeed && correctInsight) {
+            feedbackClass = 'bg-green-100 border border-green-200';
+            feedbackText = '🎉 Excellent! This POV statement is specific, evidence-based, and actionable. It clearly identifies the user, articulates a real need, and provides evidence from observations.';
+        } else {
+            feedbackClass = 'bg-orange-100 border border-orange-200';
+            const issues = [];
+            if (!correctUser) issues.push('User could be more specific');
+            if (!correctNeed) issues.push('Need should focus on the problem, not the solution');
+            if (!correctInsight) issues.push('Insight should be based on evidence you observed');
+            
+            feedbackText = `💡 Good try! Areas to improve: ${issues.join(', ')}. Remember to be specific about who, what they need (not how), and why based on evidence.`;
+        }
+        
+        feedbackContainer.className = `p-3 rounded-lg ${feedbackClass}`;
+        feedbackContainer.innerHTML = `<div class="text-sm">${feedbackText}</div>`;
+        feedback.classList.remove('hidden');
+    } else {
+        feedback.classList.add('hidden');
+    }
+}
+
+// Add event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('practice-user').addEventListener('change', updatePracticePOV);
+    document.getElementById('practice-need').addEventListener('change', updatePracticePOV);
+    document.getElementById('practice-insight').addEventListener('change', updatePracticePOV);
+});
+</script>
+
+<style>
+.pov-builder {
+    position: relative;
+    overflow: hidden;
+}
+
+.pov-builder::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(147, 51, 234, 0.1), transparent);
+    transform: rotate(45deg);
+    animation: pov-shine 4s infinite;
+}
+
+@keyframes pov-shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    50% { transform: translateX(0%) translateY(0%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+select:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+</style>

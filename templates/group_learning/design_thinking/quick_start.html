@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}The Classroom Innovators Challenge - Start{% endblock %}
+
+{% block description %}Start a new Design Thinking session or join an existing one. Transform your classroom through collaborative innovation.{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Minimal CSS for gradient background only */
+  main {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto pt-24 pb-8 px-4">
+  <!-- Header -->
+  <div class="text-center mb-8">
+    <h1 class="text-4xl font-bold text-gray-900 mb-3">🏫 The Classroom Innovators Challenge</h1>
+    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+      Transform your classroom through collaborative Design Thinking
+    </p>
+  </div>
+
+  <!-- Role Selection -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <!-- Teacher Card -->
+    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-200">
+      <span class="text-5xl mb-4 block">👨‍🏫</span>
+      <h2 class="text-xl font-semibold mb-3">I'm a Teacher</h2>
+      <p class="text-blue-100 mb-6 text-sm leading-relaxed">
+        Create and facilitate a Design Thinking session for your classroom
+      </p>
+      <a href="{% url 'group_learning:design_thinking_create' %}" class="block bg-white/20 border border-white/30 text-white font-medium py-3 px-6 rounded-lg hover:bg-white/30 transition-all duration-200">
+        Create New Session
+      </a>
+    </div>
+
+    <!-- Student Card -->
+    <div class="bg-gradient-to-br from-cyan-500 to-cyan-600 text-white rounded-xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-200">
+      <span class="text-5xl mb-4 block">🎓</span>
+      <h2 class="text-xl font-semibold mb-3">I'm a Student</h2>
+      <p class="text-cyan-100 mb-6 text-sm leading-relaxed">
+        Join an existing session using your teacher's session code
+      </p>
+      <a href="{% url 'group_learning:design_thinking_join' %}" class="block bg-white/20 border border-white/30 text-white font-medium py-3 px-6 rounded-lg hover:bg-white/30 transition-all duration-200">
+        Join Session
+      </a>
+    </div>
+  </div>
+
+  <!-- Game Overview -->
+  <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+    <h3 class="text-xl font-semibold text-gray-900 mb-6 text-center">Game Overview</h3>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="text-center p-4 bg-gray-50 rounded-lg">
+        <span class="text-2xl font-bold text-blue-500 block">90</span>
+        <div class="text-xs text-gray-600 mt-1">Minutes</div>
+      </div>
+      <div class="text-center p-4 bg-gray-50 rounded-lg">
+        <span class="text-2xl font-bold text-blue-500 block">6</span>
+        <div class="text-xs text-gray-600 mt-1">Missions</div>
+      </div>
+      <div class="text-center p-4 bg-gray-50 rounded-lg">
+        <span class="text-2xl font-bold text-blue-500 block">3-30</span>
+        <div class="text-xs text-gray-600 mt-1">Players</div>
+      </div>
+      <div class="text-center p-4 bg-gray-50 rounded-lg">
+        <span class="text-2xl font-bold text-blue-500 block">100</span>
+        <div class="text-xs text-gray-600 mt-1">Max Teams</div>
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      {% for mission in missions %}
+      <div class="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+        <span class="text-xl mr-3">
+          {% if mission.mission_type == 'kickoff' %}🚀
+          {% elif mission.mission_type == 'empathy' %}🔍
+          {% elif mission.mission_type == 'define' %}🎯
+          {% elif mission.mission_type == 'ideate' %}💡
+          {% elif mission.mission_type == 'prototype' %}🔧
+          {% elif mission.mission_type == 'showcase' %}🏆
+          {% endif %}
+        </span>
+        <div class="flex-1">
+          <div class="font-medium text-gray-900 text-sm">{{ mission.title }}</div>
+          <div class="text-xs text-gray-600">{{ mission.description|truncatewords:8 }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

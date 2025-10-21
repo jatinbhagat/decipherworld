@@ -1,0 +1,960 @@
+{% extends '../../../../base.html' %}
+{% load static %}
+
+{% block title %}Prototype Mission - Design Thinking{% endblock %}
+
+{% block extra_head %}
+<style>
+    .mission-phase {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .phase-indicator {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .prototype-toolkit {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border-radius: 1rem;
+        padding: 2rem;
+    }
+    
+    .prototype-step {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+    }
+    
+    .prototype-step:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .prototype-input {
+        background: rgba(255, 255, 255, 0.9);
+        color: #374151;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        width: 100%;
+        font-size: 1rem;
+        transition: background 0.2s ease;
+    }
+    
+    .prototype-input:focus {
+        background: white;
+        outline: 2px solid #f59e0b;
+        outline-offset: 2px;
+    }
+    
+    .materials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .material-item {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+    
+    .material-item:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .material-item.selected {
+        border-color: #f59e0b;
+        background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .prototype-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .prototype-card {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+    
+    .prototype-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .testing-framework {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        color: #1f2937;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Mission Header -->
+    <div class="mission-phase">
+        <div class="phase-indicator">Phase 4: Prototype</div>
+        <h1 class="text-3xl font-bold mb-4">🔧 Build and Test Your Solution</h1>
+        <p class="text-xl opacity-90">Transform your best ideas into tangible prototypes that you can test and iterate quickly.</p>
+    </div>
+
+    <!-- LEARN PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">📚</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Learn: The Art of Rapid Prototyping</h2>
+                <p class="text-gray-600">Master the principles of building testable solutions quickly</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-blue-900 mb-3">🔧 What is Prototyping?</h3>
+                <p class="text-blue-800 text-sm mb-3">
+                    Prototyping is building a simple, testable version of your solution to learn what works and what doesn't. 
+                    It's about "thinking with your hands" and learning through experimentation rather than just planning.
+                </p>
+                <div class="bg-white p-3 rounded border-l-4 border-blue-500">
+                    <p class="text-blue-900 font-medium text-sm">"If a picture is worth 1000 words, a prototype is worth 1000 meetings." - Tom & David Kelley, IDEO</p>
+                </div>
+            </div>
+
+            <div class="bg-green-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-green-900 mb-3">🎯 Key Principles</h3>
+                <ul class="text-green-800 text-sm space-y-2">
+                    <li class="flex items-start">
+                        <span class="text-green-600 mr-2">•</span>
+                        <span><strong>Start rough:</strong> Don't make it perfect, make it testable</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-600 mr-2">•</span>
+                        <span><strong>Fail fast:</strong> Learn quickly what doesn't work</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-600 mr-2">•</span>
+                        <span><strong>Build with users:</strong> Get feedback early and often</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-600 mr-2">•</span>
+                        <span><strong>Iterate rapidly:</strong> Make improvements based on tests</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+            <h4 class="font-semibold text-yellow-900 mb-2">🌟 The Prototype Mindset:</h4>
+            <div class="grid md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <div class="text-2xl mb-2">🏃‍♂️</div>
+                    <strong class="text-yellow-800">Quick</strong>
+                    <p class="text-yellow-700 text-sm">Build fast, test faster</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl mb-2">🧪</div>
+                    <strong class="text-yellow-800">Experimental</strong>
+                    <p class="text-yellow-700 text-sm">Try ideas, not perfection</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl mb-2">🔄</div>
+                    <strong class="text-yellow-800">Iterative</strong>
+                    <p class="text-yellow-700 text-sm">Improve with each version</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl mb-2">👥</div>
+                    <strong class="text-yellow-800">User-focused</strong>
+                    <p class="text-yellow-700 text-sm">Build for real people</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRACTICE PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-orange-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">🛠️</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Practice: Prototype Planning Workshop</h2>
+                <p class="text-gray-600">Learn to choose the right prototyping approach for your solution</p>
+            </div>
+        </div>
+
+        <!-- Prototype Types -->
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+                <h4 class="font-semibold text-purple-900 mb-3">📄 Paper Prototypes</h4>
+                <div class="text-sm text-purple-800 mb-3">
+                    <strong>Best for:</strong> User interfaces, app screens, website layouts
+                </div>
+                <div class="space-y-1 text-xs text-purple-700">
+                    <p><strong>Materials:</strong> Paper, pens, scissors, tape</p>
+                    <p><strong>Time:</strong> 15-30 minutes</p>
+                    <p><strong>Example:</strong> Sketch screens for a study app</p>
+                </div>
+            </div>
+            
+            <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+                <h4 class="font-semibold text-orange-900 mb-3">🏗️ Physical Prototypes</h4>
+                <div class="text-sm text-orange-800 mb-3">
+                    <strong>Best for:</strong> Objects, furniture, tools, physical solutions
+                </div>
+                <div class="space-y-1 text-xs text-orange-700">
+                    <p><strong>Materials:</strong> Cardboard, clay, tape, recyclables</p>
+                    <p><strong>Time:</strong> 30-60 minutes</p>
+                    <p><strong>Example:</strong> Desk organizer from cardboard</p>
+                </div>
+            </div>
+            
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                <h4 class="font-semibold text-blue-900 mb-3">🎭 Service Prototypes</h4>
+                <div class="text-sm text-blue-800 mb-3">
+                    <strong>Best for:</strong> Experiences, processes, interactions
+                </div>
+                <div class="space-y-1 text-xs text-blue-700">
+                    <p><strong>Materials:</strong> Role-play, storyboards, scripts</p>
+                    <p><strong>Time:</strong> 20-45 minutes</p>
+                    <p><strong>Example:</strong> New lunch ordering system</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prototype Planning Exercise -->
+        <div class="testing-framework">
+            <h4 class="font-bold mb-3">🎯 Quick Planning Exercise</h4>
+            <p class="text-sm mb-3">Think about your best idea from ideation. Which prototype type would work best?</p>
+            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <strong>Consider:</strong>
+                    <ul class="mt-1 space-y-1">
+                        <li>• Is it digital or physical?</li>
+                        <li>• Who needs to test it?</li>
+                        <li>• What materials do you have?</li>
+                        <li>• How much time do you have?</li>
+                    </ul>
+                </div>
+                <div>
+                    <strong>Questions to ask:</strong>
+                    <ul class="mt-1 space-y-1">
+                        <li>• What's the core function to test?</li>
+                        <li>• What might go wrong?</li>
+                        <li>• How will users interact with it?</li>
+                        <li>• What feedback do you need?</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLY PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-green-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">🚀</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Apply: Build Your Prototype</h2>
+                <p class="text-gray-600">Create a testable version of your solution</p>
+            </div>
+        </div>
+
+        <!-- Context Reminder -->
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+            <div class="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+                <h4 class="font-semibold text-purple-900 mb-2">💡 Your Selected Idea</h4>
+                <div id="selected-idea-display" class="text-purple-800">
+                    <div id="selected-idea-content" class="italic">Choose your best idea from the Ideate mission...</div>
+                </div>
+                <button onclick="selectIdea()" class="mt-2 text-purple-600 hover:text-purple-700 text-sm font-medium">
+                    🔄 Select Different Idea
+                </button>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                <h4 class="font-semibold text-blue-900 mb-2">🎯 Your POV Statement</h4>
+                <div id="pov-reminder" class="text-blue-800">
+                    <div id="pov-content-prototype" class="italic">Loading your problem statement...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prototype Builder Toolkit -->
+        <div class="prototype-toolkit">
+            <h3 class="text-2xl font-bold mb-6 text-center">🔧 Prototype Builder Toolkit</h3>
+            
+            <!-- Step 1: Choose Prototype Type -->
+            <div class="prototype-step">
+                <h4 class="text-lg font-bold mb-4">Step 1: Choose Your Prototype Type</h4>
+                <div class="grid md:grid-cols-3 gap-3">
+                    <div class="material-item" onclick="selectPrototypeType('paper')" id="type-paper">
+                        <div class="text-2xl mb-1">📄</div>
+                        <div>Paper/Digital</div>
+                    </div>
+                    <div class="material-item" onclick="selectPrototypeType('physical')" id="type-physical">
+                        <div class="text-2xl mb-1">🏗️</div>
+                        <div>Physical Object</div>
+                    </div>
+                    <div class="material-item" onclick="selectPrototypeType('service')" id="type-service">
+                        <div class="text-2xl mb-1">🎭</div>
+                        <div>Service/Experience</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Select Materials -->
+            <div id="materials-step" class="prototype-step hidden">
+                <h4 class="text-lg font-bold mb-4">Step 2: Select Your Materials</h4>
+                <div id="materials-grid" class="materials-grid">
+                    <!-- Materials will be populated based on prototype type -->
+                </div>
+            </div>
+
+            <!-- Step 3: Prototype Description -->
+            <div id="description-step" class="prototype-step hidden">
+                <h4 class="text-lg font-bold mb-4">Step 3: Describe Your Prototype</h4>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-semibold mb-2">What will you build?</label>
+                        <textarea id="prototype-description" 
+                                  class="prototype-input h-24"
+                                  placeholder="Describe your prototype in detail - what it looks like, how it works, what users will do with it..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">How will you test it?</label>
+                        <textarea id="prototype-testing" 
+                                  class="prototype-input h-20"
+                                  placeholder="Who will test it? What will you ask them to do? What feedback will you collect?"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Success Criteria -->
+            <div id="criteria-step" class="prototype-step hidden">
+                <h4 class="text-lg font-bold mb-4">Step 4: Define Success Criteria</h4>
+                <div class="space-y-3">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="criteria-solves" class="mr-2">
+                        <label for="criteria-solves">Does it solve the main problem?</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="criteria-usable" class="mr-2">
+                        <label for="criteria-usable">Is it easy for users to understand?</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="criteria-feasible" class="mr-2">
+                        <label for="criteria-feasible">Can it be built with available resources?</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="criteria-testable" class="mr-2">
+                        <label for="criteria-testable">Can you get meaningful feedback?</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-between items-center mt-6">
+                <button onclick="startOver()" 
+                        class="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors">
+                    🔄 Start Over
+                </button>
+                <button onclick="savePrototype()" 
+                        id="save-prototype-btn"
+                        class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled>
+                    💾 Save Prototype Plan
+                </button>
+            </div>
+        </div>
+
+        <!-- Prototype Display -->
+        <div id="prototype-display" class="hidden mt-6 bg-green-50 border-2 border-green-200 p-6 rounded-xl">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-xl font-bold text-green-900">🎉 Your Prototype Plan</h4>
+                <div class="text-sm text-green-600 font-medium">Ready to build!</div>
+            </div>
+            <div id="prototype-summary" class="bg-white p-4 rounded-lg">
+                <!-- Prototype summary will appear here -->
+            </div>
+            <div class="mt-4 flex justify-between items-center">
+                <button onclick="editPrototype()" 
+                        class="text-green-700 hover:text-green-800 font-medium">
+                    ✏️ Edit Plan
+                </button>
+                <div class="text-sm text-green-600">
+                    Time to build and test your solution!
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Tracking -->
+        <div class="mt-6 bg-blue-50 border border-blue-200 p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div class="font-semibold text-blue-900">Prototype Progress</div>
+                <div id="prototype-progress" class="text-blue-700">Planning phase</div>
+            </div>
+            <div class="w-full bg-blue-200 rounded-full h-3 mt-2">
+                <div id="prototype-progress-bar" class="bg-blue-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REFLECT PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-purple-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">🤔</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Reflect: Understanding Your Prototyping Journey</h2>
+                <p class="text-gray-600">Think about what you learned through building and testing</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-purple-900 mb-3">🎯 Reflection Questions</h3>
+                <div class="space-y-3">
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">What surprised you about building your prototype?</p>
+                    </div>
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">How did testing change your understanding of the solution?</p>
+                    </div>
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">What would you improve in the next version?</p>
+                    </div>
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">How did user feedback differ from your expectations?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-blue-900 mb-3">🌟 Key Learnings</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span class="text-blue-800">Building reveals problems you can't see in planning</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span class="text-blue-800">Users interact with prototypes differently than expected</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span class="text-blue-800">Simple prototypes can provide powerful insights</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span class="text-blue-800">Iteration improves solutions rapidly</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-gray-900 mb-3">🚀 Apply This Learning</h4>
+            <p class="text-gray-700 text-sm mb-3">
+                Prototyping skills are valuable in many contexts. You can use rapid prototyping when:
+            </p>
+            <div class="grid md:grid-cols-3 gap-3 text-sm">
+                <div class="bg-white p-3 rounded">
+                    <strong class="text-purple-700">School Projects:</strong>
+                    <p class="text-gray-600">Test ideas before final presentation</p>
+                </div>
+                <div class="bg-white p-3 rounded">
+                    <strong class="text-blue-700">Event Planning:</strong>
+                    <p class="text-gray-600">Try out activities before the big day</p>
+                </div>
+                <div class="bg-white p-3 rounded">
+                    <strong class="text-green-700">Problem Solving:</strong>
+                    <p class="text-gray-600">Test solutions before committing resources</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prototyping Tips and Resources -->
+    <div class="grid md:grid-cols-2 gap-6">
+        <!-- Success Tips -->
+        <div class="bg-green-50 border border-green-200 p-6 rounded-xl">
+            <h3 class="text-lg font-bold text-green-900 mb-4">🎯 Prototyping Success Tips</h3>
+            <div class="space-y-3 text-sm">
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Start with the core function - don't add extras yet</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Use whatever materials you have available</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Test with real users as soon as possible</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Be prepared to make changes based on feedback</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Common Mistakes -->
+        <div class="bg-red-50 border border-red-200 p-6 rounded-xl">
+            <h3 class="text-lg font-bold text-red-900 mb-4">⚠️ Avoid These Mistakes</h3>
+            <div class="space-y-3 text-sm">
+                <div class="flex items-start">
+                    <span class="text-red-600 mr-2 font-bold">✗</span>
+                    <span class="text-red-800">Spending too much time making it "perfect"</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-red-600 mr-2 font-bold">✗</span>
+                    <span class="text-red-800">Building too many features at once</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-red-600 mr-2 font-bold">✗</span>
+                    <span class="text-red-800">Not testing with real users</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-red-600 mr-2 font-bold">✗</span>
+                    <span class="text-red-800">Ignoring user feedback because it's different from your vision</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Idea Selection Modal -->
+<div id="idea-selection-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">💡 Select Your Best Idea</h3>
+                    <button onclick="closeIdeaModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+                </div>
+                
+                <div id="ideas-list-modal" class="space-y-3 max-h-60 overflow-y-auto">
+                    <!-- Ideas will be loaded here -->
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <button onclick="closeIdeaModal()" 
+                            class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Prototype Mission -->
+<script>
+let selectedIdea = null;
+let prototypeType = '';
+let selectedMaterials = [];
+let currentStep = 0;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializePrototypeMission();
+    loadPreviousData();
+});
+
+function initializePrototypeMission() {
+    loadSavedPrototype();
+}
+
+function selectPrototypeType(type) {
+    // Remove active class from all types
+    ['type-paper', 'type-physical', 'type-service'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.classList.remove('selected');
+    });
+    
+    // Add active class to selected type
+    const selectedElement = document.getElementById(`type-${type}`);
+    if (selectedElement) selectedElement.classList.add('selected');
+    
+    prototypeType = type;
+    
+    // Show materials step
+    showMaterialsStep(type);
+    updateProgress(25);
+}
+
+function showMaterialsStep(type) {
+    const materialsStep = document.getElementById('materials-step');
+    const materialsGrid = document.getElementById('materials-grid');
+    
+    if (!materialsStep || !materialsGrid) return;
+    
+    materialsStep.classList.remove('hidden');
+    
+    const materialOptions = {
+        paper: ['📄 Paper', '✏️ Pens/Markers', '✂️ Scissors', '📱 Phone/Tablet', '🖥️ Computer', '📐 Ruler'],
+        physical: ['📦 Cardboard', '🔨 Tape', '✂️ Scissors', '🏺 Clay/Playdough', '📎 Paper clips', '🧱 Building blocks'],
+        service: ['🎭 Role-play', '📝 Scripts', '📋 Storyboard', '⏰ Timer', '📊 Feedback forms', '🎪 Props']
+    };
+    
+    materialsGrid.innerHTML = materialOptions[type].map(material => `
+        <div class="material-item" onclick="toggleMaterial('${material}')" data-material="${material}">
+            ${material}
+        </div>
+    `).join('');
+    
+    // Show description step
+    document.getElementById('description-step').classList.remove('hidden');
+    updateProgress(50);
+}
+
+function toggleMaterial(material) {
+    const element = document.querySelector(`[data-material="${material}"]`);
+    if (!element) return;
+    
+    if (selectedMaterials.includes(material)) {
+        selectedMaterials = selectedMaterials.filter(m => m !== material);
+        element.classList.remove('selected');
+    } else {
+        selectedMaterials.push(material);
+        element.classList.add('selected');
+    }
+    
+    validateForm();
+}
+
+function validateForm() {
+    const description = document.getElementById('prototype-description').value.trim();
+    const testing = document.getElementById('prototype-testing').value.trim();
+    
+    const isValid = prototypeType && selectedMaterials.length > 0 && description.length > 20 && testing.length > 15;
+    
+    if (isValid) {
+        document.getElementById('criteria-step').classList.remove('hidden');
+        updateProgress(75);
+    }
+    
+    const saveBtn = document.getElementById('save-prototype-btn');
+    if (saveBtn) {
+        saveBtn.disabled = !isValid;
+    }
+}
+
+function savePrototype() {
+    const description = document.getElementById('prototype-description').value.trim();
+    const testing = document.getElementById('prototype-testing').value.trim();
+    
+    const criteria = [
+        document.getElementById('criteria-solves').checked,
+        document.getElementById('criteria-usable').checked,
+        document.getElementById('criteria-feasible').checked,
+        document.getElementById('criteria-testable').checked
+    ];
+    
+    if (!selectedIdea) {
+        alert('Please select an idea to prototype first!');
+        selectIdea();
+        return;
+    }
+    
+    const prototypeData = {
+        idea: selectedIdea,
+        type: prototypeType,
+        materials: selectedMaterials,
+        description: description,
+        testing: testing,
+        criteria: criteria,
+        timestamp: new Date().toISOString()
+    };
+    
+    // Save to session storage
+    sessionStorage.setItem('designThinking_prototype', JSON.stringify(prototypeData));
+    
+    // Show prototype display
+    showPrototypeDisplay(prototypeData);
+    
+    // Save to backend
+    savePrototypeToBackend(prototypeData);
+    
+    updateProgress(100);
+    alert('Prototype plan saved successfully!');
+}
+
+function showPrototypeDisplay(data) {
+    const display = document.getElementById('prototype-display');
+    const summary = document.getElementById('prototype-summary');
+    const toolkit = document.querySelector('.prototype-toolkit').parentElement;
+    
+    if (display && summary && toolkit) {
+        summary.innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <strong class="text-gray-900">Selected Idea:</strong>
+                    <p class="text-gray-700">${data.idea}</p>
+                </div>
+                <div>
+                    <strong class="text-gray-900">Prototype Type:</strong>
+                    <span class="text-gray-700">${data.type.charAt(0).toUpperCase() + data.type.slice(1)}</span>
+                </div>
+                <div>
+                    <strong class="text-gray-900">Materials:</strong>
+                    <p class="text-gray-700">${data.materials.join(', ')}</p>
+                </div>
+                <div>
+                    <strong class="text-gray-900">Description:</strong>
+                    <p class="text-gray-700">${data.description}</p>
+                </div>
+                <div>
+                    <strong class="text-gray-900">Testing Plan:</strong>
+                    <p class="text-gray-700">${data.testing}</p>
+                </div>
+            </div>
+        `;
+        
+        toolkit.style.display = 'none';
+        display.classList.remove('hidden');
+    }
+}
+
+function editPrototype() {
+    const display = document.getElementById('prototype-display');
+    const toolkit = document.querySelector('.prototype-toolkit').parentElement;
+    
+    if (display && toolkit) {
+        display.classList.add('hidden');
+        toolkit.style.display = 'block';
+    }
+}
+
+function startOver() {
+    // Reset all selections
+    prototypeType = '';
+    selectedMaterials = [];
+    
+    // Clear form
+    document.getElementById('prototype-description').value = '';
+    document.getElementById('prototype-testing').value = '';
+    
+    // Reset checkboxes
+    ['criteria-solves', 'criteria-usable', 'criteria-feasible', 'criteria-testable'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.checked = false;
+    });
+    
+    // Hide steps
+    ['materials-step', 'description-step', 'criteria-step'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.classList.add('hidden');
+    });
+    
+    // Remove selections
+    document.querySelectorAll('.material-item.selected, .selected').forEach(el => {
+        el.classList.remove('selected');
+    });
+    
+    updateProgress(0);
+}
+
+function selectIdea() {
+    const savedIdeas = sessionStorage.getItem('designThinking_ideas');
+    if (!savedIdeas) {
+        alert('Please complete the Ideate mission first to select an idea!');
+        return;
+    }
+    
+    try {
+        const ideas = JSON.parse(savedIdeas);
+        if (ideas.length === 0) {
+            alert('No ideas found. Please complete the Ideate mission first!');
+            return;
+        }
+        
+        showIdeaSelectionModal(ideas);
+    } catch (e) {
+        console.warn('Could not load ideas:', e);
+        alert('Error loading ideas. Please try again.');
+    }
+}
+
+function showIdeaSelectionModal(ideas) {
+    const modal = document.getElementById('idea-selection-modal');
+    const list = document.getElementById('ideas-list-modal');
+    
+    if (modal && list) {
+        list.innerHTML = ideas.map((idea, index) => `
+            <div class="border border-gray-200 p-3 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                 onclick="chooseIdea('${idea.content.replace(/'/g, "\\'")}')">
+                <div class="flex justify-between items-start">
+                    <p class="text-gray-800">${idea.content}</p>
+                    <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">${idea.method}</span>
+                </div>
+            </div>
+        `).join('');
+        
+        modal.classList.remove('hidden');
+    }
+}
+
+function chooseIdea(ideaContent) {
+    selectedIdea = ideaContent;
+    
+    // Update display
+    const selectedIdeaDisplay = document.getElementById('selected-idea-content');
+    if (selectedIdeaDisplay) {
+        selectedIdeaDisplay.textContent = ideaContent;
+    }
+    
+    closeIdeaModal();
+    updateProgress(10);
+}
+
+function closeIdeaModal() {
+    const modal = document.getElementById('idea-selection-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function updateProgress(percentage) {
+    const progressText = document.getElementById('prototype-progress');
+    const progressBar = document.getElementById('prototype-progress-bar');
+    
+    if (progressText) {
+        if (percentage === 0) progressText.textContent = 'Planning phase';
+        else if (percentage < 50) progressText.textContent = 'Designing prototype';
+        else if (percentage < 100) progressText.textContent = 'Finalizing plan';
+        else progressText.textContent = 'Prototype plan complete! ✅';
+    }
+    
+    if (progressBar) {
+        progressBar.style.width = `${percentage}%`;
+        if (percentage >= 100) {
+            progressBar.classList.remove('bg-blue-500');
+            progressBar.classList.add('bg-green-500');
+        }
+    }
+}
+
+function loadPreviousData() {
+    // Load POV statement
+    const savedPOV = sessionStorage.getItem('designThinking_povStatement');
+    if (savedPOV) {
+        try {
+            const povData = JSON.parse(savedPOV);
+            const povDisplay = document.getElementById('pov-content-prototype');
+            if (povDisplay) {
+                povDisplay.textContent = povData.statement;
+            }
+        } catch (e) {
+            console.warn('Could not load POV data:', e);
+        }
+    }
+    
+    // Try to auto-select the first idea if none selected
+    if (!selectedIdea) {
+        const savedIdeas = sessionStorage.getItem('designThinking_ideas');
+        if (savedIdeas) {
+            try {
+                const ideas = JSON.parse(savedIdeas);
+                if (ideas.length > 0) {
+                    chooseIdea(ideas[0].content);
+                }
+            } catch (e) {
+                console.warn('Could not auto-select idea:', e);
+            }
+        }
+    }
+}
+
+function loadSavedPrototype() {
+    const savedPrototype = sessionStorage.getItem('designThinking_prototype');
+    if (savedPrototype) {
+        try {
+            const prototypeData = JSON.parse(savedPrototype);
+            showPrototypeDisplay(prototypeData);
+            updateProgress(100);
+        } catch (e) {
+            console.warn('Could not load saved prototype:', e);
+        }
+    }
+}
+
+function savePrototypeToBackend(prototypeData) {
+    const sessionCode = document.querySelector('[data-session-code]')?.dataset.sessionCode;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+    
+    if (!sessionCode || !csrfToken) {
+        console.warn('Missing session data for backend save');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('submission_type', 'prototype');
+    formData.append('content', JSON.stringify(prototypeData));
+    formData.append('submitted_by', 'Team Member');
+    
+    fetch(`/learn/api/design-thinking/${sessionCode}/submit/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrfToken },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            console.warn('Prototype save failed:', data.error);
+        }
+    })
+    .catch(error => console.warn('Prototype save error:', error));
+}
+
+// Setup form validation
+document.addEventListener('DOMContentLoaded', function() {
+    ['prototype-description', 'prototype-testing'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', validateForm);
+        }
+    });
+});
+
+// Global function exports
+window.selectPrototypeType = selectPrototypeType;
+window.toggleMaterial = toggleMaterial;
+window.savePrototype = savePrototype;
+window.editPrototype = editPrototype;
+window.startOver = startOver;
+window.selectIdea = selectIdea;
+window.chooseIdea = chooseIdea;
+window.closeIdeaModal = closeIdeaModal;
+</script>
+{% endblock %}

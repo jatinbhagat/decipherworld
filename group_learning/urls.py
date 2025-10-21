@@ -69,4 +69,17 @@ urlpatterns = [
     path('api/migrate/', views.ProductionMigrateAPI.as_view(), name='production_migrate_api'),
     path('api/diagnostics/', views.ProductionDiagnosticsAPI.as_view(), name='production_diagnostics_api'),
     path('api/setup-production/', views.ProductionSetupAPI.as_view(), name='production_setup_api'),
+    
+    # Design Thinking / Classroom Innovators Challenge URLs
+    path('design-thinking/', views.DesignThinkingStartView.as_view(), name='design_thinking_start'),
+    path('design-thinking/create/', views.DesignThinkingCreateView.as_view(), name='design_thinking_create'),
+    path('design-thinking/join/', views.DesignThinkingJoinView.as_view(), name='design_thinking_join'),
+    path('design-thinking/<str:session_code>/facilitator/', views.DesignThinkingFacilitatorView.as_view(), name='design_thinking_facilitator'),
+    path('design-thinking/<str:session_code>/play/', views.DesignThinkingPlayView.as_view(), name='design_thinking_play'),
+    
+    # Design Thinking API endpoints
+    path('api/design-thinking/<str:session_code>/submit/', views.DesignThinkingSubmissionAPI.as_view(), name='design_thinking_submit'),
+    path('api/design-thinking/<str:session_code>/control/', views.DesignThinkingMissionControlAPI.as_view(), name='design_thinking_control'),
+    path('api/design-thinking/<str:session_code>/status/', views.DesignThinkingStatusAPI.as_view(), name='design_thinking_status'),
+    path('session/<str:session_code>/mission-interface/', views.DesignThinkingMissionInterfaceAPI.as_view(), name='design_thinking_mission_interface'),
 ]

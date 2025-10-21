@@ -1,0 +1,2419 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ team.team_name }} - Design Challenge{% endblock %}
+
+{% block description %}Team interface for Design Thinking Challenge. Collaborate and innovate together.{% endblock %}
+
+{% block extra_head %}
+<script>
+console.log("DEBUG: team_interface.html is using base.html template");
+console.log("DEBUG: This should show MAIN site header, not Group Learning header");
+</script>
+<style>
+/* Modern Student Dashboard Design System */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --success-gradient: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    --warning-gradient: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Enhanced cards with modern shadows */
+.card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+}
+
+/* Modern button styles */
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+    
+    .card {
+        margin-bottom: 16px;
+    }
+    
+    .btn-primary {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+    }
+}
+
+/* Mission cards */
+.mission-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+.mission-card.completed {
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+}
+.mission-card.current {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* Clean layout helpers */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+.text-center {
+    text-align: center;
+}
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Utility classes */
+.hidden { display: none; }
+.text-sm { font-size: 14px; }
+.text-lg { font-size: 18px; }
+.text-xl { font-size: 20px; }
+.text-2xl { font-size: 24px; }
+.font-bold { font-weight: 700; }
+.font-medium { font-weight: 500; }
+.text-gray-600 { color: #6b7280; }
+.text-gray-700 { color: #374151; }
+.text-gray-800 { color: #1f2937; }
+.text-blue-600 { color: #2563eb; }
+.text-blue-800 { color: #1e40af; }
+.text-green-600 { color: #059669; }
+.text-green-800 { color: #166534; }
+.text-white { color: white; }
+.bg-blue-50 { background-color: #eff6ff; }
+.bg-green-50 { background-color: #f0fdf4; }
+.bg-gray-50 { background-color: #f9fafb; }
+.border-l-4 { border-left-width: 4px; }
+.border-blue-500 { border-color: #3b82f6; }
+.border-green-500 { border-color: #10b981; }
+.mb-2 { margin-bottom: 8px; }
+.mb-3 { margin-bottom: 12px; }
+.mb-4 { margin-bottom: 16px; }
+.mb-6 { margin-bottom: 24px; }
+.p-3 { padding: 12px; }
+.p-4 { padding: 16px; }
+.p-6 { padding: 24px; }
+.p-8 { padding: 32px; }
+.px-2 { padding-left: 8px; padding-right: 8px; }
+.px-3 { padding-left: 12px; padding-right: 12px; }
+.px-4 { padding-left: 16px; padding-right: 16px; }
+.py-1 { padding-top: 4px; padding-bottom: 4px; }
+.py-2 { padding-top: 8px; padding-bottom: 8px; }
+.py-6 { padding-top: 24px; padding-bottom: 24px; }
+.rounded { border-radius: 4px; }
+.rounded-lg { border-radius: 8px; }
+.rounded-full { border-radius: 9999px; }
+.space-x-3 > * + * { margin-left: 12px; }
+.space-x-4 > * + * { margin-left: 16px; }
+.space-y-3 > * + * { margin-top: 12px; }
+.w-2 { width: 8px; }
+.w-10 { width: 40px; }
+.w-12 { width: 48px; }
+.h-2 { height: 8px; }
+.h-10 { height: 40px; }
+.h-12 { height: 48px; }
+.mr-2 { margin-right: 8px; }
+.mr-4 { margin-right: 16px; }
+.flex { display: flex; }
+.flex-1 { flex: 1; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.justify-between { justify-content: space-between; }
+.inline-flex { display: inline-flex; }
+.floating-vani:focus-within {
+    outline: 3px solid #10B981;
+    outline-offset: 2px;
+}
+
+/* Enhanced Upload Zone with Better Feedback */
+.upload-zone {
+    border: 2px dashed #cbd5e0;
+    transition: all 0.3s ease;
+    border-radius: 0.75rem;
+    min-height: 120px;
+    cursor: pointer;
+}
+.upload-zone:hover {
+    border-color: #9CA3AF;
+    background-color: #F9FAFB;
+}
+.upload-zone:focus-within {
+    outline: 2px solid #3B82F6;
+    outline-offset: 2px;
+}
+.upload-zone.dragover {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    transform: scale(1.02);
+}
+
+/* Action Buttons with Enhanced Touch Targets */
+.action-button {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border-radius: 0.75rem;
+    position: relative;
+}
+
+.action-button:focus {
+    outline: 3px solid #3B82F6;
+    outline-offset: 2px;
+}
+
+.action-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.action-button:hover:not(:disabled) {
+    transform: scale(1.02);
+}
+
+/* Loading States */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 2px solid #3B82F6;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Form Validation Styles */
+.form-field {
+    position: relative;
+}
+
+.form-field.error input,
+.form-field.error textarea {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 1px #EF4444;
+}
+
+.form-field.valid input,
+.form-field.valid textarea {
+    border-color: #10B981;
+    box-shadow: 0 0 0 1px #10B981;
+}
+
+.field-error {
+    color: #EF4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: none;
+}
+
+.form-field.error .field-error {
+    display: block;
+}
+
+/* Auto-save indicator */
+.save-status {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    transform: translateY(-100px);
+    opacity: 0;
+}
+.save-status.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+.save-status.saving {
+    background: #fef3c7;
+    color: #92400e;
+}
+.save-status.saved {
+    background: #dcfce7;
+    color: #166534;
+}
+.save-status.error {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* Quick Observation Entry Styles */
+.suggestion-pill {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    color: #4b5563;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.suggestion-pill:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+}
+
+.observation-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: between;
+    animation: slideInFromTop 0.3s ease-out;
+}
+
+.observation-item.new {
+    background: #ecfdf5;
+    border-color: #10b981;
+    animation: bounceIn 0.5s ease-out;
+}
+
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.observation-counter {
+    background: #3b82f6;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Screen reader only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Celebration Animation */
+.celebration-confetti {
+    animation: confettiDance 2s ease-in-out infinite;
+    font-size: 1.5rem;
+    letter-spacing: 0.5rem;
+}
+
+@keyframes confettiDance {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-10px) rotate(5deg); }
+    50% { transform: translateY(-5px) rotate(-3deg); }
+    75% { transform: translateY(-8px) rotate(3deg); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Team Info Integration in Main Navigation -->
+<style>
+.team-info-badge {
+    position: fixed;
+    top: 4rem;
+    right: 1rem;
+    z-index: 40;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .team-info-badge {
+        position: relative;
+        top: 0;
+        right: 0;
+        margin: 1rem;
+        width: calc(100% - 2rem);
+    }
+}
+</style>
+
+<!-- Compact Team Status Badge (replaces duplicate header) -->
+<div class="team-info-badge" data-session-code="{{ session.session_code }}" data-team-id="{{ team.id }}">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <div class="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs font-bold" 
+                 style="background: {{ team.team_color }}">
+                {{ team.team_emoji|default:"🎯" }}
+            </div>
+            <div>
+                <div class="text-sm font-bold" style="color: {{ team.team_color }}">{{ team.team_name }}</div>
+                <div class="text-xs text-gray-600">Mission <span id="mission-progress-text">{{ team_progress }}/{{ total_missions }}</span></div>
+            </div>
+        </div>
+        <div class="flex items-center space-x-1 text-green-600 ml-3">
+            <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+            <span class="text-xs font-medium">Live</span>
+        </div>
+    </div>
+</div>
+
+<div class="min-h-screen bg-gray-50 pt-20">
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-6">
+        
+        <!-- Progress Dashboard -->
+        <!-- Progress dashboard component removed - was causing Loading... issues and incorrect time tracking -->
+        
+        {% if current_mission %}
+        <!-- Modern Mission Hero Card -->
+        <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 mb-6 text-white shadow-xl">
+            <div class="flex items-start space-x-4">
+                <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-3xl font-bold">
+                    {% if current_mission.mission_type == 'kickoff' %}⚡
+                    {% elif current_mission.mission_type == 'empathy' %}🔍
+                    {% elif current_mission.mission_type == 'define' %}🎯
+                    {% elif current_mission.mission_type == 'ideate' %}💡
+                    {% elif current_mission.mission_type == 'prototype' %}🔧
+                    {% elif current_mission.mission_type == 'showcase' %}⭐
+                    {% else %}📋{% endif %}
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-2">
+                        <h2 class="text-2xl font-bold">{{ current_mission.title }}</h2>
+                        <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
+                            ⏱️ {{ current_mission.estimated_duration }}m
+                        </span>
+                    </div>
+                    <p class="text-white/90 text-lg mb-4">{{ current_mission.description }}</p>
+                    
+                    <!-- Mission Instructions - Crisp Format -->
+                    {% if current_mission.instructions %}
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xl">🎯</span>
+                            <h3 class="font-bold text-lg">Your Challenge</h3>
+                        </div>
+                        <p class="text-white/95 leading-relaxed">{{ current_mission.instructions }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mission Workspace -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">Mission Workspace</h3>
+                <div class="flex-1"></div>
+                <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                    Team Activity
+                </span>
+            </div>
+            
+            <div id="mission-interface" class="space-y-4">
+                {% if current_mission.mission_type == 'kickoff' %}
+                    {% include 'group_learning/design_thinking/missions/kickoff.html' %}
+                {% elif current_mission.mission_type == 'empathy' %}
+                    {% include 'group_learning/design_thinking/missions/empathy.html' %}
+                {% elif current_mission.mission_type == 'define' %}
+                    {% include 'group_learning/design_thinking/missions/define.html' %}
+                {% elif current_mission.mission_type == 'ideate' %}
+                    {% include 'group_learning/design_thinking/missions/ideate.html' %}
+                {% elif current_mission.mission_type == 'prototype' %}
+                    {% include 'group_learning/design_thinking/missions/prototype.html' %}
+                {% elif current_mission.mission_type == 'showcase' %}
+                    {% include 'group_learning/design_thinking/missions/showcase.html' %}
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <!-- Modern Waiting State -->
+        <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-8 text-center mb-6 border border-yellow-200">
+            <div class="w-20 h-20 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
+                ⏳
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Ready to Start!</h2>
+            <p class="text-lg text-gray-600 mb-6 max-w-md mx-auto">
+                Your team is ready to innovate. Waiting for your teacher to begin the challenge.
+            </p>
+            <div class="inline-flex items-center px-6 py-3 bg-white/60 backdrop-blur-sm border border-yellow-300 rounded-full shadow-sm">
+                <div class="w-3 h-3 rounded-full bg-yellow-500 animate-pulse mr-3"></div>
+                <span class="font-medium text-yellow-800">Waiting for teacher to start</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Team Progress Feed -->
+        {% if team_submissions %}
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">Team Progress</h3>
+                <div class="flex-1"></div>
+                <span class="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium">
+                    {{ team_submissions|length }} submissions
+                </span>
+            </div>
+            
+            <div class="space-y-3">
+                {% for submission in team_submissions %}
+                <div class="group bg-gray-50 hover:bg-blue-50 p-4 rounded-xl border border-transparent hover:border-blue-200 transition-all duration-200">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-xs font-bold">
+                                {% if submission.submission_type == 'observation' %}👁️
+                                {% elif submission.submission_type == 'idea' %}💡
+                                {% elif submission.submission_type == 'prototype' %}🔧
+                                {% else %}📝{% endif %}
+                            </span>
+                            <h4 class="font-semibold text-gray-800">{{ submission.get_submission_type_display }}</h4>
+                        </div>
+                        <span class="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">{{ submission.submitted_at|timesince }} ago</span>
+                    </div>
+                    
+                    {% if submission.title %}
+                    <p class="font-medium text-gray-700 mb-2">{{ submission.title }}</p>
+                    {% endif %}
+                    
+                    {% if submission.content %}
+                    <p class="text-gray-600 mb-3 text-sm leading-relaxed">{{ submission.content|truncatewords:25 }}</p>
+                    {% endif %}
+                    
+                    <div class="flex justify-between items-center">
+                        {% if submission.uploaded_file %}
+                        <span class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full flex items-center gap-1">
+                            📎 File attached
+                        </span>
+                        {% else %}
+                        <span></span>
+                        {% endif %}
+                        <span class="text-xs text-gray-500 font-medium">by {{ submission.submitted_by }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Challenge Progress section removed - was causing Loading... issues -->
+    </div>
+
+    <!-- Save Status Indicator -->
+    <div id="save-status" class="save-status"></div>
+</div>
+
+<!-- Enhanced Submission Modal with Accessibility -->
+<div id="submission-modal" 
+     class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" 
+     role="dialog" 
+     aria-modal="true" 
+     aria-labelledby="modal-title"
+     aria-describedby="modal-description">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto" 
+             role="document">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900" id="modal-title">Add Submission</h3>
+                    <button onclick="closeSubmissionModal()" 
+                            class="action-button text-gray-500 hover:text-gray-700 p-2"
+                            aria-label="Close submission modal">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <p id="modal-description" class="text-gray-600 mb-6 sr-only">
+                    Use this form to submit your work for the current mission. All fields marked with * are required.
+                </p>
+                
+                <form id="submission-form" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    <input type="hidden" id="submission_type" name="submission_type">
+                    
+                    <!-- Title (optional) -->
+                    <div class="form-field mb-4">
+                        <label for="submission_title" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Title (optional)
+                        </label>
+                        <input type="text" 
+                               id="submission_title" 
+                               name="title" 
+                               placeholder="Give your submission a title..."
+                               maxlength="100"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                               aria-describedby="title-help">
+                        <div id="title-help" class="text-xs text-gray-500 mt-1">
+                            Optional: Add a short, descriptive title
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="form-field mb-4">
+                        <label for="submission_content" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Description/Notes <span class="text-red-500" aria-label="required">*</span>
+                        </label>
+                        <textarea id="submission_content" 
+                                  name="content" 
+                                  required
+                                  rows="4"
+                                  maxlength="1000"
+                                  placeholder="Describe your observation, idea, or work..."
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                  aria-describedby="content-help content-error"></textarea>
+                        <div id="content-help" class="text-xs text-gray-500 mt-1">
+                            <span id="content-counter">0/1000</span> characters
+                        </div>
+                        <div id="content-error" class="field-error" role="alert" aria-live="polite">
+                            Please provide a description of your work.
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced File Upload -->
+                    <div class="mb-4" id="file-upload-section">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Upload File (optional)
+                        </label>
+                        <div class="upload-zone p-6 rounded-xl text-center cursor-pointer" 
+                             onclick="document.getElementById('file_input').click()"
+                             tabindex="0"
+                             role="button"
+                             aria-label="Click to upload file or drag and drop here"
+                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+                            <div class="text-4xl mb-2" role="img" aria-label="File attachment">📎</div>
+                            <div class="text-gray-600">Click to upload photo or file</div>
+                            <div class="text-xs text-gray-500 mt-1">Or drag and drop here</div>
+                            <div class="text-xs text-gray-400 mt-2">
+                                Supported: Images, Audio, PDF, Word documents (max 10MB)
+                            </div>
+                        </div>
+                        <input type="file" 
+                               id="file_input" 
+                               name="file" 
+                               accept="image/*,audio/*,.pdf,.doc,.docx"
+                               class="hidden"
+                               aria-describedby="file-help">
+                        <div id="file-help" class="text-xs text-gray-500 mt-1">
+                            Optional: Add a photo, recording, or document to support your submission
+                        </div>
+                        <div id="file-preview" class="mt-2 hidden">
+                            <div class="bg-gray-100 p-3 rounded-xl flex items-center">
+                                <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <span id="file-name" class="flex-1"></span>
+                                <button type="button" 
+                                        onclick="removeFile()" 
+                                        class="action-button ml-auto text-red-500 hover:text-red-700 p-1"
+                                        aria-label="Remove uploaded file">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submitted By -->
+                    <div class="form-field mb-6">
+                        <label for="submitted_by" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Your Name <span class="text-red-500" aria-label="required">*</span>
+                        </label>
+                        <input type="text" 
+                               id="submitted_by" 
+                               name="submitted_by" 
+                               required
+                               maxlength="50"
+                               placeholder="Enter your name"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                               aria-describedby="name-help name-error">
+                        <div id="name-help" class="text-xs text-gray-500 mt-1">
+                            Enter your name so teammates know who contributed this work
+                        </div>
+                        <div id="name-error" class="field-error" role="alert" aria-live="polite">
+                            Please enter your name.
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Submit Buttons -->
+                    <div class="flex space-x-4">
+                        <button type="submit" 
+                                id="submit-btn"
+                                class="action-button flex-1 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition-colors font-semibold"
+                                aria-describedby="submit-help">
+                            <span id="submit-text">Submit</span>
+                        </button>
+                        <button type="button" 
+                                onclick="closeSubmissionModal()"
+                                class="action-button px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+                                aria-label="Cancel and close modal">
+                            Cancel
+                        </button>
+                    </div>
+                    <div id="submit-help" class="text-xs text-gray-500 text-center mt-2">
+                        Your submission will be shared with your team and facilitator
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Auto-save Status Indicator -->
+<div id="auto-save-status" class="auto-save-status" role="status" aria-live="polite">
+    <div class="flex items-center">
+        <span class="loading-spinner mr-2 hidden" id="save-spinner"></span>
+        <span id="save-message">Draft saved</span>
+    </div>
+</div>
+
+<script>
+// Enhanced Form Validation System
+class FormValidator {
+    constructor() {
+        this.rules = {
+            required: (value) => value.trim() !== '',
+            maxLength: (value, max) => value.length <= max,
+            minLength: (value, min) => value.length >= min
+        };
+        
+        this.errorMessages = {
+            required: 'This field is required.',
+            maxLength: (max) => `Maximum ${max} characters allowed.`,
+            minLength: (min) => `Minimum ${min} characters required.`
+        };
+    }
+    
+    validateField(field) {
+        const value = field.value;
+        const fieldContainer = field.closest('.form-field');
+        const errorElement = fieldContainer?.querySelector('.field-error');
+        
+        let isValid = true;
+        let errorMessage = '';
+        
+        // Required validation
+        if (field.hasAttribute('required') && !this.rules.required(value)) {
+            isValid = false;
+            errorMessage = this.errorMessages.required;
+        }
+        
+        // Max length validation
+        const maxLength = field.getAttribute('maxlength');
+        if (maxLength && !this.rules.maxLength(value, parseInt(maxLength))) {
+            isValid = false;
+            errorMessage = this.errorMessages.maxLength(maxLength);
+        }
+        
+        // Update field state
+        if (fieldContainer) {
+            fieldContainer.classList.toggle('error', !isValid);
+            fieldContainer.classList.toggle('valid', isValid && value.trim() !== '');
+        }
+        
+        if (errorElement) {
+            errorElement.textContent = errorMessage;
+        }
+        
+        return isValid;
+    }
+    
+    validateForm(form) {
+        const fields = form.querySelectorAll('input[required], textarea[required]');
+        let isValid = true;
+        
+        fields.forEach(field => {
+            if (!this.validateField(field)) {
+                isValid = false;
+            }
+        });
+        
+        return isValid;
+    }
+}
+
+// Auto-save System
+class AutoSaveManager {
+    constructor() {
+        this.saveTimeout = null;
+        this.saveDelay = 2000; // 2 seconds
+        this.statusElement = document.getElementById('auto-save-status');
+        this.spinnerElement = document.getElementById('save-spinner');
+        this.messageElement = document.getElementById('save-message');
+    }
+    
+    showStatus(type, message) {
+        if (!this.statusElement) return;
+        
+        this.statusElement.className = `auto-save-status ${type}`;
+        this.messageElement.textContent = message;
+        
+        if (type === 'saving') {
+            this.spinnerElement.classList.remove('hidden');
+        } else {
+            this.spinnerElement.classList.add('hidden');
+        }
+        
+        // Auto-hide after 3 seconds unless saving
+        if (type !== 'saving') {
+            setTimeout(() => {
+                this.statusElement.classList.remove(type);
+            }, 3000);
+        }
+    }
+    
+    scheduleSave(formData) {
+        if (this.saveTimeout) {
+            clearTimeout(this.saveTimeout);
+        }
+        
+        this.saveTimeout = setTimeout(() => {
+            this.saveData(formData);
+        }, this.saveDelay);
+    }
+    
+    saveData(formData) {
+        this.showStatus('saving', 'Saving draft...');
+        
+        // Save to localStorage for offline support
+        try {
+            localStorage.setItem('design_thinking_draft', JSON.stringify(formData));
+            this.showStatus('saved', 'Draft saved');
+        } catch (error) {
+            console.error('Auto-save failed:', error);
+            this.showStatus('error', 'Save failed');
+        }
+    }
+    
+    loadDraft() {
+        try {
+            const draft = localStorage.getItem('design_thinking_draft');
+            if (draft) {
+                return JSON.parse(draft);
+            }
+        } catch (error) {
+            console.error('Failed to load draft:', error);
+        }
+        return null;
+    }
+    
+    clearDraft() {
+        localStorage.removeItem('design_thinking_draft');
+    }
+}
+
+// Initialize systems
+const formValidator = new FormValidator();
+const autoSaveManager = new AutoSaveManager();
+
+// Enhanced submission functions with better UX
+function openSubmissionModal(type, title = 'Add Submission') {
+    const modal = document.getElementById('submission-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const submissionType = document.getElementById('submission_type');
+    const form = document.getElementById('submission-form');
+    
+    // Set modal properties
+    submissionType.value = type;
+    modalTitle.textContent = title;
+    modal.classList.remove('hidden');
+    
+    // Clear form and reset validation
+    form.reset();
+    document.querySelectorAll('.form-field').forEach(field => {
+        field.classList.remove('error', 'valid');
+    });
+    document.getElementById('file-preview').classList.add('hidden');
+    
+    // Load draft if available
+    const draft = autoSaveManager.loadDraft();
+    if (draft && draft.type === type) {
+        if (draft.title) document.getElementById('submission_title').value = draft.title;
+        if (draft.content) document.getElementById('submission_content').value = draft.content;
+        if (draft.submittedBy) document.getElementById('submitted_by').value = draft.submittedBy;
+    }
+    
+    // Focus first field for accessibility
+    setTimeout(() => {
+        const firstField = form.querySelector('input:not([type="hidden"]), textarea');
+        if (firstField) firstField.focus();
+    }, 100);
+    
+    // Trap focus in modal
+    trapFocusInModal(modal);
+}
+
+function closeSubmissionModal() {
+    const modal = document.getElementById('submission-modal');
+    modal.classList.add('hidden');
+    
+    // Clear draft when modal is closed
+    autoSaveManager.clearDraft();
+    
+    // Return focus to trigger element if available
+    const triggerButton = document.querySelector('[onclick*="openSubmissionModal"]');
+    if (triggerButton) triggerButton.focus();
+}
+
+function trapFocusInModal(modal) {
+    const focusableElements = modal.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    
+    modal.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            if (e.shiftKey) {
+                if (document.activeElement === firstElement) {
+                    e.preventDefault();
+                    lastElement.focus();
+                }
+            } else {
+                if (document.activeElement === lastElement) {
+                    e.preventDefault();
+                    firstElement.focus();
+                }
+            }
+        }
+    });
+}
+
+function submitTeamWork() {
+    const form = document.getElementById('submission-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const submitText = document.getElementById('submit-text');
+    
+    // Validate form
+    if (!formValidator.validateForm(form)) {
+        announceToScreenReader('Please correct the errors in the form before submitting.');
+        return;
+    }
+    
+    // Set loading state
+    setButtonLoading(submitBtn, 'Submitting...', submitText);
+    
+    const formData = new FormData(form);
+    const sessionCode = document.querySelector('[data-session-code]').dataset.sessionCode;
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    fetch(`/learn/api/design-thinking/${sessionCode}/submit/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showSuccessMessage('Submission successful!', 'Your work has been shared with your team.');
+            autoSaveManager.clearDraft();
+            closeSubmissionModal();
+            
+            // Refresh the page to show new submission
+            setTimeout(() => {
+                announceToScreenReader('Submission completed. Page content updated.');
+                window.location.reload();
+            }, 1000);
+        } else {
+            throw new Error(data.error || 'Submission failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showErrorMessage('Submission failed', error.message || 'Please check your connection and try again.');
+    })
+    .finally(() => {
+        resetButtonLoading(submitBtn, 'Submit', submitText);
+    });
+}
+
+// Enhanced helper functions
+function setButtonLoading(button, loadingText, textElement = null) {
+    if (!button) return;
+    
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+    
+    if (textElement) {
+        textElement.innerHTML = `
+            <span class="loading-spinner mr-2" aria-hidden="true"></span>
+            ${loadingText}
+        `;
+    }
+}
+
+function resetButtonLoading(button, originalText, textElement = null) {
+    if (!button) return;
+    
+    button.disabled = false;
+    button.setAttribute('aria-busy', 'false');
+    
+    if (textElement) {
+        textElement.textContent = originalText;
+    }
+}
+
+function announceToScreenReader(message) {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.className = 'sr-only';
+    announcement.textContent = message;
+    
+    document.body.appendChild(announcement);
+    setTimeout(() => document.body.removeChild(announcement), 1000);
+}
+
+// Enhanced message system
+function showSuccessMessage(title, description = '') {
+    showMessage(title, description, 'success');
+}
+
+function showErrorMessage(title, description = '') {
+    showMessage(title, description, 'error');
+}
+
+function showMessage(title, description, type = 'success') {
+    // Remove existing messages
+    const existingMessages = document.querySelectorAll('.message-toast');
+    existingMessages.forEach(msg => msg.remove());
+    
+    // Create new message
+    const message = document.createElement('div');
+    message.className = `message-toast ${type}`;
+    message.setAttribute('role', type === 'error' ? 'alert' : 'status');
+    message.setAttribute('aria-live', 'assertive');
+    message.setAttribute('aria-atomic', 'true');
+    
+    message.innerHTML = `
+        <div class="flex items-start">
+            <div class="flex-1">
+                <div class="font-semibold">${title}</div>
+                ${description ? `<div class="text-sm opacity-90 mt-1">${description}</div>` : ''}
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" 
+                    class="ml-3 text-white hover:text-gray-200"
+                    aria-label="Close message">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    `;
+    
+    // Add to page
+    document.body.appendChild(message);
+    
+    // Show with animation
+    setTimeout(() => message.classList.add('show'), 100);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        message.classList.remove('show');
+        setTimeout(() => message.remove(), 300);
+    }, 5000);
+}
+
+// Character counter and real-time validation
+function initializeFormFeatures() {
+    // Content character counter
+    const contentTextarea = document.getElementById('submission_content');
+    const contentCounter = document.getElementById('content-counter');
+    
+    if (contentTextarea && contentCounter) {
+        contentTextarea.addEventListener('input', function() {
+            const length = this.value.length;
+            const maxLength = parseInt(this.getAttribute('maxlength') || '1000');
+            contentCounter.textContent = `${length}/${maxLength}`;
+            
+            // Validate field in real-time
+            formValidator.validateField(this);
+            
+            // Auto-save functionality
+            const formData = {
+                type: document.getElementById('submission_type').value,
+                title: document.getElementById('submission_title').value,
+                content: this.value,
+                submittedBy: document.getElementById('submitted_by').value
+            };
+            autoSaveManager.scheduleSave(formData);
+        });
+    }
+    
+    // Real-time validation for all form fields
+    const formFields = document.querySelectorAll('#submission-form input, #submission-form textarea');
+    formFields.forEach(field => {
+        field.addEventListener('blur', () => formValidator.validateField(field));
+        field.addEventListener('input', () => {
+            // Auto-save for text fields
+            if (field.type === 'text' || field.tagName === 'TEXTAREA') {
+                const formData = {
+                    type: document.getElementById('submission_type').value,
+                    title: document.getElementById('submission_title').value,
+                    content: document.getElementById('submission_content').value,
+                    submittedBy: document.getElementById('submitted_by').value
+                };
+                autoSaveManager.scheduleSave(formData);
+            }
+        });
+    });
+}
+
+// File upload handling
+document.getElementById('file_input').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        document.getElementById('file-name').textContent = file.name;
+        document.getElementById('file-preview').classList.remove('hidden');
+    }
+});
+
+function removeFile() {
+    document.getElementById('file_input').value = '';
+    document.getElementById('file-preview').classList.add('hidden');
+}
+
+// Drag and drop
+const uploadZone = document.querySelector('.upload-zone');
+uploadZone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.classList.add('dragover');
+});
+
+uploadZone.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+});
+
+uploadZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        document.getElementById('file_input').files = files;
+        document.getElementById('file-name').textContent = files[0].name;
+        document.getElementById('file-preview').classList.remove('hidden');
+    }
+});
+
+// Form submission
+document.getElementById('submission-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    submitTeamWork();
+});
+
+// Vani mentor functions
+function hideVani() {
+    document.getElementById('vani-mentor').classList.add('hidden');
+}
+
+function showVaniMessage(message) {
+    document.getElementById('vani-message').textContent = message;
+    document.getElementById('vani-mentor').classList.remove('hidden');
+    
+    // Auto-hide after 10 seconds
+    setTimeout(() => {
+        document.getElementById('vani-mentor').classList.add('hidden');
+    }, 10000);
+}
+
+// Auto-refresh status
+function updateTeamStatus() {
+    const sessionCode = document.querySelector('[data-session-code]').dataset.sessionCode;
+    
+    fetch(`/learn/session/${sessionCode}/mission-control/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: 'action=get_progress'
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Check if mission has changed (new API format)
+        const currentMissionTitle = document.getElementById('mission-title');
+        if (data.success && data.progress && data.progress.current_mission && currentMissionTitle) {
+            if (currentMissionTitle.textContent !== data.progress.current_mission.title) {
+                // Mission has changed, reload page
+                window.location.reload();
+            }
+        }
+    })
+    .catch(error => console.log('Status update failed:', error));
+}
+
+// WebSocket connection for real-time updates
+let teamSocket = null;
+
+function initializeTeamWebSocket() {
+    const sessionCode = document.querySelector('[data-session-code]').dataset.sessionCode;
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const socketUrl = `${protocol}//${window.location.host}/ws/design-thinking/${sessionCode}/`;
+    
+    console.log('🎨 Team connecting to Design Thinking WebSocket:', socketUrl);
+    
+    teamSocket = new WebSocket(socketUrl);
+    
+    teamSocket.onopen = function(e) {
+        console.log('✅ Team WebSocket connected');
+    };
+    
+    teamSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log('📨 Team WebSocket message received:', data.type);
+        
+        switch(data.type) {
+            case 'session_status':
+                updateTeamFromStatus(data.data);
+                break;
+            case 'mission_advanced':
+                handleMissionChange(data.mission_data);
+                break;
+            case 'team_submission':
+                handleOtherTeamSubmission(data.team_data, data.submission_data);
+                break;
+            case 'team_spotlight':
+                handleTeamSpotlight(data.team_data, data.spotlight_reason);
+                break;
+            case 'vani_nudge':
+                handleVaniNudge(data.nudge_data);
+                break;
+            default:
+                console.log('Unknown team WebSocket message type:', data.type);
+        }
+    };
+    
+    teamSocket.onclose = function(e) {
+        console.log('🔌 Team WebSocket disconnected:', e.code);
+        if (e.code !== 1000) {
+            setTimeout(initializeTeamWebSocket, 3000);
+        }
+    };
+    
+    teamSocket.onerror = function(e) {
+        console.error('💥 Team WebSocket error:', e);
+    };
+}
+
+function updateTeamFromStatus(statusData) {
+    // Update any team-specific status information
+    if (statusData.current_mission) {
+        // Check if mission has changed
+        const currentMissionTitle = document.getElementById('mission-title');
+        if (currentMissionTitle && currentMissionTitle.textContent !== statusData.current_mission.title) {
+            handleMissionChange(statusData.current_mission);
+        }
+    }
+}
+
+function handleMissionChange(missionData) {
+    console.log('🎯 Mission change received:', missionData);
+    
+    // Show celebration modal with countdown
+    showMissionTransitionModal(missionData);
+}
+
+function showMissionTransitionModal(missionData) {
+    // Create celebration modal
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 transition-opacity';
+    modal.style.opacity = '0';
+    
+    const missionMessages = {
+        'kickoff': "Let's get this innovation party started! 🚀",
+        'empathy': "Time to become detectives! Look for problems everywhere! 🔍", 
+        'define': "Focus time! Pick ONE problem that really matters. 🎯",
+        'ideate': "Brainstorm mode ON! No idea is too crazy! 💡",
+        'prototype': "Make it real! Build something you can actually test! 🔧",
+        'showcase': "Show time! You've done amazing work! 🏆"
+    };
+    
+    const motivationalMessage = missionMessages[missionData.mission_type] || "New mission time!";
+    
+    modal.innerHTML = `
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center transform scale-75 transition-transform">
+            <!-- Celebration Animation -->
+            <div class="celebration-confetti mb-4">
+                🎉 🎊 ✨ 🎯 ✨ 🎊 🎉
+            </div>
+            
+            <!-- Mission Complete -->
+            <div class="mb-6">
+                <div class="text-6xl mb-2">🏆</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Mission Complete!</h2>
+                <p class="text-gray-600">Great work team! 🔥</p>
+            </div>
+            
+            <!-- Next Mission -->
+            <div class="mb-6">
+                <h3 class="text-xl font-bold text-indigo-600 mb-2">Next Up:</h3>
+                <div class="text-3xl mb-2">${getMissionIcon(missionData.mission_type)}</div>
+                <h4 class="text-lg font-semibold text-gray-800">${missionData.title}</h4>
+                <p class="text-sm text-gray-600 mt-2">${motivationalMessage}</p>
+            </div>
+            
+            <!-- Countdown -->
+            <div class="mb-6">
+                <p class="text-sm text-gray-500 mb-2">Starting in:</p>
+                <div class="text-4xl font-bold text-indigo-600" id="countdown-timer">5</div>
+                <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                    <div class="bg-indigo-600 h-2 rounded-full transition-all duration-1000" id="countdown-progress" style="width: 100%"></div>
+                </div>
+            </div>
+            
+            <!-- Skip Button -->
+            <button onclick="skipCountdown()" class="text-sm text-gray-500 hover:text-indigo-600 transition-colors">
+                Skip countdown →
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Animate in
+    requestAnimationFrame(() => {
+        modal.style.opacity = '1';
+        modal.querySelector('.bg-white').style.transform = 'scale(1)';
+    });
+    
+    // Start countdown
+    let timeLeft = 5;
+    const countdownTimer = modal.querySelector('#countdown-timer');
+    const countdownProgress = modal.querySelector('#countdown-progress');
+    
+    const countdownInterval = setInterval(() => {
+        timeLeft--;
+        countdownTimer.textContent = timeLeft;
+        countdownProgress.style.width = `${(timeLeft / 5) * 100}%`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(countdownInterval);
+            completeMissionTransition(modal);
+        }
+    }, 1000);
+    
+    // Store interval for skip functionality
+    window.currentCountdownInterval = countdownInterval;
+    window.currentMissionModal = modal;
+}
+
+function skipCountdown() {
+    if (window.currentCountdownInterval) {
+        clearInterval(window.currentCountdownInterval);
+    }
+    if (window.currentMissionModal) {
+        completeMissionTransition(window.currentMissionModal);
+    }
+}
+
+function completeMissionTransition(modal) {
+    // Animate out
+    modal.style.opacity = '0';
+    modal.querySelector('.bg-white').style.transform = 'scale(0.75)';
+    
+    setTimeout(() => {
+        modal.remove();
+        // Update mission content dynamically instead of page reload
+        refreshMissionContent();
+    }, 300);
+}
+
+function refreshMissionContent() {
+    const sessionCode = document.querySelector('[data-session-code]')?.dataset.sessionCode;
+    if (!sessionCode) {
+        console.error('No session code found for content refresh');
+        return;
+    }
+    
+    // Show loading state
+    const missionInterface = document.getElementById('mission-interface');
+    if (missionInterface) {
+        missionInterface.innerHTML = `
+            <div class="text-center py-8">
+                <div class="text-4xl mb-4">⏳</div>
+                <p class="text-lg text-gray-600">Loading new mission...</p>
+            </div>
+        `;
+    }
+    
+    // Fetch updated mission content
+    fetch(`/learn/session/${sessionCode}/mission-interface/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.text();
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    })
+    .then(html => {
+        // Update the mission interface content
+        if (missionInterface) {
+            missionInterface.innerHTML = html;
+        }
+        
+        // Update team status bar mission counter
+        updateTeamStatusBar();
+        
+        // Reinitialize any JavaScript for the new mission
+        reinitializeMissionScripts();
+        
+        console.log('✅ Mission content updated successfully');
+    })
+    .catch(error => {
+        console.error('Failed to refresh mission content:', error);
+        // Fallback to page reload if dynamic update fails
+        console.log('Falling back to page reload...');
+        window.location.reload();
+    });
+}
+
+function updateTeamStatusBar() {
+    // Update the mission progress counter in the team status bar
+    const sessionCode = document.querySelector('[data-session-code]')?.dataset.sessionCode;
+    
+    fetch(`/learn/session/${sessionCode}/mission-control/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: 'action=get_progress'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.current_mission) {
+            const progressText = document.getElementById('mission-progress-text');
+            if (progressText) {
+                progressText.textContent = `${data.current_mission.order}/${data.total_missions}`;
+            }
+        }
+    })
+    .catch(error => console.warn('Could not update team status bar:', error));
+}
+
+function reinitializeMissionScripts() {
+    // Reinitialize any mission-specific JavaScript
+    // This is for mission templates that have their own JS initialization
+    
+    if (typeof initializeEmpathyMission === 'function') {
+        try {
+            initializeEmpathyMission();
+        } catch (e) {
+            console.warn('Could not reinitialize empathy mission:', e);
+        }
+    }
+    
+    // Add other mission initializers as needed
+    if (typeof initializeDefineMission === 'function') {
+        try {
+            initializeDefineMission();
+        } catch (e) {
+            console.warn('Could not reinitialize define mission:', e);
+        }
+    }
+    
+    if (typeof initializeIdeateMission === 'function') {
+        try {
+            initializeIdeateMission();
+        } catch (e) {
+            console.warn('Could not reinitialize ideate mission:', e);
+        }
+    }
+}
+
+function getMissionIcon(missionType) {
+    const icons = {
+        'kickoff': '🚀',
+        'empathy': '🔍', 
+        'define': '🎯',
+        'ideate': '💡',
+        'prototype': '🔧',
+        'showcase': '🏆'
+    };
+    return icons[missionType] || '🎯';
+}
+
+function handleOtherTeamSubmission(teamData, submissionData) {
+    // Show notification about other team's progress (if enabled)
+    const teamId = document.querySelector('[data-team-id]').dataset.teamId;
+    if (teamData.id != teamId) {
+        showVaniMessage(`Great job ${teamData.name}! They just shared ${submissionData.type}! Keep up the momentum! 💪`);
+    }
+}
+
+function handleTeamSpotlight(teamData, reason) {
+    const teamId = document.querySelector('[data-team-id]').dataset.teamId;
+    if (teamData.id == teamId) {
+        // This team is being spotlighted!
+        showVaniMessage(`🌟 SPOTLIGHT TIME! 🌟 Your team is being highlighted for excellent work! ${reason}`);
+        
+        // Add spotlight effect
+        document.body.style.animation = 'spotlight 3s ease-in-out';
+        setTimeout(() => {
+            document.body.style.animation = '';
+        }, 3000);
+    } else {
+        // Another team is spotlighted
+        showVaniMessage(`🌟 ${teamData.name} is being spotlighted for great work! Let's keep innovating!`);
+    }
+}
+
+function handleVaniNudge(nudgeData) {
+    showVaniMessage(nudgeData.message, nudgeData.title);
+}
+
+// Broadcast team submission to other participants
+function broadcastTeamSubmission(submissionData) {
+    if (teamSocket && teamSocket.readyState === WebSocket.OPEN) {
+        const teamId = document.querySelector('[data-team-id]').dataset.teamId;
+        teamSocket.send(JSON.stringify({
+            type: 'team_update',
+            update_type: 'submission',
+            team_id: teamId,
+            submission_data: submissionData
+        }));
+    }
+}
+
+// Enhanced file upload with validation
+function initializeEnhancedFileUpload() {
+    const fileInput = document.getElementById('file_input');
+    const uploadZone = document.querySelector('.upload-zone');
+    const filePreview = document.getElementById('file-preview');
+    const fileName = document.getElementById('file-name');
+    
+    // File input change handler
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            validateAndPreviewFile(file);
+        }
+    });
+    
+    // Drag and drop handlers
+    uploadZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+    
+    uploadZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+    });
+    
+    uploadZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            validateAndPreviewFile(files[0]);
+            fileInput.files = files;
+        }
+    });
+    
+    function validateAndPreviewFile(file) {
+        // File size validation (10MB max)
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        if (file.size > maxSize) {
+            showErrorMessage('File too large', 'Please select a file smaller than 10MB.');
+            return false;
+        }
+        
+        // Show file preview
+        fileName.textContent = file.name;
+        filePreview.classList.remove('hidden');
+        
+        announceToScreenReader(`File selected: ${file.name}`);
+        return true;
+    }
+}
+
+function removeFile() {
+    const fileInput = document.getElementById('file_input');
+    const filePreview = document.getElementById('file-preview');
+    
+    fileInput.value = '';
+    filePreview.classList.add('hidden');
+    
+    announceToScreenReader('File removed');
+}
+
+// Enhanced Vani mentor functions with accessibility
+function hideVani() {
+    const vaniElement = document.getElementById('vani-mentor');
+    vaniElement.classList.add('hidden');
+    announceToScreenReader('Virtual mentor message closed');
+}
+
+function showVaniMessage(message, title = "Vani says:") {
+    const vaniElement = document.getElementById('vani-mentor');
+    const messageElement = document.getElementById('vani-message');
+    const titleElement = vaniElement.querySelector('.font-bold');
+    
+    if (titleElement) titleElement.textContent = title;
+    messageElement.textContent = message;
+    vaniElement.classList.remove('hidden');
+    
+    // Announce to screen readers
+    announceToScreenReader(`Virtual mentor message: ${message}`);
+    
+    // Auto-hide after 10 seconds
+    setTimeout(() => {
+        vaniElement.classList.add('hidden');
+    }, 10000);
+}
+
+// Initialize everything
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all enhanced features
+    initializeFormFeatures();
+    initializeEnhancedFileUpload();
+    
+    // Initialize WebSocket
+    initializeTeamWebSocket();
+    
+    // Update status every 5 seconds
+    setInterval(updateTeamStatus, 5000);
+    
+    // Form submission handler
+    const submissionForm = document.getElementById('submission-form');
+    if (submissionForm) {
+        submissionForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitTeamWork();
+        });
+    }
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + Enter to submit form when modal is open
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            const modal = document.getElementById('submission-modal');
+            if (!modal.classList.contains('hidden')) {
+                e.preventDefault();
+                submitTeamWork();
+            }
+        }
+        
+        // Escape to close modal
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('submission-modal');
+            if (!modal.classList.contains('hidden')) {
+                closeSubmissionModal();
+            }
+        }
+    });
+    
+    // Show welcome Vani message
+    setTimeout(() => {
+        showVaniMessage("Welcome to the Innovation Challenge! Work together and don't be afraid to think outside the box! 🚀");
+    }, 2000);
+    
+    // Add message toast styles if not already added
+    if (!document.querySelector('.message-toast-styles')) {
+        const messageStyles = document.createElement('style');
+        messageStyles.className = 'message-toast-styles';
+        messageStyles.textContent = `
+            .message-toast {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1000;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                color: white;
+                font-weight: 500;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                max-width: 400px;
+            }
+            
+            .message-toast.show {
+                transform: translateX(0);
+            }
+            
+            .message-toast.success {
+                background-color: #10B981;
+            }
+            
+            .message-toast.error {
+                background-color: #EF4444;
+            }
+            
+            @media (max-width: 768px) {
+                .message-toast {
+                    right: 10px;
+                    left: 10px;
+                    max-width: none;
+                    transform: translateY(-100px);
+                }
+                
+                .message-toast.show {
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(messageStyles);
+    }
+});
+
+// Close WebSocket when page unloads
+window.addEventListener('beforeunload', function() {
+    if (teamSocket) {
+        teamSocket.close();
+    }
+});
+
+// Quick Observation System - Todo App Style
+let observationCount = 0;
+
+function addQuickObservation() {
+    const input = document.getElementById('quick-observation-input');
+    const text = input.value.trim();
+    
+    if (!text) {
+        input.focus();
+        return;
+    }
+    
+    submitQuickObservation(text);
+    input.value = '';
+    input.focus();
+}
+
+function addSuggestion(suggestionText) {
+    submitQuickObservation(suggestionText);
+}
+
+function submitQuickObservation(observationText) {
+    const sessionCode = document.querySelector('[data-session-code]').dataset.sessionCode;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    // Create form data
+    const formData = new FormData();
+    formData.append('submission_type', 'observation');
+    formData.append('content', observationText);
+    formData.append('submitted_by', 'Team Member'); // You can get actual name if needed
+    
+    // Show immediate feedback
+    addObservationToList(observationText, true);
+    updateObservationCounter();
+    
+    // Submit to server
+    fetch(`/learn/api/design-thinking/${sessionCode}/submit/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showQuickSuccess('✅ Observation added!');
+        } else {
+            showQuickError('❌ Failed to save');
+            // Remove the optimistically added item if it failed
+            removeLastObservation();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showQuickError('❌ Connection error');
+        removeLastObservation();
+    });
+}
+
+function addObservationToList(text, isNew = false) {
+    const container = document.getElementById('observations-list-container');
+    const list = document.getElementById('observations-list');
+    
+    // Show container if hidden
+    container.classList.remove('hidden');
+    
+    // Create observation item
+    const item = document.createElement('div');
+    item.className = `observation-item${isNew ? ' new' : ''}`;
+    item.innerHTML = `
+        <div class="flex items-center w-full">
+            <div class="text-blue-600 mr-3">•</div>
+            <div class="flex-1 text-gray-800">${text}</div>
+            <div class="text-xs text-gray-500">Just now</div>
+        </div>
+    `;
+    
+    // Add at the top
+    list.insertBefore(item, list.firstChild);
+    
+    // Remove 'new' class after animation
+    if (isNew) {
+        setTimeout(() => {
+            item.classList.remove('new');
+        }, 500);
+    }
+    
+    observationCount++;
+}
+
+function updateObservationCounter() {
+    const counter = document.getElementById('observation-counter');
+    const liveCount = document.getElementById('live-count');
+    
+    counter.textContent = `${observationCount} observations`;
+    if (liveCount) {
+        liveCount.textContent = `${observationCount} added`;
+    }
+}
+
+function removeLastObservation() {
+    const list = document.getElementById('observations-list');
+    const firstItem = list.firstElementChild;
+    if (firstItem) {
+        firstItem.remove();
+        observationCount = Math.max(0, observationCount - 1);
+        updateObservationCounter();
+    }
+}
+
+function showQuickSuccess(message) {
+    showQuickNotification(message, 'success');
+}
+
+function showQuickError(message) {
+    showQuickNotification(message, 'error');
+}
+
+function showQuickNotification(message, type) {
+    // Remove existing notifications
+    const existing = document.querySelector('.quick-notification');
+    if (existing) existing.remove();
+    
+    const notification = document.createElement('div');
+    notification.className = `quick-notification fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-sm font-medium ${
+        type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 
+        'bg-red-100 text-red-800 border border-red-200'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 2 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 2000);
+}
+
+function handleQuickPhotoUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    // Create FormData with photo
+    const sessionCode = document.querySelector('[data-session-code]').dataset.sessionCode;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    const formData = new FormData();
+    formData.append('submission_type', 'photo');
+    formData.append('content', 'Photo evidence');
+    formData.append('submitted_by', 'Team Member');
+    formData.append('file', file);
+    
+    showQuickNotification('📸 Uploading photo...', 'success');
+    
+    fetch(`/learn/api/design-thinking/${sessionCode}/submit/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            addObservationToList(`📸 Photo uploaded: ${file.name}`, true);
+            updateObservationCounter();
+            showQuickSuccess('✅ Photo uploaded!');
+        } else {
+            showQuickError('❌ Photo upload failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showQuickError('❌ Upload error');
+    });
+    
+    // Clear the input
+    input.value = '';
+}
+
+// Structured Empathy Observation System
+let observationCount = 0;
+const targetObservations = 5;
+
+function addStructuredObservation() {
+    const what = document.getElementById('observation-what').value.trim();
+    const emotion = document.getElementById('observation-emotion').value;
+    const why = document.getElementById('observation-why').value.trim();
+    const evidence = document.getElementById('observation-evidence').value.trim();
+    
+    if (!what || !emotion || !why || !evidence) {
+        showQuickNotification('❌ Please fill in all observation fields', 'error');
+        return;
+    }
+    
+    const observation = {
+        what: what,
+        emotion: emotion,
+        why: why,
+        evidence: evidence,
+        timestamp: new Date().toISOString()
+    };
+    
+    // Create structured observation content for backend
+    const structuredContent = `OBSERVATION: ${what}\nEMOTION: ${emotion}\nWHY: ${why}\nEVIDENCE: ${evidence}`;
+    
+    // Add to UI list
+    addObservationToEmpathyList(observation);
+    
+    // Submit to backend
+    submitStructuredObservation(structuredContent);
+    
+    // Clear form
+    clearObservationForm();
+    
+    // Update progress
+    updateEmpathyProgress();
+    
+    showQuickNotification('✅ Observation added!', 'success');
+}
+
+function addObservationToEmpathyList(observation) {
+    const container = document.getElementById('observations-list-container');
+    const list = document.getElementById('observations-list');
+    
+    container.classList.remove('hidden');
+    
+    const item = document.createElement('div');
+    item.className = 'observation-item bg-white p-4 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors';
+    
+    const emotionEmoji = {
+        'frustrated': '😤',
+        'worried': '😟',
+        'confused': '😕',
+        'embarrassed': '😳',
+        'isolated': '😔',
+        'overwhelmed': '😰',
+        'resigned': '😞',
+        'determined': '😤'
+    };
+    
+    item.innerHTML = `
+        <div class="flex items-start justify-between mb-2">
+            <div class="flex items-center">
+                <span class="text-xl mr-2">${emotionEmoji[observation.emotion] || '📝'}</span>
+                <span class="font-semibold text-gray-900">${observation.emotion.charAt(0).toUpperCase() + observation.emotion.slice(1)} User</span>
+            </div>
+            <span class="text-xs text-gray-500">Just now</span>
+        </div>
+        <div class="text-gray-800 mb-2">${observation.what}</div>
+        <div class="text-sm text-gray-600 mb-1"><strong>Why:</strong> ${observation.why}</div>
+        <div class="text-sm text-gray-600"><strong>Evidence:</strong> ${observation.evidence}</div>
+    `;
+    
+    list.insertBefore(item, list.firstChild);
+    observationCount++;
+    
+    // Update counter
+    document.getElementById('live-count').textContent = `${observationCount} observations added`;
+    document.getElementById('observation-counter').textContent = `${observationCount} of ${targetObservations}+ observations`;
+}
+
+function submitStructuredObservation(content) {
+    const sessionCode = document.querySelector('[data-session-code]').dataset.sessionCode;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    const formData = new FormData();
+    formData.append('submission_type', 'observation');
+    formData.append('content', content);
+    formData.append('submitted_by', getCurrentUserName());
+    
+    fetch(`/learn/api/design-thinking/${sessionCode}/submit/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            console.warn('Observation save failed:', data.error);
+        }
+    })
+    .catch(error => {
+        console.warn('Observation save error:', error);
+    });
+}
+
+function clearObservationForm() {
+    document.getElementById('observation-what').value = '';
+    document.getElementById('observation-emotion').value = '';
+    document.getElementById('observation-why').value = '';
+    document.getElementById('observation-evidence').value = '';
+}
+
+function useObservationStarter(starter) {
+    document.getElementById('observation-what').value = starter;
+    document.getElementById('observation-what').focus();
+    
+    // Trigger auto-scroll to form
+    document.getElementById('observation-what').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function updateEmpathyProgress() {
+    const progress = Math.min(100, (observationCount / targetObservations) * 100);
+    const progressBar = document.getElementById('empathy-progress-bar');
+    const progressText = document.getElementById('empathy-progress');
+    
+    if (progressBar) {
+        progressBar.style.width = `${progress}%`;
+    }
+    
+    if (progressText) {
+        progressText.textContent = `${observationCount} of ${targetObservations}+ observations complete`;
+    }
+    
+    // Color coding
+    if (observationCount >= targetObservations) {
+        progressBar.className = 'bg-green-500 h-3 rounded-full transition-all duration-500';
+        showQuickNotification('🎉 Great job! You\'ve reached your observation goal!', 'success');
+        
+        // Show reflection after delay
+        setTimeout(() => {
+            document.getElementById('reflection-empathy').classList.remove('hidden');
+            document.getElementById('reflection-empathy').scrollIntoView({ behavior: 'smooth' });
+        }, 2000);
+    } else if (observationCount >= targetObservations * 0.7) {
+        progressBar.className = 'bg-yellow-500 h-3 rounded-full transition-all duration-500';
+    }
+}
+
+function handleEmpathyPhotoUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const sessionCode = document.querySelector('[data-session-code]').dataset.sessionCode;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    const formData = new FormData();
+    formData.append('submission_type', 'photo');
+    formData.append('content', 'Empathy observation photo evidence');
+    formData.append('submitted_by', getCurrentUserName());
+    formData.append('file', file);
+    
+    showQuickNotification('📸 Uploading photo evidence...', 'success');
+    
+    fetch(`/learn/api/design-thinking/${sessionCode}/submit/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showQuickNotification('✅ Photo evidence uploaded!', 'success');
+        } else {
+            showQuickNotification('❌ Photo upload failed', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showQuickNotification('❌ Upload error', 'error');
+    });
+    
+    input.value = '';
+}
+
+// Display persona in observation section
+function displayPersonaInObservations() {
+    const persona = sessionStorage.getItem('userPersona');
+    if (persona) {
+        const personaData = JSON.parse(persona);
+        const display = document.getElementById('persona-display');
+        if (display) {
+            display.textContent = `${personaData.identity} who feels ${personaData.emotion} because ${personaData.frustration}`;
+        }
+    }
+}
+
+// Initialize empathy mission
+function initializeEmpathyMission() {
+    displayPersonaInObservations();
+    
+    // Reset counters
+    observationCount = 0;
+    updateEmpathyProgress();
+}
+
+// Mission start handler
+function onMissionStart(missionType) {
+    if (missionType === 'empathy') {
+        initializeEmpathyMission();
+    }
+}
+
+// Enable Enter key for quick add
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('quick-observation-input');
+    if (input) {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addQuickObservation();
+            }
+        });
+    }
+    
+    // Initialize persona display if already in empathy mission
+    setTimeout(displayPersonaInObservations, 1000);
+    
+    // Initialize Define mission functions if we're on Define mission
+    if (document.getElementById('mission-content-define')) {
+        initializeDefineMissionInterface();
+    }
+    
+    // Mission progress simplified - page reloads on mission changes for real-time updates
+    console.log('Mission progress tracking initialized - automatic page reload on changes');
+});
+
+// Define Mission Interface Functions
+function initializeDefineMissionInterface() {
+    // Load empathy data into Define mission
+    loadEmpathyDataIntoDefine();
+    
+    // Check for saved POV and display it
+    checkForSavedPOV();
+}
+
+function loadEmpathyDataIntoDefine() {
+    // Load persona data
+    const savedPersona = sessionStorage.getItem('designThinking_userPersona');
+    if (savedPersona) {
+        try {
+            const persona = JSON.parse(savedPersona);
+            const personaDisplay = document.getElementById('persona-display-define');
+            if (personaDisplay) {
+                personaDisplay.innerHTML = `
+                    <strong>${persona.name}</strong> - ${persona.age} year old ${persona.role}<br>
+                    <em>Problem focus:</em> ${persona.problemCategory}
+                `;
+                personaDisplay.classList.remove('italic');
+                personaDisplay.classList.add('text-yellow-900');
+            }
+        } catch (e) {
+            console.warn('Could not load persona data into Define mission:', e);
+        }
+    }
+    
+    // Load observations data
+    const savedObservations = sessionStorage.getItem('designThinking_observations');
+    if (savedObservations) {
+        try {
+            const observations = JSON.parse(savedObservations);
+            const observationsDisplay = document.getElementById('observations-display-define');
+            if (observationsDisplay && observations.length > 0) {
+                const topObservations = observations.slice(0, 3); // Show top 3
+                observationsDisplay.innerHTML = topObservations.map((obs, index) => `
+                    <div class="mb-2 p-2 bg-white rounded border border-green-200">
+                        <strong>${index + 1}.</strong> ${obs.what} 
+                        <span class="text-green-600 text-sm">(${obs.emotion})</span>
+                    </div>
+                `).join('');
+            }
+        } catch (e) {
+            console.warn('Could not load observations data into Define mission:', e);
+        }
+    }
+}
+
+function checkForSavedPOV() {
+    const savedPOV = sessionStorage.getItem('designThinking_povStatement');
+    if (savedPOV) {
+        try {
+            const povData = JSON.parse(savedPOV);
+            
+            // Show the saved POV instead of the builder
+            showSavedPOVInInterface(povData.statement);
+            
+            // Update progress to 100%
+            updateDefineProgressInInterface(100);
+        } catch (e) {
+            console.warn('Could not load saved POV:', e);
+        }
+    }
+}
+
+function showSavedPOVInInterface(povStatement) {
+    // Hide the builder form
+    const builderForm = document.querySelector('.bg-purple-200')?.closest('.bg-white');
+    if (builderForm) {
+        builderForm.style.display = 'none';
+    }
+    
+    // Show the saved POV container
+    const savedContainer = document.getElementById('saved-pov-container');
+    if (savedContainer) {
+        savedContainer.classList.remove('hidden');
+        const finalDisplay = document.getElementById('final-pov-display');
+        if (finalDisplay) {
+            finalDisplay.textContent = povStatement;
+        }
+    }
+}
+
+function updateDefineProgressInInterface(percentage) {
+    const progressText = document.getElementById('define-progress');
+    const progressBar = document.getElementById('define-progress-bar');
+    
+    if (progressText && progressBar) {
+        if (percentage >= 100) {
+            progressText.textContent = 'POV statement complete! ✅';
+            progressBar.style.width = '100%';
+            progressBar.classList.remove('bg-blue-500');
+            progressBar.classList.add('bg-green-500');
+            
+            // Show ready for next mission notification
+            setTimeout(() => {
+                showQuickNotification('🎯 POV statement complete! Ready for Ideation phase.', 'success');
+            }, 1000);
+        } else {
+            progressText.textContent = `POV statement ${percentage}% complete`;
+            progressBar.style.width = `${percentage}%`;
+        }
+    }
+}
+
+// Mission progress display function removed - simplified to use page reloads on changes
+
+function setFallbackMissionStatus() {
+    // If API fails, show intelligent defaults instead of "Loading..."
+    console.log('⚠️ Setting fallback mission status - API call failed');
+    
+    const missionItems = document.querySelectorAll('.mission-progress-item');
+    console.log(`🔧 Applying fallback to ${missionItems.length} mission items`);
+    
+    missionItems.forEach((item, index) => {
+        const badge = item.querySelector('.mission-status-badge');
+        const icon = item.querySelector('.mission-status-icon');
+        const title = item.querySelector('.mission-title');
+        const duration = item.querySelector('.mission-duration');
+        const missionNumber = index + 1;
+        
+        if (badge && badge.textContent === 'Loading...') {
+            // Reset classes
+            item.className = 'flex items-center p-3 rounded-lg mission-progress-item';
+            icon.className = 'w-10 h-10 rounded-full mr-4 flex items-center justify-center mission-status-icon';
+            badge.className = 'mission-status-badge inline-flex items-center px-2 py-1 rounded text-xs font-medium';
+            title.className = 'font-medium mission-title';
+            duration.className = 'text-sm mission-duration';
+            
+            if (index === 0) {
+                // First mission is current (fallback assumption)
+                console.log(`🎯 Setting mission ${missionNumber} as CURRENT (fallback)`);
+                item.classList.add('bg-blue-50', 'border-l-4', 'border-blue-500');
+                icon.classList.add('bg-blue-500', 'text-white');
+                icon.textContent = missionNumber;
+                badge.classList.add('bg-blue-100', 'text-blue-800');
+                badge.textContent = 'Current';
+                title.classList.add('text-blue-800');
+                duration.classList.add('text-blue-600');
+            } else {
+                // Other missions are next (fallback assumption)
+                console.log(`⏭️ Setting mission ${missionNumber} as NEXT (fallback)`);
+                item.classList.add('bg-gray-50');
+                icon.classList.add('bg-gray-300', 'text-gray-600');
+                icon.textContent = missionNumber;
+                badge.classList.add('bg-gray-100', 'text-gray-600');
+                badge.textContent = 'Next';
+                title.classList.add('text-gray-700');
+                duration.classList.add('text-gray-500');
+            }
+        }
+    });
+    
+    // Update progress text with fallback
+    const progressText = document.getElementById('mission-progress-text');
+    if (progressText) {
+        progressText.textContent = 'Mission 1/6 (Fallback)';
+        console.log('📊 Updated progress text to fallback state');
+    }
+}
+
+// Helper function to get mission order based on current mission ID
+function getCurrentMissionOrder(currentMissionId) {
+    // If no current mission, we're at the beginning
+    if (!currentMissionId) {
+        return 1; // First mission is current
+    }
+    
+    // Get all mission items and find the current one's position
+    const missionItems = document.querySelectorAll('.mission-progress-item');
+    for (let i = 0; i < missionItems.length; i++) {
+        const itemMissionId = parseInt(missionItems[i].dataset.missionId);
+        if (itemMissionId === currentMissionId) {
+            return i + 1; // Return 1-based mission number
+        }
+    }
+    
+    // Fallback: return 1 if mission not found
+    console.warn('Current mission ID not found in mission items, defaulting to mission 1');
+    return 1;
+}
+
+// Mission items removed - progress tracking simplified to header only
+// Mission changes trigger page reload for real-time updates
+
+// Global helper function for notifications (if not already defined)
+if (typeof showQuickNotification !== 'function') {
+    function showQuickNotification(message, type = 'info') {
+        // Create toast notification
+        const toast = document.createElement('div');
+        toast.className = `message-toast ${type}`;
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        // Show toast
+        setTimeout(() => toast.classList.add('show'), 100);
+        
+        // Hide and remove toast
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => document.body.removeChild(toast), 300);
+        }, 3000);
+    }
+}
+
+// Add spotlight animation CSS
+const spotlightCSS = `
+@keyframes spotlight {
+    0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+    50% { box-shadow: 0 0 30px 10px rgba(255, 215, 0, 0.7); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+}
+`;
+const style = document.createElement('style');
+style.textContent = spotlightCSS;
+document.head.appendChild(style);
+</script>
+
+</div> <!-- End of main content container -->
+{% endblock content %}

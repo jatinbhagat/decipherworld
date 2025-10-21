@@ -1,0 +1,241 @@
+<!-- How Might We Generator Component -->
+<div id="hmw-generator" class="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-xl p-6 mb-8">
+    <div class="flex items-center mb-4">
+        <div class="text-2xl mr-4">🎯</div>
+        <div>
+            <h3 class="text-xl font-bold text-gray-900">How Might We Generator Practice</h3>
+            <div class="text-gray-600">Practice turning POV statements into opportunity questions</div>
+        </div>
+        <div class="ml-auto bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+            5 min practice
+        </div>
+    </div>
+    
+    <!-- HMW Introduction -->
+    <div class="bg-white p-4 rounded-lg mb-6">
+        <div class="font-semibold text-yellow-900 mb-2">💡 "How Might We" Questions:</div>
+        <div class="text-yellow-800 text-sm mb-2">
+            HMW questions turn problems into opportunities. They're open-ended, hopeful, and suggest possibilities.
+        </div>
+        <div class="text-yellow-700 text-xs">
+            <strong>Formula:</strong> "How might we help [USER] [NEED]?" or "How might we [SOLVE CHALLENGE]?"
+        </div>
+    </div>
+    
+    <!-- Interactive HMW Builder -->
+    <div class="bg-white border border-yellow-200 rounded-lg p-4 mb-4">
+        <div class="font-semibold text-gray-900 mb-3">🎯 Try Building HMW Questions:</div>
+        
+        <!-- Example POV for Practice -->
+        <div class="bg-blue-50 p-3 rounded-lg mb-4">
+            <div class="font-medium text-blue-800 mb-1">Example POV Statement:</div>
+            <div class="text-blue-700 text-sm italic">
+                "Students in the back row need better lighting because poor visibility causes them to miss information and feel frustrated."
+            </div>
+        </div>
+        
+        <!-- HMW Options -->
+        <div class="space-y-3">
+            <div class="font-medium text-gray-700 mb-2">Which HMW questions could come from this POV? (Select all good ones)</div>
+            
+            <label class="flex items-start cursor-pointer hover:bg-yellow-50 p-2 rounded-lg transition-colors">
+                <input type="checkbox" class="mt-1 mr-3 text-yellow-600" value="good" data-feedback="Great! This is specific and actionable.">
+                <span class="text-sm text-gray-700">How might we improve lighting for students in the back row?</span>
+            </label>
+            
+            <label class="flex items-start cursor-pointer hover:bg-yellow-50 p-2 rounded-lg transition-colors">
+                <input type="checkbox" class="mt-1 mr-3 text-yellow-600" value="bad" data-feedback="Too broad - 'everyone' makes it less actionable.">
+                <span class="text-sm text-gray-700">How might we help everyone see better?</span>
+            </label>
+            
+            <label class="flex items-start cursor-pointer hover:bg-yellow-50 p-2 rounded-lg transition-colors">
+                <input type="checkbox" class="mt-1 mr-3 text-yellow-600" value="good" data-feedback="Excellent! This focuses on the user need and emotion.">
+                <span class="text-sm text-gray-700">How might we help back-row students feel less frustrated during lessons?</span>
+            </label>
+            
+            <label class="flex items-start cursor-pointer hover:bg-yellow-50 p-2 rounded-lg transition-colors">
+                <input type="checkbox" class="mt-1 mr-3 text-yellow-600" value="solution" data-feedback="This is already a solution (buy lamps), not an open question.">
+                <span class="text-sm text-gray-700">How might we buy better lamps for the classroom?</span>
+            </label>
+            
+            <label class="flex items-start cursor-pointer hover:bg-yellow-50 p-2 rounded-lg transition-colors">
+                <input type="checkbox" class="mt-1 mr-3 text-yellow-600" value="good" data-feedback="Perfect! This opens up creative possibilities.">
+                <span class="text-sm text-gray-700">How might we ensure all students can access visual information clearly?</span>
+            </label>
+        </div>
+        
+        <!-- Feedback Area -->
+        <div id="hmw-feedback" class="mt-4 hidden">
+            <div class="p-3 rounded-lg" id="hmw-feedback-container">
+                <!-- Feedback will appear here -->
+            </div>
+        </div>
+        
+        <!-- Check Answers Button -->
+        <div class="mt-4 text-center">
+            <button onclick="checkHMWAnswers()" 
+                    class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors text-sm font-medium">
+                Check My Answers
+            </button>
+        </div>
+    </div>
+    
+    <!-- HMW Quality Indicators -->
+    <div class="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+        <div class="font-semibold text-gray-900 mb-3">✅ Good HMW Questions:</div>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+                <div class="flex items-start">
+                    <div class="text-green-500 mr-2 text-sm">✓</div>
+                    <span class="text-sm text-gray-700">Start with "How might we..."</span>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-green-500 mr-2 text-sm">✓</div>
+                    <span class="text-sm text-gray-700">Focus on specific users</span>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-green-500 mr-2 text-sm">✓</div>
+                    <span class="text-sm text-gray-700">Suggest possibilities, not solutions</span>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <div class="flex items-start">
+                    <div class="text-green-500 mr-2 text-sm">✓</div>
+                    <span class="text-sm text-gray-700">Are open-ended and hopeful</span>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-green-500 mr-2 text-sm">✓</div>
+                    <span class="text-sm text-gray-700">Connect to your POV insights</span>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-green-500 mr-2 text-sm">✓</div>
+                    <span class="text-sm text-gray-700">Inspire creative solutions</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- HMW Templates -->
+    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+        <div class="font-semibold text-orange-800 mb-3">🎨 HMW Question Templates:</div>
+        <div class="grid md:grid-cols-2 gap-2 text-sm">
+            <div class="space-y-1">
+                <div class="text-orange-700">• How might we help [user] [achieve goal]?</div>
+                <div class="text-orange-700">• How might we make [situation] more [positive]?</div>
+                <div class="text-orange-700">• How might we reduce [user's frustration]?</div>
+            </div>
+            <div class="space-y-1">
+                <div class="text-orange-700">• How might we ensure [user] can [succeed]?</div>
+                <div class="text-orange-700">• How might we turn [problem] into [opportunity]?</div>
+                <div class="text-orange-700">• How might we create [positive experience]?</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// HMW Generator functionality
+function checkHMWAnswers() {
+    const checkboxes = document.querySelectorAll('#hmw-generator input[type="checkbox"]');
+    const feedback = document.getElementById('hmw-feedback');
+    const feedbackContainer = document.getElementById('hmw-feedback-container');
+    
+    let correctCount = 0;
+    let totalCorrect = 0;
+    let feedbackText = '';
+    
+    checkboxes.forEach(checkbox => {
+        const isChecked = checkbox.checked;
+        const value = checkbox.value;
+        const feedbackMsg = checkbox.dataset.feedback;
+        
+        if (value === 'good') {
+            totalCorrect++;
+            if (isChecked) {
+                correctCount++;
+                feedbackText += `✅ ${feedbackMsg}\n`;
+            } else {
+                feedbackText += `⚠️ You missed a good one: "${checkbox.parentElement.textContent.trim()}"\n`;
+            }
+        } else if (isChecked) {
+            // They selected a bad/solution option
+            if (value === 'bad') {
+                feedbackText += `❌ ${feedbackMsg}\n`;
+            } else if (value === 'solution') {
+                feedbackText += `⚠️ ${feedbackMsg}\n`;
+            }
+        }
+    });
+    
+    const score = Math.round((correctCount / totalCorrect) * 100);
+    let feedbackClass, summaryText;
+    
+    if (score >= 80) {
+        feedbackClass = 'bg-green-100 border border-green-200';
+        summaryText = `🎉 Excellent! You got ${score}% correct. You understand how to create good HMW questions!`;
+    } else if (score >= 60) {
+        feedbackClass = 'bg-yellow-100 border border-yellow-200';
+        summaryText = `👍 Good job! You got ${score}% correct. Keep practicing to master HMW questions.`;
+    } else {
+        feedbackClass = 'bg-orange-100 border border-orange-200';
+        summaryText = `💪 Keep learning! You got ${score}% correct. Remember: good HMW questions are specific, open-ended, and positive.`;
+    }
+    
+    feedbackContainer.className = `p-3 rounded-lg ${feedbackClass}`;
+    feedbackContainer.innerHTML = `
+        <div class="font-semibold text-sm mb-2">${summaryText}</div>
+        <div class="text-xs whitespace-pre-line">${feedbackText}</div>
+    `;
+    feedback.classList.remove('hidden');
+}
+
+// Initialize HMW generator
+document.addEventListener('DOMContentLoaded', function() {
+    // Add change listeners to checkboxes for immediate visual feedback
+    const checkboxes = document.querySelectorAll('#hmw-generator input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            // Reset feedback when user changes selections
+            const feedback = document.getElementById('hmw-feedback');
+            if (feedback && !feedback.classList.contains('hidden')) {
+                feedback.classList.add('hidden');
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.hmw-generator {
+    position: relative;
+    overflow: hidden;
+}
+
+.hmw-generator::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(251, 191, 36, 0.1), transparent);
+    transform: rotate(45deg);
+    animation: hmw-shine 4s infinite;
+}
+
+@keyframes hmw-shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    50% { transform: translateX(0%) translateY(0%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+input[type="checkbox"]:checked + span {
+    background-color: rgba(251, 191, 36, 0.1);
+    font-weight: 500;
+}
+
+input[type="checkbox"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.3);
+}
+</style>

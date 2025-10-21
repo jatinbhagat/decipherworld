@@ -1,0 +1,846 @@
+{% extends '../../../../base.html' %}
+{% load static %}
+
+{% block title %}Ideate Mission - Design Thinking{% endblock %}
+
+{% block extra_head %}
+<style>
+    .mission-phase {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .phase-indicator {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .ideation-toolkit {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border-radius: 1rem;
+        padding: 2rem;
+    }
+    
+    .ideation-method {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+    }
+    
+    .ideation-method:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .ideation-method.active {
+        border-color: #f59e0b;
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .idea-input {
+        background: rgba(255, 255, 255, 0.9);
+        color: #374151;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        width: 100%;
+        font-size: 1rem;
+        transition: background 0.2s ease;
+    }
+    
+    .idea-input:focus {
+        background: white;
+        outline: 2px solid #f59e0b;
+        outline-offset: 2px;
+    }
+    
+    .idea-tag {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        margin: 0.25rem;
+        transition: all 0.2s ease;
+    }
+    
+    .idea-tag:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
+    }
+    
+    .ideas-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .idea-card {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+    
+    .idea-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .creativity-booster {
+        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        color: #1f2937;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin: 0.5rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Mission Header -->
+    <div class="mission-phase">
+        <div class="phase-indicator">Phase 3: Ideate</div>
+        <h1 class="text-3xl font-bold mb-4">💡 Generate Creative Solutions</h1>
+        <p class="text-xl opacity-90">Brainstorm innovative solutions to your defined problem through divergent thinking and creative exploration.</p>
+    </div>
+
+    <!-- LEARN PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">📚</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Learn: The Power of Creative Ideation</h2>
+                <p class="text-gray-600">Master the art of generating breakthrough solutions</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-yellow-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-yellow-900 mb-3">💡 What is Ideation?</h3>
+                <p class="text-yellow-800 text-sm mb-3">
+                    Ideation is the creative process of generating, developing, and communicating new ideas. 
+                    It's about quantity over quality initially - the goal is to explore as many possibilities as possible without judgment.
+                </p>
+                <div class="bg-white p-3 rounded border-l-4 border-yellow-500">
+                    <p class="text-yellow-900 font-medium text-sm">"Creativity is intelligence having fun." - Albert Einstein</p>
+                </div>
+            </div>
+
+            <div class="bg-orange-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-orange-900 mb-3">🧠 Key Principles</h3>
+                <ul class="text-orange-800 text-sm space-y-2">
+                    <li class="flex items-start">
+                        <span class="text-orange-600 mr-2">•</span>
+                        <span><strong>Defer judgment:</strong> No criticism during brainstorming</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-orange-600 mr-2">•</span>
+                        <span><strong>Go for quantity:</strong> More ideas = better chance of breakthroughs</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-orange-600 mr-2">•</span>
+                        <span><strong>Build on ideas:</strong> "Yes, and..." not "Yes, but..."</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-orange-600 mr-2">•</span>
+                        <span><strong>Encourage wild ideas:</strong> Crazy ideas often lead to breakthroughs</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-green-50 border border-green-200 p-4 rounded-lg">
+            <h4 class="font-semibold text-green-900 mb-2">🌟 The Ideation Mindset:</h4>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="text-center">
+                    <div class="text-2xl mb-2">🎨</div>
+                    <strong class="text-green-800">Creative</strong>
+                    <p class="text-green-700 text-sm">Think outside the box</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl mb-2">🌊</div>
+                    <strong class="text-green-800">Flow</strong>
+                    <p class="text-green-700 text-sm">Let ideas flow freely</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl mb-2">🚀</div>
+                    <strong class="text-green-800">Bold</strong>
+                    <p class="text-green-700 text-sm">Dare to dream big</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRACTICE PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-orange-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">🛠️</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Practice: Creativity Warm-Up</h2>
+                <p class="text-gray-600">Activate your creative thinking with fun exercises</p>
+            </div>
+        </div>
+
+        <!-- How Might We Generator Integration -->
+        <div class="bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-orange-200 p-6 rounded-xl mb-6">
+            <h3 class="text-xl font-bold text-orange-900 mb-4">🔄 Transform Your POV into How Might We Questions</h3>
+            <p class="text-orange-800 mb-4">Convert your problem statement into opportunity questions:</p>
+            {% include 'group_learning/design_thinking/components/hmw_generator.html' %}
+        </div>
+
+        <!-- Creativity Boosters -->
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="creativity-booster">
+                <h4 class="font-bold mb-3">🎯 Quick Creative Challenge</h4>
+                <p class="text-sm mb-3">Generate 10 uses for a paper clip in 2 minutes:</p>
+                <div class="space-y-1 text-sm">
+                    <div>💡 Holding papers together</div>
+                    <div>💡 Phone stand</div>
+                    <div>💡 Bookmark</div>
+                    <div class="italic opacity-75">...keep going! No idea is too silly!</div>
+                </div>
+            </div>
+            
+            <div class="creativity-booster">
+                <h4 class="font-bold mb-3">🌟 Idea Starters</h4>
+                <p class="text-sm mb-3">Try these creative prompts:</p>
+                <div class="space-y-1 text-xs">
+                    <div>🔹 What if gravity worked differently?</div>
+                    <div>🔹 How would a child solve this?</div>
+                    <div>🔹 What would nature do?</div>
+                    <div>🔹 How might we make this fun?</div>
+                    <div>🔹 What if cost wasn't a factor?</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLY PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-green-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">🚀</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Apply: Solution Generation Mission</h2>
+                <p class="text-gray-600">Create breakthrough solutions for your defined problem</p>
+            </div>
+        </div>
+
+        <!-- Problem Context Reminder -->
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+            <div class="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+                <h4 class="font-semibold text-purple-900 mb-2">🎯 Your POV Statement</h4>
+                <div id="pov-display" class="text-purple-800">
+                    <div id="pov-content" class="italic">Loading your problem statement from the Define mission...</div>
+                </div>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                <h4 class="font-semibold text-blue-900 mb-2">💡 Your HMW Question</h4>
+                <div id="hmw-display" class="text-blue-800">
+                    <div id="hmw-content" class="italic">Loading your How Might We question...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ideation Toolkit -->
+        <div class="ideation-toolkit">
+            <h3 class="text-2xl font-bold mb-6 text-center">🧠 Creative Ideation Toolkit</h3>
+            
+            <!-- Mission Goal -->
+            <div class="ideation-method">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h4 class="text-lg font-bold">🎯 Mission Goal</h4>
+                        <p>Generate 10+ creative solutions to your HMW question</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-medium">
+                        Goal: 10+ ideas
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ideation Method Selector -->
+            <div class="mb-6">
+                <h4 class="text-lg font-bold mb-4">Choose Your Ideation Method:</h4>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="ideation-method" onclick="selectIdeationMethod('rapid')" id="method-rapid">
+                        <div class="text-center">
+                            <div class="text-3xl mb-2">⚡</div>
+                            <h5 class="font-bold mb-2">Rapid Fire</h5>
+                            <p class="text-sm opacity-90">Quick bursts, one idea at a time</p>
+                        </div>
+                    </div>
+                    <div class="ideation-method" onclick="selectIdeationMethod('structured')" id="method-structured">
+                        <div class="text-center">
+                            <div class="text-3xl mb-2">📋</div>
+                            <h5 class="font-bold mb-2">Structured</h5>
+                            <p class="text-sm opacity-90">Organized by categories</p>
+                        </div>
+                    </div>
+                    <div class="ideation-method" onclick="selectIdeationMethod('collaborative')" id="method-collaborative">
+                        <div class="text-center">
+                            <div class="text-3xl mb-2">🤝</div>
+                            <h5 class="font-bold mb-2">Collaborative</h5>
+                            <p class="text-sm opacity-90">Build on each other's ideas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rapid Fire Method -->
+            <div id="rapid-interface" class="ideation-method hidden">
+                <h4 class="text-lg font-bold mb-4">⚡ Rapid Fire Ideation</h4>
+                <div class="mb-4">
+                    <input type="text" 
+                           id="rapid-idea-input"
+                           class="idea-input"
+                           placeholder="Type one idea and press Enter to add it quickly..."
+                           maxlength="100">
+                    <div class="text-xs mt-1 opacity-80">Press Enter to add • <span id="rapid-count">0</span> ideas generated</div>
+                </div>
+                <div id="rapid-ideas-display" class="space-y-2 max-h-40 overflow-y-auto">
+                    <!-- Ideas will appear here -->
+                </div>
+            </div>
+
+            <!-- Structured Method -->
+            <div id="structured-interface" class="ideation-method hidden">
+                <h4 class="text-lg font-bold mb-4">📋 Structured Ideation</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold mb-2">🛠️ Low-Tech Solutions</label>
+                        <textarea id="lowtech-ideas" 
+                                  class="idea-input h-24"
+                                  placeholder="Simple, easy-to-implement ideas..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">🔬 High-Tech Solutions</label>
+                        <textarea id="hightech-ideas" 
+                                  class="idea-input h-24"
+                                  placeholder="Advanced, technology-based ideas..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">🏗️ Physical Changes</label>
+                        <textarea id="physical-ideas" 
+                                  class="idea-input h-24"
+                                  placeholder="Changes to space or objects..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">👥 Behavioral Solutions</label>
+                        <textarea id="behavioral-ideas" 
+                                  class="idea-input h-24"
+                                  placeholder="Changes in how people act..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collaborative Method -->
+            <div id="collaborative-interface" class="ideation-method hidden">
+                <h4 class="text-lg font-bold mb-4">🤝 Collaborative Ideation</h4>
+                <div class="mb-4">
+                    <textarea id="collaborative-ideas" 
+                              class="idea-input h-32"
+                              placeholder="Add your ideas here... Build on what others have suggested!&#10;&#10;• Idea 1&#10;• Idea 2&#10;• Idea 3..."></textarea>
+                    <div class="text-xs mt-1 opacity-80">Add ideas that build on your teammates' suggestions</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-between items-center mt-6">
+                <button onclick="clearCurrentMethod()" 
+                        class="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors">
+                    🔄 Clear Ideas
+                </button>
+                <button onclick="saveAllIdeas()" 
+                        id="save-ideas-btn"
+                        class="bg-white text-pink-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled>
+                    💾 Save All Ideas
+                </button>
+            </div>
+        </div>
+
+        <!-- Ideas Collection Display -->
+        <div id="ideas-collection" class="hidden mt-6 bg-green-50 border-2 border-green-200 p-6 rounded-xl">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-xl font-bold text-green-900">✨ Your Creative Solutions</h4>
+                <div class="text-sm text-green-600 font-medium">
+                    <span id="total-ideas-count">0</span> ideas generated
+                </div>
+            </div>
+            <div id="ideas-gallery" class="ideas-gallery">
+                <!-- Ideas will appear here -->
+            </div>
+            <div class="mt-4 text-center">
+                <button onclick="addMoreIdeas()" 
+                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                    ➕ Generate More Ideas
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress Tracking -->
+        <div class="mt-6 bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div class="font-semibold text-yellow-900">Mission Progress</div>
+                <div id="ideate-progress" class="text-yellow-700">0 of 10+ ideas generated</div>
+            </div>
+            <div class="w-full bg-yellow-200 rounded-full h-3 mt-2">
+                <div id="ideate-progress-bar" class="bg-yellow-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REFLECT PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-purple-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">🤔</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Reflect: Understanding Your Creative Process</h2>
+                <p class="text-gray-600">Think about your ideation journey and creative insights</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-purple-900 mb-3">🎯 Reflection Questions</h3>
+                <div class="space-y-3">
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">Which ideas surprised you the most?</p>
+                    </div>
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">How did deferring judgment help your creativity?</p>
+                    </div>
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">What made some ideas better or more interesting than others?</p>
+                    </div>
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">How did building on others' ideas spark new thinking?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-blue-900 mb-3">🌟 Key Learnings</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span class="text-blue-800">Quantity leads to quality in ideation</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span class="text-blue-800">Wild ideas often inspire practical solutions</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span class="text-blue-800">Building on ideas creates better outcomes</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span class="text-blue-800">Different methods unlock different creativity</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-gray-900 mb-3">🚀 Apply This Learning</h4>
+            <p class="text-gray-700 text-sm mb-3">
+                Creative ideation skills are valuable in many situations. You can use these techniques when:
+            </p>
+            <div class="grid md:grid-cols-3 gap-3 text-sm">
+                <div class="bg-white p-3 rounded">
+                    <strong class="text-purple-700">Solving Problems:</strong>
+                    <p class="text-gray-600">Generate multiple solutions before choosing one</p>
+                </div>
+                <div class="bg-white p-3 rounded">
+                    <strong class="text-blue-700">Planning Events:</strong>
+                    <p class="text-gray-600">Brainstorm creative activities and themes</p>
+                </div>
+                <div class="bg-white p-3 rounded">
+                    <strong class="text-green-700">School Projects:</strong>
+                    <p class="text-gray-600">Think of unique approaches and presentations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ideation Tips and Guidelines -->
+    <div class="grid md:grid-cols-2 gap-6">
+        <!-- Success Tips -->
+        <div class="bg-green-50 border border-green-200 p-6 rounded-xl">
+            <h3 class="text-lg font-bold text-green-900 mb-4">🎯 Ideation Success Tips</h3>
+            <div class="space-y-3 text-sm">
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Go for quantity first - aim for 10+ ideas minimum</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Welcome wild, crazy, and impossible ideas</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Build on others' ideas with "Yes, and..."</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Stay focused on your HMW question</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Common Mistakes -->
+        <div class="bg-red-50 border border-red-200 p-6 rounded-xl">
+            <h3 class="text-lg font-bold text-red-900 mb-4">⚠️ Avoid These Mistakes</h3>
+            <div class="space-y-3 text-sm">
+                <div class="flex items-start">
+                    <span class="text-red-600 mr-2 font-bold">✗</span>
+                    <span class="text-red-800">Judging or criticizing ideas during brainstorming</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-red-600 mr-2 font-bold">✗</span>
+                    <span class="text-red-800">Settling for the first few ideas</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-red-600 mr-2 font-bold">✗</span>
+                    <span class="text-red-800">Only thinking of "realistic" solutions</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-red-600 mr-2 font-bold">✗</span>
+                    <span class="text-red-800">Working alone when collaboration is possible</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Ideate Mission -->
+<script>
+let allIdeas = [];
+let currentMethod = '';
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeIdeateMission();
+    loadPreviousData();
+});
+
+function initializeIdeateMission() {
+    setupRapidFireInput();
+    loadSavedIdeas();
+}
+
+function setupRapidFireInput() {
+    const rapidInput = document.getElementById('rapid-idea-input');
+    if (rapidInput) {
+        rapidInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addRapidIdea();
+            }
+        });
+    }
+}
+
+function selectIdeationMethod(method) {
+    // Hide all interfaces
+    ['rapid-interface', 'structured-interface', 'collaborative-interface'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.classList.add('hidden');
+    });
+    
+    // Remove active class from all methods
+    ['method-rapid', 'method-structured', 'method-collaborative'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.classList.remove('active');
+    });
+    
+    // Show selected interface and activate method
+    const interfaceId = `${method}-interface`;
+    const methodId = `method-${method}`;
+    
+    const selectedInterface = document.getElementById(interfaceId);
+    const selectedMethod = document.getElementById(methodId);
+    
+    if (selectedInterface) selectedInterface.classList.remove('hidden');
+    if (selectedMethod) selectedMethod.classList.add('active');
+    
+    currentMethod = method;
+    
+    // Enable save button
+    const saveBtn = document.getElementById('save-ideas-btn');
+    if (saveBtn) saveBtn.disabled = false;
+}
+
+function addRapidIdea() {
+    const input = document.getElementById('rapid-idea-input');
+    const idea = input.value.trim();
+    
+    if (idea && idea.length > 3) {
+        const rapidDisplay = document.getElementById('rapid-ideas-display');
+        const rapidCount = document.getElementById('rapid-count');
+        
+        // Create idea element
+        const ideaElement = document.createElement('div');
+        ideaElement.className = 'idea-tag';
+        ideaElement.textContent = idea;
+        ideaElement.onclick = () => ideaElement.remove();
+        ideaElement.title = 'Click to remove';
+        
+        rapidDisplay.appendChild(ideaElement);
+        
+        // Update count
+        const currentCount = rapidDisplay.children.length;
+        rapidCount.textContent = currentCount;
+        
+        // Clear input
+        input.value = '';
+        input.focus();
+    }
+}
+
+function clearCurrentMethod() {
+    if (currentMethod === 'rapid') {
+        document.getElementById('rapid-ideas-display').innerHTML = '';
+        document.getElementById('rapid-count').textContent = '0';
+        document.getElementById('rapid-idea-input').value = '';
+    } else if (currentMethod === 'structured') {
+        ['lowtech-ideas', 'hightech-ideas', 'physical-ideas', 'behavioral-ideas'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.value = '';
+        });
+    } else if (currentMethod === 'collaborative') {
+        const element = document.getElementById('collaborative-ideas');
+        if (element) element.value = '';
+    }
+}
+
+function saveAllIdeas() {
+    let newIdeas = [];
+    
+    if (currentMethod === 'rapid') {
+        const rapidDisplay = document.getElementById('rapid-ideas-display');
+        newIdeas = Array.from(rapidDisplay.children).map(child => child.textContent.trim());
+    } else if (currentMethod === 'structured') {
+        const categories = [
+            { id: 'lowtech-ideas', category: 'Low-Tech' },
+            { id: 'hightech-ideas', category: 'High-Tech' },
+            { id: 'physical-ideas', category: 'Physical' },
+            { id: 'behavioral-ideas', category: 'Behavioral' }
+        ];
+        
+        categories.forEach(cat => {
+            const element = document.getElementById(cat.id);
+            if (element && element.value.trim()) {
+                const ideas = element.value.trim().split('\n').filter(idea => idea.trim());
+                ideas.forEach(idea => {
+                    newIdeas.push(`[${cat.category}] ${idea.trim()}`);
+                });
+            }
+        });
+    } else if (currentMethod === 'collaborative') {
+        const element = document.getElementById('collaborative-ideas');
+        if (element && element.value.trim()) {
+            newIdeas = element.value.trim().split('\n')
+                .filter(idea => idea.trim())
+                .map(idea => idea.replace(/^[•\-\*]\s*/, '').trim());
+        }
+    }
+    
+    if (newIdeas.length === 0) {
+        alert('Please generate some ideas first!');
+        return;
+    }
+    
+    // Add new ideas to collection
+    newIdeas.forEach(idea => {
+        if (idea.length > 3) {
+            allIdeas.push({
+                content: idea,
+                method: currentMethod,
+                timestamp: new Date().toISOString()
+            });
+        }
+    });
+    
+    // Save to session storage
+    sessionStorage.setItem('designThinking_ideas', JSON.stringify(allIdeas));
+    
+    // Update display
+    updateIdeasDisplay();
+    updateProgress();
+    
+    // Save to backend
+    saveIdeasToBackend(newIdeas);
+    
+    // Clear current method
+    clearCurrentMethod();
+    
+    alert(`${newIdeas.length} ideas saved successfully!`);
+}
+
+function updateIdeasDisplay() {
+    if (allIdeas.length === 0) return;
+    
+    const container = document.getElementById('ideas-collection');
+    const gallery = document.getElementById('ideas-gallery');
+    const counter = document.getElementById('total-ideas-count');
+    
+    container.classList.remove('hidden');
+    counter.textContent = allIdeas.length;
+    
+    gallery.innerHTML = allIdeas.map((idea, index) => `
+        <div class="idea-card">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">${idea.method}</span>
+                <button onclick="removeIdea(${index})" class="text-red-500 hover:text-red-700 text-sm">✕</button>
+            </div>
+            <p class="text-gray-800 text-sm">${idea.content}</p>
+        </div>
+    `).join('');
+}
+
+function removeIdea(index) {
+    allIdeas.splice(index, 1);
+    sessionStorage.setItem('designThinking_ideas', JSON.stringify(allIdeas));
+    updateIdeasDisplay();
+    updateProgress();
+}
+
+function addMoreIdeas() {
+    // Reset method selection
+    ['rapid-interface', 'structured-interface', 'collaborative-interface'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.classList.add('hidden');
+    });
+    
+    ['method-rapid', 'method-structured', 'method-collaborative'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.classList.remove('active');
+    });
+    
+    currentMethod = '';
+    
+    // Scroll to method selector
+    document.querySelector('.ideation-toolkit').scrollIntoView({ behavior: 'smooth' });
+}
+
+function updateProgress() {
+    const count = allIdeas.length;
+    const percentage = Math.min((count / 10) * 100, 100);
+    
+    const progressText = document.getElementById('ideate-progress');
+    const progressBar = document.getElementById('ideate-progress-bar');
+    
+    if (progressText) {
+        progressText.textContent = `${count} of 10+ ideas generated`;
+    }
+    
+    if (progressBar) {
+        progressBar.style.width = `${percentage}%`;
+        if (percentage >= 100) {
+            progressBar.classList.remove('bg-yellow-500');
+            progressBar.classList.add('bg-green-500');
+        }
+    }
+}
+
+function loadPreviousData() {
+    // Load POV statement
+    const savedPOV = sessionStorage.getItem('designThinking_povStatement');
+    if (savedPOV) {
+        try {
+            const povData = JSON.parse(savedPOV);
+            const povDisplay = document.getElementById('pov-content');
+            if (povDisplay) {
+                povDisplay.textContent = povData.statement;
+            }
+            
+            // Generate HMW question from POV
+            const hmwDisplay = document.getElementById('hmw-content');
+            if (hmwDisplay) {
+                const hmwQuestion = `How might we help ${povData.user} ${povData.need}?`;
+                hmwDisplay.textContent = hmwQuestion;
+            }
+        } catch (e) {
+            console.warn('Could not load POV data:', e);
+        }
+    }
+}
+
+function loadSavedIdeas() {
+    const savedIdeas = sessionStorage.getItem('designThinking_ideas');
+    if (savedIdeas) {
+        try {
+            allIdeas = JSON.parse(savedIdeas);
+            updateIdeasDisplay();
+            updateProgress();
+        } catch (e) {
+            console.warn('Could not load saved ideas:', e);
+        }
+    }
+}
+
+function saveIdeasToBackend(ideas) {
+    const sessionCode = document.querySelector('[data-session-code]')?.dataset.sessionCode;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+    
+    if (!sessionCode || !csrfToken) {
+        console.warn('Missing session data for backend save');
+        return;
+    }
+    
+    ideas.forEach(idea => {
+        const formData = new FormData();
+        formData.append('submission_type', 'idea');
+        formData.append('content', idea);
+        formData.append('submitted_by', 'Team Member');
+        
+        fetch(`/learn/api/design-thinking/${sessionCode}/submit/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                console.warn('Idea save failed:', data.error);
+            }
+        })
+        .catch(error => console.warn('Idea save error:', error));
+    });
+}
+
+// Global function exports
+window.selectIdeationMethod = selectIdeationMethod;
+window.addRapidIdea = addRapidIdea;
+window.clearCurrentMethod = clearCurrentMethod;
+window.saveAllIdeas = saveAllIdeas;
+window.removeIdea = removeIdea;
+window.addMoreIdeas = addMoreIdeas;
+</script>
+{% endblock %}

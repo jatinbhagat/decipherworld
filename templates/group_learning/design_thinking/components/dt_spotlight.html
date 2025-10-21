@@ -1,0 +1,199 @@
+<!-- Design Thinking Skill Spotlight Component -->
+<div id="dt-spotlight-{{ mission_type }}" class="dt-spotlight bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl p-6 mb-8 shadow-lg">
+    <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center">
+            <div class="text-3xl mr-4">{{ skill_icon }}</div>
+            <div>
+                <h3 class="text-xl font-bold mb-1">🎓 DT Skill Spotlight</h3>
+                <div class="text-lg font-semibold text-indigo-100">{{ skill_title }}</div>
+            </div>
+        </div>
+        <div class="bg-white bg-opacity-20 rounded-lg px-3 py-1 text-sm font-medium">
+            {{ duration }} min
+        </div>
+    </div>
+    
+    <!-- Learning Content -->
+    <div class="bg-white bg-opacity-10 rounded-lg p-4 mb-4">
+        <div class="text-lg font-medium mb-3 text-indigo-100">{{ learning_objective }}</div>
+        <div class="text-indigo-50 mb-4">{{ skill_explanation }}</div>
+        
+        <!-- Key Concepts -->
+        <div class="grid md:grid-cols-2 gap-4">
+            {% for concept in key_concepts %}
+            <div class="flex items-start">
+                <div class="w-2 h-2 bg-yellow-300 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <span class="text-sm text-indigo-50">{{ concept }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Real-world Example -->
+    <div class="bg-white bg-opacity-10 rounded-lg p-4 mb-4">
+        <div class="font-semibold mb-2 text-indigo-100">💡 Real-World Example:</div>
+        <div class="text-sm text-indigo-50 italic">{{ example_text }}</div>
+    </div>
+    
+    <!-- Success Criteria -->
+    <div class="bg-white bg-opacity-10 rounded-lg p-4 mb-4">
+        <div class="font-semibold mb-2 text-indigo-100">🎯 What Good {{ skill_title }} Looks Like:</div>
+        <div class="grid md:grid-cols-2 gap-2">
+            {% for criteria in success_criteria %}
+            <div class="flex items-start">
+                <div class="text-green-300 mr-2 text-sm">✓</div>
+                <span class="text-sm text-indigo-50">{{ criteria }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Action Button -->
+    <div class="text-center">
+        <button onclick="startMissionPhase('{{ mission_type }}')" 
+                class="bg-white text-indigo-600 px-6 py-3 rounded-lg font-bold hover:bg-indigo-50 transition-colors">
+            🚀 Start {{ skill_title }} Practice
+        </button>
+    </div>
+</div>
+
+<!-- Mission Timer -->
+<div id="mission-timer-{{ mission_type }}" class="hidden bg-orange-100 border-l-4 border-orange-400 p-4 rounded-r-lg mb-6">
+    <div class="flex items-center">
+        <div class="text-orange-600 text-xl mr-3">⏱️</div>
+        <div>
+            <div class="font-semibold text-orange-800">Mission Timer</div>
+            <div class="text-orange-700">
+                <span id="timer-minutes-{{ mission_type }}">{{ mission_duration }}</span> minutes remaining
+                <div class="w-full bg-orange-200 rounded-full h-2 mt-2">
+                    <div id="timer-progress-{{ mission_type }}" class="bg-orange-500 h-2 rounded-full transition-all duration-1000" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mission timer functionality
+let missionTimers = {};
+
+function startMissionPhase(missionType) {
+    // Hide spotlight, show timer
+    document.getElementById(`dt-spotlight-${missionType}`).style.display = 'none';
+    document.getElementById(`mission-timer-${missionType}`).classList.remove('hidden');
+    
+    // Start mission timer
+    const duration = parseInt(document.getElementById(`timer-minutes-${missionType}`).textContent);
+    startMissionTimer(missionType, duration);
+    
+    // Show mission content
+    const missionContent = document.getElementById(`mission-content-${missionType}`);
+    if (missionContent) {
+        missionContent.classList.remove('hidden');
+        missionContent.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Trigger mission start event
+    if (typeof onMissionStart === 'function') {
+        onMissionStart(missionType);
+    }
+}
+
+function startMissionTimer(missionType, minutes) {
+    const totalSeconds = minutes * 60;
+    let remainingSeconds = totalSeconds;
+    
+    const timerInterval = setInterval(() => {
+        remainingSeconds--;
+        
+        const minutesLeft = Math.floor(remainingSeconds / 60);
+        const secondsLeft = remainingSeconds % 60;
+        
+        // Update timer display
+        document.getElementById(`timer-minutes-${missionType}`).textContent = 
+            `${minutesLeft}:${secondsLeft.toString().padStart(2, '0')}`;
+        
+        // Update progress bar
+        const progress = (remainingSeconds / totalSeconds) * 100;
+        document.getElementById(`timer-progress-${missionType}`).style.width = `${progress}%`;
+        
+        // Color coding for urgency
+        const progressBar = document.getElementById(`timer-progress-${missionType}`);
+        if (progress < 25) {
+            progressBar.className = 'bg-red-500 h-2 rounded-full transition-all duration-1000';
+        } else if (progress < 50) {
+            progressBar.className = 'bg-yellow-500 h-2 rounded-full transition-all duration-1000';
+        }
+        
+        // Timer finished
+        if (remainingSeconds <= 0) {
+            clearInterval(timerInterval);
+            onMissionTimeUp(missionType);
+        }
+        
+        // Warning at 1 minute
+        if (remainingSeconds === 60) {
+            showQuickNotification(`⚠️ 1 minute remaining for ${missionType}!`, 'warning');
+        }
+    }, 1000);
+    
+    missionTimers[missionType] = timerInterval;
+}
+
+function onMissionTimeUp(missionType) {
+    showQuickNotification(`⏰ ${missionType} time is up! Moving to reflection...`, 'info');
+    
+    // Auto-advance to reflection if available
+    setTimeout(() => {
+        const reflectionSection = document.getElementById(`reflection-${missionType}`);
+        if (reflectionSection) {
+            reflectionSection.classList.remove('hidden');
+            reflectionSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, 2000);
+}
+
+function extendMissionTime(missionType, additionalMinutes) {
+    // Only allow if teacher/facilitator
+    if (typeof isFacilitator !== 'undefined' && isFacilitator) {
+        const currentMinutes = parseInt(document.getElementById(`timer-minutes-${missionType}`).textContent.split(':')[0]);
+        const totalMinutes = currentMinutes + additionalMinutes;
+        
+        clearInterval(missionTimers[missionType]);
+        startMissionTimer(missionType, totalMinutes);
+        
+        showQuickNotification(`⏰ ${additionalMinutes} minutes added to ${missionType}`, 'success');
+    }
+}
+</script>
+
+<style>
+.dt-spotlight {
+    position: relative;
+    overflow: hidden;
+}
+
+.dt-spotlight::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    animation: spotlight-shine 3s infinite;
+}
+
+@keyframes spotlight-shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    50% { transform: translateX(0%) translateY(0%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.dt-spotlight:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
+}
+</style>

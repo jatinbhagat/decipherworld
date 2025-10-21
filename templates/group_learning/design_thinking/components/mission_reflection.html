@@ -1,0 +1,288 @@
+<!-- Mission Reflection Component -->
+<div id="reflection-{{ mission_type }}" class="mission-reflection hidden bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-xl p-6 mt-8 mb-8">
+    <div class="flex items-center mb-6">
+        <div class="text-3xl mr-4">🤔</div>
+        <div>
+            <h3 class="text-xl font-bold text-gray-900">Mission Reflection</h3>
+            <div class="text-gray-600">Take 2 minutes to think about your {{ skill_title }} experience</div>
+        </div>
+        <div class="ml-auto bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+            2 min
+        </div>
+    </div>
+    
+    <!-- Reflection Questions -->
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+        {% for question in reflection_questions %}
+        <div class="bg-white p-4 rounded-lg border border-green-200">
+            <div class="font-semibold text-gray-900 mb-3">{{ question.prompt }}</div>
+            <textarea 
+                id="reflection-{{ mission_type }}-{{ forloop.counter }}"
+                placeholder="{{ question.placeholder }}"
+                class="w-full p-3 border border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 resize-none"
+                rows="3"
+                maxlength="200"
+            ></textarea>
+            <div class="text-xs text-gray-500 mt-1">
+                <span class="reflection-char-count">0</span>/200 characters
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Learning Insights -->
+    <div class="bg-white p-4 rounded-lg border border-blue-200 mb-6">
+        <div class="font-semibold text-blue-900 mb-3">💡 What I Learned About {{ skill_title }}:</div>
+        <div class="grid md:grid-cols-3 gap-3">
+            {% for insight in learning_insights %}
+            <label class="flex items-start cursor-pointer hover:bg-blue-50 p-2 rounded-lg transition-colors">
+                <input type="checkbox" class="mt-1 mr-3 text-blue-600" value="{{ insight }}">
+                <span class="text-sm text-gray-700">{{ insight }}</span>
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Transfer Application -->
+    <div class="bg-white p-4 rounded-lg border border-purple-200 mb-6">
+        <div class="font-semibold text-purple-900 mb-3">🔄 Where Else Could You Use {{ skill_title }}?</div>
+        <div class="flex flex-wrap gap-2">
+            {% for application in transfer_applications %}
+            <button onclick="toggleTransferApp(this)" 
+                    class="transfer-app-btn bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm hover:bg-purple-200 transition-colors">
+                {{ application }}
+            </button>
+            {% endfor %}
+        </div>
+        <div class="mt-3">
+            <input type="text" 
+                   placeholder="Or add your own idea..."
+                   class="w-full p-2 border border-purple-200 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 text-sm"
+                   maxlength="50">
+        </div>
+    </div>
+    
+    <!-- Confidence Meter -->
+    <div class="bg-white p-4 rounded-lg border border-yellow-200 mb-6">
+        <div class="font-semibold text-yellow-900 mb-3">📊 How Confident Do You Feel Using {{ skill_title }}?</div>
+        <div class="flex items-center space-x-4">
+            <span class="text-sm text-gray-600">Not confident</span>
+            <div class="flex space-x-2">
+                {% for i in "12345" %}
+                <button onclick="setConfidence({{ i }}, '{{ mission_type }}')" 
+                        class="confidence-btn w-8 h-8 rounded-full border-2 border-yellow-300 hover:bg-yellow-200 transition-colors"
+                        data-value="{{ i }}">
+                    {{ i }}
+                </button>
+                {% endfor %}
+            </div>
+            <span class="text-sm text-gray-600">Very confident</span>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex justify-between items-center">
+        <button onclick="skipReflection('{{ mission_type }}')" 
+                class="text-gray-500 hover:text-gray-700 text-sm">
+            Skip reflection →
+        </button>
+        
+        <button onclick="completeReflection('{{ mission_type }}')" 
+                class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+            Complete Reflection & Continue
+        </button>
+    </div>
+</div>
+
+<script>
+// Reflection functionality
+function toggleTransferApp(button) {
+    button.classList.toggle('bg-purple-200');
+    button.classList.toggle('bg-purple-100');
+    button.classList.toggle('font-semibold');
+}
+
+function setConfidence(value, missionType) {
+    // Clear previous selection
+    document.querySelectorAll(`#reflection-${missionType} .confidence-btn`).forEach(btn => {
+        btn.classList.remove('bg-yellow-400', 'text-white', 'border-yellow-400');
+        btn.classList.add('border-yellow-300');
+    });
+    
+    // Highlight selected confidence level
+    const selectedBtn = document.querySelector(`#reflection-${missionType} .confidence-btn[data-value="${value}"]`);
+    selectedBtn.classList.add('bg-yellow-400', 'text-white', 'border-yellow-400');
+    selectedBtn.classList.remove('border-yellow-300');
+    
+    // Store confidence value
+    selectedBtn.closest('.mission-reflection').dataset.confidence = value;
+}
+
+function completeReflection(missionType) {
+    const reflectionData = collectReflectionData(missionType);
+    
+    // Save reflection to backend
+    saveReflectionData(missionType, reflectionData);
+    
+    // Hide reflection and trigger next mission
+    document.getElementById(`reflection-${missionType}`).classList.add('hidden');
+    
+    // Show success message
+    showQuickNotification('💡 Reflection saved! Great thinking!', 'success');
+    
+    // Trigger next mission or completion
+    setTimeout(() => {
+        advanceToNextMission(missionType);
+    }, 1000);
+}
+
+function skipReflection(missionType) {
+    if (confirm('Are you sure you want to skip reflection? This helps you learn!')) {
+        document.getElementById(`reflection-${missionType}`).classList.add('hidden');
+        advanceToNextMission(missionType);
+    }
+}
+
+function collectReflectionData(missionType) {
+    const reflectionEl = document.getElementById(`reflection-${missionType}`);
+    
+    // Collect text responses
+    const textResponses = [];
+    reflectionEl.querySelectorAll('textarea').forEach((textarea, index) => {
+        textResponses.push({
+            question: index + 1,
+            response: textarea.value.trim()
+        });
+    });
+    
+    // Collect learning insights
+    const insights = [];
+    reflectionEl.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+        insights.push(checkbox.value);
+    });
+    
+    // Collect transfer applications
+    const transferApps = [];
+    reflectionEl.querySelectorAll('.transfer-app-btn.bg-purple-200').forEach(btn => {
+        transferApps.push(btn.textContent);
+    });
+    
+    // Custom transfer application
+    const customTransfer = reflectionEl.querySelector('input[placeholder*="add your own"]').value.trim();
+    if (customTransfer) {
+        transferApps.push(customTransfer);
+    }
+    
+    // Confidence level
+    const confidence = reflectionEl.dataset.confidence || null;
+    
+    return {
+        mission_type: missionType,
+        text_responses: textResponses,
+        learning_insights: insights,
+        transfer_applications: transferApps,
+        confidence_level: confidence,
+        completed_at: new Date().toISOString()
+    };
+}
+
+function saveReflectionData(missionType, reflectionData) {
+    const sessionCode = document.querySelector('[data-session-code]').dataset.sessionCode;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    const formData = new FormData();
+    formData.append('submission_type', 'reflection');
+    formData.append('content', JSON.stringify(reflectionData));
+    formData.append('submitted_by', getCurrentUserName());
+    
+    fetch(`/learn/api/design-thinking/${sessionCode}/submit/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            console.warn('Reflection save failed:', data.error);
+        }
+    })
+    .catch(error => {
+        console.warn('Reflection save error:', error);
+    });
+}
+
+function advanceToNextMission(currentMission) {
+    const missionOrder = ['empathy', 'define', 'ideate', 'prototype', 'showcase'];
+    const currentIndex = missionOrder.indexOf(currentMission);
+    
+    if (currentIndex < missionOrder.length - 1) {
+        const nextMission = missionOrder[currentIndex + 1];
+        // This would typically trigger facilitator-controlled mission advancement
+        showQuickNotification(`🎯 Ready for ${nextMission} mission!`, 'info');
+    } else {
+        showQuickNotification('🎉 All missions complete! Fantastic work!', 'success');
+    }
+}
+
+function getCurrentUserName() {
+    // Try to get from previous form entries or use default
+    const lastSubmittedBy = document.querySelector('[name="submitted_by"]');
+    return lastSubmittedBy ? lastSubmittedBy.value : 'Team Member';
+}
+
+// Character counting for textareas
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.mission-reflection textarea').forEach(textarea => {
+        const counter = textarea.parentElement.querySelector('.reflection-char-count');
+        
+        textarea.addEventListener('input', function() {
+            counter.textContent = this.value.length;
+            
+            // Color coding
+            if (this.value.length > 180) {
+                counter.className = 'reflection-char-count text-red-500 font-semibold';
+            } else if (this.value.length > 150) {
+                counter.className = 'reflection-char-count text-yellow-600';
+            } else {
+                counter.className = 'reflection-char-count text-gray-500';
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.mission-reflection {
+    animation: slideInFromBottom 0.5s ease-out;
+}
+
+@keyframes slideInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.confidence-btn {
+    transition: all 0.2s ease;
+}
+
+.confidence-btn:hover {
+    transform: scale(1.1);
+}
+
+.transfer-app-btn {
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.transfer-app-btn:hover {
+    transform: translateY(-1px);
+}
+</style>

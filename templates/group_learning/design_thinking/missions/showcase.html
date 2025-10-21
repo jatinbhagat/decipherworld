@@ -1,0 +1,918 @@
+{% extends '../../../../base.html' %}
+{% load static %}
+
+{% block title %}Showcase Mission - Design Thinking{% endblock %}
+
+{% block extra_head %}
+<style>
+    .mission-phase {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .phase-indicator {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .showcase-toolkit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 1rem;
+        padding: 2rem;
+    }
+    
+    .presentation-step {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+    }
+    
+    .presentation-step:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .presentation-input {
+        background: rgba(255, 255, 255, 0.9);
+        color: #374151;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        width: 100%;
+        font-size: 1rem;
+        transition: background 0.2s ease;
+    }
+    
+    .presentation-input:focus {
+        background: white;
+        outline: 2px solid #f59e0b;
+        outline-offset: 2px;
+    }
+    
+    .journey-timeline {
+        position: relative;
+        padding-left: 2rem;
+    }
+    
+    .journey-timeline::before {
+        content: '';
+        position: absolute;
+        left: 0.75rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(to bottom, #667eea, #764ba2);
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -1.25rem;
+        top: 0.5rem;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid #667eea;
+    }
+    
+    .pitch-preview {
+        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        color: #1f2937;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+    
+    .celebration-animation {
+        animation: celebrate 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes celebrate {
+        0% { transform: scale(1) rotate(0deg); }
+        100% { transform: scale(1.05) rotate(2deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Mission Header -->
+    <div class="mission-phase">
+        <div class="phase-indicator">Phase 5: Showcase</div>
+        <h1 class="text-3xl font-bold mb-4">🏆 Share Your Innovation</h1>
+        <p class="text-xl opacity-90">Present your solution journey and celebrate the impact you've created through design thinking.</p>
+    </div>
+
+    <!-- LEARN PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">📚</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Learn: The Art of Innovation Storytelling</h2>
+                <p class="text-gray-600">Master the skills of presenting your design thinking journey</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-yellow-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-yellow-900 mb-3">🎤 What Makes Great Presentations?</h3>
+                <p class="text-yellow-800 text-sm mb-3">
+                    Great innovation presentations tell a story - from the problem you discovered to the solution you created. 
+                    They focus on the human impact and the journey of discovery, not just the final product.
+                </p>
+                <div class="bg-white p-3 rounded border-l-4 border-yellow-500">
+                    <p class="text-yellow-900 font-medium text-sm">"The best way to persuade people is with your ears - by listening to them." - Dean Rusk</p>
+                </div>
+            </div>
+
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-purple-900 mb-3">🎯 Key Elements</h3>
+                <ul class="text-purple-800 text-sm space-y-2">
+                    <li class="flex items-start">
+                        <span class="text-purple-600 mr-2">•</span>
+                        <span><strong>Human-centered story:</strong> Start with the user's real need</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-purple-600 mr-2">•</span>
+                        <span><strong>Clear problem:</strong> Make the challenge tangible and relatable</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-purple-600 mr-2">•</span>
+                        <span><strong>Solution demo:</strong> Show, don't just tell about your idea</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-purple-600 mr-2">•</span>
+                        <span><strong>Impact vision:</strong> Paint the picture of change you'll create</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-green-50 border border-green-200 p-4 rounded-lg">
+            <h4 class="font-semibold text-green-900 mb-2">🌟 The Innovation Story Arc:</h4>
+            <div class="grid md:grid-cols-5 gap-2">
+                <div class="text-center">
+                    <div class="text-2xl mb-1">👥</div>
+                    <strong class="text-green-800 text-sm">User</strong>
+                    <p class="text-green-700 text-xs">Who you helped</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl mb-1">❗</div>
+                    <strong class="text-green-800 text-sm">Problem</strong>
+                    <p class="text-green-700 text-xs">What you discovered</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl mb-1">💡</div>
+                    <strong class="text-green-800 text-sm">Solution</strong>
+                    <p class="text-green-700 text-xs">What you created</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl mb-1">🧪</div>
+                    <strong class="text-green-800 text-sm">Testing</strong>
+                    <p class="text-green-700 text-xs">What you learned</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl mb-1">🚀</div>
+                    <strong class="text-green-800 text-sm">Impact</strong>
+                    <p class="text-green-700 text-xs">What changes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRACTICE PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-orange-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">🛠️</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Practice: Presentation Skills Workshop</h2>
+                <p class="text-gray-600">Practice key presentation techniques and build confidence</p>
+            </div>
+        </div>
+
+        <!-- Presentation Techniques -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                <h4 class="font-semibold text-blue-900 mb-3">🎯 The 2-Minute Rule</h4>
+                <div class="text-sm text-blue-800 mb-3">
+                    Practice telling your story in exactly 2 minutes to keep it focused and engaging.
+                </div>
+                <div class="space-y-1 text-xs text-blue-700">
+                    <p><strong>Technique:</strong> Use a timer and practice out loud</p>
+                    <p><strong>Focus:</strong> One key insight per minute</p>
+                    <p><strong>Goal:</strong> Leave audience wanting to know more</p>
+                </div>
+            </div>
+            
+            <div class="bg-green-50 border border-green-200 p-4 rounded-lg">
+                <h4 class="font-semibold text-green-900 mb-3">👀 Show, Don't Tell</h4>
+                <div class="text-sm text-green-800 mb-3">
+                    Use visuals, demos, or props to make your solution tangible and memorable.
+                </div>
+                <div class="space-y-1 text-xs text-green-700">
+                    <p><strong>Technique:</strong> Bring your prototype or sketches</p>
+                    <p><strong>Focus:</strong> Let people experience your idea</p>
+                    <p><strong>Goal:</strong> Make the solution feel real</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Practice Exercise -->
+        <div class="pitch-preview">
+            <h4 class="font-bold mb-3">🎯 Quick Practice: 30-Second Elevator Pitch</h4>
+            <p class="text-sm mb-3">Practice describing your solution in one breath. Fill in the blanks:</p>
+            <div class="bg-white bg-opacity-50 p-3 rounded text-sm">
+                <p class="mb-2">
+                    "We discovered that <span class="bg-white px-2 py-1 rounded font-medium">[your user]</span> 
+                    struggles with <span class="bg-white px-2 py-1 rounded font-medium">[the problem]</span>.
+                </p>
+                <p class="mb-2">
+                    So we created <span class="bg-white px-2 py-1 rounded font-medium">[your solution]</span> 
+                    that helps them <span class="bg-white px-2 py-1 rounded font-medium">[the benefit]</span>.
+                </p>
+                <p>
+                    This will <span class="bg-white px-2 py-1 rounded font-medium">[the impact]</span>."
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLY PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-green-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">🚀</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Apply: Create Your Innovation Showcase</h2>
+                <p class="text-gray-600">Build a compelling presentation of your design thinking journey</p>
+            </div>
+        </div>
+
+        <!-- Journey Recap -->
+        <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-xl mb-6">
+            <h4 class="font-semibold text-gray-900 mb-4">📚 Your Design Thinking Journey</h4>
+            <div class="journey-timeline">
+                <div class="timeline-item">
+                    <div class="bg-white p-4 rounded-lg">
+                        <h5 class="font-semibold text-blue-900 mb-2">🔍 Empathy - You observed users</h5>
+                        <div id="empathy-summary" class="text-blue-800 text-sm">
+                            <div id="empathy-content">Loading your observations...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="bg-white p-4 rounded-lg">
+                        <h5 class="font-semibold text-green-900 mb-2">🎯 Define - You focused the problem</h5>
+                        <div id="define-summary" class="text-green-800 text-sm">
+                            <div id="define-content">Loading your POV statement...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="bg-white p-4 rounded-lg">
+                        <h5 class="font-semibold text-yellow-900 mb-2">💡 Ideate - You generated solutions</h5>
+                        <div id="ideate-summary" class="text-yellow-800 text-sm">
+                            <div id="ideate-content">Loading your ideas...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="bg-white p-4 rounded-lg">
+                        <h5 class="font-semibold text-purple-900 mb-2">🔧 Prototype - You built and tested</h5>
+                        <div id="prototype-summary" class="text-purple-800 text-sm">
+                            <div id="prototype-content">Loading your prototype...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Presentation Builder -->
+        <div class="showcase-toolkit">
+            <h3 class="text-2xl font-bold mb-6 text-center">🎤 Innovation Presentation Builder</h3>
+            
+            <!-- Step 1: Opening Hook -->
+            <div class="presentation-step">
+                <h4 class="text-lg font-bold mb-4">Step 1: Grab Attention (15 seconds)</h4>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block font-semibold mb-2">Start with a compelling hook:</label>
+                        <textarea id="presentation-hook" 
+                                  class="presentation-input h-20"
+                                  placeholder="e.g., 'Imagine being in a classroom where you can't see or hear the teacher...' or 'What if solving one small problem could change someone's entire day?'"></textarea>
+                        <div class="text-xs mt-1 opacity-80">
+                            <span id="hook-count">0</span>/200 characters • Aim for one powerful sentence
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Problem Story -->
+            <div class="presentation-step">
+                <h4 class="text-lg font-bold mb-4">Step 2: Tell the Problem Story (30 seconds)</h4>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block font-semibold mb-2">Describe who you observed and what you discovered:</label>
+                        <textarea id="presentation-problem" 
+                                  class="presentation-input h-24"
+                                  placeholder="Tell the story of your user and their struggle. Make it personal and relatable..."></textarea>
+                        <div class="text-xs mt-1 opacity-80">
+                            <span id="problem-count">0</span>/300 characters • Focus on emotions and real impact
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Solution Reveal -->
+            <div class="presentation-step">
+                <h4 class="text-lg font-bold mb-4">Step 3: Reveal Your Solution (45 seconds)</h4>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block font-semibold mb-2">Explain your solution and show your prototype:</label>
+                        <textarea id="presentation-solution" 
+                                  class="presentation-input h-28"
+                                  placeholder="Describe your solution clearly and explain how it works. Mention that you'll show your prototype..."></textarea>
+                        <div class="text-xs mt-1 opacity-80">
+                            <span id="solution-count">0</span>/400 characters • Remember to bring your prototype!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Testing & Learning -->
+            <div class="presentation-step">
+                <h4 class="text-lg font-bold mb-4">Step 4: Share What You Learned (20 seconds)</h4>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block font-semibold mb-2">What surprised you during testing?</label>
+                        <textarea id="presentation-learning" 
+                                  class="presentation-input h-20"
+                                  placeholder="Share the most interesting discovery from testing your prototype..."></textarea>
+                        <div class="text-xs mt-1 opacity-80">
+                            <span id="learning-count">0</span>/250 characters • Focus on insights and surprises
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Impact Vision -->
+            <div class="presentation-step">
+                <h4 class="text-lg font-bold mb-4">Step 5: Paint the Impact Vision (10 seconds)</h4>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block font-semibold mb-2">How will this change things?</label>
+                        <textarea id="presentation-impact" 
+                                  class="presentation-input h-20"
+                                  placeholder="Describe the positive change your solution will create..."></textarea>
+                        <div class="text-xs mt-1 opacity-80">
+                            <span id="impact-count">0</span>/200 characters • End with hope and possibility
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-between items-center mt-6">
+                <button onclick="clearPresentation()" 
+                        class="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors">
+                    🔄 Start Over
+                </button>
+                <button onclick="previewPresentation()" 
+                        id="preview-btn"
+                        class="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors mr-3">
+                    👁️ Preview
+                </button>
+                <button onclick="savePresentation()" 
+                        id="save-presentation-btn"
+                        class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled>
+                    💾 Save Presentation
+                </button>
+            </div>
+        </div>
+
+        <!-- Presentation Preview -->
+        <div id="presentation-preview" class="hidden mt-6 bg-yellow-50 border-2 border-yellow-200 p-6 rounded-xl">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-xl font-bold text-yellow-900">🎬 Presentation Preview</h4>
+                <div class="text-sm text-yellow-600 font-medium">~2 minutes</div>
+            </div>
+            <div id="preview-content" class="bg-white p-4 rounded-lg space-y-4">
+                <!-- Preview content will appear here -->
+            </div>
+            <div class="mt-4 flex justify-between items-center">
+                <button onclick="hidePreview()" 
+                        class="text-yellow-700 hover:text-yellow-800 font-medium">
+                    ← Back to Edit
+                </button>
+                <div class="text-sm text-yellow-600">
+                    Practice this out loud with a timer!
+                </div>
+            </div>
+        </div>
+
+        <!-- Presentation Complete -->
+        <div id="presentation-complete" class="hidden mt-6 bg-green-50 border-2 border-green-200 p-6 rounded-xl">
+            <div class="text-center celebration-animation">
+                <div class="text-6xl mb-4">🎉</div>
+                <h4 class="text-2xl font-bold text-green-900 mb-2">Innovation Showcase Ready!</h4>
+                <p class="text-green-700 mb-4">
+                    You've completed the entire Design Thinking process and created a compelling presentation!
+                </p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-4 mt-6">
+                <div class="bg-white p-4 rounded-lg">
+                    <h5 class="font-semibold text-green-900 mb-2">🏆 What You've Accomplished:</h5>
+                    <ul class="text-green-800 text-sm space-y-1">
+                        <li>✅ Developed deep empathy for users</li>
+                        <li>✅ Defined a clear, focused problem</li>
+                        <li>✅ Generated creative solutions</li>
+                        <li>✅ Built and tested a prototype</li>
+                        <li>✅ Created a compelling presentation</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-4 rounded-lg">
+                    <h5 class="font-semibold text-green-900 mb-2">🚀 You're Now Ready To:</h5>
+                    <ul class="text-green-800 text-sm space-y-1">
+                        <li>• Present your solution confidently</li>
+                        <li>• Iterate based on feedback</li>
+                        <li>• Apply design thinking to new challenges</li>
+                        <li>• Help others solve problems creatively</li>
+                        <li>• Make a real impact in your community</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-6 text-center">
+                <button onclick="editPresentation()" 
+                        class="text-green-700 hover:text-green-800 font-medium mr-4">
+                    ✏️ Edit Presentation
+                </button>
+                <button onclick="celebrateCompletion()" 
+                        class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold">
+                    🎊 Celebrate Your Success!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REFLECT PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-purple-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">🤔</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Reflect: Your Innovation Journey Complete</h2>
+                <p class="text-gray-600">Think about your growth as a design thinking innovator</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-purple-900 mb-3">🎯 Reflection Questions</h3>
+                <div class="space-y-3">
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">How has your perspective on problem-solving changed?</p>
+                    </div>
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">What was the most surprising discovery in your journey?</p>
+                    </div>
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">How will you use design thinking in the future?</p>
+                    </div>
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">What would you tell someone just starting design thinking?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-blue-900 mb-3">🌟 Your Innovation Superpowers</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">🔍</span>
+                        <span class="text-blue-800"><strong>Empathy:</strong> You can see problems through users' eyes</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">🎯</span>
+                        <span class="text-blue-800"><strong>Focus:</strong> You can define problems clearly</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">💡</span>
+                        <span class="text-blue-800"><strong>Creativity:</strong> You can generate breakthrough ideas</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">🔧</span>
+                        <span class="text-blue-800"><strong>Building:</strong> You can turn ideas into reality</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">🎤</span>
+                        <span class="text-blue-800"><strong>Communication:</strong> You can share your vision</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-gray-900 mb-3">🌍 Change the World</h4>
+            <p class="text-gray-700 text-sm mb-3">
+                You now have the tools to tackle any challenge with design thinking. Here's how to keep making impact:
+            </p>
+            <div class="grid md:grid-cols-3 gap-3 text-sm">
+                <div class="bg-white p-3 rounded">
+                    <strong class="text-purple-700">Start Small:</strong>
+                    <p class="text-gray-600">Look for problems in your daily life to practice with</p>
+                </div>
+                <div class="bg-white p-3 rounded">
+                    <strong class="text-blue-700">Collaborate:</strong>
+                    <p class="text-gray-600">Bring others into your design thinking process</p>
+                </div>
+                <div class="bg-white p-3 rounded">
+                    <strong class="text-green-700">Keep Learning:</strong>
+                    <p class="text-gray-600">Every project teaches you something new</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Tips and Next Steps -->
+    <div class="grid md:grid-cols-2 gap-6">
+        <!-- Presentation Tips -->
+        <div class="bg-green-50 border border-green-200 p-6 rounded-xl">
+            <h3 class="text-lg font-bold text-green-900 mb-4">🎯 Presentation Success Tips</h3>
+            <div class="space-y-3 text-sm">
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Practice with a timer - aim for exactly 2 minutes</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Bring your prototype to make it tangible</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Tell a story that connects emotionally</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">End with the positive change you'll create</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Innovation Mindset -->
+        <div class="bg-blue-50 border border-blue-200 p-6 rounded-xl">
+            <h3 class="text-lg font-bold text-blue-900 mb-4">🚀 Keep Innovating</h3>
+            <div class="space-y-3 text-sm">
+                <div class="flex items-start">
+                    <span class="text-blue-600 mr-2 font-bold">→</span>
+                    <span class="text-blue-800">Look for problems everywhere you go</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-blue-600 mr-2 font-bold">→</span>
+                    <span class="text-blue-800">Ask "How might we...?" about daily challenges</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-blue-600 mr-2 font-bold">→</span>
+                    <span class="text-blue-800">Build quick prototypes to test ideas</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-blue-600 mr-2 font-bold">→</span>
+                    <span class="text-blue-800">Share your solutions to inspire others</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Showcase Mission -->
+<script>
+let presentationData = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeShowcaseMission();
+    loadJourneyData();
+});
+
+function initializeShowcaseMission() {
+    setupCharacterCounting();
+    loadSavedPresentation();
+}
+
+function setupCharacterCounting() {
+    const inputs = [
+        { id: 'presentation-hook', counterId: 'hook-count' },
+        { id: 'presentation-problem', counterId: 'problem-count' },
+        { id: 'presentation-solution', counterId: 'solution-count' },
+        { id: 'presentation-learning', counterId: 'learning-count' },
+        { id: 'presentation-impact', counterId: 'impact-count' }
+    ];
+    
+    inputs.forEach(input => {
+        const element = document.getElementById(input.id);
+        const counter = document.getElementById(input.counterId);
+        
+        if (element && counter) {
+            element.addEventListener('input', function() {
+                counter.textContent = this.value.length;
+                validatePresentation();
+            });
+        }
+    });
+}
+
+function validatePresentation() {
+    const hook = document.getElementById('presentation-hook').value.trim();
+    const problem = document.getElementById('presentation-problem').value.trim();
+    const solution = document.getElementById('presentation-solution').value.trim();
+    const learning = document.getElementById('presentation-learning').value.trim();
+    const impact = document.getElementById('presentation-impact').value.trim();
+    
+    const isValid = hook.length > 10 && problem.length > 20 && solution.length > 30 && 
+                   learning.length > 10 && impact.length > 10;
+    
+    const saveBtn = document.getElementById('save-presentation-btn');
+    if (saveBtn) {
+        saveBtn.disabled = !isValid;
+    }
+    
+    return isValid;
+}
+
+function previewPresentation() {
+    const hook = document.getElementById('presentation-hook').value.trim();
+    const problem = document.getElementById('presentation-problem').value.trim();
+    const solution = document.getElementById('presentation-solution').value.trim();
+    const learning = document.getElementById('presentation-learning').value.trim();
+    const impact = document.getElementById('presentation-impact').value.trim();
+    
+    if (!validatePresentation()) {
+        alert('Please complete all sections of your presentation first!');
+        return;
+    }
+    
+    const previewDiv = document.getElementById('presentation-preview');
+    const previewContent = document.getElementById('preview-content');
+    
+    if (previewDiv && previewContent) {
+        previewContent.innerHTML = `
+            <div class="space-y-4">
+                <div class="border-l-4 border-yellow-500 pl-4">
+                    <h5 class="font-semibold text-yellow-900 mb-1">🎯 Opening Hook (15 seconds)</h5>
+                    <p class="text-gray-700">${hook}</p>
+                </div>
+                <div class="border-l-4 border-red-500 pl-4">
+                    <h5 class="font-semibold text-red-900 mb-1">❗ Problem Story (30 seconds)</h5>
+                    <p class="text-gray-700">${problem}</p>
+                </div>
+                <div class="border-l-4 border-blue-500 pl-4">
+                    <h5 class="font-semibold text-blue-900 mb-1">💡 Solution Reveal (45 seconds)</h5>
+                    <p class="text-gray-700">${solution}</p>
+                    <p class="text-blue-600 text-sm mt-2 italic">→ Show your prototype here!</p>
+                </div>
+                <div class="border-l-4 border-green-500 pl-4">
+                    <h5 class="font-semibold text-green-900 mb-1">🧪 Learning & Testing (20 seconds)</h5>
+                    <p class="text-gray-700">${learning}</p>
+                </div>
+                <div class="border-l-4 border-purple-500 pl-4">
+                    <h5 class="font-semibold text-purple-900 mb-1">🚀 Impact Vision (10 seconds)</h5>
+                    <p class="text-gray-700">${impact}</p>
+                </div>
+            </div>
+        `;
+        
+        previewDiv.classList.remove('hidden');
+        previewDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function hidePreview() {
+    const previewDiv = document.getElementById('presentation-preview');
+    if (previewDiv) {
+        previewDiv.classList.add('hidden');
+    }
+}
+
+function savePresentation() {
+    if (!validatePresentation()) {
+        alert('Please complete all sections of your presentation!');
+        return;
+    }
+    
+    const hook = document.getElementById('presentation-hook').value.trim();
+    const problem = document.getElementById('presentation-problem').value.trim();
+    const solution = document.getElementById('presentation-solution').value.trim();
+    const learning = document.getElementById('presentation-learning').value.trim();
+    const impact = document.getElementById('presentation-impact').value.trim();
+    
+    presentationData = {
+        hook, problem, solution, learning, impact,
+        timestamp: new Date().toISOString()
+    };
+    
+    // Save to session storage
+    sessionStorage.setItem('designThinking_presentation', JSON.stringify(presentationData));
+    
+    // Show completion state
+    showPresentationComplete();
+    
+    // Save to backend
+    savePresentationToBackend(presentationData);
+    
+    alert('Presentation saved successfully! 🎉');
+}
+
+function showPresentationComplete() {
+    const toolkit = document.querySelector('.showcase-toolkit').parentElement;
+    const completeDiv = document.getElementById('presentation-complete');
+    
+    if (toolkit && completeDiv) {
+        toolkit.style.display = 'none';
+        completeDiv.classList.remove('hidden');
+        completeDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function editPresentation() {
+    const toolkit = document.querySelector('.showcase-toolkit').parentElement;
+    const completeDiv = document.getElementById('presentation-complete');
+    
+    if (toolkit && completeDiv) {
+        completeDiv.classList.add('hidden');
+        toolkit.style.display = 'block';
+    }
+    
+    // Load saved data back into form
+    if (presentationData.hook) {
+        document.getElementById('presentation-hook').value = presentationData.hook;
+        document.getElementById('presentation-problem').value = presentationData.problem;
+        document.getElementById('presentation-solution').value = presentationData.solution;
+        document.getElementById('presentation-learning').value = presentationData.learning;
+        document.getElementById('presentation-impact').value = presentationData.impact;
+        
+        setupCharacterCounting();
+        validatePresentation();
+    }
+}
+
+function clearPresentation() {
+    ['presentation-hook', 'presentation-problem', 'presentation-solution', 
+     'presentation-learning', 'presentation-impact'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.value = '';
+    });
+    
+    ['hook-count', 'problem-count', 'solution-count', 'learning-count', 'impact-count'].forEach(id => {
+        const counter = document.getElementById(id);
+        if (counter) counter.textContent = '0';
+    });
+    
+    hidePreview();
+    validatePresentation();
+}
+
+function celebrateCompletion() {
+    // Add celebration animation
+    const completeDiv = document.getElementById('presentation-complete');
+    if (completeDiv) {
+        completeDiv.classList.add('celebration-animation');
+        
+        // Show success message
+        alert('🎊 Congratulations! You\'ve completed the entire Design Thinking journey and are ready to change the world with your innovations! 🌟');
+        
+        // Remove animation after a few seconds
+        setTimeout(() => {
+            completeDiv.classList.remove('celebration-animation');
+        }, 4000);
+    }
+}
+
+function loadJourneyData() {
+    // Load empathy observations
+    const savedObservations = sessionStorage.getItem('designThinking_observations');
+    if (savedObservations) {
+        try {
+            const observations = JSON.parse(savedObservations);
+            const empathyContent = document.getElementById('empathy-content');
+            if (empathyContent && observations.length > 0) {
+                empathyContent.innerHTML = `Found ${observations.length} key user insights about emotions and behaviors`;
+            }
+        } catch (e) {
+            console.warn('Could not load empathy data:', e);
+        }
+    }
+    
+    // Load POV statement
+    const savedPOV = sessionStorage.getItem('designThinking_povStatement');
+    if (savedPOV) {
+        try {
+            const povData = JSON.parse(savedPOV);
+            const defineContent = document.getElementById('define-content');
+            if (defineContent) {
+                defineContent.textContent = `"${povData.statement}"`;
+            }
+        } catch (e) {
+            console.warn('Could not load POV data:', e);
+        }
+    }
+    
+    // Load ideas
+    const savedIdeas = sessionStorage.getItem('designThinking_ideas');
+    if (savedIdeas) {
+        try {
+            const ideas = JSON.parse(savedIdeas);
+            const ideateContent = document.getElementById('ideate-content');
+            if (ideateContent && ideas.length > 0) {
+                ideateContent.innerHTML = `Generated ${ideas.length} creative solutions using multiple ideation methods`;
+            }
+        } catch (e) {
+            console.warn('Could not load ideas data:', e);
+        }
+    }
+    
+    // Load prototype
+    const savedPrototype = sessionStorage.getItem('designThinking_prototype');
+    if (savedPrototype) {
+        try {
+            const prototypeData = JSON.parse(savedPrototype);
+            const prototypeContent = document.getElementById('prototype-content');
+            if (prototypeContent) {
+                prototypeContent.innerHTML = `Built a ${prototypeData.type} prototype and created a testing plan`;
+            }
+        } catch (e) {
+            console.warn('Could not load prototype data:', e);
+        }
+    }
+}
+
+function loadSavedPresentation() {
+    const savedPresentation = sessionStorage.getItem('designThinking_presentation');
+    if (savedPresentation) {
+        try {
+            presentationData = JSON.parse(savedPresentation);
+            showPresentationComplete();
+        } catch (e) {
+            console.warn('Could not load saved presentation:', e);
+        }
+    }
+}
+
+function savePresentationToBackend(presentationData) {
+    const sessionCode = document.querySelector('[data-session-code]')?.dataset.sessionCode;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+    
+    if (!sessionCode || !csrfToken) {
+        console.warn('Missing session data for backend save');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('submission_type', 'presentation');
+    formData.append('content', JSON.stringify(presentationData));
+    formData.append('submitted_by', 'Team Member');
+    
+    fetch(`/learn/api/design-thinking/${sessionCode}/submit/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrfToken },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            console.warn('Presentation save failed:', data.error);
+        }
+    })
+    .catch(error => console.warn('Presentation save error:', error));
+}
+
+// Global function exports
+window.previewPresentation = previewPresentation;
+window.hidePreview = hidePreview;
+window.savePresentation = savePresentation;
+window.editPresentation = editPresentation;
+window.clearPresentation = clearPresentation;
+window.celebrateCompletion = celebrateCompletion;
+</script>
+{% endblock %}

@@ -10,4 +10,7 @@ websocket_urlpatterns = [
     re_path(r'ws/climate/(?P<session_code>\w+)/$', consumers.ClimateGameConsumer.as_asgi()),
     # Legacy lobby endpoint redirects to main consumer for backward compatibility  
     re_path(r'ws/climate-lobby/(?P<session_code>\w+)/$', consumers.ClimateGameConsumer.as_asgi()),
+    
+    # Design Thinking WebSocket endpoints
+    re_path(r'ws/design-thinking/(?P<session_code>\w+)/$', consumers.DesignThinkingConsumer.as_asgi()),
 ]

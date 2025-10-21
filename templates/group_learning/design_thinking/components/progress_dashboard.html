@@ -1,0 +1,571 @@
+<!-- Design Thinking Progress Dashboard Component - Updated to use API data (v2.0) -->
+<div id="dt-progress-dashboard" class="bg-white rounded-xl shadow-lg p-6 mb-8">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h3 class="text-2xl font-bold text-gray-900">🏆 Your Design Thinking Journey</h3>
+            <p class="text-gray-600">Track your progress through the innovation process</p>
+        </div>
+        <div class="text-right">
+            <div class="text-3xl font-bold text-blue-600" id="overall-progress">0%</div>
+            <div class="text-sm text-gray-500">Complete</div>
+        </div>
+    </div>
+
+    <!-- Progress Ring Visualization -->
+    <div class="flex justify-center mb-8">
+        <div class="relative w-48 h-48">
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                <!-- Background circle -->
+                <circle cx="50" cy="50" r="40" stroke="#e5e7eb" stroke-width="8" fill="none"/>
+                <!-- Progress circle -->
+                <circle id="progress-circle" cx="50" cy="50" r="40" stroke="#3b82f6" stroke-width="8" 
+                        fill="none" stroke-linecap="round" 
+                        stroke-dasharray="251.2" stroke-dashoffset="251.2"
+                        style="transition: stroke-dashoffset 0.5s ease-in-out"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="text-center">
+                    <div class="text-2xl" id="progress-emoji">🎯</div>
+                    <div class="text-sm font-medium text-gray-600" id="progress-phase">Getting Started</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission Progress Cards -->
+    <div class="grid md:grid-cols-5 gap-4 mb-6">
+        <!-- Empathy Card -->
+        <div class="mission-progress-card" data-mission="empathy">
+            <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 text-center transition-all duration-300">
+                <div class="text-2xl mb-2">🔍</div>
+                <h4 class="font-semibold text-blue-900 text-sm mb-1">Empathy</h4>
+                <div class="progress-indicator" id="empathy-indicator">
+                    <div class="w-full bg-blue-200 rounded-full h-2">
+                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: 0%" id="empathy-progress-bar"></div>
+                    </div>
+                </div>
+                <div class="text-xs text-blue-600 mt-1" id="empathy-status">Not Started</div>
+            </div>
+        </div>
+
+        <!-- Define Card -->
+        <div class="mission-progress-card" data-mission="define">
+            <div class="bg-green-50 border-2 border-green-200 rounded-lg p-4 text-center transition-all duration-300">
+                <div class="text-2xl mb-2">🎯</div>
+                <h4 class="font-semibold text-green-900 text-sm mb-1">Define</h4>
+                <div class="progress-indicator" id="define-indicator">
+                    <div class="w-full bg-green-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full transition-all duration-500" style="width: 0%" id="define-progress-bar"></div>
+                    </div>
+                </div>
+                <div class="text-xs text-green-600 mt-1" id="define-status">Not Started</div>
+            </div>
+        </div>
+
+        <!-- Ideate Card -->
+        <div class="mission-progress-card" data-mission="ideate">
+            <div class="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 text-center transition-all duration-300">
+                <div class="text-2xl mb-2">💡</div>
+                <h4 class="font-semibold text-yellow-900 text-sm mb-1">Ideate</h4>
+                <div class="progress-indicator" id="ideate-indicator">
+                    <div class="w-full bg-yellow-200 rounded-full h-2">
+                        <div class="bg-yellow-500 h-2 rounded-full transition-all duration-500" style="width: 0%" id="ideate-progress-bar"></div>
+                    </div>
+                </div>
+                <div class="text-xs text-yellow-600 mt-1" id="ideate-status">Not Started</div>
+            </div>
+        </div>
+
+        <!-- Prototype Card -->
+        <div class="mission-progress-card" data-mission="prototype">
+            <div class="bg-purple-50 border-2 border-purple-200 rounded-lg p-4 text-center transition-all duration-300">
+                <div class="text-2xl mb-2">🔧</div>
+                <h4 class="font-semibold text-purple-900 text-sm mb-1">Prototype</h4>
+                <div class="progress-indicator" id="prototype-indicator">
+                    <div class="w-full bg-purple-200 rounded-full h-2">
+                        <div class="bg-purple-500 h-2 rounded-full transition-all duration-500" style="width: 0%" id="prototype-progress-bar"></div>
+                    </div>
+                </div>
+                <div class="text-xs text-purple-600 mt-1" id="prototype-status">Not Started</div>
+            </div>
+        </div>
+
+        <!-- Showcase Card -->
+        <div class="mission-progress-card" data-mission="showcase">
+            <div class="bg-pink-50 border-2 border-pink-200 rounded-lg p-4 text-center transition-all duration-300">
+                <div class="text-2xl mb-2">🏆</div>
+                <h4 class="font-semibold text-pink-900 text-sm mb-1">Showcase</h4>
+                <div class="progress-indicator" id="showcase-indicator">
+                    <div class="w-full bg-pink-200 rounded-full h-2">
+                        <div class="bg-pink-500 h-2 rounded-full transition-all duration-500" style="width: 0%" id="showcase-progress-bar"></div>
+                    </div>
+                </div>
+                <div class="text-xs text-pink-600 mt-1" id="showcase-status">Not Started</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Section -->
+    <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 mb-6">
+        <h4 class="font-semibold text-gray-900 mb-3">🏅 Innovation Achievements</h4>
+        <div class="grid md:grid-cols-3 gap-3" id="achievements-grid">
+            <!-- Achievements will be populated dynamically -->
+        </div>
+    </div>
+
+    <!-- Learning Insights -->
+    <div class="bg-gray-50 rounded-lg p-4">
+        <h4 class="font-semibold text-gray-900 mb-3">📊 Your Learning Analytics</h4>
+        <div class="grid md:grid-cols-3 gap-4" id="learning-stats">
+            <div class="bg-white p-3 rounded-lg text-center">
+                <div class="text-lg font-bold text-blue-600" id="observations-count">0</div>
+                <div class="text-sm text-gray-600">User Observations</div>
+            </div>
+            <div class="bg-white p-3 rounded-lg text-center">
+                <div class="text-lg font-bold text-green-600" id="ideas-count">0</div>
+                <div class="text-sm text-gray-600">Creative Ideas</div>
+            </div>
+            <div class="bg-white p-3 rounded-lg text-center">
+                <div class="text-lg font-bold text-purple-600" id="time-spent">0m</div>
+                <div class="text-sm text-gray-600">Time Invested</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-between items-center mt-6">
+        <button onclick="resetProgress()" class="text-gray-500 hover:text-gray-700 text-sm">
+            🔄 Reset Progress
+        </button>
+        <button onclick="exportProgress()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            📄 Export Journey
+        </button>
+    </div>
+</div>
+
+<!-- Progress Dashboard JavaScript -->
+<script>
+class DesignThinkingProgress {
+    constructor() {
+        this.missions = ['empathy', 'define', 'ideate', 'prototype', 'showcase'];
+        this.achievements = [
+            { id: 'first_observation', name: 'First Observer', description: 'Made your first user observation', icon: '👁️' },
+            { id: 'problem_solver', name: 'Problem Solver', description: 'Created a clear POV statement', icon: '🎯' },
+            { id: 'idea_generator', name: 'Idea Generator', description: 'Generated 10+ creative ideas', icon: '💡' },
+            { id: 'builder', name: 'Builder', description: 'Created your first prototype', icon: '🔧' },
+            { id: 'presenter', name: 'Innovation Presenter', description: 'Built a complete presentation', icon: '🎤' },
+            { id: 'collaborator', name: 'Team Player', description: 'Contributed to team activities', icon: '🤝' },
+            { id: 'innovator', name: 'Certified Innovator', description: 'Completed entire DT journey', icon: '🏆' }
+        ];
+        this.unlockedAchievements = new Set();
+        this.startTime = Date.now();
+        
+        this.init();
+    }
+
+    async init() {
+        // Clear any stale browser storage data that could cause false completions
+        this.clearStaleStorageData();
+        
+        await this.loadProgress();
+        this.updateDashboard();
+        this.checkAchievements();
+        
+        // Set up periodic updates
+        setInterval(async () => {
+            await this.loadProgress();
+            this.updateDashboard();
+        }, 5000);
+    }
+
+    clearStaleStorageData() {
+        // Clear potentially stale sessionStorage data that could cause false progress
+        const keysToCheck = [
+            'designThinking_observations',
+            'designThinking_povStatement', 
+            'designThinking_ideas',
+            'designThinking_prototype',
+            'designThinking_presentation'
+        ];
+        
+        keysToCheck.forEach(key => {
+            const data = sessionStorage.getItem(key);
+            if (data) {
+                console.warn(`Clearing potentially stale data for ${key}:`, data);
+                sessionStorage.removeItem(key);
+            }
+        });
+    }
+
+    async loadProgress() {
+        // Load progress from API instead of session storage
+        try {
+            const sessionCode = this.getSessionCode();
+            if (sessionCode) {
+                const response = await fetch(`/learn/api/design-thinking/${sessionCode}/status/`);
+                const data = await response.json();
+                
+                if (data.success && data.teams && data.teams[0]) {
+                    const teamData = data.teams[0];
+                    this.apiData = teamData;
+                    
+                    // Map API data to progress data structure
+                    this.progressData = {
+                        empathy: Array(teamData.empathy_observations_count || 0).fill({}), // Create array with correct length
+                        define: teamData.missions_completed > 1 ? {} : null,
+                        ideate: teamData.missions_completed > 2 ? Array(5).fill({}) : [], // Assume 5 ideas needed
+                        prototype: teamData.missions_completed > 3 ? {} : null,
+                        showcase: teamData.missions_completed > 4 ? {} : null
+                    };
+                } else {
+                    // Fallback to empty progress
+                    this.progressData = {
+                        empathy: [],
+                        define: null,
+                        ideate: [],
+                        prototype: null,
+                        showcase: null
+                    };
+                }
+            }
+        } catch (error) {
+            console.warn('Could not load progress from API, using empty state:', error);
+            // Fallback to empty progress
+            this.progressData = {
+                empathy: [],
+                define: null,
+                ideate: [],
+                prototype: null,
+                showcase: null
+            };
+        }
+
+        // Load unlocked achievements (keep this as is since it's local)
+        const savedAchievements = localStorage.getItem('dt_achievements');
+        if (savedAchievements) {
+            this.unlockedAchievements = new Set(JSON.parse(savedAchievements));
+        }
+
+        // Load start time (keep this as is since it's local)
+        const savedStartTime = localStorage.getItem('dt_start_time');
+        if (savedStartTime) {
+            this.startTime = parseInt(savedStartTime);
+        } else {
+            localStorage.setItem('dt_start_time', this.startTime.toString());
+        }
+    }
+
+    getSessionCode() {
+        // Get session code from page data attribute or URL
+        const sessionElement = document.querySelector('[data-session-code]');
+        if (sessionElement) {
+            return sessionElement.dataset.sessionCode;
+        }
+        
+        // Fallback: extract from URL path
+        const pathMatch = window.location.pathname.match(/\/design-thinking\/([A-Z0-9]+)\//);
+        return pathMatch ? pathMatch[1] : null;
+    }
+
+    getSessionData(key, defaultValue) {
+        try {
+            const data = sessionStorage.getItem(key);
+            return data ? JSON.parse(data) : defaultValue;
+        } catch (e) {
+            return defaultValue;
+        }
+    }
+
+    calculateMissionProgress(mission) {
+        switch (mission) {
+            case 'empathy':
+                const observations = this.progressData.empathy;
+                return Math.min((observations.length / 5) * 100, 100);
+            
+            case 'define':
+                return this.progressData.define ? 100 : 0;
+            
+            case 'ideate':
+                const ideas = this.progressData.ideate;
+                return Math.min((ideas.length / 10) * 100, 100);
+            
+            case 'prototype':
+                return this.progressData.prototype ? 100 : 0;
+            
+            case 'showcase':
+                return this.progressData.showcase ? 100 : 0;
+            
+            default:
+                return 0;
+        }
+    }
+
+    updateDashboard() {
+        let totalProgress = 0;
+        let completedMissions = 0;
+
+        // Update individual mission progress
+        this.missions.forEach(mission => {
+            const progress = this.calculateMissionProgress(mission);
+            totalProgress += progress;
+            
+            // Update progress bar
+            const progressBar = document.getElementById(`${mission}-progress-bar`);
+            if (progressBar) {
+                progressBar.style.width = `${progress}%`;
+            }
+
+            // Update status
+            const statusElement = document.getElementById(`${mission}-status`);
+            if (statusElement) {
+                if (progress === 0) {
+                    statusElement.textContent = 'Not Started';
+                } else if (progress < 100) {
+                    statusElement.textContent = `${Math.round(progress)}% Complete`;
+                } else {
+                    statusElement.textContent = 'Complete ✅';
+                    completedMissions++;
+                }
+            }
+
+            // Update card styling for completed missions
+            const card = document.querySelector(`[data-mission="${mission}"]`);
+            if (card && progress === 100) {
+                const cardContent = card.querySelector('div');
+                cardContent.classList.add('border-green-400', 'bg-green-50');
+            }
+        });
+
+        // Update overall progress
+        const overallProgress = totalProgress / this.missions.length;
+        document.getElementById('overall-progress').textContent = `${Math.round(overallProgress)}%`;
+
+        // Update progress circle
+        const circle = document.getElementById('progress-circle');
+        if (circle) {
+            const circumference = 251.2;
+            const offset = circumference - (overallProgress / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        // Update progress phase
+        this.updateProgressPhase(overallProgress, completedMissions);
+
+        // Update learning stats
+        this.updateLearningStats();
+
+        // Check for new achievements
+        this.checkAchievements();
+    }
+
+    updateProgressPhase(overallProgress, completedMissions) {
+        const emojiElement = document.getElementById('progress-emoji');
+        const phaseElement = document.getElementById('progress-phase');
+
+        if (completedMissions === 5) {
+            emojiElement.textContent = '🏆';
+            phaseElement.textContent = 'Innovation Complete!';
+        } else if (completedMissions >= 3) {
+            emojiElement.textContent = '🚀';
+            phaseElement.textContent = 'Nearly There!';
+        } else if (completedMissions >= 1) {
+            emojiElement.textContent = '⚡';
+            phaseElement.textContent = 'Making Progress';
+        } else if (overallProgress > 0) {
+            emojiElement.textContent = '🌟';
+            phaseElement.textContent = 'Getting Started';
+        } else {
+            emojiElement.textContent = '🎯';
+            phaseElement.textContent = 'Ready to Begin';
+        }
+    }
+
+    updateLearningStats() {
+        // Use API data if available, otherwise use progress data
+        const observationsCount = this.apiData ? this.apiData.empathy_observations_count : this.progressData.empathy.length;
+        document.getElementById('observations-count').textContent = observationsCount || 0;
+
+        // Update ideas count (use progress data for now since API doesn't track ideas separately)
+        const ideasCount = this.progressData.ideate.length;
+        document.getElementById('ideas-count').textContent = ideasCount;
+
+        // Update time spent
+        const timeSpent = Math.round((Date.now() - this.startTime) / (1000 * 60));
+        document.getElementById('time-spent').textContent = `${timeSpent}m`;
+    }
+
+    checkAchievements() {
+        const newAchievements = [];
+
+        // Check each achievement
+        if (this.progressData.empathy.length > 0 && !this.unlockedAchievements.has('first_observation')) {
+            newAchievements.push('first_observation');
+        }
+
+        if (this.progressData.define && !this.unlockedAchievements.has('problem_solver')) {
+            newAchievements.push('problem_solver');
+        }
+
+        if (this.progressData.ideate.length >= 10 && !this.unlockedAchievements.has('idea_generator')) {
+            newAchievements.push('idea_generator');
+        }
+
+        if (this.progressData.prototype && !this.unlockedAchievements.has('builder')) {
+            newAchievements.push('builder');
+        }
+
+        if (this.progressData.showcase && !this.unlockedAchievements.has('presenter')) {
+            newAchievements.push('presenter');
+        }
+
+        // Check for completion achievement
+        const allComplete = this.missions.every(mission => this.calculateMissionProgress(mission) === 100);
+        if (allComplete && !this.unlockedAchievements.has('innovator')) {
+            newAchievements.push('innovator');
+        }
+
+        // Unlock new achievements
+        newAchievements.forEach(achievementId => {
+            this.unlockAchievement(achievementId);
+        });
+
+        // Update achievements display
+        this.updateAchievementsDisplay();
+    }
+
+    unlockAchievement(achievementId) {
+        this.unlockedAchievements.add(achievementId);
+        localStorage.setItem('dt_achievements', JSON.stringify([...this.unlockedAchievements]));
+        
+        // Show achievement notification
+        const achievement = this.achievements.find(a => a.id === achievementId);
+        if (achievement) {
+            this.showAchievementNotification(achievement);
+        }
+    }
+
+    showAchievementNotification(achievement) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+        notification.innerHTML = `
+            <div class="flex items-center">
+                <span class="text-2xl mr-3">${achievement.icon}</span>
+                <div>
+                    <div class="font-bold">Achievement Unlocked!</div>
+                    <div class="text-sm">${achievement.name}</div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Animate in
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+
+        // Animate out and remove
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 4000);
+    }
+
+    updateAchievementsDisplay() {
+        const grid = document.getElementById('achievements-grid');
+        if (!grid) return;
+
+        grid.innerHTML = this.achievements.map(achievement => {
+            const isUnlocked = this.unlockedAchievements.has(achievement.id);
+            return `
+                <div class="bg-white p-3 rounded-lg border-2 ${isUnlocked ? 'border-green-400' : 'border-gray-200'} transition-all duration-300">
+                    <div class="text-center">
+                        <div class="text-2xl mb-1 ${isUnlocked ? '' : 'opacity-30'}">${achievement.icon}</div>
+                        <div class="font-semibold text-sm ${isUnlocked ? 'text-green-900' : 'text-gray-400'}">${achievement.name}</div>
+                        <div class="text-xs ${isUnlocked ? 'text-green-600' : 'text-gray-400'}">${achievement.description}</div>
+                        ${isUnlocked ? '<div class="text-xs text-green-500 mt-1">✅ Unlocked</div>' : '<div class="text-xs text-gray-400 mt-1">🔒 Locked</div>'}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    resetProgress() {
+        if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+            // Clear session storage
+            ['designThinking_observations', 'designThinking_povStatement', 'designThinking_ideas', 
+             'designThinking_prototype', 'designThinking_presentation'].forEach(key => {
+                sessionStorage.removeItem(key);
+            });
+            
+            // Clear achievements
+            localStorage.removeItem('dt_achievements');
+            localStorage.removeItem('dt_start_time');
+            
+            // Reload page
+            window.location.reload();
+        }
+    }
+
+    exportProgress() {
+        const exportData = {
+            progress: this.progressData,
+            achievements: [...this.unlockedAchievements],
+            timeSpent: Math.round((Date.now() - this.startTime) / (1000 * 60)),
+            exportDate: new Date().toISOString()
+        };
+
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'design-thinking-journey.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+}
+
+// Initialize progress dashboard when DOM is loaded
+document.addEventListener('DOMContentLoaded', async function() {
+    if (document.getElementById('dt-progress-dashboard')) {
+        window.dtProgress = new DesignThinkingProgress();
+        // Note: init() is called in constructor, which is now async
+    }
+});
+
+// Global functions for buttons
+function resetProgress() {
+    if (window.dtProgress) {
+        window.dtProgress.resetProgress();
+    }
+}
+
+function exportProgress() {
+    if (window.dtProgress) {
+        window.dtProgress.exportProgress();
+    }
+}
+</script>
+
+<style>
+.mission-progress-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mission-progress-card.completed {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+#progress-circle {
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.3));
+}
+</style>

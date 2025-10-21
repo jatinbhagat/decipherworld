@@ -98,6 +98,32 @@ gunicorn decipherworld.wsgi:application
 - **robotic_buddy**: AI learning games for kids
 - **group_learning**: Multi-player collaborative scenarios
 
+### Game Header Standardization
+**CRITICAL**: All games must use the main DecipherWorld header, not the "Group Learning" header.
+
+**Rule**: Game templates should extend `'base.html'` (main site template) NOT `'group_learning/base.html'`
+
+**Examples**:
+- ✅ **Correct**: `{% extends 'base.html' %}` → Shows "Decipherworld" with full navigation
+- ❌ **Wrong**: `{% extends 'group_learning/base.html' %}` → Shows "🎯 Group Learning" header
+
+**Templates to Check**:
+- Design Thinking: `/templates/group_learning/design_thinking/*.html`
+- Climate Game: `/templates/group_learning/climate/*.html` 
+- Any future group learning games
+
+**Why This Matters**:
+- Consistent branding across all games
+- Users get the main site navigation (Home, Games, Students, etc.)
+- SEO and user experience consistency
+- Matches other educational games on the platform
+
+**Implementation**:
+1. Change template inheritance: `{% extends 'base.html' %}`
+2. Use `{% block extra_head %}` for custom CSS (both base templates support this)
+3. Use `{% block content %}` for main content
+4. Test that navigation shows "Decipherworld" brand, not "Group Learning"
+
 ### Settings Configuration
 - **base.py**: Common settings, SQLite fallback for local dev
 - **production.py**: Azure-specific overrides, PostgreSQL, security settings

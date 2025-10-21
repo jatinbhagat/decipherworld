@@ -1,0 +1,797 @@
+{% extends '../../../../base.html' %}
+{% load static %}
+
+{% block title %}Define Mission - Design Thinking{% endblock %}
+
+{% block extra_head %}
+<style>
+    .mission-phase {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .phase-indicator {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .pov-builder {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border-radius: 1rem;
+        padding: 2rem;
+    }
+    
+    .pov-formula {
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .pov-input-group {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .pov-input {
+        background: rgba(255, 255, 255, 0.9);
+        color: #374151;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        width: 100%;
+        font-size: 1rem;
+    }
+    
+    .pov-input:focus {
+        background: white;
+        outline: 2px solid #f59e0b;
+        outline-offset: 2px;
+    }
+    
+    .pov-preview {
+        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        color: #1f2937;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+        text-align: center;
+        min-height: 4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .quality-indicator {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+        background: #ef4444;
+        transition: background-color 0.3s ease;
+    }
+    
+    .quality-indicator.valid {
+        background: #10b981;
+    }
+    
+    .progress-ring {
+        transform: rotate(-90deg);
+    }
+    
+    .progress-ring-circle {
+        transition: stroke-dashoffset 0.35s;
+        transform-origin: 50% 50%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Mission Header -->
+    <div class="mission-phase">
+        <div class="phase-indicator">Phase 2: Define</div>
+        <h1 class="text-3xl font-bold mb-4">🎯 Define the Problem</h1>
+        <p class="text-xl opacity-90">Transform your empathy insights into a clear, actionable problem statement that will guide your solution design.</p>
+    </div>
+
+    <!-- LEARN PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">📚</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Learn: Understanding the Define Phase</h2>
+                <p class="text-gray-600">Master the art of problem definition in design thinking</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-blue-900 mb-3">🎯 What is Define?</h3>
+                <p class="text-blue-800 text-sm mb-3">
+                    Define is the phase where you synthesize your empathy research into a clear, human-centered problem statement. 
+                    It's about making sense of your observations and focusing on the real user need behind everything you discovered.
+                </p>
+                <div class="bg-white p-3 rounded border-l-4 border-blue-500">
+                    <p class="text-blue-900 font-medium text-sm">"A problem well stated is a problem half solved." - Charles Kettering</p>
+                </div>
+            </div>
+
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-purple-900 mb-3">🔑 Key Principles</h3>
+                <ul class="text-purple-800 text-sm space-y-2">
+                    <li class="flex items-start">
+                        <span class="text-purple-600 mr-2">•</span>
+                        <span><strong>Human-centered:</strong> Focus on the user, not the technology</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-purple-600 mr-2">•</span>
+                        <span><strong>Specific:</strong> Avoid broad, general statements</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-purple-600 mr-2">•</span>
+                        <span><strong>Evidence-based:</strong> Grounded in your observations</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-purple-600 mr-2">•</span>
+                        <span><strong>Actionable:</strong> Suggests clear opportunities for solutions</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-green-50 border border-green-200 p-4 rounded-lg">
+            <h4 class="font-semibold text-green-900 mb-2">💡 Example Transformation:</h4>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <span class="text-sm font-medium text-green-700">❌ Vague Problem:</span>
+                    <p class="text-green-800 italic">"Students have learning difficulties"</p>
+                </div>
+                <div>
+                    <span class="text-sm font-medium text-green-700">✅ Clear POV Statement:</span>
+                    <p class="text-green-800 italic">"Distracted students need a way to focus during lessons because classroom noise prevents them from absorbing information effectively"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRACTICE PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-orange-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">🛠️</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Practice: POV Statement Framework</h2>
+                <p class="text-gray-600">Learn the structure before building your own</p>
+            </div>
+        </div>
+
+        <div class="pov-formula bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-orange-200">
+            <h3 class="text-xl font-bold text-orange-900 mb-4">📐 Point of View (POV) Formula</h3>
+            <div class="text-2xl font-bold text-orange-800 mb-4">
+                [USER] needs [NEED] because [INSIGHT]
+            </div>
+            <div class="grid md:grid-cols-3 gap-4 text-sm">
+                <div class="bg-white p-3 rounded border-l-4 border-blue-500">
+                    <strong class="text-blue-900">USER</strong>
+                    <p class="text-gray-700">Specific person or group you observed</p>
+                    <p class="text-blue-600 italic">e.g., "Students in the back row"</p>
+                </div>
+                <div class="bg-white p-3 rounded border-l-4 border-green-500">
+                    <strong class="text-green-900">NEED</strong>
+                    <p class="text-gray-700">What they need (not a solution!)</p>
+                    <p class="text-green-600 italic">e.g., "a way to see clearly"</p>
+                </div>
+                <div class="bg-white p-3 rounded border-l-4 border-purple-500">
+                    <strong class="text-purple-900">INSIGHT</strong>
+                    <p class="text-gray-700">Why they need it (your evidence)</p>
+                    <p class="text-purple-600 italic">e.g., "poor visibility causes frustration"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice Examples -->
+        <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-gray-900 mb-3">🎯 Practice Examples:</h4>
+            <div class="space-y-3">
+                <div class="bg-white p-3 rounded border-l-4 border-green-500">
+                    <strong class="text-green-700">Good POV:</strong>
+                    <p class="text-gray-800">"Anxious test-takers need a way to calm down before exams because stress prevents them from remembering what they studied"</p>
+                </div>
+                <div class="bg-white p-3 rounded border-l-4 border-red-500">
+                    <strong class="text-red-700">Poor POV:</strong>
+                    <p class="text-gray-800">"Students need meditation apps because technology is cool"</p>
+                    <p class="text-red-600 text-sm">Issues: Too general user, solution instead of need, no real evidence</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLY PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-green-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">🚀</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Apply: Build Your POV Statement</h2>
+                <p class="text-gray-600">Create your own problem statement using your empathy insights</p>
+            </div>
+        </div>
+
+        <!-- Data Recap -->
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+            <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                <h4 class="font-semibold text-yellow-900 mb-2">🎭 Your User Persona</h4>
+                <div id="persona-recap" class="text-yellow-800">
+                    <div id="persona-display" class="italic">Loading your persona from empathy research...</div>
+                </div>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                <h4 class="font-semibold text-blue-900 mb-2">📝 Key Observations</h4>
+                <div id="observations-recap" class="text-blue-800">
+                    <div id="observations-display" class="space-y-1">Loading your observations...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- POV Builder -->
+        <div class="pov-builder">
+            <h3 class="text-2xl font-bold mb-6 text-center">🔧 POV Statement Builder</h3>
+            
+            <div class="space-y-6">
+                <!-- User Component -->
+                <div class="pov-input-group">
+                    <label class="block font-semibold mb-3 text-lg">
+                        <span class="bg-blue-500 text-white px-2 py-1 rounded mr-2">1</span>
+                        WHO is your specific user?
+                    </label>
+                    <input type="text" 
+                           id="pov-user"
+                           class="pov-input"
+                           placeholder="e.g., Students who sit in the back of noisy classrooms"
+                           maxlength="100">
+                    <div class="flex justify-between mt-2 text-sm opacity-80">
+                        <span>Be specific! Avoid "students" or "people"</span>
+                        <span><span id="user-count">0</span>/100 characters</span>
+                    </div>
+                </div>
+
+                <!-- Need Component -->
+                <div class="pov-input-group">
+                    <label class="block font-semibold mb-3 text-lg">
+                        <span class="bg-green-500 text-white px-2 py-1 rounded mr-2">2</span>
+                        WHAT do they need? (Focus on need, not solution!)
+                    </label>
+                    <input type="text" 
+                           id="pov-need"
+                           class="pov-input"
+                           placeholder="e.g., a way to hear the teacher clearly during lessons"
+                           maxlength="120">
+                    <div class="flex justify-between mt-2 text-sm opacity-80">
+                        <span>Avoid mentioning specific products or tools</span>
+                        <span><span id="need-count">0</span>/120 characters</span>
+                    </div>
+                </div>
+
+                <!-- Insight Component -->
+                <div class="pov-input-group">
+                    <label class="block font-semibold mb-3 text-lg">
+                        <span class="bg-purple-500 text-white px-2 py-1 rounded mr-2">3</span>
+                        WHY do they need this? (Your evidence from observations)
+                    </label>
+                    <input type="text" 
+                           id="pov-insight"
+                           class="pov-input"
+                           placeholder="e.g., because background noise prevents them from understanding instructions and causes anxiety"
+                           maxlength="150">
+                    <div class="flex justify-between mt-2 text-sm opacity-80">
+                        <span>Base this on what you actually observed</span>
+                        <span><span id="insight-count">0</span>/150 characters</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Preview -->
+            <div class="pov-preview">
+                <div id="pov-statement-preview">
+                    Fill in the fields above to see your POV statement
+                </div>
+            </div>
+
+            <!-- Quality Indicators -->
+            <div class="mt-6 bg-white bg-opacity-20 p-4 rounded-lg">
+                <h4 class="font-semibold mb-3">✅ Quality Check:</h4>
+                <div class="grid md:grid-cols-2 gap-3">
+                    <div class="flex items-center">
+                        <span class="quality-indicator" id="indicator-specific"></span>
+                        <span class="text-sm">User is specific and detailed</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="quality-indicator" id="indicator-need"></span>
+                        <span class="text-sm">Need is not a solution</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="quality-indicator" id="indicator-evidence"></span>
+                        <span class="text-sm">Insight is evidence-based</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="quality-indicator" id="indicator-length"></span>
+                        <span class="text-sm">Statement is detailed enough</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-between items-center mt-6">
+                <button onclick="clearPOVBuilder()" 
+                        class="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors">
+                    🔄 Clear Form
+                </button>
+                <button onclick="savePOVStatement()" 
+                        id="save-pov-btn"
+                        class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled>
+                    💾 Save POV Statement
+                </button>
+            </div>
+        </div>
+
+        <!-- Success State -->
+        <div id="pov-success" class="hidden mt-6 bg-green-50 border-2 border-green-200 p-6 rounded-xl">
+            <div class="flex items-center mb-4">
+                <span class="text-3xl mr-3">🎉</span>
+                <div>
+                    <h3 class="text-xl font-bold text-green-900">POV Statement Complete!</h3>
+                    <p class="text-green-700">Your problem is now clearly defined and ready for ideation</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-lg border-l-4 border-green-500">
+                <div class="text-sm text-green-700 font-medium mb-2">Your Point of View Statement:</div>
+                <div id="final-pov-display" class="text-lg text-green-900 font-semibold"></div>
+            </div>
+            <div class="mt-4 flex justify-between items-center">
+                <button onclick="editPOVStatement()" 
+                        class="text-green-700 hover:text-green-800 font-medium">
+                    ✏️ Edit Statement
+                </button>
+                <div class="text-sm text-green-600">
+                    This will guide your ideation in the next phase!
+                </div>
+            </div>
+        </div>
+
+        <!-- How Might We Preview -->
+        <div class="mt-6 bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="font-semibold text-yellow-900">💡 Coming Next: How Might We...</h4>
+                    <p class="text-yellow-700 text-sm">Your POV will transform into solution opportunities</p>
+                </div>
+                <div class="text-yellow-800 italic text-sm max-w-md">
+                    <div id="hmw-preview">Complete your POV to see the transformation...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REFLECT PHASE -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-purple-100 p-3 rounded-full mr-4">
+                <span class="text-2xl">🤔</span>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Reflect: Understanding Your Define Journey</h2>
+                <p class="text-gray-600">Think about what you learned and how it applies beyond this exercise</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-purple-900 mb-3">🎯 Reflection Questions</h3>
+                <div class="space-y-3">
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">How did creating a POV change your understanding of the problem?</p>
+                    </div>
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">What was most challenging about defining the problem clearly?</p>
+                    </div>
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-purple-800 font-medium text-sm">How will this POV guide your solution ideas?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-blue-900 mb-3">🌟 Key Learnings</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span class="text-blue-800">Good problems are specific and user-focused</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span class="text-blue-800">Evidence from empathy research is crucial</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span class="text-blue-800">Defining problems well leads to better solutions</span>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span class="text-blue-800">POV statements focus creativity on real needs</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-gray-900 mb-3">🚀 Apply This Learning</h4>
+            <p class="text-gray-700 text-sm mb-3">
+                The define skill is valuable beyond design thinking. You can use POV statements when:
+            </p>
+            <div class="grid md:grid-cols-3 gap-3 text-sm">
+                <div class="bg-white p-3 rounded">
+                    <strong class="text-purple-700">School Projects:</strong>
+                    <p class="text-gray-600">Clearly define what problem your project solves</p>
+                </div>
+                <div class="bg-white p-3 rounded">
+                    <strong class="text-blue-700">Family Issues:</strong>
+                    <p class="text-gray-600">Understand what family members really need</p>
+                </div>
+                <div class="bg-white p-3 rounded">
+                    <strong class="text-green-700">Friend Problems:</strong>
+                    <p class="text-gray-600">Help friends by understanding their real challenges</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tips and Common Mistakes -->
+    <div class="grid md:grid-cols-2 gap-6">
+        <!-- Tips -->
+        <div class="bg-green-50 border border-green-200 p-6 rounded-xl">
+            <h3 class="text-lg font-bold text-green-900 mb-4">🎯 Pro Tips for Success</h3>
+            <div class="space-y-3 text-sm">
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Use your strongest observation as foundation</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Keep referring back to your persona</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Focus on one specific user group</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-green-600 mr-2 font-bold">✓</span>
+                    <span class="text-green-800">Ask "Why?" three times to get to real need</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Common Mistakes -->
+        <div class="bg-red-50 border border-red-200 p-6 rounded-xl">
+            <h3 class="text-lg font-bold text-red-900 mb-4">⚠️ Avoid These Mistakes</h3>
+            <div class="space-y-3 text-sm">
+                <div class="flex items-start">
+                    <span class="text-red-600 mr-2 font-bold">✗</span>
+                    <span class="text-red-800">Being too broad: "All students need..."</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-red-600 mr-2 font-bold">✗</span>
+                    <span class="text-red-800">Jumping to solutions: "need an app"</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-red-600 mr-2 font-bold">✗</span>
+                    <span class="text-red-800">No evidence: "because it would be better"</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="text-red-600 mr-2 font-bold">✗</span>
+                    <span class="text-red-800">Wrong focus: defining for wrong user</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for POV Builder Functionality -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initializePOVBuilder();
+    loadEmpathyData();
+});
+
+function initializePOVBuilder() {
+    setupCharacterCounting();
+    setupLivePreview();
+    setupQualityValidation();
+    loadSavedPOV();
+}
+
+function setupCharacterCounting() {
+    const inputs = [
+        { id: 'pov-user', counterId: 'user-count' },
+        { id: 'pov-need', counterId: 'need-count' },
+        { id: 'pov-insight', counterId: 'insight-count' }
+    ];
+    
+    inputs.forEach(input => {
+        const element = document.getElementById(input.id);
+        const counter = document.getElementById(input.counterId);
+        
+        if (element && counter) {
+            element.addEventListener('input', function() {
+                counter.textContent = this.value.length;
+                updateLivePreview();
+                validateQuality();
+            });
+        }
+    });
+}
+
+function setupLivePreview() {
+    updateLivePreview();
+}
+
+function updateLivePreview() {
+    const user = document.getElementById('pov-user').value.trim();
+    const need = document.getElementById('pov-need').value.trim();
+    const insight = document.getElementById('pov-insight').value.trim();
+    
+    const preview = document.getElementById('pov-statement-preview');
+    
+    if (user && need && insight) {
+        preview.textContent = `${user} needs ${need} because ${insight}`;
+        updateHMWPreview(user, need);
+    } else {
+        preview.textContent = 'Fill in the fields above to see your POV statement';
+        document.getElementById('hmw-preview').textContent = 'Complete your POV to see the transformation...';
+    }
+}
+
+function updateHMWPreview(user, need) {
+    const hmwPreview = document.getElementById('hmw-preview');
+    if (user && need) {
+        hmwPreview.textContent = `How might we help ${user} ${need}?`;
+    }
+}
+
+function setupQualityValidation() {
+    validateQuality();
+}
+
+function validateQuality() {
+    const user = document.getElementById('pov-user').value.trim();
+    const need = document.getElementById('pov-need').value.trim();
+    const insight = document.getElementById('pov-insight').value.trim();
+    
+    const checks = {
+        'indicator-specific': isSpecificUser(user),
+        'indicator-need': isRealNeed(need),
+        'indicator-evidence': isEvidenceBased(insight),
+        'indicator-length': user.length > 15 && need.length > 15 && insight.length > 20
+    };
+    
+    let allValid = true;
+    Object.keys(checks).forEach(indicatorId => {
+        const indicator = document.getElementById(indicatorId);
+        if (indicator) {
+            if (checks[indicatorId]) {
+                indicator.classList.add('valid');
+            } else {
+                indicator.classList.remove('valid');
+                allValid = false;
+            }
+        }
+    });
+    
+    const saveBtn = document.getElementById('save-pov-btn');
+    if (saveBtn) {
+        saveBtn.disabled = !allValid || !user || !need || !insight;
+    }
+    
+    return allValid;
+}
+
+function isSpecificUser(user) {
+    const tooGeneral = ['people', 'everyone', 'users', 'students', 'teachers'];
+    return user.length > 10 && !tooGeneral.some(term => user.toLowerCase() === term);
+}
+
+function isRealNeed(need) {
+    const solutions = ['app', 'phone', 'website', 'tablet', 'computer', 'device', 'tool'];
+    return need.length > 10 && !solutions.some(solution => need.toLowerCase().includes(solution));
+}
+
+function isEvidenceBased(insight) {
+    const nonEvidence = ['cool', 'nice', 'good', 'better', 'awesome', 'fun', 'would be'];
+    return insight.length > 15 && !nonEvidence.some(word => insight.toLowerCase().includes(word));
+}
+
+function loadEmpathyData() {
+    // Load persona
+    const savedPersona = sessionStorage.getItem('designThinking_userPersona');
+    if (savedPersona) {
+        try {
+            const persona = JSON.parse(savedPersona);
+            const personaDisplay = document.getElementById('persona-display');
+            if (personaDisplay) {
+                personaDisplay.innerHTML = `
+                    <strong>${persona.name}</strong> - ${persona.age} year old ${persona.role}<br>
+                    <span class="text-sm">Focus area: ${persona.problemCategory}</span>
+                `;
+            }
+        } catch (e) {
+            console.warn('Could not load persona data:', e);
+        }
+    }
+    
+    // Load observations
+    const savedObservations = sessionStorage.getItem('designThinking_observations');
+    if (savedObservations) {
+        try {
+            const observations = JSON.parse(savedObservations);
+            const observationsDisplay = document.getElementById('observations-display');
+            if (observationsDisplay && observations.length > 0) {
+                const topObservations = observations.slice(0, 3);
+                observationsDisplay.innerHTML = topObservations.map((obs, index) => `
+                    <div class="text-sm bg-white p-2 rounded border-l-2 border-blue-400">
+                        ${obs.what} <span class="text-blue-600">(${obs.emotion})</span>
+                    </div>
+                `).join('');
+            }
+        } catch (e) {
+            console.warn('Could not load observations data:', e);
+        }
+    }
+}
+
+function clearPOVBuilder() {
+    document.getElementById('pov-user').value = '';
+    document.getElementById('pov-need').value = '';
+    document.getElementById('pov-insight').value = '';
+    
+    ['user-count', 'need-count', 'insight-count'].forEach(id => {
+        const counter = document.getElementById(id);
+        if (counter) counter.textContent = '0';
+    });
+    
+    updateLivePreview();
+    validateQuality();
+}
+
+function savePOVStatement() {
+    const user = document.getElementById('pov-user').value.trim();
+    const need = document.getElementById('pov-need').value.trim();
+    const insight = document.getElementById('pov-insight').value.trim();
+    
+    if (!user || !need || !insight || !validateQuality()) {
+        alert('Please complete all fields and ensure your POV meets quality criteria');
+        return;
+    }
+    
+    const povStatement = `${user} needs ${need} because ${insight}`;
+    
+    // Save to session storage
+    const povData = {
+        user, need, insight, 
+        statement: povStatement, 
+        timestamp: new Date().toISOString()
+    };
+    sessionStorage.setItem('designThinking_povStatement', JSON.stringify(povData));
+    
+    // Show success state
+    showPOVSuccess(povStatement);
+    
+    // Save to backend if possible
+    savePOVToBackend(povStatement);
+}
+
+function showPOVSuccess(povStatement) {
+    const successDiv = document.getElementById('pov-success');
+    const finalDisplay = document.getElementById('final-pov-display');
+    const builderDiv = document.querySelector('.pov-builder').parentElement;
+    
+    if (successDiv && finalDisplay && builderDiv) {
+        finalDisplay.textContent = povStatement;
+        builderDiv.style.display = 'none';
+        successDiv.classList.remove('hidden');
+    }
+}
+
+function editPOVStatement() {
+    const successDiv = document.getElementById('pov-success');
+    const builderDiv = document.querySelector('.pov-builder').parentElement;
+    
+    if (successDiv && builderDiv) {
+        successDiv.classList.add('hidden');
+        builderDiv.style.display = 'block';
+    }
+    
+    // Reload data
+    const savedPOV = sessionStorage.getItem('designThinking_povStatement');
+    if (savedPOV) {
+        try {
+            const povData = JSON.parse(savedPOV);
+            document.getElementById('pov-user').value = povData.user;
+            document.getElementById('pov-need').value = povData.need;
+            document.getElementById('pov-insight').value = povData.insight;
+            
+            setupCharacterCounting();
+            updateLivePreview();
+            validateQuality();
+        } catch (e) {
+            console.warn('Could not reload POV data:', e);
+        }
+    }
+}
+
+function loadSavedPOV() {
+    const savedPOV = sessionStorage.getItem('designThinking_povStatement');
+    if (savedPOV) {
+        try {
+            const povData = JSON.parse(savedPOV);
+            showPOVSuccess(povData.statement);
+        } catch (e) {
+            console.warn('Could not load saved POV:', e);
+        }
+    }
+}
+
+function savePOVToBackend(povStatement) {
+    const sessionCode = document.querySelector('[data-session-code]')?.dataset.sessionCode;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+    
+    if (!sessionCode || !csrfToken) {
+        console.warn('Missing session data for backend save');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('submission_type', 'pov_statement');
+    formData.append('content', povStatement);
+    formData.append('submitted_by', 'Team Member');
+    
+    fetch(`/learn/api/design-thinking/${sessionCode}/submit/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrfToken },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            console.warn('POV save failed:', data.error);
+        }
+    })
+    .catch(error => console.warn('POV save error:', error));
+}
+
+// Global function exports
+window.clearPOVBuilder = clearPOVBuilder;
+window.savePOVStatement = savePOVStatement;
+window.editPOVStatement = editPOVStatement;
+</script>
+{% endblock %}

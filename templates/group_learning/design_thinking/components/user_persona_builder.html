@@ -1,0 +1,439 @@
+<!-- User Persona Builder Component -->
+<div id="user-persona-builder" class="bg-white border-2 border-blue-200 rounded-xl p-6 mb-8 shadow-lg">
+    <div class="flex items-center mb-6">
+        <div class="text-3xl mr-4">👤</div>
+        <div>
+            <h3 class="text-xl font-bold text-gray-900">User Persona Builder</h3>
+            <div class="text-gray-600">Define WHO you're designing for (this makes everything clearer!)</div>
+        </div>
+        <div class="ml-auto bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+            5 min
+        </div>
+    </div>
+    
+    <!-- Problem Category Selection -->
+    <div class="mb-6">
+        <div class="font-semibold text-gray-900 mb-3">🎯 First, what type of problem interests your team?</div>
+        <div class="grid md:grid-cols-4 gap-3">
+            <button onclick="selectProblemCategory('classroom')" 
+                    class="problem-category-btn border-2 border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-colors"
+                    data-category="classroom">
+                <div class="text-2xl mb-2">🏫</div>
+                <div class="font-medium text-gray-900">Classroom</div>
+                <div class="text-xs text-gray-600">Learning environment</div>
+            </button>
+            
+            <button onclick="selectProblemCategory('school')" 
+                    class="problem-category-btn border-2 border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-colors"
+                    data-category="school">
+                <div class="text-2xl mb-2">🏢</div>
+                <div class="font-medium text-gray-900">School</div>
+                <div class="text-xs text-gray-600">Campus-wide issues</div>
+            </button>
+            
+            <button onclick="selectProblemCategory('community')" 
+                    class="problem-category-btn border-2 border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-colors"
+                    data-category="community">
+                <div class="text-2xl mb-2">🌍</div>
+                <div class="font-medium text-gray-900">Community</div>
+                <div class="text-xs text-gray-600">Local neighborhood</div>
+            </button>
+            
+            <button onclick="selectProblemCategory('personal')" 
+                    class="problem-category-btn border-2 border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-colors"
+                    data-category="personal">
+                <div class="text-2xl mb-2">💭</div>
+                <div class="font-medium text-gray-900">Personal</div>
+                <div class="text-xs text-gray-600">Daily life challenges</div>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Persona Builder Form -->
+    <div id="persona-form" class="hidden">
+        <div class="bg-blue-50 p-4 rounded-lg mb-6">
+            <div class="font-semibold text-blue-900 mb-2">👥 Now, describe a SPECIFIC person affected by this problem:</div>
+            <div class="text-blue-700 text-sm">The more specific you are, the better your solutions will be!</div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Left Column -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-semibold text-gray-900 mb-2">
+                        👤 Who are they? (Be specific!)
+                    </label>
+                    <input type="text" 
+                           id="persona-identity"
+                           placeholder="e.g., 8th grade student who sits in the back corner"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                           maxlength="100">
+                    <div class="text-xs text-gray-500 mt-1">Be specific about age, role, situation</div>
+                </div>
+                
+                <div>
+                    <label class="block font-semibold text-gray-900 mb-2">
+                        😤 What frustrates them most?
+                    </label>
+                    <input type="text" 
+                           id="persona-frustration"
+                           placeholder="e.g., can't see the board clearly and gets headaches"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                           maxlength="100">
+                    <div class="text-xs text-gray-500 mt-1">What specific problem do they face?</div>
+                </div>
+                
+                <div>
+                    <label class="block font-semibold text-gray-900 mb-2">
+                        🎯 What do they really want?
+                    </label>
+                    <input type="text" 
+                           id="persona-goal"
+                           placeholder="e.g., to learn effectively without physical discomfort"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                           maxlength="100">
+                    <div class="text-xs text-gray-500 mt-1">Their deeper need or goal</div>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-semibold text-gray-900 mb-2">
+                        📍 When/where does this happen?
+                    </label>
+                    <input type="text" 
+                           id="persona-context"
+                           placeholder="e.g., during math class in the afternoon"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                           maxlength="100">
+                    <div class="text-xs text-gray-500 mt-1">Specific situation or timing</div>
+                </div>
+                
+                <div>
+                    <label class="block font-semibold text-gray-900 mb-2">
+                        💭 How do they feel about it?
+                    </label>
+                    <select id="persona-emotion" 
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                        <option value="">Choose their emotion...</option>
+                        <option value="frustrated">😤 Frustrated</option>
+                        <option value="worried">😟 Worried</option>
+                        <option value="confused">😕 Confused</option>
+                        <option value="embarrassed">😳 Embarrassed</option>
+                        <option value="isolated">😔 Isolated</option>
+                        <option value="overwhelmed">😰 Overwhelmed</option>
+                        <option value="bored">😴 Bored</option>
+                        <option value="anxious">😨 Anxious</option>
+                    </select>
+                    <div class="text-xs text-gray-500 mt-1">Their emotional state</div>
+                </div>
+                
+                <div>
+                    <label class="block font-semibold text-gray-900 mb-2">
+                        🤔 Why haven't they solved it yet?
+                    </label>
+                    <input type="text" 
+                           id="persona-barrier"
+                           placeholder="e.g., they can't move their seat or change the lighting"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                           maxlength="100">
+                    <div class="text-xs text-gray-500 mt-1">What's stopping them?</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Live Persona Preview -->
+        <div class="mt-6 bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border border-green-200">
+            <div class="font-semibold text-green-900 mb-2">👤 Your User Persona:</div>
+            <div id="persona-preview" class="text-gray-700 italic text-lg">
+                Fill in the details above to see your persona come to life!
+            </div>
+        </div>
+        
+        <!-- Validation Checklist -->
+        <div class="mt-6 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+            <div class="font-semibold text-yellow-900 mb-2">✅ Persona Quality Check:</div>
+            <div class="space-y-2">
+                <div class="flex items-center">
+                    <input type="checkbox" id="check-specific" class="mr-2" disabled>
+                    <span class="text-sm text-gray-700">Is your user specific enough? (not "students" but "students who...")</span>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="check-real" class="mr-2" disabled>
+                    <span class="text-sm text-gray-700">Could you actually find this person in real life?</span>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="check-problem" class="mr-2" disabled>
+                    <span class="text-sm text-gray-700">Is their problem clear and solvable?</span>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="check-empathy" class="mr-2" disabled>
+                    <span class="text-sm text-gray-700">Do you feel empathy for this person?</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex justify-between items-center mt-6">
+            <button onclick="startOver()" 
+                    class="text-gray-500 hover:text-gray-700 text-sm">
+                ← Start over with different problem
+            </button>
+            
+            <button onclick="savePersona()" 
+                    id="save-persona-btn"
+                    class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    disabled>
+                Save Persona & Start Observations
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentPersona = {};
+
+function selectProblemCategory(category) {
+    // Update UI
+    document.querySelectorAll('.problem-category-btn').forEach(btn => {
+        btn.classList.remove('border-blue-500', 'bg-blue-50');
+        btn.classList.add('border-gray-300');
+    });
+    
+    const selectedBtn = document.querySelector(`[data-category="${category}"]`);
+    selectedBtn.classList.add('border-blue-500', 'bg-blue-50');
+    selectedBtn.classList.remove('border-gray-300');
+    
+    // Store category
+    currentPersona.category = category;
+    
+    // Show persona form
+    document.getElementById('persona-form').classList.remove('hidden');
+    
+    // Update placeholders based on category
+    updatePlaceholders(category);
+    
+    // Scroll to form
+    document.getElementById('persona-form').scrollIntoView({ behavior: 'smooth' });
+}
+
+function updatePlaceholders(category) {
+    const placeholders = {
+        classroom: {
+            identity: "e.g., 8th grade student who sits in the back corner",
+            frustration: "e.g., can't see the board clearly and gets headaches",
+            goal: "e.g., to learn effectively without physical discomfort",
+            context: "e.g., during math class in the afternoon",
+            barrier: "e.g., they can't move their seat or change the lighting"
+        },
+        school: {
+            identity: "e.g., 6th grader who brings lunch from home",
+            frustration: "e.g., nowhere quiet to eat and food gets cold",
+            goal: "e.g., to enjoy lunch with friends in comfort",
+            context: "e.g., during the 30-minute lunch period",
+            barrier: "e.g., cafeteria is too loud and no microwaves available"
+        },
+        community: {
+            identity: "e.g., elderly neighbor who walks their dog daily",
+            frustration: "e.g., sidewalks are cracked and dangerous",
+            goal: "e.g., to exercise safely with their pet",
+            context: "e.g., morning and evening walks around the block",
+            barrier: "e.g., city maintenance is slow and expensive"
+        },
+        personal: {
+            identity: "e.g., busy parent juggling work and family",
+            frustration: "e.g., always forgetting important family events",
+            goal: "e.g., to be present and organized for their family",
+            context: "e.g., evenings when managing schedules",
+            barrier: "e.g., too many different calendars and reminder systems"
+        }
+    };
+    
+    const categoryPlaceholders = placeholders[category];
+    document.getElementById('persona-identity').placeholder = categoryPlaceholders.identity;
+    document.getElementById('persona-frustration').placeholder = categoryPlaceholders.frustration;
+    document.getElementById('persona-goal').placeholder = categoryPlaceholders.goal;
+    document.getElementById('persona-context').placeholder = categoryPlaceholders.context;
+    document.getElementById('persona-barrier').placeholder = categoryPlaceholders.barrier;
+}
+
+function updatePersonaPreview() {
+    const identity = document.getElementById('persona-identity').value;
+    const frustration = document.getElementById('persona-frustration').value;
+    const goal = document.getElementById('persona-goal').value;
+    const context = document.getElementById('persona-context').value;
+    const emotion = document.getElementById('persona-emotion').value;
+    const barrier = document.getElementById('persona-barrier').value;
+    
+    if (!identity && !frustration) {
+        document.getElementById('persona-preview').textContent = 
+            "Fill in the details above to see your persona come to life!";
+        return;
+    }
+    
+    let preview = "";
+    if (identity) preview += `${identity} `;
+    if (emotion) preview += `feels ${emotion} `;
+    if (frustration) preview += `because ${frustration}. `;
+    if (goal) preview += `They want ${goal} `;
+    if (context) preview += `${context}, `;
+    if (barrier) preview += `but ${barrier}.`;
+    
+    document.getElementById('persona-preview').textContent = preview || "Keep filling in the details...";
+    
+    // Update validation checklist
+    validatePersona();
+}
+
+function validatePersona() {
+    const identity = document.getElementById('persona-identity').value.trim();
+    const frustration = document.getElementById('persona-frustration').value.trim();
+    const goal = document.getElementById('persona-goal').value.trim();
+    const emotion = document.getElementById('persona-emotion').value;
+    
+    // Check if specific enough (contains descriptive words)
+    const isSpecific = identity.length > 15 && (identity.includes(' who ') || identity.includes(' that '));
+    document.getElementById('check-specific').checked = isSpecific;
+    
+    // Check if real (all basic fields filled)
+    const isReal = identity && frustration && goal && emotion;
+    document.getElementById('check-real').checked = isReal;
+    
+    // Check if problem is clear
+    const isProblemClear = frustration.length > 10;
+    document.getElementById('check-problem').checked = isProblemClear;
+    
+    // Check if empathy-worthy (emotion selected)
+    const hasEmpathy = emotion && goal;
+    document.getElementById('check-empathy').checked = hasEmpathy;
+    
+    // Enable save button if all checks pass
+    const allValid = isSpecific && isReal && isProblemClear && hasEmpathy;
+    document.getElementById('save-persona-btn').disabled = !allValid;
+    
+    return allValid;
+}
+
+function startOver() {
+    // Reset form
+    document.getElementById('persona-form').classList.add('hidden');
+    document.querySelectorAll('.problem-category-btn').forEach(btn => {
+        btn.classList.remove('border-blue-500', 'bg-blue-50');
+        btn.classList.add('border-gray-300');
+    });
+    
+    // Clear all inputs
+    document.getElementById('persona-identity').value = '';
+    document.getElementById('persona-frustration').value = '';
+    document.getElementById('persona-goal').value = '';
+    document.getElementById('persona-context').value = '';
+    document.getElementById('persona-emotion').value = '';
+    document.getElementById('persona-barrier').value = '';
+    
+    // Reset validation
+    document.querySelectorAll('#user-persona-builder input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.getElementById('save-persona-btn').disabled = true;
+    
+    currentPersona = {};
+}
+
+function savePersona() {
+    const persona = {
+        category: currentPersona.category,
+        identity: document.getElementById('persona-identity').value.trim(),
+        frustration: document.getElementById('persona-frustration').value.trim(),
+        goal: document.getElementById('persona-goal').value.trim(),
+        context: document.getElementById('persona-context').value.trim(),
+        emotion: document.getElementById('persona-emotion').value,
+        barrier: document.getElementById('persona-barrier').value.trim(),
+        created_at: new Date().toISOString()
+    };
+    
+    // Save to session storage for use throughout missions
+    sessionStorage.setItem('userPersona', JSON.stringify(persona));
+    
+    // Submit to backend
+    submitPersonaToBackend(persona);
+    
+    // Hide persona builder and show success
+    document.getElementById('user-persona-builder').style.display = 'none';
+    showQuickNotification('👤 User persona saved! Now you know who you\'re designing for.', 'success');
+    
+    // Show observations section
+    setTimeout(() => {
+        const observationSection = document.getElementById('mission-content-empathy');
+        if (observationSection) {
+            observationSection.classList.remove('hidden');
+            observationSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, 1000);
+}
+
+function submitPersonaToBackend(persona) {
+    const sessionCode = document.querySelector('[data-session-code]').dataset.sessionCode;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    const formData = new FormData();
+    formData.append('submission_type', 'user_persona');
+    formData.append('content', JSON.stringify(persona));
+    formData.append('submitted_by', getCurrentUserName());
+    
+    fetch(`/learn/api/design-thinking/${sessionCode}/submit/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            console.warn('Persona save failed:', data.error);
+        }
+    })
+    .catch(error => {
+        console.warn('Persona save error:', error);
+    });
+}
+
+// Add event listeners for real-time updates
+document.addEventListener('DOMContentLoaded', function() {
+    ['persona-identity', 'persona-frustration', 'persona-goal', 'persona-context', 'persona-barrier'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updatePersonaPreview);
+    });
+    
+    document.getElementById('persona-emotion').addEventListener('change', updatePersonaPreview);
+});
+</script>
+
+<style>
+.problem-category-btn {
+    transition: all 0.2s ease;
+}
+
+.problem-category-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.problem-category-btn.border-blue-500 {
+    animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+    0%, 100% { border-color: #3b82f6; }
+    50% { border-color: #1d4ed8; }
+}
+
+#user-persona-builder input:focus,
+#user-persona-builder select:focus {
+    animation: focus-glow 0.3s ease;
+}
+
+@keyframes focus-glow {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+</style>
