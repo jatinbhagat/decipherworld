@@ -45,6 +45,9 @@ class RoboticBuddyLandingView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
+            'page_title': 'Create AI Robotic Buddy - Personalized Learning Companion for Kids | DecipherWorld',
+            'page_description': 'Build your own AI robotic buddy! Personalized learning companion for CBSE ICSE students. Create, customize, and learn with your AI friend through interactive games.',
+            'canonical_url': '/games/ai-learning/robotic-buddy/',
             'activities': GameActivity.objects.filter(is_active=True, activity_type='classification')[:3],
             'recent_buddies': RoboticBuddy.objects.order_by('-created_at')[:5],
         })
@@ -54,11 +57,29 @@ class RoboticBuddyLandingView(TemplateView):
 class SimpleGameLandingView(TemplateView):
     """Individual game landing - Simple Learning Game"""
     template_name = 'games/simple_game_landing.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Simple AI Learning Game - Introduction to Machine Learning for Kids | DecipherWorld',
+            'page_description': 'Start your AI journey with our simple learning game. Perfect introduction to artificial intelligence and machine learning for CBSE ICSE students grades 1-6.',
+            'canonical_url': '/games/ai-learning/simple-game/',
+        })
+        return context
 
 
 class DragDropGameLandingView(TemplateView):
     """Individual game landing - Drag & Drop Game"""
     template_name = 'games/drag_drop_game_landing.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Drag & Drop AI Classification Game - Interactive Machine Learning for Kids | DecipherWorld',
+            'page_description': 'Learn AI classification through fun drag-and-drop gameplay. Interactive machine learning game for CBSE ICSE students grades 1-8. Teach artificial intelligence concepts visually.',
+            'canonical_url': '/games/ai-learning/drag-drop-game/',
+        })
+        return context
 
 
 class GroupLearningGamesView(TemplateView):
@@ -68,8 +89,9 @@ class GroupLearningGamesView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            'page_title': 'Group Learning Games - Collaborative Educational Scenarios',
+            'page_title': 'Group Learning Games - Collaborative Educational Scenarios | DecipherWorld',
             'page_description': 'Multi-player educational scenarios where students collaborate to solve real-world challenges. Experience role-playing games focused on climate change, problem-solving, and teamwork.',
+            'canonical_url': '/games/group-learning/',
             'games': Game.objects.filter(is_active=True),
             'featured_game': Game.objects.filter(is_active=True).first(),
         })
@@ -88,8 +110,9 @@ class MonsoonMayhemLandingView(TemplateView):
             monsoon_game = Game.objects.filter(is_active=True).first()
         
         context.update({
-            'page_title': 'Monsoon Mayhem - Climate Crisis Collaboration Game',
+            'page_title': 'Monsoon Mayhem - Climate Crisis Collaboration Game | DecipherWorld',
             'page_description': 'Lead flood response efforts in rural India. Collaborate as district officials, farmers, engineers, and school principals to save communities from climate disasters.',
+            'canonical_url': '/games/group-learning/monsoon-mayhem/',
             'game': monsoon_game,
         })
         return context
