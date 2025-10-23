@@ -19,7 +19,8 @@
       "Bash(az webapp config appsettings list:*)",
       "Bash(pkill:*)",
       "Bash(kill:*)",
-      "Bash(lsof:*)"
+      "Bash(lsof:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
