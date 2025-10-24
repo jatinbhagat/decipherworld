@@ -197,25 +197,68 @@
     <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
     
-    <!-- MixPanel Analytics -->
+    <!-- MixPanel Analytics - Official Snippet (Clean Implementation) -->
     <script type="text/javascript">
-    (function(f,b){if(!b.__SV){var e,g,i,h;window.mixpanel=b;b._i=[];b.init=function(e,f,c){function g(a,d){var b=d.split(".");2==b.length&&(a=a[b[0]],d=b[1]);a[d]=function(){a.push([d].concat(Array.prototype.slice.call(arguments,0)))}}var a=b;"undefined"!==typeof c?a=b[c]=[]:c="mixpanel";a.people=a.people||{};a.toString=function(a){var d="mixpanel";"mixpanel"!==c&&(d+="."+c);a||(d+=" (stub)");return d};a.people.toString=function(){return a.toString(1)+".people (stub)"};i="disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" ");for(h=0;h<i.length;h++)g(a,i[h]);var j="set set_once union unset remove delete".split(" ");a.get_group=function(){function b(c){d[c]=function(){call2_args=arguments;call2=[c].concat(Array.prototype.slice.call(call2_args,0));a.push([e,call2])}}for(var d={},e=["get_group"].concat(Array.prototype.slice.call(arguments,0)),c=0;c<j.length;c++)b(j[c]);return d};b._i.push([e,f,c])};b.__SV=1.2;e=f.createElement("script");e.type="text/javascript";e.async=!0;e.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===f.location.protocol&&"//cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js";g=f.getElementsByTagName("script")[0];g.parentNode.insertBefore(e,g)}})(document,window.mixpanel||[]);
+    // Environment detection
+    const isProduction = window.location.hostname.includes('azurewebsites.net') || window.location.hostname.includes('decipherworld.com');
+    const mixpanelToken = isProduction ? '100436c05647bbfab884ce5304fe0b65' : '4a1e9a6c220877deaf36430132988a14';
     
-    // Initialize MixPanel with project token
-    mixpanel.init('100436c05647bbfab884ce5304fe0b65', {
-        debug: true, // Enable debug mode for troubleshooting
-        track_pageview: false, // We'll handle this manually
+    console.log('🔧 Starting Mixpanel clean initialization...');
+    console.log('Environment:', isProduction ? 'production' : 'development');
+    console.log('Token:', mixpanelToken);
+    
+    // Official Mixpanel snippet (modified for conflict prevention)
+    (function(f,b){if(!b.__SV){var e,g,i,h;window.mixpanel=b;b._i=[];b.init=function(e,f,c){function g(a,d){var b=d.split(".");2==b.length&&(a=a[b[0]],d=b[1]);a[d]=function(){a.push([d].concat(Array.prototype.slice.call(arguments,0)))}}var a=b;"undefined"!==typeof c?a=b[c]=[]:c="mixpanel";a.people=a.people||[];a.toString=function(a){var d="mixpanel";"mixpanel"!==c&&(d+="."+c);a||(d+=" (stub)");return d};a.people.toString=function(){return a.toString(1)+".people (stub)"};i="disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" ");for(h=0;h<i.length;h++)g(a,i[h]);var j="set set_once union unset remove delete".split(" ");a.get_group=function(){function b(c){d[c]=function(){call2_args=arguments;call2=[c].concat(Array.prototype.slice.call(call2_args,0));a.push([e,call2])}}for(var d={},e=["get_group"].concat(Array.prototype.slice.call(arguments,0)),c=0;c<j.length;c++)b(j[c]);return d};b._i.push([e,f,c])};b.__SV=1.2;e=f.createElement("script");e.type="text/javascript";e.async=!0;e.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===f.location.protocol&&"//cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js";g=f.getElementsByTagName("script")[0];g.parentNode.insertBefore(e,g)}})(document,window.mixpanel||[]);
+    
+    // Initialize with proper configuration
+    window.mixpanel.init(mixpanelToken, {
+        debug: true,
+        track_pageview: false,
         persistence: 'cookie',
-        api_host: 'https://api.mixpanel.com', // Explicit API host
+        api_host: 'https://api.mixpanel.com',
+        secure_cookie: isProduction,
+        cross_subdomain_cookie: false,
+        ip: true,
+        property_blacklist: [],
         loaded: function(mixpanel) {
-            console.log('✅ Mixpanel loaded successfully');
-            console.log('Mixpanel config:', mixpanel.config);
+            console.log('✅ Mixpanel loaded and initialized successfully!');
+            console.log('Config:', mixpanel.config);
+            window.mixpanelReady = true;
+            
+            // Test event
+            try {
+                mixpanel.track('Mixpanel Initialized Successfully', {
+                    environment: isProduction ? 'production' : 'development',
+                    timestamp: new Date().toISOString(),
+                    page: window.location.pathname,
+                    hostname: window.location.hostname,
+                    token_used: mixpanelToken,
+                    initialization_method: 'official_snippet'
+                });
+                console.log('🔥 Initialization test event sent successfully!');
+            } catch (trackError) {
+                console.error('❌ Error sending test event:', trackError);
+            }
+        },
+        error: function(error) {
+            console.error('❌ Mixpanel initialization error:', error);
+            window.mixpanelReady = false;
         }
     });
     
-    // Add additional debugging
-    console.log('🔧 Mixpanel initialization script loaded');
-    console.log('Mixpanel object available:', typeof mixpanel !== 'undefined');
+    // Verification after delay
+    setTimeout(() => {
+        console.log('🔍 Final Mixpanel status check:');
+        console.log('- Available:', typeof mixpanel !== 'undefined');
+        console.log('- Has track method:', typeof mixpanel?.track === 'function');
+        console.log('- Ready flag:', window.mixpanelReady);
+        
+        if (typeof mixpanel !== 'undefined' && mixpanel.track && typeof mixpanel.track === 'function') {
+            console.log('✅ Mixpanel is fully ready for tracking!');
+        } else {
+            console.warn('⚠️ Mixpanel still not ready after extended delay');
+        }
+    }, 3000);
     </script>
     
     <!-- Analytics Manager -->
@@ -226,175 +269,180 @@
 </head>
 <body data-theme="modern" class="bg-base-100">
     
-    <!-- Compact Single-Line Navigation Header -->
-    <div class="navbar bg-white shadow-md border-b border-slate-100 fixed top-0 z-50 backdrop-blur-sm px-2 lg:px-4 min-h-16">
-        <div class="navbar-start">
-            <!-- Mobile Menu -->
-            <div class="dropdown lg:hidden">
-                <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
-                    <i class="fas fa-bars text-xl text-slate-700"></i>
+    <!-- Properly Aligned Header -->
+    <div class="w-full bg-white shadow-md border-b border-slate-100 fixed top-0 z-50 backdrop-blur-sm">
+        <div class="w-full px-6 lg:px-8 h-20 flex items-center relative">
+            <!-- Logo Section - LEFT ALIGNED (Full Width) -->
+            <div class="flex items-center">
+                <!-- Mobile Menu -->
+                <div class="dropdown lg:hidden mr-3">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+                        <i class="fas fa-bars text-xl text-slate-700"></i>
+                    </div>
+                    <ul tabindex="0" class="menu menu-sm dropdown-content bg-white rounded-xl z-[1] mt-3 w-64 p-4 shadow-xl border border-slate-200">
+                        <!-- Home Section -->
+                        <li>
+                            <details>
+                                <summary class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium">
+                                    <i class="fas fa-home text-primary"></i>Home
+                                </summary>
+                                <ul class="p-2 bg-slate-50 rounded-lg mt-2 space-y-1">
+                                    <li><a href="{% url 'core:home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-house text-sm"></i>Homepage</a></li>
+                                    <li><a href="{% url 'core:about' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-users text-sm"></i>About Us</a></li>
+                                    <li><a href="{% url 'core:gallery' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-images text-sm"></i>Gallery</a></li>
+                                </ul>
+                            </details>
+                        </li>
+                        
+                        <!-- Students -->
+                        <li><a href="{% url 'core:courses' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-graduation-cap text-blue-500"></i>Students</a></li>
+                        
+                        <!-- Games -->
+                        <li>
+                            <details>
+                                <summary class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium">
+                                    <i class="fas fa-gamepad text-orange-500"></i>Games
+                                </summary>
+                                <ul class="p-2 bg-slate-50 rounded-lg mt-2 space-y-1">
+                                    <li><a href="{% url 'games:hub' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-th-large text-sm"></i>All Games</a></li>
+                                    <li class="border-t border-slate-200 pt-2 mt-2">
+                                        <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Individual Games</div>
+                                    </li>
+                                    <li><a href="{% url 'games:ai_learning' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-robot text-sm"></i>AI Learning</a></li>
+                                    <li><a href="{% url 'games:financial_literacy' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-coins text-sm"></i>Financial Literacy</a></li>
+                                    <li><a href="{% url 'games:entrepreneurship' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-rocket text-sm"></i>Entrepreneurship</a></li>
+                                    <li><a href="{% url 'games:cyber_security' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-shield text-sm"></i>Cyber Security</a></li>
+                                    <li class="border-t border-slate-200 pt-2 mt-2">
+                                        <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Team Games</div>
+                                    </li>
+                                    <li><a href="{% url 'group_learning:design_thinking_start' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-lightbulb text-sm"></i>Design Thinking</a></li>
+                                    <li><a href="{% url 'games:constitution_basic' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-landmark text-sm"></i>Constitution</a></li>
+                                </ul>
+                            </details>
+                        </li>
+                        
+                        <!-- Teachers -->
+                        <li><a href="{% url 'core:teachers' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-chalkboard-teacher text-green-500"></i>Teachers</a></li>
+                        
+                        <!-- Schools -->
+                        <li><a href="{% url 'core:schools' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-school text-purple-500"></i>Schools</a></li>
+                        
+                        <!-- Articles -->
+                        <li><a href="{% url 'articles:article_list' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-newspaper text-slate-600"></i>Articles</a></li>
+                        
+                        <!-- Contact -->
+                        <li class="border-t border-slate-200 pt-2 mt-2">
+                            <a href="{% url 'core:contact' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-primary hover:text-white text-primary font-medium">
+                                <i class="fas fa-rocket"></i>Get Started
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-                <ul tabindex="0" class="menu menu-sm dropdown-content bg-white rounded-xl z-[1] mt-3 w-64 p-4 shadow-xl border border-slate-200">
-                    <!-- Home Section -->
-                    <li>
-                        <details>
-                            <summary class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium">
-                                <i class="fas fa-home text-primary"></i>Home
-                            </summary>
-                            <ul class="p-2 bg-slate-50 rounded-lg mt-2 space-y-1">
-                                <li><a href="{% url 'core:home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-house text-sm"></i>Homepage</a></li>
-                                <li><a href="{% url 'core:about' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-users text-sm"></i>About Us</a></li>
-                                <li><a href="{% url 'core:gallery' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-images text-sm"></i>Gallery</a></li>
-                            </ul>
-                        </details>
-                    </li>
-                    
-                    <!-- Students -->
-                    <li><a href="{% url 'core:courses' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-graduation-cap text-blue-500"></i>Students</a></li>
-                    
-                    <!-- Games -->
-                    <li>
-                        <details>
-                            <summary class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium">
-                                <i class="fas fa-gamepad text-orange-500"></i>Games
-                                <span class="badge badge-orange badge-xs">Popular</span>
-                            </summary>
-                            <ul class="p-2 bg-slate-50 rounded-lg mt-2 space-y-1">
-                                <li><a href="{% url 'games:hub' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-th-large text-sm"></i>All Games</a></li>
-                                <li class="border-t border-slate-200 pt-2 mt-2">
-                                    <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Individual Games</div>
-                                </li>
-                                <li><a href="{% url 'games:ai_learning' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-robot text-sm"></i>AI Learning</a></li>
-                                <li><a href="{% url 'games:financial_literacy' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-coins text-sm"></i>Financial Literacy</a></li>
-                                <li><a href="{% url 'games:entrepreneurship' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-rocket text-sm"></i>Entrepreneurship</a></li>
-                                <li><a href="{% url 'games:cyber_security' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-shield text-sm"></i>Cyber Security</a></li>
-                                <li class="border-t border-slate-200 pt-2 mt-2">
-                                    <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Team Games</div>
-                                </li>
-                                <li><a href="{% url 'group_learning:design_thinking_start' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-lightbulb text-sm"></i>Design Thinking</a></li>
-                                <li><a href="{% url 'games:constitution_basic' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-landmark text-sm"></i>Constitution</a></li>
-                            </ul>
-                        </details>
-                    </li>
-                    
-                    <!-- Teachers -->
-                    <li><a href="{% url 'core:teachers' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-chalkboard-teacher text-green-500"></i>Teachers</a></li>
-                    
-                    <!-- Schools -->
-                    <li><a href="{% url 'core:schools' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-school text-purple-500"></i>Schools</a></li>
-                    
-                    <!-- Articles -->
-                    <li><a href="{% url 'articles:article_list' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-newspaper text-slate-600"></i>Articles</a></li>
-                    
-                    <!-- Contact -->
-                    <li class="border-t border-slate-200 pt-2 mt-2">
-                        <a href="{% url 'core:contact' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-primary hover:text-white text-primary font-medium">
-                            <i class="fas fa-rocket"></i>Get Started
-                        </a>
-                    </li>
-                </ul>
+                
+                <!-- Prominent Logo & Brand - LEFT ALIGNED -->
+                <a href="{% url 'core:home' %}" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+                    <div class="w-14 h-14 lg:w-16 lg:h-16 flex items-center justify-center flex-shrink-0">
+                        <img src="{% static 'images/decipherworld-logo.svg' %}" 
+                             alt="DecipherWorld Logo" 
+                             class="w-full h-full object-contain"
+                             onerror="this.onerror=null; this.src='{% static 'images/decipherworld-logo.png' %}';">
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xl lg:text-2xl font-bold text-slate-900 leading-none tracking-tight">
+                            Decipherworld
+                        </span>
+                        <span class="text-sm text-slate-500 font-medium leading-none hidden sm:block">
+                            Game-Based Learning
+                        </span>
+                    </div>
+                </a>
             </div>
             
-            <!-- Compact Logo & Brand -->
-            <a href="{% url 'core:home' %}" class="flex items-center gap-2 ml-3 lg:ml-0 hover:opacity-90 transition-opacity">
-                <div class="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center flex-shrink-0">
-                    <img src="{% static 'images/decipherworld-logo.svg' %}" 
-                         alt="DecipherWorld Logo" 
-                         class="w-full h-full object-contain"
-                         onerror="this.onerror=null; this.src='{% static 'images/decipherworld-logo.png' %}';">
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-lg lg:text-xl font-bold text-slate-900 leading-none tracking-tight">
-                        Decipherworld
-                    </span>
-                    <span class="text-xs text-slate-500 font-medium leading-none hidden sm:block">
-                        Game-Based Learning
-                    </span>
-                </div>
-            </a>
-        </div>
-        
-        <!-- Super Compact Desktop Navigation -->
-        <div class="navbar-center hidden lg:flex flex-1 justify-center">
-            <ul class="menu menu-horizontal px-0 gap-0">
-                <!-- Home Dropdown -->
-                <li>
-                    <details>
-                        <summary class="btn btn-ghost btn-xs text-slate-700 hover:text-primary font-medium px-2">
-                            <i class="fas fa-home text-primary text-xs"></i>
-                            <span class="text-xs">Home</span>
-                        </summary>
-                        <ul class="p-3 bg-white shadow-xl rounded-xl border border-slate-200 w-48 z-50">
-                            <li><a href="{% url 'core:home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-house text-sm"></i>Homepage</a></li>
-                            <li><a href="{% url 'core:about' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-users text-sm"></i>About Us</a></li>
-                            <li><a href="{% url 'core:gallery' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-images text-sm"></i>Gallery</a></li>
-                        </ul>
-                    </details>
-                </li>
-                
-                <!-- Students -->
-                <li>
-                    <a href="{% url 'core:courses' %}" class="btn btn-ghost btn-xs text-slate-700 hover:text-blue-500 font-medium px-2">
-                        <i class="fas fa-graduation-cap text-blue-500 text-xs"></i>
-                        <span class="text-xs">Students</span>
-                    </a>
-                </li>
-                
-                <!-- Games Dropdown -->
-                <li>
-                    <details>
-                        <summary class="btn btn-ghost btn-xs text-slate-700 hover:text-orange-500 font-medium px-2">
-                            <i class="fas fa-gamepad text-orange-500 text-xs"></i>
-                            <span class="text-xs">Games</span>
-                            <span class="badge badge-orange badge-xs ml-1 text-xs">NEW</span>
-                        </summary>
-                        <ul class="p-3 bg-white shadow-xl rounded-xl border border-slate-200 w-72 z-50">
-                            <li><a href="{% url 'games:hub' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-th-large text-sm"></i>All Games</a></li>
-                            <li class="border-t border-slate-200 pt-2 mt-2">
-                                <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Individual Games</div>
-                            </li>
-                            <li><a href="{% url 'games:ai_learning' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-robot text-sm"></i>AI Learning</a></li>
-                            <li><a href="{% url 'games:financial_literacy' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-coins text-sm"></i>Financial Literacy</a></li>
-                            <li><a href="{% url 'games:entrepreneurship' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-rocket text-sm"></i>Entrepreneurship</a></li>
-                            <li><a href="{% url 'games:cyber_security' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-shield text-sm"></i>Cyber Security</a></li>
-                            <li class="border-t border-slate-200 pt-2 mt-2">
-                                <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Team Games</div>
-                            </li>
-                            <li><a href="{% url 'group_learning:design_thinking_start' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-lightbulb text-sm"></i>Design Thinking</a></li>
-                            <li><a href="{% url 'games:constitution_basic' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-landmark text-sm"></i>Constitution</a></li>
-                        </ul>
-                    </details>
-                </li>
-                
-                <!-- Teachers -->
-                <li>
-                    <a href="{% url 'core:teachers' %}" class="btn btn-ghost btn-xs text-slate-700 hover:text-green-500 font-medium px-2">
-                        <i class="fas fa-chalkboard-teacher text-green-500 text-xs"></i>
-                        <span class="text-xs">Teachers</span>
-                    </a>
-                </li>
-                
-                <!-- Schools -->
-                <li>
-                    <a href="{% url 'core:schools' %}" class="btn btn-ghost btn-xs text-slate-700 hover:text-purple-500 font-medium px-2">
-                        <i class="fas fa-school text-purple-500 text-xs"></i>
-                        <span class="text-xs">Schools</span>
-                    </a>
-                </li>
-                
-                <!-- Articles -->
-                <li>
-                    <a href="{% url 'articles:article_list' %}" class="btn btn-ghost btn-xs text-slate-700 hover:text-slate-600 font-medium px-2">
-                        <i class="fas fa-newspaper text-slate-600 text-xs"></i>
-                        <span class="text-xs">Articles</span>
-                    </a>
-                </li>
-            </ul>
+            <!-- CENTER ALIGNED Navigation with Perfect Vertical Alignment -->
+            <div class="hidden lg:flex absolute left-1/2 transform -translate-x-1/2">
+                <nav class="flex items-center h-20">
+                    <ul class="flex items-center space-x-1 h-full">
+                        <!-- Home Dropdown -->
+                        <li class="h-full flex items-center relative">
+                            <details class="h-full flex items-center">
+                                <summary class="h-full flex items-center px-4 text-slate-700 hover:text-primary font-medium cursor-pointer transition-colors">
+                                    <i class="fas fa-home text-primary text-sm mr-2"></i>
+                                    <span>Home</span>
+                                    <i class="fas fa-chevron-down text-xs ml-1"></i>
+                                </summary>
+                                <ul class="absolute top-full left-0 mt-2 p-3 bg-white shadow-xl rounded-xl border border-slate-200 w-48 z-50">
+                                    <li><a href="{% url 'core:home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-house text-sm"></i>Homepage</a></li>
+                                    <li><a href="{% url 'core:about' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-users text-sm"></i>About Us</a></li>
+                                    <li><a href="{% url 'core:gallery' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-images text-sm"></i>Gallery</a></li>
+                                </ul>
+                            </details>
+                        </li>
+                        
+                        <!-- Students -->
+                        <li class="h-full flex items-center">
+                            <a href="{% url 'core:courses' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-blue-500 font-medium transition-colors">
+                                <i class="fas fa-graduation-cap text-blue-500 text-sm mr-2"></i>
+                                <span>Students</span>
+                            </a>
+                        </li>
+                        
+                        <!-- Games Dropdown -->
+                        <li class="h-full flex items-center relative">
+                            <details class="h-full flex items-center">
+                                <summary class="h-full flex items-center px-4 text-slate-700 hover:text-orange-500 font-medium cursor-pointer transition-colors">
+                                    <i class="fas fa-gamepad text-orange-500 text-sm mr-2"></i>
+                                    <span>Games</span>
+                                    <i class="fas fa-chevron-down text-xs ml-1"></i>
+                                </summary>
+                                <ul class="absolute top-full left-0 mt-2 p-3 bg-white shadow-xl rounded-xl border border-slate-200 w-72 z-50">
+                                    <li><a href="{% url 'games:hub' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-th-large text-sm"></i>All Games</a></li>
+                                    <li class="border-t border-slate-200 pt-2 mt-2">
+                                        <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Individual Games</div>
+                                    </li>
+                                    <li><a href="{% url 'games:ai_learning' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-robot text-sm"></i>AI Learning</a></li>
+                                    <li><a href="{% url 'games:financial_literacy' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-coins text-sm"></i>Financial Literacy</a></li>
+                                    <li><a href="{% url 'games:entrepreneurship' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-rocket text-sm"></i>Entrepreneurship</a></li>
+                                    <li><a href="{% url 'games:cyber_security' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-shield text-sm"></i>Cyber Security</a></li>
+                                    <li class="border-t border-slate-200 pt-2 mt-2">
+                                        <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Team Games</div>
+                                    </li>
+                                    <li><a href="{% url 'group_learning:design_thinking_start' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-lightbulb text-sm"></i>Design Thinking</a></li>
+                                    <li><a href="{% url 'games:constitution_basic' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-landmark text-sm"></i>Constitution</a></li>
+                                </ul>
+                            </details>
+                        </li>
+                        
+                        <!-- Teachers -->
+                        <li class="h-full flex items-center">
+                            <a href="{% url 'core:teachers' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-green-500 font-medium transition-colors">
+                                <i class="fas fa-chalkboard-teacher text-green-500 text-sm mr-2"></i>
+                                <span>Teachers</span>
+                            </a>
+                        </li>
+                        
+                        <!-- Schools -->
+                        <li class="h-full flex items-center">
+                            <a href="{% url 'core:schools' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-purple-500 font-medium transition-colors">
+                                <i class="fas fa-school text-purple-500 text-sm mr-2"></i>
+                                <span>Schools</span>
+                            </a>
+                        </li>
+                        
+                        <!-- Articles -->
+                        <li class="h-full flex items-center">
+                            <a href="{% url 'articles:article_list' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-slate-600 font-medium transition-colors">
+                                <i class="fas fa-newspaper text-slate-600 text-sm mr-2"></i>
+                                <span>Articles</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
     
     <!-- Main Content -->
-    <main class="pt-20">
+    <main class="pt-24">
         {% if messages %}
             <div class="container mx-auto px-4 py-4">
                 {% for message in messages %}

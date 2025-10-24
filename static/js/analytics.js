@@ -130,21 +130,26 @@ class DecipherWorldAnalytics {
     /**
      * Wait for Mixpanel to be fully loaded
      */
-    waitForMixpanel(maxAttempts = 50) {
+    waitForMixpanel(maxAttempts = 100) {
         return new Promise((resolve, reject) => {
             let attempts = 0;
             
             const checkMixpanel = () => {
                 attempts++;
                 
+                console.log(`🔄 Checking Mixpanel... attempt ${attempts}`);
+                console.log('- mixpanel exists:', typeof mixpanel !== 'undefined');
+                console.log('- has track:', typeof mixpanel?.track === 'function');
+                console.log('- ready flag:', window.mixpanelReady);
+                
                 if (typeof mixpanel !== 'undefined' && mixpanel.track && typeof mixpanel.track === 'function') {
-                    console.log('Mixpanel is ready after', attempts, 'attempts');
+                    console.log('✅ Mixpanel is ready after', attempts, 'attempts');
                     resolve(mixpanel);
                 } else if (attempts >= maxAttempts) {
+                    console.error('❌ Mixpanel failed to load after', maxAttempts, 'attempts');
                     reject(new Error('Mixpanel failed to load after ' + maxAttempts + ' attempts'));
                 } else {
-                    console.log('Waiting for Mixpanel... attempt', attempts);
-                    setTimeout(checkMixpanel, 100);
+                    setTimeout(checkMixpanel, 200); // Increased delay
                 }
             };
             
@@ -500,12 +505,40 @@ class DecipherWorldAnalytics {
      */
     track(eventName, properties = {}) {
         try {
+            // Enhanced debugging
+            console.log('🎯 Attempting to track event:', eventName);
+            console.log('📊 Event properties:', properties);
+            console.log('🔍 Mixpanel status:', {
+                available: typeof mixpanel !== 'undefined',
+                hasTrackMethod: typeof mixpanel?.track === 'function',
+                config: mixpanel?.config || 'not available'
+            });
+            
             if (typeof mixpanel !== 'undefined' && mixpanel.track && typeof mixpanel.track === 'function') {
-                console.log('🔥 TRACKING EVENT:', eventName, properties);
+                console.log('🔥 TRACKING EVENT:', eventName);
+                console.log('📋 With properties:', JSON.stringify(properties, null, 2));
+                
                 mixpanel.track(eventName, properties);
                 console.log('✅ Event tracked successfully:', eventName);
+                
+                // Log to global array for debugging
+                if (!window.dwAnalyticsLog) window.dwAnalyticsLog = [];
+                window.dwAnalyticsLog.push({
+                    timestamp: new Date().toISOString(),
+                    event: eventName,
+                    properties: properties,
+                    status: 'success'
+                });
+                
+                return true;
             } else {
-                console.warn('⚠️ MixPanel not available, event logged to console:', eventName, properties);
+                console.warn('⚠️ MixPanel not available for event:', eventName);
+                console.log('Debug info:', {
+                    mixpanelType: typeof mixpanel,
+                    trackType: typeof mixpanel?.track,
+                    windowKeys: Object.keys(window).filter(k => k.includes('mix'))
+                });
+                
                 // Also log to a global array for debugging
                 if (!window.dwAnalyticsLog) window.dwAnalyticsLog = [];
                 window.dwAnalyticsLog.push({
@@ -514,18 +547,41 @@ class DecipherWorldAnalytics {
                     properties: properties,
                     status: 'mixpanel_not_available'
                 });
+                
+                return false;
             }
         } catch (error) {
             console.error('❌ Error tracking event:', eventName, error);
+            console.error('Error stack:', error.stack);
+            
             // Log error events for debugging
             if (!window.dwAnalyticsErrors) window.dwAnalyticsErrors = [];
             window.dwAnalyticsErrors.push({
                 timestamp: new Date().toISOString(),
                 event: eventName,
                 properties: properties,
-                error: error.message
+                error: error.message,
+                stack: error.stack
             });
+            
+            return false;
         }
+    }
+    
+    /**
+     * Manual test function for debugging
+     */
+    testEvent(eventName = 'Test Event', customProperties = {}) {
+        console.log('🧪 Manual test event triggered');
+        const testProperties = {
+            ...this.getBaseProperties(),
+            test_mode: true,
+            manual_trigger: true,
+            browser_timestamp: new Date().toISOString(),
+            ...customProperties
+        };
+        
+        return this.track(eventName, testProperties);
     }
 
     /**
