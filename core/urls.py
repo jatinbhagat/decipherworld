@@ -24,4 +24,6 @@ urlpatterns = [
     path('submit-game-review/', views.submit_game_review, name='submit_game_review'),
     path('create-production-superuser/', views.create_production_superuser, name='create_production_superuser'),
     path('mixpanel-test/', views.mixpanel_test, name='mixpanel_test'),
+    path('health/', views.health_check, name='health_check'),
+    path('api/track-event/', views.track_event_fallback, name='track_event_fallback'),
 ]

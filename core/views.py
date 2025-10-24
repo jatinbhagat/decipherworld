@@ -35,23 +35,47 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            # Test database connection first
-            course_count = Course.objects.count()
-            print(f"Total courses in database: {course_count}")
+            # OPTIMIZED: Cache-first approach to prevent database timeouts
+            from django.core.cache import cache
+            import time
             
-            context['courses'] = Course.objects.filter(is_active=True)[:4]
-            print(f"Active courses loaded: {len(context['courses'])}")
+            start_time = time.time()
+            cache_key = 'homepage_courses_v2'
+            
+            # Try cache first - this prevents 504 timeouts from database
+            cached_courses = cache.get(cache_key)
+            if cached_courses is not None:
+                context['courses'] = cached_courses
+                print(f"✅ Courses from cache: {len(cached_courses)} in {(time.time() - start_time)*1000:.1f}ms")
+            else:
+                # Optimized DB query - NO count(), use only() for minimal data
+                courses = list(Course.objects.filter(is_active=True).only('id', 'title', 'description')[:4])
+                context['courses'] = courses
+                
+                # Cache for 10 minutes to reduce load
+                cache.set(cache_key, courses, 600)
+                duration = (time.time() - start_time) * 1000
+                print(f"🔄 Courses from DB: {len(courses)} in {duration:.1f}ms")
+                
+                # Alert if slow (potential 504 cause)
+                if duration > 2000:
+                    print(f"🚨 SLOW QUERY WARNING: {duration:.1f}ms - potential 504 risk")
+                    
         except Exception as e:
-            # Fallback if Course queries fail
+            # CRITICAL: Prevent cascading failures that cause 504s
             context['courses'] = []
-            print(f"Error loading courses: {e}")
-            # Track error for monitoring
-            track_error(self.request, 'Database Error', str(e), {
-                'view': 'HomeView',
-                'operation': 'loading_courses'
-            })
-            import traceback
-            print(f"Full traceback: {traceback.format_exc()}")
+            error_msg = str(e)[:100]  # Truncate to prevent memory issues
+            print(f"❌ Course loading failed: {error_msg}")
+            
+            # Non-blocking error tracking
+            try:
+                track_error(self.request, 'Database Error', error_msg, {
+                    'view': 'HomeView',
+                    'operation': 'loading_courses',
+                    'error_type': type(e).__name__
+                })
+            except:
+                pass  # Don't let error tracking cause 504s
         return context
 
 class CoursesView(ListView):
@@ -935,3 +959,120 @@ def create_production_superuser(request):
 def mixpanel_test(request):
     """Debug page for testing Mixpanel analytics"""
     return render(request, 'core/mixpanel_test.html')
+
+def health_check(request):
+    """Comprehensive health check endpoint for Azure monitoring"""
+    import time
+    from django.db import connection
+    
+    start_time = time.time()
+    health_status = {
+        "status": "healthy",
+        "timestamp": time.time(),
+        "version": "1.0.0",
+        "environment": "production",
+        "checks": {}
+    }
+    
+    try:
+        # Database connectivity check
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            health_status["checks"]["database"] = "healthy"
+    except Exception as e:
+        health_status["status"] = "unhealthy"
+        health_status["checks"]["database"] = f"unhealthy: {str(e)}"
+    
+    try:
+        # Check if we can import core models
+        from .models import Course
+        course_count = Course.objects.count()
+        health_status["checks"]["models"] = "healthy"
+        health_status["course_count"] = course_count
+    except Exception as e:
+        health_status["status"] = "degraded"
+        health_status["checks"]["models"] = f"degraded: {str(e)}"
+    
+    # Response time check
+    response_time = (time.time() - start_time) * 1000
+    health_status["response_time_ms"] = round(response_time, 2)
+    
+    if response_time > 2000:  # More than 2 seconds
+        health_status["status"] = "degraded"
+    
+    # Memory usage check (basic)
+    import psutil
+    try:
+        memory_percent = psutil.virtual_memory().percent
+        health_status["memory_usage_percent"] = memory_percent
+        health_status["checks"]["memory"] = "healthy" if memory_percent < 90 else "degraded"
+        
+        if memory_percent > 95:
+            health_status["status"] = "degraded"
+    except:
+        health_status["checks"]["memory"] = "unknown"
+    
+    # Determine HTTP status code
+    if health_status["status"] == "healthy":
+        status_code = 200
+    elif health_status["status"] == "degraded":
+        status_code = 200  # Still operational but with issues
+    else:
+        status_code = 503  # Service unavailable
+    
+    return JsonResponse(health_status, status=status_code)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def track_event_fallback(request):
+    """Fallback event tracking when frontend Mixpanel fails"""
+    try:
+        import json
+        from datetime import datetime
+        
+        data = json.loads(request.body)
+        event_name = data.get('event')
+        properties = data.get('properties', {})
+        
+        # Add server-side properties
+        properties.update({
+            'fallback_tracking': True,
+            'server_timestamp': datetime.now().isoformat(),
+            'user_agent': request.META.get('HTTP_USER_AGENT', ''),
+            'ip_address': get_client_ip(request),
+            'method': 'backend_fallback'
+        })
+        
+        # Track via backend analytics
+        from .analytics import track_event
+        success = track_event(event_name, properties)
+        
+        return JsonResponse({
+            'status': 'success' if success else 'failed',
+            'message': 'Event tracked via backend fallback',
+            'event': event_name
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+def get_client_ip(request):
+    """Get client IP address from request"""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0].strip()
+        # Remove port number if present (Azure load balancer can include ports)
+        if ':' in ip and not ip.startswith('['):
+            ip = ip.split(':')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR', '127.0.0.1')
+    
+    # Clean and validate IP address
+    ip = ip.strip()
+    if not ip or len(ip) > 45:  # Max length for IPv6
+        ip = '127.0.0.1'
+    
+    return ip
