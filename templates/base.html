@@ -314,15 +314,15 @@
             </a>
         </div>
         
-        <!-- Ultra-Compact Desktop Navigation -->
+        <!-- Super Compact Desktop Navigation -->
         <div class="navbar-center hidden lg:flex flex-1 justify-center">
-            <ul class="menu menu-horizontal px-0 gap-1">
+            <ul class="menu menu-horizontal px-0 gap-0">
                 <!-- Home Dropdown -->
                 <li>
                     <details>
-                        <summary class="btn btn-ghost btn-sm text-slate-700 hover:text-primary font-medium px-3">
-                            <i class="fas fa-home text-primary text-sm"></i>
-                            <span>Home</span>
+                        <summary class="btn btn-ghost btn-xs text-slate-700 hover:text-primary font-medium px-2">
+                            <i class="fas fa-home text-primary text-xs"></i>
+                            <span class="text-xs">Home</span>
                         </summary>
                         <ul class="p-3 bg-white shadow-xl rounded-xl border border-slate-200 w-48 z-50">
                             <li><a href="{% url 'core:home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-house text-sm"></i>Homepage</a></li>
@@ -334,19 +334,19 @@
                 
                 <!-- Students -->
                 <li>
-                    <a href="{% url 'core:courses' %}" class="btn btn-ghost btn-sm text-slate-700 hover:text-blue-500 font-medium px-3">
-                        <i class="fas fa-graduation-cap text-blue-500 text-sm"></i>
-                        <span>Students</span>
+                    <a href="{% url 'core:courses' %}" class="btn btn-ghost btn-xs text-slate-700 hover:text-blue-500 font-medium px-2">
+                        <i class="fas fa-graduation-cap text-blue-500 text-xs"></i>
+                        <span class="text-xs">Students</span>
                     </a>
                 </li>
                 
                 <!-- Games Dropdown -->
                 <li>
                     <details>
-                        <summary class="btn btn-ghost btn-sm text-slate-700 hover:text-orange-500 font-medium px-3">
-                            <i class="fas fa-gamepad text-orange-500 text-sm"></i>
-                            <span>Games</span>
-                            <span class="badge badge-orange badge-xs ml-1">Popular</span>
+                        <summary class="btn btn-ghost btn-xs text-slate-700 hover:text-orange-500 font-medium px-2">
+                            <i class="fas fa-gamepad text-orange-500 text-xs"></i>
+                            <span class="text-xs">Games</span>
+                            <span class="badge badge-orange badge-xs ml-1 text-xs">NEW</span>
                         </summary>
                         <ul class="p-3 bg-white shadow-xl rounded-xl border border-slate-200 w-72 z-50">
                             <li><a href="{% url 'games:hub' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-th-large text-sm"></i>All Games</a></li>
@@ -368,25 +368,25 @@
                 
                 <!-- Teachers -->
                 <li>
-                    <a href="{% url 'core:teachers' %}" class="btn btn-ghost btn-sm text-slate-700 hover:text-green-500 font-medium px-3">
-                        <i class="fas fa-chalkboard-teacher text-green-500 text-sm"></i>
-                        <span>Teachers</span>
+                    <a href="{% url 'core:teachers' %}" class="btn btn-ghost btn-xs text-slate-700 hover:text-green-500 font-medium px-2">
+                        <i class="fas fa-chalkboard-teacher text-green-500 text-xs"></i>
+                        <span class="text-xs">Teachers</span>
                     </a>
                 </li>
                 
                 <!-- Schools -->
                 <li>
-                    <a href="{% url 'core:schools' %}" class="btn btn-ghost btn-sm text-slate-700 hover:text-purple-500 font-medium px-3">
-                        <i class="fas fa-school text-purple-500 text-sm"></i>
-                        <span>Schools</span>
+                    <a href="{% url 'core:schools' %}" class="btn btn-ghost btn-xs text-slate-700 hover:text-purple-500 font-medium px-2">
+                        <i class="fas fa-school text-purple-500 text-xs"></i>
+                        <span class="text-xs">Schools</span>
                     </a>
                 </li>
                 
                 <!-- Articles -->
                 <li>
-                    <a href="{% url 'articles:article_list' %}" class="btn btn-ghost btn-sm text-slate-700 hover:text-slate-600 font-medium px-3">
-                        <i class="fas fa-newspaper text-slate-600 text-sm"></i>
-                        <span>Articles</span>
+                    <a href="{% url 'articles:article_list' %}" class="btn btn-ghost btn-xs text-slate-700 hover:text-slate-600 font-medium px-2">
+                        <i class="fas fa-newspaper text-slate-600 text-xs"></i>
+                        <span class="text-xs">Articles</span>
                     </a>
                 </li>
             </ul>
