@@ -10,6 +10,7 @@ import uuid
 import random
 
 from .models import RoboticBuddy, GameActivity, TrainingSession, TrainingExample, BuddyAchievement, AIReasoningExplanation
+from core.analytics import track_page_view, track_game_session, track_user_content_creation
 
 
 class GameHomeView(TemplateView):
@@ -17,6 +18,14 @@ class GameHomeView(TemplateView):
     Main entry point for the Robotic Buddy game
     """
     template_name = 'robotic_buddy/game_home.html'
+    
+    def get(self, request, *args, **kwargs):
+        # Track game home page view
+        track_page_view(request, 'AI Buddy Game Home', {
+            'page_category': 'AI Games',
+            'game_type': 'Robotic Buddy'
+        })
+        return super().get(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -2,11 +2,20 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from group_learning.models import Game
 from robotic_buddy.models import RoboticBuddy, GameActivity
+from core.analytics import track_page_view
 
 
 class GamesHubView(TemplateView):
     """Main Games Hub - Overview of all game categories"""
     template_name = 'games/hub.html'
+    
+    def get(self, request, *args, **kwargs):
+        # Track games hub page view
+        track_page_view(request, 'Games Hub', {
+            'page_category': 'Games',
+            'is_main_hub': True
+        })
+        return super().get(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

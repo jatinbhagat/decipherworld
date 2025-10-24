@@ -14,6 +14,7 @@ from .models import (
     PhotoCategory, PhotoGallery, VideoTestimonial
 )
 from .forms import DemoRequestForm, SchoolDemoRequestForm
+from .analytics import track_page_view, track_form_submission, track_error
 
 def simple_home_test(request):
     """Simple test view for debugging"""
@@ -22,6 +23,14 @@ def simple_home_test(request):
 class HomeView(TemplateView):
     """Homepage with hero section and product highlights"""
     template_name = 'home/index.html'
+    
+    def get(self, request, *args, **kwargs):
+        # Track homepage view
+        track_page_view(request, 'Homepage', {
+            'page_category': 'Landing',
+            'is_homepage': True
+        })
+        return super().get(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -36,6 +45,11 @@ class HomeView(TemplateView):
             # Fallback if Course queries fail
             context['courses'] = []
             print(f"Error loading courses: {e}")
+            # Track error for monitoring
+            track_error(self.request, 'Database Error', str(e), {
+                'view': 'HomeView',
+                'operation': 'loading_courses'
+            })
             import traceback
             print(f"Full traceback: {traceback.format_exc()}")
         return context
@@ -49,6 +63,14 @@ class CoursesView(ListView):
 class TeachersView(TemplateView):
     """AI Training for Teachers & Administrators"""
     template_name = 'home/teachers.html'
+    
+    def get(self, request, *args, **kwargs):
+        # Track teachers page view
+        track_page_view(request, 'Teachers Hub', {
+            'page_category': 'Teachers',
+            'target_audience': 'educators'
+        })
+        return super().get(request, *args, **kwargs)
 
 class SchoolsView(FormView):
     """Schools demo request page with product selection"""
@@ -56,10 +78,26 @@ class SchoolsView(FormView):
     form_class = SchoolDemoRequestForm
     success_url = reverse_lazy('core:schools')
     
+    def get(self, request, *args, **kwargs):
+        # Track schools page view
+        track_page_view(request, 'Schools Demo Page', {
+            'page_category': 'Lead Generation',
+            'form_type': 'school_demo_request'
+        })
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form):
         try:
             school_demo = form.save()
             products_display = ', '.join(school_demo.get_products_display())
+            
+            # Track successful form submission
+            track_form_submission(self.request, 'School Demo Request', {
+                'school_type': school_demo.school_type,
+                'products_selected': school_demo.get_products_display(),
+                'student_count': school_demo.student_count,
+            }, success=True)
+            
             messages.success(self.request, 
                 f'🏫 School Demo Scheduled! Thank you {school_demo.contact_person}! '
                 f'We\'ve received your request for {school_demo.school_name} regarding: {products_display}. '
@@ -67,10 +105,19 @@ class SchoolsView(FormView):
             )
             return super().form_valid(form)
         except Exception as e:
+            # Track form submission error
+            track_form_submission(self.request, 'School Demo Request', {}, success=False)
+            track_error(self.request, 'Form Submission Error', str(e), {
+                'form_type': 'school_demo_request'
+            })
             messages.error(self.request, f'Error saving your school demo request: {str(e)}')
             return self.form_invalid(form)
     
     def form_invalid(self, form):
+        # Track form validation errors
+        track_form_submission(self.request, 'School Demo Request', {
+            'validation_errors': list(form.errors.keys())
+        }, success=False)
         messages.error(self.request, 'Please check the form for errors and try again.')
         return super().form_invalid(form)
 
