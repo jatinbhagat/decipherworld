@@ -1,5 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
+from articles.models import Article
 
 class StaticViewSitemap(Sitemap):
     """Sitemap for static pages"""
@@ -105,3 +106,52 @@ class GroupLearningGamesSitemap(Sitemap):
 
     def lastmod(self, obj):
         return None
+
+
+class ArticlesSitemap(Sitemap):
+    """Sitemap for Articles - Dynamic content with high SEO value"""
+    priority = 0.8
+    changefreq = 'weekly'
+
+    def items(self):
+        # Return all published articles, ordered by most recent
+        return Article.objects.all().order_by('-last_modified')
+
+    def location(self, article):
+        return article.get_absolute_url()
+
+    def lastmod(self, article):
+        return article.last_modified
+
+    def priority(self, article):
+        # Higher priority for recent articles
+        import datetime
+        from django.utils import timezone
+        
+        days_since_modified = (timezone.now() - article.last_modified).days
+        if days_since_modified <= 7:
+            return 0.9  # Very recent articles
+        elif days_since_modified <= 30:
+            return 0.8  # Recent articles
+        else:
+            return 0.6  # Older articles
+
+
+class ArticleListSitemap(Sitemap):
+    """Sitemap for Articles listing pages"""
+    priority = 0.7
+    changefreq = 'daily'
+
+    def items(self):
+        return ['articles:article_list']
+
+    def location(self, item):
+        return reverse(item)
+
+    def lastmod(self, obj):
+        # Return last modified date of most recent article
+        try:
+            latest_article = Article.objects.latest('last_modified')
+            return latest_article.last_modified
+        except Article.DoesNotExist:
+            return None

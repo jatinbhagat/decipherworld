@@ -351,6 +351,7 @@
                     <li><a href="{% url 'core:teachers' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-robot text-secondary"></i>AI for Teachers</a></li>
                     <li><a href="{% url 'core:schools' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-building text-accent"></i>Schools</a></li>
                     <li><a href="{% url 'core:gallery' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-images text-info"></i>Gallery</a></li>
+                    <li><a href="{% url 'articles:article_list' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-newspaper text-blue-600"></i>Articles</a></li>
                     <li><a href="{% url 'core:about' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-users text-purple-500"></i>About Us</a></li>
                     <li><a href="{% url 'core:contact' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-envelope text-success"></i>Get Started</a></li>
                 </ul>
@@ -525,6 +526,11 @@
                 <li>
                     <a href="{% url 'core:gallery' %}" class="btn btn-ghost btn-sm text-slate-700 hover:text-info">
                         <i class="fas fa-images text-info"></i>Gallery
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'articles:article_list' %}" class="btn btn-ghost btn-sm text-slate-700 hover:text-blue-600">
+                        <i class="fas fa-newspaper text-blue-600"></i>Articles
                     </a>
                 </li>
                 <li>

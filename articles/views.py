@@ -11,6 +11,7 @@ from django.db import IntegrityError
 import json
 import re
 from .models import Article, Comment, ArticleLike, ArticleShare
+from core.analytics import track_page_view
 
 
 class ArticleListView(ListView):
@@ -18,12 +19,33 @@ class ArticleListView(ListView):
     template_name = 'articles/article_list.html'
     context_object_name = 'articles'
     paginate_by = 10
+    
+    def get(self, request, *args, **kwargs):
+        # Track articles list page view
+        track_page_view(request, 'Articles List', {
+            'page_category': 'Content',
+            'content_type': 'articles'
+        })
+        return super().get(request, *args, **kwargs)
 
 
 class ArticleDetailView(DetailView):
     model = Article
     template_name = 'articles/article_detail.html'
     context_object_name = 'article'
+    
+    def get(self, request, *args, **kwargs):
+        # Track individual article view
+        response = super().get(request, *args, **kwargs)
+        article = self.object
+        track_page_view(request, f'Article - {article.title}', {
+            'page_category': 'Content',
+            'content_type': 'article',
+            'article_category': article.category.name,
+            'article_author': article.author.username,
+            'article_slug': article.slug
+        })
+        return response
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -243,9 +265,12 @@ def toggle_like(request, slug):
         })
         
     except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Like toggle error for article {slug}: {str(e)}")
         return JsonResponse({
             'success': False,
-            'error': 'Failed to process like. Please try again.'
+            'error': f'Failed to process like: {str(e)}'
         }, status=500)
 
 
