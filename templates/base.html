@@ -217,7 +217,7 @@
 </head>
 <body data-theme="modern" class="bg-base-100">
     
-    <!-- Clean & Prominent Navigation Header -->
+    <!-- Clean & Properly Aligned Navigation Header -->
     <div class="navbar bg-white shadow-md border-b border-slate-100 fixed top-0 z-50 backdrop-blur-sm px-4 lg:px-6">
         <div class="navbar-start">
             <!-- Mobile Menu -->
@@ -276,22 +276,20 @@
                     </li>
                 </ul>
             </div>
-        </div>
-        
-        <!-- Prominent Logo & Brand -->
-        <div class="navbar-center">
-            <a href="{% url 'core:home' %}" class="flex items-center gap-4 hover:opacity-90 transition-opacity">
-                <div class="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center flex-shrink-0">
+            
+            <!-- Logo & Brand -->
+            <a href="{% url 'core:home' %}" class="flex items-center gap-3 ml-4 lg:ml-0 hover:opacity-90 transition-opacity">
+                <div class="w-9 h-9 lg:w-10 lg:h-10 flex items-center justify-center flex-shrink-0">
                     <img src="{% static 'images/decipherworld-logo.svg' %}" 
                          alt="DecipherWorld Logo" 
                          class="w-full h-full object-contain drop-shadow-lg"
                          onerror="this.onerror=null; this.src='{% static 'images/decipherworld-logo.png' %}';">
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-2xl lg:text-3xl font-bold text-slate-900 leading-none">
+                    <span class="text-xl lg:text-2xl font-bold text-slate-900 leading-none">
                         Decipherworld
                     </span>
-                    <span class="text-xs lg:text-sm text-slate-500 font-medium leading-none hidden sm:block">
+                    <span class="text-xs text-slate-500 font-medium leading-none hidden sm:block">
                         Game-Based Learning
                     </span>
                 </div>
