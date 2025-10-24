@@ -246,6 +246,25 @@ All events include these standard properties:
 - `referrer`: Traffic source
 - `session_duration`: Time in current session
 
+### Game Properties (when applicable)
+When on game pages or during game-related events, these additional properties are automatically included:
+- `game_name`: Full descriptive name of the game
+- `game_code`: Unique identifier code for the game
+- `game_subtype`: Specific variation of the game (when applicable)
+- `session_id`: Game session identifier (for multiplayer/collaborative games)
+
+#### Game Code Reference Table
+| Game Name | Game Code | Path Patterns | Subtypes |
+|-----------|-----------|---------------|----------|
+| Design Thinking Challenge | DTC001 | `/learn/design-thinking/`, `/learn/session/` | N/A |
+| Climate Change Challenge | CCC001 | `/learn/climate/`, `/monsoon-mayhem/` | N/A |
+| Robotic Buddy AI Learning | RBAL001 | `/buddy/`, `/robotic-buddy/` | Animal Classification, Simple AI Game, Drag Drop Game |
+| Financial Literacy Adventure | FLA001 | `/financial-literacy/` | N/A |
+| Cyber Security Mission | CSM001 | `/cyber-security/`, `/cyber-city/` | N/A |
+| Constitution Explorer Basic | CEB001 | `/constitution-basic/` | N/A |
+| Constitution Explorer Advanced | CEA001 | `/constitution-advanced/` | N/A |
+| Entrepreneurship Challenge | EC001 | `/entrepreneurship/` | N/A |
+
 ### Debugging
 - Debug mode enabled in development
 - Console logging for all events
@@ -262,24 +281,78 @@ All events include these standard properties:
 
 ### Manual Event Tracking
 ```javascript
-// Track custom game event
+// Track custom game event (game_name and game_code automatically included)
 window.dwAnalytics.trackGameEvent('Level Completed', 'AI Learning', {
     level: 3,
     score: 250,
     time_taken: 45
 });
 
-// Track achievement
+// Results in event with properties:
+// {
+//   "event": "Game Level Completed",
+//   "user_id": "anon_abc123_1698123456",
+//   "game_name": "Robotic Buddy AI Learning",  // AUTO-ADDED
+//   "game_code": "RBAL001",                    // AUTO-ADDED
+//   "game_subtype": "Animal Classification",   // AUTO-ADDED (if applicable)
+//   "game_type": "AI Learning",
+//   "level": 3,
+//   "score": 250,
+//   "time_taken": 45,
+//   "timestamp": "2025-10-24T09:30:15.123Z"
+// }
+
+// Track achievement (game properties automatically included)
 window.dwAnalytics.trackAchievement('First Classification', 'AI Learning', {
     animal_count: 5,
     accuracy: 100
 });
 
-// Track error
+// Results in event with properties:
+// {
+//   "event": "Achievement Unlocked",
+//   "user_id": "anon_abc123_1698123456",
+//   "game_name": "Robotic Buddy AI Learning",  // AUTO-ADDED
+//   "game_code": "RBAL001",                    // AUTO-ADDED
+//   "achievement": "First Classification",
+//   "game_type": "AI Learning",
+//   "animal_count": 5,
+//   "accuracy": 100,
+//   "timestamp": "2025-10-24T09:30:15.123Z"
+// }
+
+// Track error (game context automatically included)
 window.dwAnalytics.trackError('Game Loading Error', 'Failed to load game assets', {
-    game_type: 'AI Learning',
     asset_url: '/static/games/ai-learning.js'
 });
+```
+
+### Example Page View Events with Game Properties
+
+**Design Thinking Game Page**:
+```json
+{
+  "event": "Viewed Design Thinking Game",
+  "user_id": "anon_xyz789_1698123456",
+  "game_name": "Design Thinking Challenge",
+  "game_code": "DTC001",
+  "session_id": "ABC123",
+  "current_page": "/learn/session/ABC123/",
+  "timestamp": "2025-10-24T09:30:15.123Z"
+}
+```
+
+**Robotic Buddy Game Page**:
+```json
+{
+  "event": "Viewed Robotic Buddy Game",
+  "user_id": "anon_xyz789_1698123456",
+  "game_name": "Robotic Buddy AI Learning",
+  "game_code": "RBAL001",
+  "game_subtype": "Animal Classification",
+  "current_page": "/buddy/classification/",
+  "timestamp": "2025-10-24T09:30:15.123Z"
+}
 ```
 
 ### Check Analytics Status

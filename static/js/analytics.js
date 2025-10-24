@@ -57,7 +57,7 @@ class DecipherWorldAnalytics {
      * Get standard event properties for all events
      */
     getBaseProperties() {
-        return {
+        const baseProps = {
             user_id: this.userId,
             login_status: 'Not Logged In',
             page_from: this.getPreviousPage(),
@@ -69,6 +69,10 @@ class DecipherWorldAnalytics {
             referrer: this.referrer,
             session_duration: Math.round((Date.now() - this.sessionStartTime) / 1000)
         };
+
+        // Add game information if available
+        const gameInfo = this.getGameInfo();
+        return { ...baseProps, ...gameInfo };
     }
 
     /**
@@ -204,6 +208,89 @@ class DecipherWorldAnalytics {
         
         // Default fallback
         return 'Unknown Page';
+    }
+
+    /**
+     * Extract game information from current page/context
+     */
+    getGameInfo() {
+        const path = window.location.pathname;
+        const url = window.location.href;
+        
+        // Game Name and Code mapping
+        const gameInfo = {
+            game_name: null,
+            game_code: null
+        };
+
+        // Design Thinking Game
+        if (path.includes('/learn/design-thinking/') || path.includes('/learn/session/')) {
+            gameInfo.game_name = 'Design Thinking Challenge';
+            gameInfo.game_code = 'DTC001';
+            
+            // Extract session ID if available
+            const sessionMatch = path.match(/\/learn\/session\/([A-Z0-9]+)/);
+            if (sessionMatch) {
+                gameInfo.session_id = sessionMatch[1];
+            }
+        }
+        
+        // Climate Game
+        else if (path.includes('/learn/climate/') || path.includes('/monsoon-mayhem/')) {
+            gameInfo.game_name = 'Climate Change Challenge';
+            gameInfo.game_code = 'CCC001';
+        }
+        
+        // AI Learning Games (Robotic Buddy)
+        else if (path.includes('/buddy/') || path.includes('/robotic-buddy/')) {
+            gameInfo.game_name = 'Robotic Buddy AI Learning';
+            gameInfo.game_code = 'RBAL001';
+            
+            // Detect specific AI game types
+            if (path.includes('/classification/')) {
+                gameInfo.game_subtype = 'Animal Classification';
+            } else if (path.includes('/simple-game/')) {
+                gameInfo.game_subtype = 'Simple AI Game';
+            } else if (path.includes('/drag-drop/')) {
+                gameInfo.game_subtype = 'Drag Drop Game';
+            }
+        }
+        
+        // Financial Literacy
+        else if (path.includes('/financial-literacy/')) {
+            gameInfo.game_name = 'Financial Literacy Adventure';
+            gameInfo.game_code = 'FLA001';
+        }
+        
+        // Cyber Security
+        else if (path.includes('/cyber-security/') || path.includes('/cyber-city/')) {
+            gameInfo.game_name = 'Cyber Security Mission';
+            gameInfo.game_code = 'CSM001';
+        }
+        
+        // Constitution Games
+        else if (path.includes('/constitution-basic/')) {
+            gameInfo.game_name = 'Constitution Explorer Basic';
+            gameInfo.game_code = 'CEB001';
+        } else if (path.includes('/constitution-advanced/')) {
+            gameInfo.game_name = 'Constitution Explorer Advanced';
+            gameInfo.game_code = 'CEA001';
+        }
+        
+        // Entrepreneurship
+        else if (path.includes('/entrepreneurship/')) {
+            gameInfo.game_name = 'Entrepreneurship Challenge';
+            gameInfo.game_code = 'EC001';
+        }
+
+        // Filter out null values
+        Object.keys(gameInfo).forEach(key => {
+            if (gameInfo[key] === null) {
+                delete gameInfo[key];
+            }
+        });
+
+        return gameInfo;
     }
 
     /**
@@ -351,10 +438,12 @@ class DecipherWorldAnalytics {
             document.addEventListener('click', (event) => {
                 if (event.target.matches(selector) || event.target.closest(selector)) {
                     const gameType = this.detectGameType();
+                    const gameInfo = this.getGameInfo();
                     this.track('Game Started', {
                         ...this.getBaseProperties(),
                         game_type: gameType,
-                        game_page: this.getPageName()
+                        game_page: this.getPageName(),
+                        ...gameInfo // Includes game_name and game_code
                     });
                 }
             });
@@ -369,10 +458,12 @@ class DecipherWorldAnalytics {
         // For now, track when users spend significant time on game pages
         if (this.isGamePage()) {
             setTimeout(() => {
+                const gameInfo = this.getGameInfo();
                 this.track('Game Engagement', {
                     ...this.getBaseProperties(),
                     engagement_duration: 30,
-                    game_type: this.detectGameType()
+                    game_type: this.detectGameType(),
+                    ...gameInfo // Includes game_name and game_code
                 });
             }, 30000); // Track after 30 seconds on game page
         }
@@ -443,19 +534,23 @@ class DecipherWorldAnalytics {
     
     // Track custom game events
     trackGameEvent(action, gameType, additionalProperties = {}) {
+        const gameInfo = this.getGameInfo();
         this.track(`Game ${action}`, {
             ...this.getBaseProperties(),
             game_type: gameType,
+            ...gameInfo, // Ensures game_name and game_code are included
             ...additionalProperties
         });
     }
 
     // Track achievements
     trackAchievement(achievementName, gameType, additionalProperties = {}) {
+        const gameInfo = this.getGameInfo();
         this.track('Achievement Unlocked', {
             ...this.getBaseProperties(),
             achievement: achievementName,
             game_type: gameType,
+            ...gameInfo, // Ensures game_name and game_code are included
             ...additionalProperties
         });
     }

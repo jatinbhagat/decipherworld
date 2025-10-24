@@ -70,7 +70,88 @@ class DecipherWorldAnalytics:
         if hasattr(request, 'session'):
             base_props['session_key'] = request.session.session_key or 'no-session'
         
+        # Add game information if on a game page
+        game_info = self.get_game_info_from_request(request)
+        base_props.update(game_info)
+        
         return base_props
+
+    def get_game_info_from_request(self, request: HttpRequest) -> Dict[str, Any]:
+        """
+        Extract game information from request path
+        """
+        path = request.path
+        game_info = {}
+
+        # Design Thinking Game
+        if '/learn/design-thinking/' in path or '/learn/session/' in path:
+            game_info.update({
+                'game_name': 'Design Thinking Challenge',
+                'game_code': 'DTC001'
+            })
+            
+            # Extract session ID if available
+            import re
+            session_match = re.search(r'/learn/session/([A-Z0-9]+)', path)
+            if session_match:
+                game_info['session_id'] = session_match.group(1)
+        
+        # Climate Game
+        elif '/learn/climate/' in path or '/monsoon-mayhem/' in path:
+            game_info.update({
+                'game_name': 'Climate Change Challenge',
+                'game_code': 'CCC001'
+            })
+        
+        # AI Learning Games (Robotic Buddy)
+        elif '/buddy/' in path or '/robotic-buddy/' in path:
+            game_info.update({
+                'game_name': 'Robotic Buddy AI Learning',
+                'game_code': 'RBAL001'
+            })
+            
+            # Detect specific AI game types
+            if '/classification/' in path:
+                game_info['game_subtype'] = 'Animal Classification'
+            elif '/simple-game/' in path:
+                game_info['game_subtype'] = 'Simple AI Game'
+            elif '/drag-drop/' in path:
+                game_info['game_subtype'] = 'Drag Drop Game'
+        
+        # Financial Literacy
+        elif '/financial-literacy/' in path:
+            game_info.update({
+                'game_name': 'Financial Literacy Adventure',
+                'game_code': 'FLA001'
+            })
+        
+        # Cyber Security
+        elif '/cyber-security/' in path or '/cyber-city/' in path:
+            game_info.update({
+                'game_name': 'Cyber Security Mission',
+                'game_code': 'CSM001'
+            })
+        
+        # Constitution Games
+        elif '/constitution-basic/' in path:
+            game_info.update({
+                'game_name': 'Constitution Explorer Basic',
+                'game_code': 'CEB001'
+            })
+        elif '/constitution-advanced/' in path:
+            game_info.update({
+                'game_name': 'Constitution Explorer Advanced',
+                'game_code': 'CEA001'
+            })
+        
+        # Entrepreneurship
+        elif '/entrepreneurship/' in path:
+            game_info.update({
+                'game_name': 'Entrepreneurship Challenge',
+                'game_code': 'EC001'
+            })
+
+        return game_info
 
     def get_client_ip(self, request: HttpRequest) -> str:
         """
