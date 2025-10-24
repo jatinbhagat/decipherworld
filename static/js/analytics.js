@@ -91,26 +91,61 @@ class DecipherWorldAnalytics {
     init() {
         console.log('DecipherWorld Analytics initialized for user:', this.userId);
         
-        // Identify user in MixPanel
-        if (typeof mixpanel !== 'undefined') {
-            mixpanel.identify(this.userId);
-            mixpanel.register(this.getBaseProperties());
-        }
+        // Wait for Mixpanel to be fully loaded
+        this.waitForMixpanel().then(() => {
+            console.log('Mixpanel is ready, initializing tracking...');
+            
+            // Identify user in MixPanel
+            try {
+                mixpanel.identify(this.userId);
+                mixpanel.register(this.getBaseProperties());
+                console.log('Mixpanel user identified:', this.userId);
+            } catch (error) {
+                console.error('Error identifying user in Mixpanel:', error);
+            }
 
-        // Track page view
-        this.trackPageView();
-        
-        // Set up interaction tracking
-        this.setupInteractionTracking();
-        
-        // Set up form tracking
-        this.setupFormTracking();
-        
-        // Set up game-specific tracking
-        this.setupGameTracking();
-        
-        // Store current page for next navigation
-        this.storePreviousPage();
+            // Track page view
+            this.trackPageView();
+            
+            // Set up interaction tracking
+            this.setupInteractionTracking();
+            
+            // Set up form tracking
+            this.setupFormTracking();
+            
+            // Set up game-specific tracking
+            this.setupGameTracking();
+            
+            // Store current page for next navigation
+            this.storePreviousPage();
+        }).catch(error => {
+            console.error('Failed to initialize Mixpanel analytics:', error);
+        });
+    }
+
+    /**
+     * Wait for Mixpanel to be fully loaded
+     */
+    waitForMixpanel(maxAttempts = 50) {
+        return new Promise((resolve, reject) => {
+            let attempts = 0;
+            
+            const checkMixpanel = () => {
+                attempts++;
+                
+                if (typeof mixpanel !== 'undefined' && mixpanel.track && typeof mixpanel.track === 'function') {
+                    console.log('Mixpanel is ready after', attempts, 'attempts');
+                    resolve(mixpanel);
+                } else if (attempts >= maxAttempts) {
+                    reject(new Error('Mixpanel failed to load after ' + maxAttempts + ' attempts'));
+                } else {
+                    console.log('Waiting for Mixpanel... attempt', attempts);
+                    setTimeout(checkMixpanel, 100);
+                }
+            };
+            
+            checkMixpanel();
+        });
     }
 
     /**
@@ -373,10 +408,32 @@ class DecipherWorldAnalytics {
      * Main tracking method - wrapper around MixPanel
      */
     track(eventName, properties = {}) {
-        if (typeof mixpanel !== 'undefined') {
-            mixpanel.track(eventName, properties);
-        } else {
-            console.warn('MixPanel not available, event logged:', eventName, properties);
+        try {
+            if (typeof mixpanel !== 'undefined' && mixpanel.track && typeof mixpanel.track === 'function') {
+                console.log('🔥 TRACKING EVENT:', eventName, properties);
+                mixpanel.track(eventName, properties);
+                console.log('✅ Event tracked successfully:', eventName);
+            } else {
+                console.warn('⚠️ MixPanel not available, event logged to console:', eventName, properties);
+                // Also log to a global array for debugging
+                if (!window.dwAnalyticsLog) window.dwAnalyticsLog = [];
+                window.dwAnalyticsLog.push({
+                    timestamp: new Date().toISOString(),
+                    event: eventName,
+                    properties: properties,
+                    status: 'mixpanel_not_available'
+                });
+            }
+        } catch (error) {
+            console.error('❌ Error tracking event:', eventName, error);
+            // Log error events for debugging
+            if (!window.dwAnalyticsErrors) window.dwAnalyticsErrors = [];
+            window.dwAnalyticsErrors.push({
+                timestamp: new Date().toISOString(),
+                event: eventName,
+                properties: properties,
+                error: error.message
+            });
         }
     }
 

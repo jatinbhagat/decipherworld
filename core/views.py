@@ -931,3 +931,7 @@ def create_production_superuser(request):
             'message': f'Failed to create superuser: {str(e)}',
             'error_type': type(e).__name__
         }, status=500)
+
+def mixpanel_test(request):
+    """Debug page for testing Mixpanel analytics"""
+    return render(request, 'core/mixpanel_test.html')

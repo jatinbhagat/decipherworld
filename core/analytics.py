@@ -26,7 +26,8 @@ class DecipherWorldAnalytics:
         # Initialize MixPanel consumer
         try:
             self.mp = mixpanel.Mixpanel(self.project_token)
-            self.mp_consumer = mixpanel.Consumer(api_secret=self.api_secret)
+            # Note: Consumer doesn't need api_secret, it's handled by the Mixpanel instance
+            self.mp_consumer = mixpanel.Consumer()
             logger.info("MixPanel backend analytics initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize MixPanel: {str(e)}")

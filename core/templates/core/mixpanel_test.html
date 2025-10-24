@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}Mixpanel Debug Test - DecipherWorld{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 py-20">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+            <h1 class="text-3xl font-bold text-slate-900 mb-6">
+                <i class="fas fa-bug text-red-500 mr-3"></i>
+                Mixpanel Debug Test Page
+            </h1>
+            
+            <div class="grid gap-6">
+                <!-- Status Card -->
+                <div class="bg-slate-50 rounded-xl p-6">
+                    <h2 class="text-xl font-semibold text-slate-800 mb-4">Analytics Status</h2>
+                    <div id="status-container" class="space-y-2"></div>
+                </div>
+                
+                <!-- Test Buttons -->
+                <div class="bg-slate-50 rounded-xl p-6">
+                    <h2 class="text-xl font-semibold text-slate-800 mb-4">Test Events</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <button id="test-pageview" class="btn btn-primary">
+                            <i class="fas fa-eye mr-2"></i>
+                            Test Page View
+                        </button>
+                        <button id="test-interaction" class="btn btn-secondary">
+                            <i class="fas fa-mouse-pointer mr-2"></i>
+                            Test Interaction
+                        </button>
+                        <button id="test-game-event" class="btn btn-accent">
+                            <i class="fas fa-gamepad mr-2"></i>
+                            Test Game Event
+                        </button>
+                        <button id="test-achievement" class="btn btn-success">
+                            <i class="fas fa-trophy mr-2"></i>
+                            Test Achievement
+                        </button>
+                        <button id="test-error" class="btn btn-error">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Test Error
+                        </button>
+                        <button id="test-form" class="btn btn-warning">
+                            <i class="fas fa-wpforms mr-2"></i>
+                            Test Form
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Event Log -->
+                <div class="bg-slate-50 rounded-xl p-6">
+                    <h2 class="text-xl font-semibold text-slate-800 mb-4">Event Log</h2>
+                    <div id="event-log" class="bg-black text-green-400 p-4 rounded-lg font-mono text-sm max-h-96 overflow-y-auto">
+                        <div>Waiting for events...</div>
+                    </div>
+                </div>
+                
+                <!-- Debug Form -->
+                <div class="bg-slate-50 rounded-xl p-6">
+                    <h2 class="text-xl font-semibold text-slate-800 mb-4">Test Form</h2>
+                    <form id="debug-form" class="space-y-4">
+                        {% csrf_token %}
+                        <div>
+                            <label class="label">
+                                <span class="label-text">Test Input</span>
+                            </label>
+                            <input type="text" placeholder="Enter test data" class="input input-bordered w-full" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Test Form</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusContainer = document.getElementById('status-container');
+    const eventLog = document.getElementById('event-log');
+    
+    // Function to update status
+    function updateStatus() {
+        const status = [
+            { label: 'Mixpanel Available', value: typeof mixpanel !== 'undefined', type: 'bool' },
+            { label: 'Analytics Available', value: typeof window.dwAnalytics !== 'undefined', type: 'bool' },
+            { label: 'Debug Mode', value: window.mixpanel?.config?.debug, type: 'bool' },
+            { label: 'Events Logged', value: window.dwAnalyticsLog?.length || 0, type: 'number' },
+            { label: 'Errors Logged', value: window.dwAnalyticsErrors?.length || 0, type: 'number' },
+            { label: 'User ID', value: window.dwAnalytics?.userId || 'Not set', type: 'string' }
+        ];
+        
+        statusContainer.innerHTML = status.map(item => `
+            <div class="flex justify-between items-center py-2 border-b border-slate-200 last:border-b-0">
+                <span class="font-medium">${item.label}:</span>
+                <span class="px-3 py-1 rounded-full text-sm ${
+                    item.type === 'bool' 
+                        ? (item.value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')
+                        : 'bg-slate-100 text-slate-800'
+                }">
+                    ${item.value}
+                </span>
+            </div>
+        `).join('');
+    }
+    
+    // Function to log events
+    function logEvent(message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString();
+        const colors = {
+            info: 'text-blue-400',
+            success: 'text-green-400',
+            error: 'text-red-400',
+            warning: 'text-yellow-400'
+        };
+        
+        const logEntry = document.createElement('div');
+        logEntry.className = colors[type];
+        logEntry.innerHTML = `[${timestamp}] ${message}`;
+        
+        eventLog.appendChild(logEntry);
+        eventLog.scrollTop = eventLog.scrollHeight;
+    }
+    
+    // Initial status update
+    setTimeout(updateStatus, 1000);
+    setInterval(updateStatus, 5000);
+    
+    // Test buttons
+    document.getElementById('test-pageview').addEventListener('click', () => {
+        if (window.dwAnalytics) {
+            window.dwAnalytics.trackPageView();
+            logEvent('Page view event sent', 'success');
+        } else {
+            logEvent('Analytics not available', 'error');
+        }
+    });
+    
+    document.getElementById('test-interaction').addEventListener('click', () => {
+        if (window.dwAnalytics) {
+            window.dwAnalytics.track('Test Button Clicked', {
+                button_id: 'test-interaction',
+                test_property: 'debug_value'
+            });
+            logEvent('Interaction event sent', 'success');
+        } else {
+            logEvent('Analytics not available', 'error');
+        }
+    });
+    
+    document.getElementById('test-game-event').addEventListener('click', () => {
+        if (window.dwAnalytics) {
+            window.dwAnalytics.trackGameEvent('Level Started', 'Debug Game', {
+                level: 1,
+                difficulty: 'easy'
+            });
+            logEvent('Game event sent', 'success');
+        } else {
+            logEvent('Analytics not available', 'error');
+        }
+    });
+    
+    document.getElementById('test-achievement').addEventListener('click', () => {
+        if (window.dwAnalytics) {
+            window.dwAnalytics.trackAchievement('Debug Master', 'Debug Game', {
+                points: 100
+            });
+            logEvent('Achievement event sent', 'success');
+        } else {
+            logEvent('Analytics not available', 'error');
+        }
+    });
+    
+    document.getElementById('test-error').addEventListener('click', () => {
+        if (window.dwAnalytics) {
+            window.dwAnalytics.trackError('Debug Error', 'This is a test error message', {
+                test_context: 'debug_page'
+            });
+            logEvent('Error event sent', 'success');
+        } else {
+            logEvent('Analytics not available', 'error');
+        }
+    });
+    
+    document.getElementById('test-form').addEventListener('click', () => {
+        if (window.dwAnalytics) {
+            window.dwAnalytics.track('Debug Form Interaction', {
+                form_type: 'debug_form',
+                action: 'button_clicked'
+            });
+            logEvent('Form event sent', 'success');
+        } else {
+            logEvent('Analytics not available', 'error');
+        }
+    });
+    
+    // Form submission test
+    document.getElementById('debug-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        logEvent('Form submitted - automatic tracking should fire', 'info');
+    });
+    
+    // Monitor analytics events
+    const originalTrack = window.dwAnalytics?.track;
+    if (originalTrack) {
+        window.dwAnalytics.track = function(eventName, properties) {
+            logEvent(`Event: ${eventName} with ${Object.keys(properties || {}).length} properties`, 'info');
+            return originalTrack.call(this, eventName, properties);
+        };
+    }
+    
+    logEvent('Debug page loaded and monitoring started', 'success');
+});
+</script>
+{% endblock %}
