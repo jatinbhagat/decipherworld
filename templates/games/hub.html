@@ -59,7 +59,7 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8">
             <!-- AI Learning Games -->
             <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-white">
@@ -148,6 +148,50 @@
                 </div>
             </div>
 
+            <!-- Entrepreneurship Game -->
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-br from-orange-500 to-amber-600 p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-3">
+                            <span class="text-2xl">🚀</span>
+                        </div>
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Grades 4-10</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Entrepreneurship</h3>
+                    <p class="text-orange-100 text-sm">Business Building & Scaling</p>
+                </div>
+                
+                <div class="p-6">
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Build on the famous Lemonade Stand Game to teach business basics through individual challenges and strategic thinking.
+                    </p>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+                            Business Planning & Strategy
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+                            Market Analysis Skills
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+                            Financial Management
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <a href="{% url 'games:entrepreneurship' %}" class="block w-full bg-orange-600 text-white py-3 px-4 rounded-xl hover:bg-orange-700 transition-all duration-200 text-center font-semibold group-hover:scale-105">
+                            Build Your Business
+                        </a>
+                        <a href="https://games.decipherworld.com" target="_blank" rel="noopener" class="block w-full border-2 border-orange-200 text-orange-600 py-3 px-4 rounded-xl hover:bg-orange-50 hover:border-orange-300 transition-all duration-200 text-center font-medium">
+                            Play Direct <i class="fas fa-external-link-alt ml-1 text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <!-- Cyber Security Games -->
             <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-br from-red-500 to-rose-600 p-6 text-white">
@@ -209,7 +253,47 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-8">
+            <!-- Design Thinking Game -->
+            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-br from-yellow-500 to-orange-600 p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-3">
+                            <span class="text-2xl">💡</span>
+                        </div>
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Grades 3-12</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Design Thinking</h3>
+                    <p class="text-yellow-100 text-sm">Classroom Innovators Challenge</p>
+                </div>
+                
+                <div class="p-6">
+                    <p class="text-gray-600 mb-6 leading-relaxed text-sm">
+                        Collaborate to solve real classroom challenges through design thinking methodology. Empathize, ideate, prototype, and test solutions together.
+                    </p>
+                    
+                    <div class="space-y-2 mb-6">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full mr-3"></div>
+                            Design Thinking Process
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full mr-3"></div>
+                            Team Innovation Skills
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <a href="{% url 'group_learning:design_thinking_start' %}" class="block w-full bg-yellow-600 text-white py-2.5 px-4 rounded-xl hover:bg-yellow-700 transition-all duration-200 text-center font-semibold text-sm group-hover:scale-105">
+                            Start Innovation Challenge
+                        </a>
+                        <a href="{% url 'group_learning:design_thinking_start' %}" class="block w-full border-2 border-yellow-200 text-yellow-600 py-2.5 px-4 rounded-xl hover:bg-yellow-50 hover:border-yellow-300 transition-all duration-200 text-center font-medium text-sm">
+                            Learn Design Process
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <!-- Entrepreneurship Game -->
             <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-br from-orange-500 to-amber-600 p-6 text-white">
