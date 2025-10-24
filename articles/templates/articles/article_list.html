@@ -1,53 +1,213 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Articles | DecipherWorld</title>
-    <meta name="description" content="Browse our latest articles on education, teaching strategies, and EdTech news from DecipherWorld.">
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Articles - Insights on Education & Learning | DecipherWorld{% endblock %}
+
+{% block meta %}
+    <meta name="description" content="Explore our latest articles on game-based learning, AI in education, teaching strategies, and educational innovation from DecipherWorld's experts.">
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
-</head>
-<body>
-    <div class="container">
-        <h1>Articles</h1>
-        
+    <meta property="og:title" content="Educational Articles & Insights | DecipherWorld">
+    <meta property="og:description" content="Discover expert insights on game-based learning, AI in education, and innovative teaching strategies.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 border-b border-slate-200/50">
+        <div class="container mx-auto px-4 py-12 max-w-6xl">
+            <div class="text-center">
+                <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Educational Insights</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+                    Articles & <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Insights</span>
+                </h1>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                    Discover expert perspectives on game-based learning, AI in education, and innovative teaching strategies that transform classrooms.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Articles Section -->
+    <div class="container mx-auto px-4 py-12 max-w-6xl">
         {% if articles %}
-            <div class="articles-list">
+            <!-- Articles Grid -->
+            <div class="grid gap-8 md:gap-12">
                 {% for article in articles %}
-                    <article class="article-preview">
-                        <h2><a href="{% url 'articles:article_detail' article.slug %}">{{ article.title }}</a></h2>
-                        <div class="article-meta">
-                            <span class="author">By {{ article.author.get_full_name|default:article.author.username }}</span>
-                            <span class="date">{{ article.created_on|date:"F d, Y" }}</span>
-                            <span class="category">{{ article.category.name }}</span>
+                    <article class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20 overflow-hidden">
+                        <div class="p-8">
+                            <!-- Category Badge -->
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="badge badge-primary badge-outline">
+                                    <i class="fas fa-tag text-xs mr-1"></i>
+                                    {{ article.category.name }}
+                                </div>
+                                {% if article.last_modified != article.created_on %}
+                                    <div class="badge badge-secondary badge-outline badge-sm">
+                                        <i class="fas fa-sync text-xs mr-1"></i>
+                                        Updated
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Article Title -->
+                            <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4 group-hover:text-primary transition-colors duration-300 leading-tight">
+                                <a href="{% url 'articles:article_detail' article.slug %}" class="block">
+                                    {{ article.title }}
+                                </a>
+                            </h2>
+
+                            <!-- Article Meta -->
+                            <div class="flex flex-wrap items-center gap-4 text-sm text-slate-600 mb-6">
+                                <div class="flex items-center gap-2">
+                                    <div class="avatar placeholder">
+                                        <div class="bg-primary text-primary-content rounded-full w-8">
+                                            <span class="text-xs font-medium">
+                                                {{ article.author.first_name.0|default:article.author.username.0 }}{{ article.author.last_name.0 }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <span class="font-medium">{{ article.author.get_full_name|default:article.author.username }}</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <i class="fas fa-calendar text-slate-400"></i>
+                                    <time datetime="{{ article.created_on|date:'c' }}">{{ article.created_on|date:"F d, Y" }}</time>
+                                </div>
+                                {% if article.last_modified != article.created_on %}
+                                    <div class="flex items-center gap-1">
+                                        <i class="fas fa-edit text-slate-400"></i>
+                                        <span>Updated {{ article.last_modified|date:"M d, Y" }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Article Description -->
+                            <p class="text-slate-700 text-lg leading-relaxed mb-6">
+                                {{ article.meta_description }}
+                            </p>
+
+                            <!-- Engagement Stats -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-6 text-sm text-slate-500">
+                                    <div class="flex items-center gap-1">
+                                        <i class="fas fa-heart text-red-400"></i>
+                                        <span>{{ article.get_likes_count }} like{{ article.get_likes_count|pluralize }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <i class="fas fa-comments text-blue-400"></i>
+                                        <span>{{ article.get_comments_count }} comment{{ article.get_comments_count|pluralize }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <i class="fas fa-share text-green-400"></i>
+                                        <span>{{ article.get_shares_count }} share{{ article.get_shares_count|pluralize }}</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Read More Button -->
+                                <a href="{% url 'articles:article_detail' article.slug %}" 
+                                   class="btn btn-primary btn-sm group-hover:btn-secondary transition-all duration-300">
+                                    <span>Read Article</span>
+                                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300"></i>
+                                </a>
+                            </div>
                         </div>
-                        <p class="meta-description">{{ article.meta_description }}</p>
                     </article>
                 {% endfor %}
             </div>
             
+            <!-- Pagination -->
             {% if is_paginated %}
-                <div class="pagination">
-                    <span class="pagination-links">
+                <div class="flex justify-center mt-16">
+                    <div class="join">
                         {% if page_obj.has_previous %}
-                            <a href="?page=1">&laquo; first</a>
-                            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                            <a href="?page=1" class="join-item btn btn-outline">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                            <a href="?page={{ page_obj.previous_page_number }}" class="join-item btn btn-outline">
+                                <i class="fas fa-angle-left"></i>
+                                Previous
+                            </a>
                         {% endif %}
                         
-                        <span class="current">
+                        <div class="join-item btn btn-primary btn-disabled">
                             Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                        </span>
+                        </div>
                         
                         {% if page_obj.has_next %}
-                            <a href="?page={{ page_obj.next_page_number }}">next</a>
-                            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                            <a href="?page={{ page_obj.next_page_number }}" class="join-item btn btn-outline">
+                                Next
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}" class="join-item btn btn-outline">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
                         {% endif %}
-                    </span>
+                    </div>
                 </div>
             {% endif %}
+
         {% else %}
-            <p>No articles have been published yet.</p>
+            <!-- Empty State -->
+            <div class="text-center py-20">
+                <div class="max-w-md mx-auto">
+                    <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-newspaper text-3xl text-slate-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-4">No Articles Yet</h3>
+                    <p class="text-slate-600 mb-8">
+                        We're working on creating amazing educational content for you. Check back soon for insightful articles on game-based learning and education innovation!
+                    </p>
+                    <a href="{% url 'core:home' %}" class="btn btn-primary">
+                        <i class="fas fa-home mr-2"></i>
+                        Back to Home
+                    </a>
+                </div>
+            </div>
         {% endif %}
     </div>
-</body>
-</html>
+</div>
+
+<!-- Schema.org Structured Data for Article List -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Educational Articles | DecipherWorld",
+    "description": "Collection of expert articles on game-based learning, AI in education, and innovative teaching strategies",
+    "url": "{{ request.build_absolute_uri }}",
+    "publisher": {
+        "@type": "Organization",
+        "name": "DecipherWorld",
+        "url": "{{ request.scheme }}://{{ request.get_host }}"
+    },
+    "mainEntity": {
+        "@type": "ItemList",
+        "itemListElement": [
+            {% for article in articles %}
+            {
+                "@type": "Article",
+                "position": {{ forloop.counter }},
+                "name": "{{ article.title|escapejs }}",
+                "description": "{{ article.meta_description|escapejs }}",
+                "url": "{{ request.scheme }}://{{ request.get_host }}{{ article.get_absolute_url }}",
+                "author": {
+                    "@type": "Person",
+                    "name": "{{ article.author.get_full_name|default:article.author.username|escapejs }}"
+                },
+                "datePublished": "{{ article.created_on|date:'c' }}",
+                "dateModified": "{{ article.last_modified|date:'c' }}",
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "DecipherWorld"
+                }
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    }
+}
+</script>
+{% endblock %}

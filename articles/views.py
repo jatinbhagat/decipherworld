@@ -312,10 +312,22 @@ def track_share(request, slug):
 # UTILITY FUNCTIONS
 
 def get_client_ip(request):
-    """Get client IP address"""
+    """Get client IP address, cleaned of port numbers"""
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
+        ip = x_forwarded_for.split(',')[0].strip()
     else:
-        ip = request.META.get('REMOTE_ADDR')
+        ip = request.META.get('REMOTE_ADDR', '127.0.0.1')
+    
+    # Remove port number if present (Azure load balancer can include ports)
+    if ':' in ip and not ip.startswith('['):  # Don't split IPv6 addresses
+        ip = ip.split(':')[0]
+    
+    # Clean and validate IP address
+    ip = ip.strip()
+    
+    # Fallback to localhost if IP is invalid
+    if not ip or len(ip) > 45:  # Max length for IPv6
+        ip = '127.0.0.1'
+    
     return ip
