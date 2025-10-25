@@ -26,4 +26,5 @@ urlpatterns = [
     path('mixpanel-test/', views.mixpanel_test, name='mixpanel_test'),
     path('health/', views.health_check, name='health_check'),
     path('api/track-event/', views.track_event_fallback, name='track_event_fallback'),
+    path('api/analytics/track/', views.analytics_track_api, name='analytics_track_api'),
 ]

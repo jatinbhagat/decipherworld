@@ -362,3 +362,7 @@ def track_error(request: HttpRequest, error_type: str, error_message: str, addit
 def track_user_content_creation(request: HttpRequest, content_type: str, content_data: Optional[Dict[str, Any]] = None) -> bool:
     """Quick access to track_user_content_creation"""
     return analytics.track_user_content_creation(request, content_type, content_data)
+
+def track_custom_event(request: HttpRequest, event_name: str, properties: Optional[Dict[str, Any]] = None) -> bool:
+    """Track any custom event with provided properties"""
+    return analytics.track_event(request, event_name, properties or {})

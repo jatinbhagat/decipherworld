@@ -141,13 +141,26 @@ class DecipherWorldAnalytics {
                 console.log('- mixpanel exists:', typeof mixpanel !== 'undefined');
                 console.log('- has track:', typeof mixpanel?.track === 'function');
                 console.log('- ready flag:', window.mixpanelReady);
+                console.log('- fallback exists:', typeof window.mixpanelFallback !== 'undefined');
                 
+                // Check for either real Mixpanel or fallback
                 if (typeof mixpanel !== 'undefined' && mixpanel.track && typeof mixpanel.track === 'function') {
-                    console.log('✅ Mixpanel is ready after', attempts, 'attempts');
+                    console.log('✅ Real Mixpanel is ready after', attempts, 'attempts');
                     resolve(mixpanel);
+                } else if (typeof window.mixpanelFallback !== 'undefined' && window.mixpanelFallback.track) {
+                    console.log('✅ Mixpanel fallback is ready after', attempts, 'attempts');
+                    // Set global mixpanel to fallback for compatibility
+                    window.mixpanel = window.mixpanelFallback;
+                    resolve(window.mixpanelFallback);
                 } else if (attempts >= maxAttempts) {
-                    console.error('❌ Mixpanel failed to load after', maxAttempts, 'attempts');
-                    reject(new Error('Mixpanel failed to load after ' + maxAttempts + ' attempts'));
+                    console.error('❌ Neither Mixpanel nor fallback loaded after', maxAttempts, 'attempts');
+                    // Create a dummy implementation to prevent errors
+                    window.mixpanel = {
+                        track: (event, props) => console.log('🔇 Silent tracking:', event, props),
+                        identify: (id) => console.log('🔇 Silent identify:', id),
+                        register: (props) => console.log('🔇 Silent register:', props)
+                    };
+                    resolve(window.mixpanel);
                 } else {
                     setTimeout(checkMixpanel, 200); // Increased delay
                 }

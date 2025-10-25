@@ -1076,3 +1076,46 @@ def get_client_ip(request):
         ip = '127.0.0.1'
     
     return ip
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def analytics_track_api(request):
+    """Fallback API endpoint for Mixpanel tracking when CDN is blocked"""
+    try:
+        import json
+        from .analytics import track_custom_event
+        
+        # Parse request data
+        data = json.loads(request.body)
+        event_name = data.get('event', 'Unknown Event')
+        properties = data.get('properties', {})
+        token = data.get('token', '')
+        
+        # Add request metadata
+        properties.update({
+            'user_agent': request.META.get('HTTP_USER_AGENT', ''),
+            'ip_address': get_client_ip(request),
+            'referer': request.META.get('HTTP_REFERER', ''),
+            'tracking_method': 'backend_fallback'
+        })
+        
+        # Track the event using backend analytics
+        success = track_custom_event(request, event_name, properties)
+        
+        return JsonResponse({
+            'status': 'success' if success else 'partial',
+            'message': 'Event tracked via backend fallback',
+            'event': event_name,
+            'tracked_at': properties.get('timestamp', '')
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid JSON data'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Tracking error: {str(e)}'
+        }, status=500)
