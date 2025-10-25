@@ -224,6 +224,12 @@
             // Send to backend immediately
             this.sendToBackend(eventName, properties);
         },
+        identify: function(userId) {
+            console.log('📊 Fallback identify:', userId);
+        },
+        register: function(properties) {
+            console.log('📊 Fallback register:', properties);
+        },
         sendToBackend: function(eventName, properties) {
             fetch('/api/analytics/track/', {
                 method: 'POST',
@@ -248,6 +254,9 @@
         }
     };
     
+    // Immediately set fallback as default mixpanel
+    window.mixpanel = window.mixpanelFallback;
+    
     // Load Mixpanel from local source with fallback
     (function loadMixpanel() {
         const script = document.createElement('script');
@@ -258,25 +267,27 @@
         script.onload = function() {
             console.log('📦 Local Mixpanel library loaded successfully');
             
-            // Initialize Mixpanel
+            // Check if library actually loaded the global mixpanel object
             if (typeof mixpanel !== 'undefined' && mixpanel.init) {
                 try {
+                    console.log('🔧 Initializing real Mixpanel library...');
+                    
+                    // Initialize the real Mixpanel with latest config format
                     mixpanel.init(mixpanelToken, {
-                        debug: true,
+                        debug: !isProduction,
                         track_pageview: false,
-                        persistence: 'cookie',
+                        persistence: 'localStorage+cookie',
                         api_host: 'https://api.mixpanel.com',
-                        secure_cookie: isProduction,
-                        cross_subdomain_cookie: false,
-                        ip: true,
-                        property_blacklist: [],
-                        loaded: function(mixpanel) {
-                            console.log('✅ Mixpanel loaded and initialized successfully!');
+                        loaded: function(mixpanelInstance) {
+                            console.log('✅ Real Mixpanel loaded and initialized successfully!');
                             window.mixpanelReady = true;
+                            
+                            // Replace fallback with real mixpanel
+                            window.mixpanel = mixpanelInstance;
                             
                             // Test event
                             try {
-                                mixpanel.track('Mixpanel Initialized Successfully', {
+                                window.mixpanel.track('Mixpanel Initialized Successfully', {
                                     environment: isProduction ? 'production' : 'development',
                                     timestamp: new Date().toISOString(),
                                     page: window.location.pathname,
@@ -284,20 +295,19 @@
                                     token_used: mixpanelToken,
                                     initialization_method: 'local_library'
                                 });
-                                console.log('🔥 Initialization test event sent successfully!');
+                                console.log('🔥 Real Mixpanel test event sent successfully!');
                             } catch (trackError) {
                                 console.error('❌ Error sending test event:', trackError);
                             }
-                        },
-                        error: function(error) {
-                            console.error('❌ Mixpanel initialization error:', error);
-                            window.mixpanelReady = false;
                         }
                     });
                 } catch (initError) {
                     console.error('❌ Critical Mixpanel initialization error:', initError);
                     window.mixpanelReady = false;
                 }
+            } else {
+                console.warn('⚠️ Mixpanel library loaded but global object not found');
+                window.mixpanelReady = false;
             }
         };
         
@@ -328,12 +338,12 @@
     // Verification after delay
     setTimeout(() => {
         console.log('🔍 Final Mixpanel status check:');
-        console.log('- Available:', typeof mixpanel !== 'undefined');
-        console.log('- Has track method:', typeof mixpanel?.track === 'function');
+        console.log('- Available:', typeof window.mixpanel !== 'undefined');
+        console.log('- Has track method:', typeof window.mixpanel?.track === 'function');
         console.log('- Ready flag:', window.mixpanelReady);
         console.log('- Fallback events:', window.mixpanelFallback.events.length);
         
-        if (typeof mixpanel !== 'undefined' && mixpanel.track && typeof mixpanel.track === 'function') {
+        if (typeof window.mixpanel !== 'undefined' && window.mixpanel.track && typeof window.mixpanel.track === 'function') {
             console.log('✅ Mixpanel is fully ready for tracking!');
         } else {
             console.warn('⚠️ Using fallback tracking only');
@@ -356,64 +366,64 @@
             <div class="flex items-center">
                 <!-- Mobile Menu -->
                 <div class="dropdown lg:hidden mr-3">
-                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle active:transform active:scale-95 transition-all duration-150 ease-in-out">
                         <i class="fas fa-bars text-xl text-slate-700"></i>
                     </div>
                     <ul tabindex="0" class="menu menu-sm dropdown-content bg-white rounded-xl z-[1] mt-3 w-64 p-4 shadow-xl border border-slate-200">
                         <!-- Home Section -->
                         <li>
                             <details>
-                                <summary class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium">
+                                <summary class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out">
                                     <i class="fas fa-home text-primary"></i>Home
                                 </summary>
                                 <ul class="p-2 bg-slate-50 rounded-lg mt-2 space-y-1">
-                                    <li><a href="{% url 'core:home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-house text-sm"></i>Homepage</a></li>
-                                    <li><a href="{% url 'core:about' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-users text-sm"></i>About Us</a></li>
-                                    <li><a href="{% url 'core:gallery' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-images text-sm"></i>Gallery</a></li>
+                                    <li><a href="{% url 'core:home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-house text-sm"></i>Homepage</a></li>
+                                    <li><a href="{% url 'core:about' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-users text-sm"></i>About Us</a></li>
+                                    <li><a href="{% url 'core:gallery' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-images text-sm"></i>Gallery</a></li>
                                 </ul>
                             </details>
                         </li>
                         
                         <!-- Students -->
-                        <li><a href="{% url 'core:courses' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-graduation-cap text-blue-500"></i>Students</a></li>
+                        <li><a href="{% url 'core:students' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out"><i class="fas fa-graduation-cap text-blue-500"></i>Students</a></li>
                         
                         <!-- Games -->
                         <li>
                             <details>
-                                <summary class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium">
+                                <summary class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out">
                                     <i class="fas fa-gamepad text-orange-500"></i>Games
                                 </summary>
                                 <ul class="p-2 bg-slate-50 rounded-lg mt-2 space-y-1">
-                                    <li><a href="{% url 'games:hub' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-th-large text-sm"></i>All Games</a></li>
+                                    <li><a href="{% url 'games:hub' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-th-large text-sm"></i>All Games</a></li>
                                     <li class="border-t border-slate-200 pt-2 mt-2">
                                         <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Individual Games</div>
                                     </li>
-                                    <li><a href="{% url 'games:ai_learning' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-robot text-sm"></i>AI Learning</a></li>
-                                    <li><a href="{% url 'games:cyber_security' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-shield text-sm"></i>Cyber Security</a></li>
-                                    <li><a href="{% url 'games:constitution_basic' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-landmark text-sm"></i>Constitution</a></li>
+                                    <li><a href="{% url 'games:ai_learning' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-robot text-sm"></i>AI Learning</a></li>
+                                    <li><a href="{% url 'games:cyber_security' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-shield text-sm"></i>Cyber Security</a></li>
+                                    <li><a href="{% url 'games:constitution_basic' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-landmark text-sm"></i>Constitution</a></li>
                                     <li class="border-t border-slate-200 pt-2 mt-2">
                                         <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Team Games</div>
                                     </li>
-                                    <li><a href="{% url 'group_learning:design_thinking_start' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-lightbulb text-sm"></i>Design Thinking</a></li>
-                                    <li><a href="{% url 'games:entrepreneurship' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-rocket text-sm"></i>Entrepreneurship</a></li>
-                                    <li><a href="{% url 'games:financial_literacy' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-coins text-sm"></i>Financial Literacy</a></li>
-                                    <li><a href="{% url 'group_learning:climate_game_home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white"><i class="fas fa-leaf text-sm"></i>Climate Change</a></li>
+                                    <li><a href="{% url 'group_learning:design_thinking_start' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-lightbulb text-sm"></i>Design Thinking</a></li>
+                                    <li><a href="{% url 'games:entrepreneurship' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-rocket text-sm"></i>Entrepreneurship</a></li>
+                                    <li><a href="{% url 'games:financial_literacy' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-coins text-sm"></i>Financial Literacy</a></li>
+                                    <li><a href="{% url 'group_learning:climate_game_home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-leaf text-sm"></i>Climate Change</a></li>
                                 </ul>
                             </details>
                         </li>
                         
                         <!-- Teachers -->
-                        <li><a href="{% url 'core:teachers' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-chalkboard-teacher text-green-500"></i>Teachers</a></li>
+                        <li><a href="{% url 'core:teachers' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out"><i class="fas fa-chalkboard-teacher text-green-500"></i>Teachers</a></li>
                         
                         <!-- Schools -->
-                        <li><a href="{% url 'core:schools' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-school text-purple-500"></i>Schools</a></li>
+                        <li><a href="{% url 'core:schools' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out"><i class="fas fa-school text-purple-500"></i>Schools</a></li>
                         
                         <!-- Articles -->
-                        <li><a href="{% url 'articles:article_list' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-newspaper text-slate-600"></i>Articles</a></li>
+                        <li><a href="{% url 'articles:article_list' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out"><i class="fas fa-newspaper text-slate-600"></i>Articles</a></li>
                         
                         <!-- Contact -->
                         <li class="border-t border-slate-200 pt-2 mt-2">
-                            <a href="{% url 'core:contact' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-primary hover:text-white text-primary font-medium">
+                            <a href="{% url 'core:contact' %}" class="flex items-center gap-3 py-3 rounded-lg hover:bg-primary hover:text-white text-primary active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out">
                                 <i class="fas fa-rocket"></i>Get Started
                             </a>
                         </li>
@@ -421,7 +431,7 @@
                 </div>
                 
                 <!-- Prominent Logo & Brand - LEFT ALIGNED -->
-                <a href="{% url 'core:home' %}" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+                <a href="{% url 'core:home' %}" class="flex items-center gap-3 hover:opacity-90 active:transform active:scale-95 transition-all duration-150 ease-in-out">
                     <div class="w-14 h-14 lg:w-16 lg:h-16 flex items-center justify-center flex-shrink-0">
                         <img src="{% static 'images/decipherworld-logo.svg' %}" 
                              alt="DecipherWorld Logo" 
@@ -446,22 +456,22 @@
                         <!-- Home Dropdown -->
                         <li class="h-full flex items-center relative">
                             <details class="h-full flex items-center">
-                                <summary class="h-full flex items-center px-4 text-slate-700 hover:text-primary font-medium cursor-pointer transition-colors">
+                                <summary class="h-full flex items-center px-4 text-slate-700 hover:text-primary active:transform active:scale-95 font-medium cursor-pointer transition-all duration-150 ease-in-out">
                                     <i class="fas fa-home text-primary text-sm mr-2"></i>
                                     <span>Home</span>
                                     <i class="fas fa-chevron-down text-xs ml-1"></i>
                                 </summary>
                                 <ul class="absolute top-full left-0 mt-2 p-3 bg-white shadow-xl rounded-xl border border-slate-200 w-48 z-50">
-                                    <li><a href="{% url 'core:home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-house text-sm"></i>Homepage</a></li>
-                                    <li><a href="{% url 'core:about' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-users text-sm"></i>About Us</a></li>
-                                    <li><a href="{% url 'core:gallery' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-images text-sm"></i>Gallery</a></li>
+                                    <li><a href="{% url 'core:home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-house text-sm"></i>Homepage</a></li>
+                                    <li><a href="{% url 'core:about' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-users text-sm"></i>About Us</a></li>
+                                    <li><a href="{% url 'core:gallery' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-images text-sm"></i>Gallery</a></li>
                                 </ul>
                             </details>
                         </li>
                         
                         <!-- Students -->
                         <li class="h-full flex items-center">
-                            <a href="{% url 'core:courses' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-blue-500 font-medium transition-colors">
+                            <a href="{% url 'core:students' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-blue-500 active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out">
                                 <i class="fas fa-graduation-cap text-blue-500 text-sm mr-2"></i>
                                 <span>Students</span>
                             </a>
@@ -470,33 +480,33 @@
                         <!-- Games Dropdown -->
                         <li class="h-full flex items-center relative">
                             <details class="h-full flex items-center">
-                                <summary class="h-full flex items-center px-4 text-slate-700 hover:text-orange-500 font-medium cursor-pointer transition-colors">
+                                <summary class="h-full flex items-center px-4 text-slate-700 hover:text-orange-500 active:transform active:scale-95 font-medium cursor-pointer transition-all duration-150 ease-in-out">
                                     <i class="fas fa-gamepad text-orange-500 text-sm mr-2"></i>
                                     <span>Games</span>
                                     <i class="fas fa-chevron-down text-xs ml-1"></i>
                                 </summary>
                                 <ul class="absolute top-full left-0 mt-2 p-3 bg-white shadow-xl rounded-xl border border-slate-200 w-72 z-50">
-                                    <li><a href="{% url 'games:hub' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 font-medium"><i class="fas fa-th-large text-sm"></i>All Games</a></li>
+                                    <li><a href="{% url 'games:hub' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out"><i class="fas fa-th-large text-sm"></i>All Games</a></li>
                                     <li class="border-t border-slate-200 pt-2 mt-2">
                                         <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Individual Games</div>
                                     </li>
-                                    <li><a href="{% url 'games:ai_learning' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-robot text-sm"></i>AI Learning</a></li>
-                                    <li><a href="{% url 'games:cyber_security' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-shield text-sm"></i>Cyber Security</a></li>
-                                    <li><a href="{% url 'games:constitution_basic' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-landmark text-sm"></i>Constitution</a></li>
+                                    <li><a href="{% url 'games:ai_learning' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-robot text-sm"></i>AI Learning</a></li>
+                                    <li><a href="{% url 'games:cyber_security' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-shield text-sm"></i>Cyber Security</a></li>
+                                    <li><a href="{% url 'games:constitution_basic' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-landmark text-sm"></i>Constitution</a></li>
                                     <li class="border-t border-slate-200 pt-2 mt-2">
                                         <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Team Games</div>
                                     </li>
-                                    <li><a href="{% url 'group_learning:design_thinking_start' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-lightbulb text-sm"></i>Design Thinking</a></li>
-                                    <li><a href="{% url 'games:entrepreneurship' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-rocket text-sm"></i>Entrepreneurship</a></li>
-                                    <li><a href="{% url 'games:financial_literacy' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-coins text-sm"></i>Financial Literacy</a></li>
-                                    <li><a href="{% url 'group_learning:climate_game_home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50"><i class="fas fa-leaf text-sm"></i>Climate Change</a></li>
+                                    <li><a href="{% url 'group_learning:design_thinking_start' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-lightbulb text-sm"></i>Design Thinking</a></li>
+                                    <li><a href="{% url 'games:entrepreneurship' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-rocket text-sm"></i>Entrepreneurship</a></li>
+                                    <li><a href="{% url 'games:financial_literacy' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-coins text-sm"></i>Financial Literacy</a></li>
+                                    <li><a href="{% url 'group_learning:climate_game_home' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-leaf text-sm"></i>Climate Change</a></li>
                                 </ul>
                             </details>
                         </li>
                         
                         <!-- Teachers -->
                         <li class="h-full flex items-center">
-                            <a href="{% url 'core:teachers' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-green-500 font-medium transition-colors">
+                            <a href="{% url 'core:teachers' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-green-500 active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out">
                                 <i class="fas fa-chalkboard-teacher text-green-500 text-sm mr-2"></i>
                                 <span>Teachers</span>
                             </a>
@@ -504,7 +514,7 @@
                         
                         <!-- Schools -->
                         <li class="h-full flex items-center">
-                            <a href="{% url 'core:schools' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-purple-500 font-medium transition-colors">
+                            <a href="{% url 'core:schools' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-purple-500 active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out">
                                 <i class="fas fa-school text-purple-500 text-sm mr-2"></i>
                                 <span>Schools</span>
                             </a>
@@ -512,7 +522,7 @@
                         
                         <!-- Articles -->
                         <li class="h-full flex items-center">
-                            <a href="{% url 'articles:article_list' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-slate-600 font-medium transition-colors">
+                            <a href="{% url 'articles:article_list' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-slate-600 active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out">
                                 <i class="fas fa-newspaper text-slate-600 text-sm mr-2"></i>
                                 <span>Articles</span>
                             </a>
@@ -605,16 +615,16 @@
         <!-- Social Links -->
         <div>
             <div class="grid grid-flow-col gap-4">
-                <a href="#" class="btn btn-circle btn-outline btn-sm" title="LinkedIn">
+                <a href="#" class="btn btn-circle btn-outline btn-sm active:transform active:scale-95 transition-all duration-150 ease-in-out" title="LinkedIn">
                     <i class="fab fa-linkedin-in"></i>
                 </a>
-                <a href="#" class="btn btn-circle btn-outline btn-sm" title="Twitter">
+                <a href="#" class="btn btn-circle btn-outline btn-sm active:transform active:scale-95 transition-all duration-150 ease-in-out" title="Twitter">
                     <i class="fab fa-twitter"></i>
                 </a>
-                <a href="#" class="btn btn-circle btn-outline btn-sm" title="YouTube">
+                <a href="#" class="btn btn-circle btn-outline btn-sm active:transform active:scale-95 transition-all duration-150 ease-in-out" title="YouTube">
                     <i class="fab fa-youtube"></i>
                 </a>
-                <a href="#" class="btn btn-circle btn-outline btn-sm" title="Instagram">
+                <a href="#" class="btn btn-circle btn-outline btn-sm active:transform active:scale-95 transition-all duration-150 ease-in-out" title="Instagram">
                     <i class="fab fa-instagram"></i>
                 </a>
             </div>

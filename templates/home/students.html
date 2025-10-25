@@ -1,0 +1,607 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Game-Based Learning for Students | Master Tomorrow's Skills Today | Decipherworld{% endblock %}
+
+{% block meta_description %}Experience the future of education with game-based learning. Master AI, Design Thinking, Entrepreneurship, Cyber Security & more through interactive challenges designed for modern students.{% endblock %}
+
+{% block extra_head %}
+<link rel="canonical" href="{% url 'core:students' %}">
+<meta property="og:title" content="Game-Based Learning for Students | Decipherworld">
+<meta property="og:description" content="Transform your learning journey with AI-powered games, collaborative challenges, and real-world simulations. Build skills for the future.">
+<meta property="og:url" content="{% url 'core:students' %}">
+<meta name="keywords" content="game-based learning, AI education, design thinking, entrepreneurship skills, cyber security training, 21st century skills, interactive learning, student engagement">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section: Tomorrow's Skills, Today's Games -->
+<section class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 relative overflow-hidden">
+    <!-- Dynamic Background Elements -->
+    <div class="absolute inset-0">
+        <div class="absolute top-20 left-20 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute top-40 right-32 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl animate-pulse delay-1000"></div>
+        <div class="absolute bottom-32 left-1/3 w-40 h-40 bg-green-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+    </div>
+    
+    <div class="relative z-10 container mx-auto px-6 py-20 lg:py-32">
+        <div class="max-w-6xl mx-auto">
+            <!-- Hero Content -->
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Learn Through Play • Master Through Practice</span>
+                </div>
+                
+                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 mb-6 leading-tight">
+                    Master <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Tomorrow's Skills</span><br>
+                    Through <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">Today's Games</span>
+                </h1>
+                
+                <p class="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto leading-relaxed">
+                    Transform your learning journey with <strong class="text-blue-600">AI-powered games</strong>, 
+                    <strong class="text-purple-600">collaborative challenges</strong>, and 
+                    <strong class="text-green-600">real-world simulations</strong> that prepare you for the future.
+                </p>
+                
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-blue-600 mb-2">8+</div>
+                        <div class="text-sm text-slate-600">Interactive Games</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-purple-600 mb-2">5</div>
+                        <div class="text-sm text-slate-600">Core Skills</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-green-600 mb-2">100%</div>
+                        <div class="text-sm text-slate-600">Hands-on Learning</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-orange-600 mb-2">∞</div>
+                        <div class="text-sm text-slate-600">Future Ready</div>
+                    </div>
+                </div>
+                
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="#games" class="btn btn-primary btn-lg px-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <i class="fas fa-play mr-2"></i>
+                        Start Learning Now
+                    </a>
+                    <a href="#skills" class="btn btn-outline btn-lg px-8">
+                        <i class="fas fa-lightbulb mr-2"></i>
+                        Explore Skills
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why These Skills Matter -->
+<section id="skills" class="py-20 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+                    Skills That <span class="text-blue-600">Define the Future</span>
+                </h2>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                    The world is evolving rapidly. These aren't just subjects – they're the superpowers 
+                    that will shape careers, solve global challenges, and unlock unlimited potential.
+                </p>
+            </div>
+            
+            <!-- Skills Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- AI & Machine Learning -->
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-2xl border border-blue-200 hover:shadow-lg transition-all duration-300">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-robot text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-900">Artificial Intelligence</h3>
+                    </div>
+                    <p class="text-slate-700 mb-4 leading-relaxed">
+                        AI is reshaping every industry. Learn to work alongside intelligent systems, 
+                        understand machine learning, and become an AI-native professional.
+                    </p>
+                    <div class="text-sm text-blue-700 font-medium">
+                        💼 Career Impact: 40% of jobs will require AI skills by 2030
+                    </div>
+                </div>
+                
+                <!-- Design Thinking -->
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-2xl border border-purple-200 hover:shadow-lg transition-all duration-300">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-900">Design Thinking</h3>
+                    </div>
+                    <p class="text-slate-700 mb-4 leading-relaxed">
+                        Master the art of human-centered problem solving. Learn to innovate, 
+                        empathize with users, and create solutions that truly matter.
+                    </p>
+                    <div class="text-sm text-purple-700 font-medium">
+                        🚀 Innovation Power: Used by top companies like Apple, Google, IBM
+                    </div>
+                </div>
+                
+                <!-- Entrepreneurship -->
+                <div class="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-2xl border border-green-200 hover:shadow-lg transition-all duration-300">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-rocket text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-900">Entrepreneurship</h3>
+                    </div>
+                    <p class="text-slate-700 mb-4 leading-relaxed">
+                        Turn ideas into reality. Develop business acumen, leadership skills, 
+                        and the mindset to create value in any organization or startup.
+                    </p>
+                    <div class="text-sm text-green-700 font-medium">
+                        📈 Success Rate: Entrepreneurs drive 70% of economic growth
+                    </div>
+                </div>
+                
+                <!-- Cyber Security -->
+                <div class="bg-gradient-to-br from-red-50 to-red-100 p-8 rounded-2xl border border-red-200 hover:shadow-lg transition-all duration-300">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-shield text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-900">Cyber Security</h3>
+                    </div>
+                    <p class="text-slate-700 mb-4 leading-relaxed">
+                        Become a digital guardian. Protect systems, understand threats, 
+                        and build secure digital experiences in our connected world.
+                    </p>
+                    <div class="text-sm text-red-700 font-medium">
+                        🛡️ Job Demand: 3.5M unfilled cybersecurity positions globally
+                    </div>
+                </div>
+                
+                <!-- Financial Literacy -->
+                <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-2xl border border-orange-200 hover:shadow-lg transition-all duration-300">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-coins text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-900">Financial Literacy</h3>
+                    </div>
+                    <p class="text-slate-700 mb-4 leading-relaxed">
+                        Master money management, investment strategies, and economic thinking. 
+                        Build wealth and make informed financial decisions for life.
+                    </p>
+                    <div class="text-sm text-orange-700 font-medium">
+                        💰 Life Impact: Financially literate people earn 7% more annually
+                    </div>
+                </div>
+                
+                <!-- Climate Action -->
+                <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 p-8 rounded-2xl border border-emerald-200 hover:shadow-lg transition-all duration-300">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-leaf text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-900">Climate Action</h3>
+                    </div>
+                    <p class="text-slate-700 mb-4 leading-relaxed">
+                        Understand environmental challenges and create sustainable solutions. 
+                        Become part of the generation that solves climate change.
+                    </p>
+                    <div class="text-sm text-emerald-700 font-medium">
+                        🌍 Global Need: 24M new green jobs by 2030
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Games Section -->
+<section id="games" class="py-20 bg-slate-50">
+    <div class="container mx-auto px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+                    Learn Through <span class="text-purple-600">Interactive Games</span>
+                </h2>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                    Experience hands-on learning through carefully designed games and simulations. 
+                    Each challenge builds real skills while keeping you engaged and motivated.
+                </p>
+            </div>
+            
+            <!-- Individual Games -->
+            <div class="mb-16">
+                <h3 class="text-3xl font-bold text-slate-900 mb-8 text-center">
+                    <i class="fas fa-user text-blue-600 mr-3"></i>
+                    Individual Skill Builders
+                </h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 items-stretch">
+                    <!-- AI Learning Games -->
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full">
+                        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-2xl">🤖</span>
+                                <h4 class="text-xl font-bold text-white">AI Learning Games</h4>
+                            </div>
+                            <p class="text-blue-100">
+                                Create & Train Your Robotic Buddy. Learn machine learning through hands-on AI education.
+                            </p>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="bg-blue-100 text-blue-800 text-xs font-medium px-3 py-1 rounded-full">
+                                    Grades 1-5 • Individual
+                                </span>
+                            </div>
+                            <div class="space-y-3 mb-6 flex-1">
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                                    Interactive AI Training Sessions
+                                </div>
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                                    Classification & Pattern Recognition
+                                </div>
+                            </div>
+                            <div class="space-y-2 mt-auto">
+                                <a href="{% url 'games:ai_learning' %}" class="btn btn-primary w-full group-hover:scale-105 transition-transform">
+                                    Start Learning
+                                </a>
+                                <a href="{% url 'games:robotic_buddy_landing' %}" class="btn btn-outline btn-sm w-full">
+                                    Create Buddy
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Financial Literacy Game -->
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full">
+                        <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-2xl">💰</span>
+                                <h4 class="text-xl font-bold text-white">Financial Literacy</h4>
+                            </div>
+                            <p class="text-green-100">
+                                Learn budgeting, banking, stocks and mutual funds through interactive scenarios.
+                            </p>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="bg-green-100 text-green-800 text-xs font-medium px-3 py-1 rounded-full">
+                                    Grades 5-10 • Individual
+                                </span>
+                            </div>
+                            <div class="space-y-3 mb-6 flex-1">
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                                    CBSE Curriculum Aligned
+                                </div>
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                                    Smart Money Management
+                                </div>
+                            </div>
+                            <div class="space-y-2 mt-auto">
+                                <a href="{% url 'games:financial_literacy' %}" class="btn btn-primary w-full group-hover:scale-105 transition-transform">
+                                    Start Learning
+                                </a>
+                                <a href="https://games.decipherworld.com/InvestingGame/" target="_blank" class="btn btn-outline btn-sm w-full">
+                                    Play Direct <i class="fas fa-external-link-alt ml-1 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Constitution Basic Games -->
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full">
+                        <div class="bg-gradient-to-r from-emerald-500 to-green-600 p-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-2xl">🏛️</span>
+                                <h4 class="text-xl font-bold text-white">Constitution Basic</h4>
+                            </div>
+                            <p class="text-emerald-100">
+                                Explore fundamental democratic principles and governance through interactive challenges.
+                            </p>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="bg-emerald-100 text-emerald-800 text-xs font-medium px-3 py-1 rounded-full">
+                                    Grades 4-7 • Individual
+                                </span>
+                            </div>
+                            <div class="space-y-3 mb-6 flex-1">
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                    Fundamental Rights & Democracy
+                                </div>
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                    Individual Problem Solving
+                                </div>
+                            </div>
+                            <div class="space-y-2 mt-auto">
+                                <a href="/games/constitution-basic/" class="btn btn-primary w-full group-hover:scale-105 transition-transform">
+                                    Start Learning
+                                </a>
+                                <a href="{% url 'games:constitution_advanced' %}" class="btn btn-outline btn-sm w-full">
+                                    Advanced Level
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Constitution Advanced Games -->
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full">
+                        <div class="bg-gradient-to-r from-purple-500 to-indigo-600 p-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-2xl">⚖️</span>
+                                <h4 class="text-xl font-bold text-white">Constitution Advanced</h4>
+                            </div>
+                            <p class="text-purple-100">
+                                Advanced constitutional analysis and complex governance scenarios for high school students.
+                            </p>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="bg-purple-100 text-purple-800 text-xs font-medium px-3 py-1 rounded-full">
+                                    Grades 7-10 • Individual
+                                </span>
+                            </div>
+                            <div class="space-y-3 mb-6 flex-1">
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                                    Constitutional Crisis Scenarios
+                                </div>
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                                    Comparative Democracy Analysis
+                                </div>
+                            </div>
+                            <div class="space-y-2 mt-auto">
+                                <a href="/games/constitution-advanced/" class="btn btn-primary w-full group-hover:scale-105 transition-transform">
+                                    Start Learning
+                                </a>
+                                <a href="/games/constitution-basic/" class="btn btn-outline btn-sm w-full">
+                                    Basic Level
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cyber Security Games -->
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full">
+                        <div class="bg-gradient-to-r from-red-500 to-rose-600 p-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-2xl">🛡️</span>
+                                <h4 class="text-xl font-bold text-white">Cyber Security</h4>
+                            </div>
+                            <p class="text-red-100">
+                                Protect the digital world through cybersecurity missions. Learn password safety and threat detection.
+                            </p>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="bg-red-100 text-red-800 text-xs font-medium px-3 py-1 rounded-full">
+                                    Grades 1-6 • Individual
+                                </span>
+                            </div>
+                            <div class="space-y-3 mb-6 flex-1">
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+                                    Password Security Training
+                                </div>
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+                                    Digital Threat Detection
+                                </div>
+                            </div>
+                            <div class="space-y-2 mt-auto">
+                                <a href="/games/cyber-security/" class="btn btn-primary w-full group-hover:scale-105 transition-transform">
+                                    Start Learning
+                                </a>
+                                <a href="{% url 'cyber_city:quick_game' %}" class="btn btn-outline btn-sm w-full">
+                                    Quick Game
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Team Games -->
+            <div>
+                <h3 class="text-3xl font-bold text-slate-900 mb-8 text-center">
+                    <i class="fas fa-users text-purple-600 mr-3"></i>
+                    Team Collaboration Games
+                </h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+                    <!-- Design Thinking Game -->
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full">
+                        <div class="bg-gradient-to-br from-yellow-500 to-orange-600 p-6 text-white">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-2xl">💡</span>
+                                <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Grades 3-12</span>
+                            </div>
+                            <h4 class="text-xl font-bold mb-2">Design Thinking</h4>
+                            <p class="text-yellow-100 text-sm">Classroom Innovators Challenge</p>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <p class="text-slate-600 mb-6 leading-relaxed text-sm">
+                                Collaborate to solve real classroom challenges through design thinking methodology. Empathize, ideate, prototype, and test solutions together.
+                            </p>
+                            <div class="space-y-2 mb-6 flex-1">
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full mr-3"></div>
+                                    Design Thinking Process
+                                </div>
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full mr-3"></div>
+                                    Team Innovation Skills
+                                </div>
+                            </div>
+                            <div class="space-y-2 mt-auto">
+                                <a href="{% url 'group_learning:design_thinking_start' %}" class="btn btn-primary w-full text-sm group-hover:scale-105 transition-transform">
+                                    Start Learning
+                                </a>
+                                <a href="{% url 'group_learning:design_thinking_start' %}" class="btn btn-outline btn-sm w-full">
+                                    Learn Process
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Entrepreneurship Game -->
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full">
+                        <div class="bg-gradient-to-br from-orange-500 to-amber-600 p-6 text-white">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-2xl">🚀</span>
+                                <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Grades 4-10</span>
+                            </div>
+                            <h4 class="text-xl font-bold mb-2">Entrepreneurship</h4>
+                            <p class="text-orange-100 text-sm">Business Building & Scaling</p>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <p class="text-slate-600 mb-6 leading-relaxed text-sm">
+                                Build on the famous Lemonade Stand Game to teach business basics through collaborative team challenges.
+                            </p>
+                            <div class="space-y-2 mb-6 flex-1">
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+                                    Business Planning & Strategy
+                                </div>
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+                                    Team Collaboration Skills
+                                </div>
+                            </div>
+                            <div class="space-y-2 mt-auto">
+                                <a href="{% url 'games:entrepreneurship' %}" class="btn btn-primary w-full text-sm group-hover:scale-105 transition-transform">
+                                    Start Learning
+                                </a>
+                                <a href="https://games.decipherworld.com" target="_blank" class="btn btn-outline btn-sm w-full">
+                                    Play Direct <i class="fas fa-external-link-alt ml-1 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Climate Change Challenge -->
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full">
+                        <div class="bg-gradient-to-br from-blue-500 to-cyan-600 p-6 text-white">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-2xl">🌍</span>
+                                <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">Grades 7-10</span>
+                            </div>
+                            <h4 class="text-xl font-bold mb-2">Climate Challenge</h4>
+                            <p class="text-blue-100 text-sm">Environmental Action</p>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <p class="text-slate-600 mb-6 leading-relaxed text-sm">
+                                Collaborative climate scenarios where teams tackle environmental challenges and develop sustainable solutions.
+                            </p>
+                            <div class="space-y-2 mb-6 flex-1">
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                                    Environmental Problem Solving
+                                </div>
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                                    Sustainable Development Goals
+                                </div>
+                            </div>
+                            <div class="space-y-2 mt-auto">
+                                <a href="{% url 'games:monsoon_mayhem_landing' %}" class="btn btn-primary w-full text-sm group-hover:scale-105 transition-transform">
+                                    Start Learning
+                                </a>
+                                <a href="{% url 'group_learning:climate_game_home' %}" class="btn btn-outline btn-sm w-full">
+                                    Simulation
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Learning Journey -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+                    Your <span class="text-green-600">Learning Journey</span>
+                </h2>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                    Every game is designed with pedagogical excellence. Experience learning that sticks, 
+                    skills that transfer, and confidence that grows.
+                </p>
+            </div>
+            
+            <!-- Journey Steps -->
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-play text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-4">1. Engage</h3>
+                    <p class="text-slate-600">Jump into immersive scenarios that capture your curiosity and make learning irresistible.</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-users text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-4">2. Collaborate</h3>
+                    <p class="text-slate-600">Work with peers, share ideas, and learn from diverse perspectives in real-time.</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-cogs text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-4">3. Apply</h3>
+                    <p class="text-slate-600">Practice skills in realistic simulations and see immediate impact of your decisions.</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-trophy text-orange-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-4">4. Master</h3>
+                    <p class="text-slate-600">Build confidence through achievement and carry skills forward to real-world challenges.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-green-600">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto text-center text-white">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                Ready to Shape Your Future?
+            </h2>
+            <p class="text-xl mb-12 opacity-90">
+                Join thousands of students who are already mastering tomorrow's skills. 
+                Your journey to becoming future-ready starts with a single game.
+            </p>
+            
+            <div class="flex justify-center">
+                <a href="{% url 'games:hub' %}" class="btn btn-primary btn-lg px-8 bg-white text-blue-600 hover:bg-slate-100 border-none shadow-xl">
+                    <i class="fas fa-gamepad mr-2"></i>
+                    Explore All Games
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

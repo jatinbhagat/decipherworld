@@ -20,7 +20,8 @@
       "Bash(pkill:*)",
       "Bash(kill:*)",
       "Bash(lsof:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(open \"http://127.0.0.1:8000/students/\")"
     ],
     "deny": [],
     "ask": []

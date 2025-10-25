@@ -9,13 +9,33 @@ class DecipherWorldAnalytics {
         this.currentPage = window.location.pathname;
         this.referrer = document.referrer || 'direct';
         this.sessionStartTime = Date.now();
+        this.isInitialized = false;
         
-        // Initialize analytics when DOM is ready
+        // Initialize analytics when DOM is ready and wait for Mixpanel
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.init());
+            document.addEventListener('DOMContentLoaded', () => this.safeInit());
         } else {
-            this.init();
+            this.safeInit();
         }
+    }
+
+    /**
+     * Safe initialization that waits for Mixpanel
+     */
+    safeInit() {
+        if (this.isInitialized) {
+            console.log('Analytics already initialized, skipping...');
+            return;
+        }
+
+        console.log('🚀 Starting safe analytics initialization...');
+        this.waitForMixpanel().then(() => {
+            this.init();
+            this.isInitialized = true;
+        }).catch(error => {
+            console.error('Failed to initialize analytics:', error);
+            this.isInitialized = true; // Prevent retry loops
+        });
     }
 
     /**
@@ -101,9 +121,13 @@ class DecipherWorldAnalytics {
             
             // Identify user in MixPanel
             try {
-                mixpanel.identify(this.userId);
-                mixpanel.register(this.getBaseProperties());
-                console.log('Mixpanel user identified:', this.userId);
+                if (typeof mixpanel !== 'undefined' && mixpanel.identify) {
+                    mixpanel.identify(this.userId);
+                    mixpanel.register(this.getBaseProperties());
+                    console.log('Mixpanel user identified:', this.userId);
+                } else {
+                    console.warn('Mixpanel identify/register methods not available');
+                }
             } catch (error) {
                 console.error('Error identifying user in Mixpanel:', error);
             }
@@ -144,9 +168,9 @@ class DecipherWorldAnalytics {
                 console.log('- fallback exists:', typeof window.mixpanelFallback !== 'undefined');
                 
                 // Check for either real Mixpanel or fallback
-                if (typeof mixpanel !== 'undefined' && mixpanel.track && typeof mixpanel.track === 'function') {
+                if (typeof window.mixpanel !== 'undefined' && window.mixpanel.track && typeof window.mixpanel.track === 'function') {
                     console.log('✅ Real Mixpanel is ready after', attempts, 'attempts');
-                    resolve(mixpanel);
+                    resolve(window.mixpanel);
                 } else if (typeof window.mixpanelFallback !== 'undefined' && window.mixpanelFallback.track) {
                     console.log('✅ Mixpanel fallback is ready after', attempts, 'attempts');
                     // Set global mixpanel to fallback for compatibility
@@ -522,16 +546,16 @@ class DecipherWorldAnalytics {
             console.log('🎯 Attempting to track event:', eventName);
             console.log('📊 Event properties:', properties);
             console.log('🔍 Mixpanel status:', {
-                available: typeof mixpanel !== 'undefined',
-                hasTrackMethod: typeof mixpanel?.track === 'function',
-                config: mixpanel?.config || 'not available'
+                available: typeof window.mixpanel !== 'undefined',
+                hasTrackMethod: typeof window.mixpanel?.track === 'function',
+                config: window.mixpanel?.config || 'not available'
             });
             
-            if (typeof mixpanel !== 'undefined' && mixpanel.track && typeof mixpanel.track === 'function') {
+            if (typeof window.mixpanel !== 'undefined' && window.mixpanel.track && typeof window.mixpanel.track === 'function') {
                 console.log('🔥 TRACKING EVENT:', eventName);
                 console.log('📋 With properties:', JSON.stringify(properties, null, 2));
                 
-                mixpanel.track(eventName, properties);
+                window.mixpanel.track(eventName, properties);
                 console.log('✅ Event tracked successfully:', eventName);
                 
                 // Log to global array for debugging
@@ -547,10 +571,16 @@ class DecipherWorldAnalytics {
             } else {
                 console.warn('⚠️ MixPanel not available for event:', eventName);
                 console.log('Debug info:', {
-                    mixpanelType: typeof mixpanel,
-                    trackType: typeof mixpanel?.track,
+                    mixpanelType: typeof window.mixpanel,
+                    trackType: typeof window.mixpanel?.track,
                     windowKeys: Object.keys(window).filter(k => k.includes('mix'))
                 });
+                
+                // Try fallback API if available
+                if (typeof window.mixpanelFallback !== 'undefined' && window.mixpanelFallback.track) {
+                    console.log('🔄 Using fallback API for event:', eventName);
+                    return window.mixpanelFallback.track(eventName, properties);
+                }
                 
                 // Also log to a global array for debugging
                 if (!window.dwAnalyticsLog) window.dwAnalyticsLog = [];
@@ -640,7 +670,7 @@ window.dwAnalytics = new DecipherWorldAnalytics();
 
 // Global error tracking
 window.addEventListener('error', (event) => {
-    if (window.dwAnalytics) {
+    if (window.dwAnalytics && window.dwAnalytics.isInitialized) {
         window.dwAnalytics.trackError('JavaScript Error', event.error?.message || 'Unknown error', {
             filename: event.filename,
             line_number: event.lineno,
@@ -651,7 +681,7 @@ window.addEventListener('error', (event) => {
 
 // Track page unload for session duration
 window.addEventListener('beforeunload', () => {
-    if (window.dwAnalytics) {
+    if (window.dwAnalytics && window.dwAnalytics.isInitialized) {
         window.dwAnalytics.track('Page Unloaded', {
             ...window.dwAnalytics.getBaseProperties(),
             time_on_page: Math.round((Date.now() - window.dwAnalytics.sessionStartTime) / 1000)

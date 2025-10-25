@@ -365,4 +365,8 @@ def track_user_content_creation(request: HttpRequest, content_type: str, content
 
 def track_custom_event(request: HttpRequest, event_name: str, properties: Optional[Dict[str, Any]] = None) -> bool:
     """Track any custom event with provided properties"""
-    return analytics.track_event(request, event_name, properties or {})
+    # Get base properties from request and merge with provided properties
+    base_props = analytics.get_base_properties(request)
+    final_props = {**base_props, **(properties or {})}
+    user_id = analytics.get_user_id_from_request(request)
+    return analytics.track_event(event_name, final_props, user_id)

@@ -96,6 +96,19 @@ class TeachersView(TemplateView):
         })
         return super().get(request, *args, **kwargs)
 
+class StudentsView(TemplateView):
+    """Game-Based Learning for Students"""
+    template_name = 'home/students.html'
+    
+    def get(self, request, *args, **kwargs):
+        # Track students page view
+        track_page_view(request, 'Students Hub', {
+            'page_category': 'Students',
+            'target_audience': 'students',
+            'content_type': 'game_based_learning'
+        })
+        return super().get(request, *args, **kwargs)
+
 class SchoolsView(FormView):
     """Schools demo request page with product selection"""
     template_name = 'home/schools.html'

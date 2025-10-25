@@ -16,6 +16,7 @@ def simple_sitemap(request):
         ('', '1.0', 'weekly'),  # Homepage - realistic update frequency
         ('/courses/', '0.9', 'weekly'),  # Primary educational content
         ('/teachers/', '0.9', 'weekly'),  # AI teacher training - high value
+        ('/students/', '0.9', 'weekly'),  # Students game directory - high value
         ('/about/', '0.8', 'monthly'),
         ('/schools/', '0.8', 'monthly'),
         ('/contact/', '0.8', 'monthly'),
