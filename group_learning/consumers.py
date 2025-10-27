@@ -5,10 +5,13 @@ Real-time communication for climate game sessions
 
 import json
 import logging
+import asyncio
+from datetime import datetime, timedelta
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
 from django.utils import timezone
+from django.conf import settings
 from .models import (
     ClimateGameSession, ClimatePlayerResponse,
     DesignThinkingSession, DesignTeam, TeamSubmission, TeamProgress
@@ -29,6 +32,9 @@ class ClimateGameConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f'climate_session_{self.session_code}'
         self.user_type = None  # Will be set based on authentication
         self.connection_id = self.channel_name[-8:]  # Last 8 chars for logging
+        self.last_ping = timezone.now()
+        self.ping_task = None
+        self.connection_timeout = getattr(settings, 'WEBSOCKET_TIMEOUT', 60)  # 1 minute default
         
         # Detailed connection logging for production debugging
         logger.info(f"🔌 WebSocket CONNECT attempt - Session: {self.session_code}, Connection: {self.connection_id}")
@@ -66,6 +72,10 @@ class ClimateGameConsumer(AsyncWebsocketConsumer):
         try:
             await self.accept()
             logger.info(f"✅ WebSocket ACCEPTED - Session: {self.session_code}, Connection: {self.connection_id}")
+            
+            # Start ping monitoring task
+            self.ping_task = asyncio.create_task(self.ping_monitor())
+            
         except Exception as e:
             logger.error(f"💥 Failed to accept WebSocket connection: {str(e)}")
             return
@@ -81,6 +91,14 @@ class ClimateGameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         """Leave session group when disconnecting"""
+        # Cancel ping monitoring task
+        if self.ping_task and not self.ping_task.done():
+            self.ping_task.cancel()
+            try:
+                await self.ping_task
+            except asyncio.CancelledError:
+                pass
+        
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -97,7 +115,8 @@ class ClimateGameConsumer(AsyncWebsocketConsumer):
             message_type = data.get('type')
             
             if message_type == 'ping':
-                # Respond to ping with pong for connection health check
+                # Update last ping time and respond
+                self.last_ping = timezone.now()
                 await self.send(text_data=json.dumps({
                     'type': 'pong',
                     'timestamp': data.get('timestamp')
@@ -269,9 +288,27 @@ class ClimateGameConsumer(AsyncWebsocketConsumer):
             1013: "Try again later",
             1014: "Bad gateway",
             1015: "TLS handshake failure",
-            4004: "Session not found"
+            4004: "Session not found",
+            4005: "Connection timeout"
         }
         return reasons.get(close_code, f"Unknown code {close_code}")
+
+    async def ping_monitor(self):
+        """Monitor connection health and close if inactive"""
+        try:
+            while True:
+                await asyncio.sleep(30)  # Check every 30 seconds
+                
+                time_since_ping = timezone.now() - self.last_ping
+                if time_since_ping.total_seconds() > self.connection_timeout:
+                    logger.warning(f"⏰ Connection timeout - Session: {self.session_code}, Connection: {self.connection_id}, Last ping: {time_since_ping.total_seconds()}s ago")
+                    await self.close(code=4005)  # Custom timeout code
+                    break
+                    
+        except asyncio.CancelledError:
+            logger.info(f"🔄 Ping monitor cancelled for connection: {self.connection_id}")
+        except Exception as e:
+            logger.error(f"💥 Error in ping monitor for connection {self.connection_id}: {str(e)}")
 
 
 # ClimateGameLobbyConsumer removed - Using unified ClimateGameConsumer for all phases
@@ -291,6 +328,9 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
         self.user_type = None  # facilitator or team
         self.team_id = None  # Will be set for team connections
         self.connection_id = self.channel_name[-8:]
+        self.last_ping = timezone.now()
+        self.ping_task = None
+        self.connection_timeout = getattr(settings, 'WEBSOCKET_TIMEOUT', 60)
         
         logger.info(f"🎨 Design Thinking WebSocket CONNECT - Session: {self.session_code}, Connection: {self.connection_id}")
         
@@ -317,6 +357,9 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
             await self.accept()
             logger.info(f"✅ Design Thinking WebSocket CONNECTED - Session: {self.session_code}, Group: {self.room_group_name}")
             
+            # Start ping monitoring task
+            self.ping_task = asyncio.create_task(self.design_ping_monitor())
+            
             # Send initial session status
             session_status = await self.get_design_session_status(self.session_code)
             await self.send(text_data=json.dumps({
@@ -330,6 +373,14 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         """Leave room group"""
+        # Cancel ping monitoring task
+        if self.ping_task and not self.ping_task.done():
+            self.ping_task.cancel()
+            try:
+                await self.ping_task
+            except asyncio.CancelledError:
+                pass
+        
         logger.info(f"🔌 Design Thinking WebSocket DISCONNECT - Session: {self.session_code}, Code: {close_code} ({self.get_close_reason(close_code)})")
         
         try:
@@ -355,6 +406,7 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
             elif message_type == 'vani_nudge':
                 await self.handle_vani_nudge(data)
             elif message_type == 'ping':
+                self.last_ping = timezone.now()
                 await self.send(text_data=json.dumps({'type': 'pong'}))
             else:
                 logger.warning(f"⚠️ Unknown Design Thinking message type: {message_type}")
@@ -664,6 +716,24 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
             1014: "Bad gateway",
             1015: "TLS handshake failure",
             4003: "Database error",
-            4004: "Session not found"
+            4004: "Session not found",
+            4005: "Connection timeout"
         }
         return reasons.get(close_code, f"Unknown code {close_code}")
+
+    async def design_ping_monitor(self):
+        """Monitor Design Thinking connection health and close if inactive"""
+        try:
+            while True:
+                await asyncio.sleep(30)  # Check every 30 seconds
+                
+                time_since_ping = timezone.now() - self.last_ping
+                if time_since_ping.total_seconds() > self.connection_timeout:
+                    logger.warning(f"⏰ Design Thinking connection timeout - Session: {self.session_code}, Connection: {self.connection_id}, Last ping: {time_since_ping.total_seconds()}s ago")
+                    await self.close(code=4005)  # Custom timeout code
+                    break
+                    
+        except asyncio.CancelledError:
+            logger.info(f"🔄 Design Thinking ping monitor cancelled for connection: {self.connection_id}")
+        except Exception as e:
+            logger.error(f"💥 Error in Design Thinking ping monitor for connection {self.connection_id}: {str(e)}")

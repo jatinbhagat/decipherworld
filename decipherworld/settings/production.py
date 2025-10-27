@@ -93,21 +93,24 @@ if REDIS_URL:
         },
     }
 else:
-    # Fallback to InMemory with optimized settings for Azure
+    # Fallback to InMemory with aggressive cleanup for Azure
     CHANNEL_LAYERS = {
         'default': {
             'BACKEND': 'channels.layers.InMemoryChannelLayer',
             'CONFIG': {
-                "capacity": 300,  # Reduce capacity for Azure memory limits
-                "expiry": 60,     # Shorter expiry for Azure App Service
+                "capacity": 100,  # Drastically reduced for Azure memory limits
+                "expiry": 30,     # Very short expiry to prevent buildup
+                "group_expiry": 60,  # Quick group cleanup
             },
         },
     }
 
-# WebSocket specific settings for Azure App Service
-WEBSOCKET_TIMEOUT = 240  # 4 minutes (Azure typically has 5 min timeout)
-WEBSOCKET_PING_INTERVAL = 20  # More frequent pings for Azure
-WEBSOCKET_PING_TIMEOUT = 10
+# WebSocket specific settings for Azure App Service - Optimized for performance
+WEBSOCKET_TIMEOUT = 60  # Reduced to 1 minute to prevent hanging connections
+WEBSOCKET_PING_INTERVAL = 10  # More frequent pings to detect dead connections
+WEBSOCKET_PING_TIMEOUT = 5   # Faster timeout to close dead connections
+WEBSOCKET_MAX_MESSAGE_SIZE = 1024 * 1024  # 1MB max message size
+WEBSOCKET_CONNECT_TIMEOUT = 30  # 30 seconds to establish connection
 
 # Logging
 LOGGING = {
