@@ -15,7 +15,11 @@ ALLOWED_HOSTS = [
     'decipherworld-app.azurewebsites.net',
     'www.decipherworld.com',
     'decipherworld.com',
+    'app.decipherworld.com',
     '.azurewebsites.net',  # Allow all Azure App Service domains
+    '169.254.130.5',  # Azure internal IP
+    '127.0.0.1',  # Localhost for health checks
+    'localhost',
 ] + config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',')] if v else [])
 
 # Database - Production PostgreSQL
@@ -56,6 +60,21 @@ CORS_ALLOWED_ORIGINS = [
 
 # Email backend for production
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+
+# Admin email settings for error notifications
+ADMINS = [
+    ('DecipherWorld Admin', config('ADMIN_EMAIL', default='jatinbhagatnew@gmail.com')),
+]
+MANAGERS = ADMINS
+
+# Server email for Django to send error emails
+SERVER_EMAIL = config('SERVER_EMAIL', default='noreply@decipherworld.com')
+DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 # WebSocket Channel Layers - Redis for Production
 # Check for Redis URL in environment
