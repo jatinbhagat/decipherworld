@@ -59,7 +59,12 @@ class PasswordFortressView(BaseGameSessionView):
             
             # Calculate progress percentage
             challenges_completed = player.challenges_completed if player else 0
-            progress_percentage = (challenges_completed * 20) if challenges_completed else 0
+            progress_percentage = min((challenges_completed * 20), 100) if challenges_completed else 0
+            
+            # Update city security level to match progress
+            if session and session.city_security_level < 100:
+                session.city_security_level = progress_percentage
+                session.save()
             
             context.update({
                 'session': session,
@@ -170,6 +175,8 @@ class CyberCityActionAPI(BaseGameActionView):
             return self._process_cyberbully_answer(session, player, action_data)
         elif action_type == 'progress_after_wrong_answer':
             return self._progress_after_wrong_answer(session, player, action_data)
+        elif action_type == 'progress_password_after_wrong_answer':
+            return self._progress_password_after_wrong_answer(session, player, action_data)
         else:
             raise ValueError(f"Unknown action type: {action_type}")
     
@@ -226,7 +233,10 @@ class CyberCityActionAPI(BaseGameActionView):
             session.city_security_level = 100
             session.save()
         
-        return {
+        # Check if mission is complete
+        mission_complete = player.challenges_completed >= 5
+        
+        response_data = {
             'action_result': 'answer_correct' if is_correct else 'answer_incorrect',
             'is_correct': is_correct,
             'points_earned': points_earned,
@@ -234,8 +244,51 @@ class CyberCityActionAPI(BaseGameActionView):
             'explanation': challenge.explanation,
             'tessa_tip': challenge.tessa_tip,
             'badges_earned': badges_earned,
-            'mission_complete': player.challenges_completed >= 5
+            'mission_complete': mission_complete
         }
+        
+        # Add completion data if mission is complete
+        if mission_complete:
+            response_data.update({
+                'final_score': player.total_score,
+                'correct_answers': player.correct_answers,
+                'wrong_answers': player.wrong_answers,
+                'total_challenges': 5,
+                'completion_message': self._get_completion_message(player.correct_answers)
+            })
+        
+        return response_data
+    
+    def _get_completion_message(self, correct_answers):
+        """Get appropriate completion message based on performance"""
+        if correct_answers >= 4:
+            return {
+                'title': 'FORTRESS MASTER!',
+                'message': 'Outstanding work! You\'ve mastered password security and are now a true guardian of Cyber City.',
+                'performance': 'excellent',
+                'show_retry': False
+            }
+        elif correct_answers >= 3:
+            return {
+                'title': 'FORTRESS SECURED!',
+                'message': 'Good job! You\'ve learned the basics of password security and helped protect Cyber City.',
+                'performance': 'good',
+                'show_retry': False
+            }
+        elif correct_answers >= 2:
+            return {
+                'title': 'BASIC PROTECTION',
+                'message': 'You\'ve made progress but need more practice. Consider retrying to strengthen your password security skills.',
+                'performance': 'needs_improvement',
+                'show_retry': True
+            }
+        else:
+            return {
+                'title': 'NEEDS MORE TRAINING',
+                'message': 'Password security is crucial for protecting Cyber City. Let\'s try again to master these important skills!',
+                'performance': 'retry_recommended',
+                'show_retry': True
+            }
     
     def _start_mission(self, session, player):
         """Start the password fortress mission"""
@@ -411,6 +464,25 @@ class CyberCityActionAPI(BaseGameActionView):
             'action_result': 'progress_success',
             'challenges_completed': player.cyberbully_challenges_completed,
             'current_challenge': player.cyberbully_current_challenge
+        }
+    
+    def _progress_password_after_wrong_answer(self, session, player, action_data):
+        """Progress the player after they've learned from a wrong answer in Password Fortress"""
+        challenge_id = action_data.get('challenge_id')
+        
+        try:
+            challenge = SecurityChallenge.objects.get(id=challenge_id)
+        except SecurityChallenge.DoesNotExist:
+            return {'error': 'Challenge not found'}
+        
+        # Progress the player after learning from wrong answer
+        # Only increment current_challenge, NOT challenges_completed (that's only for correct answers)
+        player.current_challenge += 1
+        player.save()
+        
+        return {
+            'action_result': 'progress_success',
+            'current_challenge': player.current_challenge
         }
 
 class CyberCityMissionHubView(TemplateView):
