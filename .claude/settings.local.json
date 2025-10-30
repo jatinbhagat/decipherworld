@@ -45,7 +45,13 @@
       "Read(//tmp/decipherworld-static/**)",
       "Read(//private/tmp/decipherworld-static/**)",
       "WebFetch(domain:)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "Bash(az webapp deployment list:*)",
+      "Bash(az webapp deployment source show:*)",
+      "Bash(az webapp log tail:*)",
+      "Read(//var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_YzWTny/**)",
+      "Read(//var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_M4VN6y/**)",
+      "Read(//var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_13V1BD/**)"
     ],
     "deny": [],
     "ask": []

@@ -216,10 +216,12 @@ class CyberCityActionAPI(BaseGameActionView):
         # Update player stats
         if is_correct:
             player.correct_answers += 1
-            player.challenges_completed += 1
-            player.current_challenge += 1
         else:
             player.wrong_answers += 1
+        
+        # Always progress to next challenge regardless of correct/incorrect
+        player.challenges_completed += 1
+        player.current_challenge += 1
         
         player.total_score += points_earned
         player.save()
@@ -238,6 +240,7 @@ class CyberCityActionAPI(BaseGameActionView):
         
         response_data = {
             'action_result': 'answer_correct' if is_correct else 'answer_incorrect',
+            'correct': is_correct,
             'is_correct': is_correct,
             'points_earned': points_earned,
             'new_score': player.total_score,

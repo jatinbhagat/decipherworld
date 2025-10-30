@@ -1,604 +1,141 @@
-
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber City Protection Squad - Game</title>
-    {% csrf_token %}
-    
-    <!-- Tailwind CSS with DaisyUI -->
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Modern Professional Theme Configuration -->
-    <script>
-        tailwind.config = {
-            daisyui: {
-                themes: [
-                    {
-                        modern: {
-                            "primary": "#2563eb",        // Modern blue
-                            "secondary": "#7c3aed",      // Modern purple
-                            "accent": "#059669",         // Modern green
-                            "neutral": "#374151",        // Refined gray
-                            "base-100": "#ffffff",       // Pure white
-                            "base-200": "#f9fafb",       // Subtle gray
-                            "base-300": "#f3f4f6",       // Light gray
-                            "info": "#0891b2",           // Cyan
-                            "success": "#059669",        // Emerald
-                            "warning": "#d97706",        // Orange
-                            "error": "#dc2626",          // Red
-                        },
-                    },
-                    "light",
-                    "dark"
-                ],
-            },
-        }
-    </script>
-    
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="{% static 'site.webmanifest' %}">
-    
-    <!-- Background Music -->
-    <audio id="backgroundMusic" loop preload="auto" style="display: none;">
-        <source src="{% static 'audio/cyber-ambient.mp3' %}" type="audio/mpeg">
-        <!-- Fallback: Simple generated tone -->
-        Your browser does not support the audio element.
-    </audio>
-    
-    <!-- Custom CSS -->
-    
-    <link rel="stylesheet" href="/static/css/custom.css">
-    
-    <!-- Enhanced SEO Meta Tags -->
-    <meta name="description" content="Transform learning into adventure with Decipherworld's game-based education platform. AI-powered tools for teachers, engaging learning for students, and collaborative group learning experiences.">
-    <meta name="keywords" content="education, game-based learning, AI teaching tools, student engagement, EdTech, collaborative learning, climate education, STEM education, group learning platform">
-    <meta name="author" content="DecipherWorld">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="">
-    
-    <!-- Open Graph Meta Tags for Social Sharing -->
-    <meta property="og:title" content="">
-    <meta property="og:description" content="Transform learning into adventure with game-based education, AI tools, and collaborative group learning experiences.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="">
-    <meta property="og:site_name" content="DecipherWorld">
-    <meta property="og:image" content=":///static/images/decipherworld-og-image.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@DecipherWorld">
-    <meta name="twitter:title" content="">
-    <meta name="twitter:description" content="Game-based education platform with AI tools and collaborative learning experiences.">
-    <meta name="twitter:image" content=":///static/images/decipherworld-twitter-card.jpg">
-    
-    <!-- Educational Schema.org Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "EducationalOrganization",
-        "name": "DecipherWorld",
-        "description": "Game-based education platform transforming learning through AI tools and collaborative experiences",
-        "url": "://",
-        "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/decipherworld-logo.png' %}",
-        "sameAs": [
-            "https://twitter.com/decipherworld",
-            "https://linkedin.com/company/decipherworld"
-        ],
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "telephone": "+1-XXX-XXX-XXXX",
-            "contactType": "Customer Service",
-            "availableLanguage": ["English"]
-        },
-        "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "US"
-        },
-        "hasOfferCatalog": {
-            "@type": "OfferCatalog",
-            "name": "Educational Services",
-            "itemListElement": [
-                {
-                    "@type": "OfferCatalog",
-                    "name": "AI Learning Games",
-                    "description": "Interactive AI-powered learning games for students"
-                },
-                {
-                    "@type": "OfferCatalog", 
-                    "name": "Group Learning Platform",
-                    "description": "Collaborative scenario-based learning experiences"
-                },
-                {
-                    "@type": "OfferCatalog",
-                    "name": "Teacher AI Tools", 
-                    "description": "AI-powered tools to enhance teaching effectiveness"
-                }
-            ]
-        }
-    }
-    </script>
-    
-    <!-- Additional Structured Data for Educational Content -->
-    
-    
-    <!-- Favicon and App Icons -->
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon-16x16.png">
-    <link rel="manifest" href="/static/site.webmanifest">
-    
-    <!-- Performance and SEO Enhancements -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
-    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
-    
-    <!-- Extra head content for child templates -->
-    
-    <!-- Critical JavaScript Functions -->
-    <script>
-    // Global variables
-    let selectedAnswer = null;
-    let sessionCode = '{{ session.session_code }}';
-    
-    // CSRF Cookie Helper
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    
-    
-    // Start Mission Function
-    function startMission() {
-        fetch(`/cyber-city/${sessionCode}/action/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({
-                action_type: 'start_mission'
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                window.location.reload();
-            } else {
-                alert('Failed to start mission. Please try again.');
-            }
-        })
-        .catch(error => {
-            console.error('Start mission error:', error);
-            alert('Failed to start mission. Please try again.');
-        });
-    }
-    </script>
-    
-</head>
-<body data-theme="modern" class="bg-base-100">
-    
-    <!-- Mobile-First Navigation Header -->
-    <div class="navbar bg-white shadow-lg border-b border-base-200 fixed top-0 z-50 backdrop-blur-sm min-h-16 px-2 sm:px-4 max-w-full">
-        <div class="navbar-start">
-            <!-- Mobile Menu -->
-            <div class="dropdown">
-                <div tabindex="0" role="button" class="btn btn-ghost btn-sm lg:hidden p-2">
-                    <i class="fas fa-bars text-lg text-slate-700"></i>
-                </div>
-                <ul tabindex="0" class="menu menu-sm dropdown-content bg-white text-slate-700 rounded-lg z-[1] mt-3 w-56 p-3 shadow-xl border border-slate-200">
-                    <li><a href="/" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-home text-primary"></i>Home</a></li>
-                    <li><a href="/courses/" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-graduation-cap text-primary"></i>Student Courses</a></li>
-                    <li>
-                        <details>
-                            <summary class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-gamepad text-warning"></i>Educational Games<span class="badge badge-warning badge-xs ml-2">NEW</span></summary>
-                            <ul class="p-2 bg-slate-50 rounded-md mt-2">
-                                <li><a href="/games/" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white"><i class="fas fa-th-large text-warning"></i>Games Hub</a></li>
-                                <li><a href="/games/ai-learning/" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white"><i class="fas fa-robot text-blue-500"></i>AI Learning</a></li>
-                                <li><a href="/games/group-learning/" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white"><i class="fas fa-users text-green-500"></i>Group Learning</a></li>
-                                <li><a href="/games/stem-challenges/" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-white text-gray-400"><i class="fas fa-flask text-orange-400"></i>STEM Challenges<small class="ml-1">(Soon)</small></a></li>
-                            </ul>
-                        </details>
-                    </li>
-                    <li><a href="/teachers/" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-robot text-secondary"></i>AI for Teachers</a></li>
-                    <li><a href="/schools/" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-building text-accent"></i>Schools</a></li>
-                    <li><a href="/gallery/" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-images text-info"></i>Gallery</a></li>
-                    <li><a href="/contact/" class="flex items-center gap-3 py-3 rounded-lg hover:bg-slate-50"><i class="fas fa-envelope text-success"></i>Get Started</a></li>
-                </ul>
-            </div>
-            
-            <!-- Professional Logo -->
-            <a href="/" class="btn btn-ghost text-lg font-bold p-2 flex-none">
-                <div class="flex items-center gap-2 lg:gap-3">
-                    <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-atom text-white text-sm"></i>
-                    </div>
-                    <span class="text-neutral font-bold text-base sm:text-lg lg:text-xl whitespace-nowrap">
-                        Decipherworld
-                    </span>
-                    <div class="badge badge-primary badge-xs hidden md:inline-flex ml-1">AI EdTech</div>
-                </div>
-            </a>
-        </div>
-        
-        <!-- Desktop Navigation -->
-        <div class="navbar-center hidden lg:flex">
-            <ul class="menu menu-horizontal px-1 gap-2">
-                <li>
-                    <a href="/" class="btn btn-ghost btn-sm text-slate-700 hover:text-primary">
-                        <i class="fas fa-home text-primary"></i>Home
-                    </a>
-                </li>
-                <li>
-                    <a href="/courses/" class="btn btn-ghost btn-sm text-slate-700 hover:text-primary">
-                        <i class="fas fa-graduation-cap text-primary"></i>Students
-                    </a>
-                </li>
-                <li>
-                    <details>
-                        <summary class="btn btn-ghost btn-sm text-slate-700 hover:text-warning">
-                            <i class="fas fa-gamepad text-warning"></i>Games
-                            <div class="badge badge-warning badge-xs">NEW</div>
-                        </summary>
-                        <ul class="p-2 bg-white shadow-lg rounded-lg border border-slate-200 w-48 z-50">
-                            <li><a href="/games/" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50"><i class="fas fa-th-large text-warning"></i>Games Hub</a></li>
-                            <li><a href="/games/ai-learning/" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50"><i class="fas fa-robot text-blue-500"></i>AI Learning</a></li>
-                            <li><a href="/games/group-learning/" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50"><i class="fas fa-users text-green-500"></i>Group Learning</a></li>
-                            <li><a href="/games/stem-challenges/" class="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-50 text-gray-400"><i class="fas fa-flask text-orange-400"></i>STEM<small class="ml-1">(Soon)</small></a></li>
-                        </ul>
-                    </details>
-                </li>
-                <li>
-                    <a href="/teachers/" class="btn btn-ghost btn-sm text-slate-700 hover:text-secondary">
-                        <i class="fas fa-robot text-secondary"></i>Teachers
-                        <div class="badge badge-secondary badge-xs">AI Training</div>
-                    </a>
-                </li>
-                <li>
-                    <a href="/schools/" class="btn btn-ghost btn-sm text-slate-700 hover:text-accent">
-                        <i class="fas fa-building text-accent"></i>Schools
-                    </a>
-                </li>
-                <li>
-                    <a href="/gallery/" class="btn btn-ghost btn-sm text-slate-700 hover:text-info">
-                        <i class="fas fa-images text-info"></i>Gallery
-                    </a>
-                </li>
-            </ul>
-        </div>
-        
-        <!-- Mobile CTA Button -->
-        <div class="navbar-end gap-2">
-            <!-- Music Control Button -->
-            <button id="musicToggle" onclick="toggleMusic()" class="btn btn-ghost btn-sm text-slate-600 hover:text-primary transition-colors" title="Toggle Background Music">
-                <i id="musicIcon" class="fas fa-volume-up text-lg"></i>
-            </button>
-            
-            <a href="/contact/" class="btn btn-primary btn-sm shadow-lg hover:shadow-xl transition-all duration-300 px-3">
-                <i class="fas fa-rocket text-sm"></i>
-                <span class="hidden xs:inline text-sm">Get Started</span>
-            </a>
-        </div>
-    </div>
-    
-    <!-- Main Content -->
-    <main class="pt-16">
+{% extends 'base.html' %}
 {% load static %}
 
-<!-- Cyber City Game Styles -->
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+{% block title %}Password Fortress - Cyber City Protection Squad{% endblock %}
+
+{% block extra_head %}
+<!-- Background Music -->
+<audio id="backgroundMusic" loop preload="auto" style="display: none;">
+    <source src="{% static 'audio/cyber-ambient.mp3' %}" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+
+<!-- Custom CSS for Password Fortress -->
 <style>
-    body {
-        background: linear-gradient(135deg, #0a0a23 0%, #1a1a3a 100%);
-        font-family: 'Orbitron', monospace;
-        color: #00ffff;
-        overflow-x: hidden;
-    }
-    
-    .cyber-grid {
-        background-image: 
-            linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
-        background-size: 30px 30px;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-        animation: gridMove 20s linear infinite;
-    }
-    
-    @keyframes gridMove {
-        0% { transform: translate(0, 0); }
-        100% { transform: translate(30px, 30px); }
-    }
-    
-    .cyber-hud {
-        background: rgba(0, 0, 0, 0.9);
-        border: 2px solid #00ffff;
-        border-radius: 15px;
-        box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+    .mission-panel {
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        border-radius: 16px;
         backdrop-filter: blur(10px);
     }
     
-    .mission-panel {
-        background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(26, 26, 58, 0.8) 100%);
-        border: 1px solid #00ffff;
-        border-radius: 10px;
-        box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.1);
-    }
-    
     .challenge-card {
-        background: rgba(0, 0, 0, 0.7);
-        border: 2px solid rgba(0, 255, 255, 0.3);
-        border-radius: 10px;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .challenge-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
-        transition: left 0.5s;
-    }
-    
-    .challenge-card:hover::before {
-        left: 100%;
-    }
-    
-    .challenge-card:hover {
-        border-color: #00ffff;
-        box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
-        transform: scale(1.02);
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(51, 65, 85, 0.9));
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        border-radius: 12px;
+        backdrop-filter: blur(8px);
     }
     
     .option-btn {
-        background: rgba(0, 0, 0, 0.6);
-        border: 2px solid rgba(0, 255, 255, 0.5);
-        color: #00ffff;
-        padding: 1rem;
+        background: linear-gradient(135deg, rgba(51, 65, 85, 0.8), rgba(71, 85, 105, 0.6));
+        border: 2px solid rgba(56, 189, 248, 0.2);
         border-radius: 8px;
-        transition: all 0.3s ease;
+        padding: 16px;
         cursor: pointer;
-        text-align: left;
+        transition: all 0.3s ease;
+        color: white;
     }
     
     .option-btn:hover {
-        border-color: #ff6b35;
-        box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
-        background: rgba(255, 107, 53, 0.1);
-    }
-    
-    .option-btn.selected {
-        border-color: #ff6b35;
-        background: rgba(255, 107, 53, 0.2);
-        box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+        border-color: rgba(56, 189, 248, 0.5);
+        background: linear-gradient(135deg, rgba(71, 85, 105, 0.9), rgba(100, 116, 139, 0.7));
+        transform: translateY(-2px);
     }
     
     .cyber-btn {
-        background: linear-gradient(45deg, #00ffff, #0080ff);
+        background: linear-gradient(45deg, #0ea5e9, #3b82f6);
         border: none;
-        color: #000;
+        padding: 16px 32px;
+        border-radius: 8px;
+        color: white;
         font-weight: bold;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
         text-transform: uppercase;
         letter-spacing: 1px;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
     }
     
     .cyber-btn:hover {
-        background: linear-gradient(45deg, #ff6b35, #ff8c42);
+        background: linear-gradient(45deg, #0284c7, #2563eb);
         transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(255, 107, 53, 0.3);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
     }
     
     .progress-bar {
-        background: rgba(0, 0, 0, 0.5);
-        border-radius: 10px;
+        background: rgba(30, 41, 59, 0.8);
+        height: 8px;
+        border-radius: 4px;
         overflow: hidden;
-        border: 1px solid #00ffff;
     }
     
     .progress-fill {
-        background: linear-gradient(90deg, #00ffff, #ff6b35);
-        height: 20px;
-        border-radius: 9px;
+        background: linear-gradient(90deg, #0ea5e9, #34d399);
+        height: 100%;
+        border-radius: 4px;
         transition: width 0.5s ease;
-        box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     }
     
     .tessa-dialogue {
-        background: rgba(0, 255, 255, 0.1);
-        border: 1px solid #00ffff;
-        border-radius: 10px;
-        position: relative;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+        border-left: 4px solid #fbbf24;
+        border-radius: 8px;
+    }
+
+    body {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        min-height: 100vh;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
-    .tessa-dialogue::before {
-        content: '🤖';
-        position: absolute;
-        top: -10px;
-        left: 15px;
-        background: rgba(0, 0, 0, 0.8);
-        padding: 0 10px;
-        font-size: 1.2rem;
-        border: 1px solid #00ffff;
-        border-radius: 50%;
+    /* Ensure content is properly visible */
+    .container {
+        max-width: 100%;
+        padding: 0 1rem;
     }
     
-    .badge-unlock {
-        animation: badgeUnlock 1s ease-out;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1000;
-        background: rgba(0, 0, 0, 0.9);
-        border: 2px solid #ff6b35;
-        border-radius: 15px;
-        padding: 2rem;
-        text-align: center;
-    }
-    
-    @keyframes badgeUnlock {
-        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-        50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-        100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    }
-    
-    .city-security-meter {
-        background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
-        border: 2px solid #00ffff;
-        border-radius: 50%;
-        width: 120px;
-        height: 120px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-    }
-    
-    .city-security-meter::before {
-        content: '';
-        position: absolute;
-        top: -5px;
-        left: -5px;
-        right: -5px;
-        bottom: -5px;
-        border: 2px solid transparent;
-        border-radius: 50%;
-        background: conic-gradient(from 0deg, #00ffff, #ff6b35, #00ffff);
-        mask: radial-gradient(farthest-side, transparent calc(100% - 4px), white calc(100% - 4px));
-        animation: rotate 3s linear infinite;
-    }
-    
-    @keyframes rotate {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    .voice-indicator {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        width: 20px;
-        height: 20px;
-        background: #00ffff;
-        border-radius: 50%;
-        animation: voicePulse 0.5s ease-in-out infinite;
-        z-index: 10;
-    }
-    
-    @keyframes voicePulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.2); opacity: 0.7; }
-    }
-    
-    @keyframes fadeIn {
-        0% { opacity: 0; transform: translateY(10px); }
-        100% { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes fadeOut {
-        0% { opacity: 1; transform: translateY(0); }
-        100% { opacity: 0; transform: translateY(-10px); }
-    }
-    
-    @keyframes celebrationFall {
-        0% {
-            transform: translateY(-50px) rotate(0deg);
-            opacity: 1;
+    @media (min-width: 768px) {
+        .container {
+            padding: 0 2rem;
         }
-        100% {
-            transform: translateY(calc(100vh + 50px)) rotate(360deg);
-            opacity: 0;
-        }
-    }
-    
-    /* Enhanced animations for better UX */
-    @keyframes fadeInScale {
-        0% {
-            opacity: 0;
-            transform: scale(0.8);
-        }
-        100% {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-    
-    .submitting {
-        background: linear-gradient(45deg, #6b7280, #9ca3af) !important;
-        cursor: not-allowed !important;
-        animation: pulse 1s infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
-    }
-    
-    /* Improved button states */
-    .option-btn {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .option-btn.selected {
-        background: linear-gradient(45deg, #3b82f6, #1d4ed8);
-        border-color: #3b82f6;
-        color: white;
-        transform: scale(1.02);
-        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
     }
 </style>
 
-<div class="cyber-grid"></div>
+<!-- Password Fortress Game Logic -->
+<script src="{% static 'js/password-fortress.js' %}"></script>
 
-<div class="min-h-screen relative z-10">
-    <!-- Game Header HUD -->
-    <div class="cyber-hud mx-4 mt-4 p-6">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center space-x-4">
-                <div class="text-3xl">🛡️</div>
-                <div>
-                    <h1 class="text-2xl font-bold text-white">CYBER CITY PROTECTION SQUAD</h1>
-                    <p class="text-gray-200">Mission 1: Password Fortress</p>
-                </div>
+<!-- Initialize game variables -->
+<script>
+    // Session variables for the game
+    let sessionCode = '{{ session.session_code }}';
+    let currentChallengeId = {{ current_challenge.id|default:"null" }};
+    
+    // Initialize Password Fortress with Django template variables
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Password Fortress initializing...');
+        if (window.PasswordFortress) {
+            PasswordFortress.init(sessionCode, currentChallengeId);
+            PasswordFortress.initializeMusic();
+            console.log('Password Fortress initialized successfully');
+        } else {
+            console.error('PasswordFortress not found - script may not have loaded');
+            // Fallback - define minimal functions if external script fails
+            window.startMission = function() { alert('Please refresh the page'); };
+            window.selectOption = function() { alert('Please refresh the page'); };
+            window.submitAnswer = function() { alert('Please refresh the page'); };
+        }
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen pt-16 pb-8" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);">
+    <!-- Game Header -->
+    <div class="mission-panel mx-4 mb-6">
+        <div class="flex items-center justify-between p-6">
+            <div>
+                <h1 class="text-3xl font-bold text-cyan-400">🏙️ CYBER CITY PROTECTION SQUAD</h1>
+                <p class="text-gray-200">Mission 1: Password Fortress</p>
             </div>
             
             {% if player %}
@@ -621,11 +158,9 @@
                 </div>
                 
                 <!-- City Security Level -->
-                <div class="city-security-meter">
-                    <div class="text-center">
-                        <div class="text-cyan-400 font-bold text-sm">SECURITY</div>
-                        <div class="text-xl text-orange-400">{{ session.city_security_level }}%</div>
-                    </div>
+                <div class="text-center">
+                    <div class="text-cyan-400 font-bold text-sm">SECURITY</div>
+                    <div class="text-xl text-orange-400">{{ session.city_security_level }}%</div>
                 </div>
             </div>
             {% endif %}
@@ -640,63 +175,21 @@
                 <h2 class="text-4xl font-bold text-white mb-6">🏙️ WELCOME TO CYBER CITY</h2>
                 
                 <div class="tessa-dialogue p-6 mb-8">
-                    <div class="text-lg text-gray-200">
+                    <div class="text-lg text-gray-200" id="tessaDialogue">
                         <strong class="text-yellow-400">Captain Tessa:</strong> 
                         "Greetings, defender! Our city's digital infrastructure is under attack. 
                         The Password Fortress has been compromised, and we need your expertise to secure it. 
                         Are you ready to join the Cyber City Protection Squad?"
                     </div>
-                </div>
-                
-                <div class="grid md:grid-cols-3 gap-6 mb-8">
-                    <div class="challenge-card p-6">
-                        <div class="text-3xl mb-3">🔐</div>
-                        <h3 class="text-white font-bold mb-2">5 Security Challenges</h3>
-                        <p class="text-gray-300 text-sm">Test your password security knowledge</p>
-                    </div>
-                    
-                    <div class="challenge-card p-6">
-                        <div class="text-3xl mb-3">🏆</div>
-                        <h3 class="text-cyan-400 font-bold mb-2">Earn Cyber Badges</h3>
-                        <p class="text-cyan-300 text-sm">Unlock achievements for your heroic deeds</p>
-                    </div>
-                    
-                    <div class="challenge-card p-6">
-                        <div class="text-3xl mb-3">🏙️</div>
-                        <h3 class="text-cyan-400 font-bold mb-2">Protect the City</h3>
-                        <p class="text-cyan-300 text-sm">Increase city security level to 100%</p>
+                    <div id="voiceIndicator" style="display: none;" class="mt-2">
+                        <div class="flex items-center justify-center text-yellow-400">
+                            <i class="fas fa-volume-up mr-2"></i>
+                            <span class="text-sm">Captain Tessa speaking...</span>
+                        </div>
                     </div>
                 </div>
                 
-                {% if not player %}
-                <a href="{% url 'cyber_city:avatar' session.session_code %}" class="cyber-btn">
-                    🚀 CREATE YOUR DEFENDER
-                </a>
-                {% else %}
-                <button onclick="startMission()" class="cyber-btn">
-                    ⚡ BEGIN MISSION
-                </button>
-                {% endif %}
-            </div>
-        </div>
-        
-        {% elif session.mission_stage == 'mission_brief' %}
-        <!-- Mission Briefing -->
-        <div class="max-w-4xl mx-auto">
-            <div class="mission-panel p-8">
-                <h2 class="text-3xl font-bold text-cyan-400 mb-6 text-center">📋 MISSION BRIEFING</h2>
-                
-                <div class="tessa-dialogue p-6 mb-6">
-                    <div class="text-lg text-cyan-300">
-                        <strong class="text-orange-400">Captain Tessa:</strong> 
-                        "Excellent, {{ player.hero_nickname }}! Your suit looks impressive. 
-                        Now, let me brief you on the Password Fortress situation. 
-                        We've detected 5 critical vulnerabilities in our password security systems. 
-                        Your mission is to identify and neutralize each threat."
-                    </div>
-                </div>
-                
-                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
                     <div class="challenge-card p-6">
                         <h3 class="text-cyan-400 font-bold mb-4">🎯 Mission Objectives</h3>
                         <ul class="text-cyan-300 space-y-2">
@@ -749,8 +242,8 @@
             <!-- Current Challenge -->
             <div class="grid lg:grid-cols-3 gap-6">
                 <!-- Challenge Panel -->
-                <div class="lg:col-span-2">
-                    <div class="challenge-card p-8">
+                <div class="lg:col-span-2 order-2 lg:order-1">
+                    <div class="challenge-card p-8" id="gameArea">
                         <div class="flex items-center justify-between mb-6">
                             <h2 class="text-2xl font-bold text-cyan-400">
                                 🔐 {{ current_challenge.title }}
@@ -797,54 +290,51 @@
                 </div>
                 
                 <!-- Side Panel -->
-                <div class="space-y-6">
+                <div class="space-y-6 order-1 lg:order-2">
                     <!-- Captain Tessa -->
-                    <div class="tessa-dialogue p-6">
-                        <div class="relative">
-                            <div class="voice-indicator" id="voiceIndicator" style="display: none;"></div>
-                            <div class="text-cyan-300" id="tessaDialogue">
-                                <strong class="text-orange-400">Captain Tessa:</strong><br>
-                                "Take your time, {{ player.hero_nickname }}. Analyze each option carefully. 
-                                The city's security depends on your knowledge!"
+                    <div class="challenge-card p-6">
+                        <h3 class="text-yellow-400 font-bold mb-4 flex items-center">
+                            <span class="text-2xl mr-2">👩‍✈️</span>
+                            Captain Tessa
+                        </h3>
+                        <div class="tessa-dialogue p-4">
+                            <div id="tessaDialogue" class="text-gray-200 text-sm">
+                                "I'm here to guide you through this mission. Take your time to read each challenge carefully."
+                            </div>
+                        </div>
+                        <div id="voiceIndicator" style="display: none;" class="mt-3">
+                            <div class="flex items-center text-yellow-400 text-sm">
+                                <i class="fas fa-volume-up mr-2"></i>
+                                <span>Captain Tessa speaking...</span>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Badges Earned -->
-                    {% if player.badges_earned %}
+                    <!-- Controls -->
                     <div class="challenge-card p-6">
-                        <h3 class="text-cyan-400 font-bold mb-4">🏆 Badges Earned</h3>
-                        <div class="space-y-2">
-                            {% for badge in player.badges_earned %}
-                            <div class="flex items-center space-x-2 text-cyan-300">
-                                {% if badge == 'perfect_defender' %}
-                                    <span>🛡️ Perfect Defender</span>
-                                {% elif badge == 'cyber_speedster' %}
-                                    <span>⚡ Cyber Speedster</span>
-                                {% elif badge == 'password_master' %}
-                                    <span>🔐 Password Master</span>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
+                        <h3 class="text-cyan-400 font-bold mb-4">🎮 Controls</h3>
+                        <div class="space-y-3">
+                            <button onclick="toggleMusic()" id="musicToggle" class="btn btn-outline btn-sm w-full">
+                                <i class="fas fa-volume-up"></i> Toggle Music
+                            </button>
                         </div>
                     </div>
-                    {% endif %}
                     
-                    <!-- Stats -->
+                    <!-- Mission Status -->
                     <div class="challenge-card p-6">
-                        <h3 class="text-cyan-400 font-bold mb-4">📊 Stats</h3>
-                        <div class="space-y-3 text-cyan-300">
+                        <h3 class="text-green-400 font-bold mb-4">📊 Status</h3>
+                        <div class="space-y-2 text-sm">
                             <div class="flex justify-between">
-                                <span>Correct Answers:</span>
-                                <span class="text-green-400">{{ player.correct_answers }}</span>
+                                <span class="text-gray-300">Challenge:</span>
+                                <span class="text-green-400">{{ current_challenge.challenge_number }}/5</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>Wrong Answers:</span>
-                                <span class="text-red-400">{{ player.wrong_answers }}</span>
+                                <span class="text-gray-300">Score:</span>
+                                <span class="text-green-400">{{ player.total_score }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span>Total Score:</span>
-                                <span class="text-orange-400">{{ player.total_score }}</span>
+                                <span class="text-gray-300">Security:</span>
+                                <span class="text-green-400">{{ session.city_security_level }}%</span>
                             </div>
                         </div>
                     </div>
@@ -853,66 +343,34 @@
             {% endif %}
         </div>
         
-        {% elif session.mission_stage == 'completed' %}
+        {% elif session.mission_stage == 'complete' %}
         <!-- Mission Complete -->
-        <div class="max-w-4xl mx-auto">
-            <div class="mission-panel p-8 text-center">
-                <h2 class="text-4xl font-bold text-green-400 mb-6">🎉 MISSION ACCOMPLISHED!</h2>
-                
-                <div class="tessa-dialogue p-6 mb-8">
-                    <div class="text-lg text-cyan-300">
-                        <strong class="text-orange-400">Captain Tessa:</strong> 
-                        "Outstanding work, {{ player.hero_nickname }}! You've successfully secured the Password Fortress. 
-                        The city's digital infrastructure is now protected thanks to your expertise. 
-                        You are truly a hero of Cyber City!"
-                    </div>
-                </div>
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="mission-panel p-8">
+                <h2 class="text-4xl font-bold text-green-400 mb-6">🏆 MISSION COMPLETE!</h2>
+                <p class="text-xl text-gray-200 mb-8">Excellent work, {{ player.hero_nickname }}! You've successfully secured the Password Fortress.</p>
                 
                 <div class="grid md:grid-cols-3 gap-6 mb-8">
                     <div class="challenge-card p-6">
-                        <div class="text-3xl mb-3 text-green-400">🏆</div>
-                        <h3 class="text-cyan-400 font-bold mb-2">Final Score</h3>
-                        <p class="text-orange-400 text-2xl font-bold">{{ player.total_score }}</p>
+                        <div class="text-3xl text-blue-400 mb-2">5/5</div>
+                        <div class="text-cyan-300">Challenges</div>
                     </div>
-                    
                     <div class="challenge-card p-6">
-                        <div class="text-3xl mb-3 text-blue-400">🛡️</div>
-                        <h3 class="text-cyan-400 font-bold mb-2">Challenges Complete</h3>
-                        <p class="text-green-400 text-2xl font-bold">{{ player.challenges_completed }}/5</p>
+                        <div class="text-3xl text-green-400 mb-2">{{ player.total_score }}/5</div>
+                        <div class="text-cyan-300">Score</div>
                     </div>
-                    
                     <div class="challenge-card p-6">
-                        <div class="text-3xl mb-3 text-purple-400">🔐</div>
-                        <h3 class="text-cyan-400 font-bold mb-2">City Security</h3>
-                        <p class="text-green-400 text-2xl font-bold">{{ session.city_security_level }}%</p>
+                        <div class="text-3xl text-orange-400 mb-2">100%</div>
+                        <div class="text-cyan-300">Security</div>
                     </div>
                 </div>
                 
-                {% if player.badges_earned %}
-                <div class="challenge-card p-6 mb-8">
-                    <h3 class="text-cyan-400 font-bold mb-4">🏆 Your Cyber Badges</h3>
-                    <div class="flex flex-wrap justify-center gap-4">
-                        {% for badge in player.badges_earned %}
-                        <div class="bg-gradient-to-r from-cyan-500 to-orange-500 p-3 rounded-lg">
-                            {% if badge == 'perfect_defender' %}
-                                <span class="text-white font-bold">🛡️ Perfect Defender</span>
-                            {% elif badge == 'cyber_speedster' %}
-                                <span class="text-white font-bold">⚡ Cyber Speedster</span>
-                            {% elif badge == 'password_master' %}
-                                <span class="text-white font-bold">🔐 Password Master</span>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-                
-                <div class="space-x-4">
-                    <button onclick="window.location.reload()" class="cyber-btn">
-                        🔄 PLAY AGAIN
-                    </button>
+                <div class="space-y-4">
+                    <a href="/cyber-city/" class="cyber-btn mr-4">
+                        🏙️ Return to Cyber City
+                    </a>
                     <a href="/games/" class="cyber-btn">
-                        🎮 MORE GAMES
+                        🎮 More Games
                     </a>
                 </div>
             </div>
@@ -920,801 +378,4 @@
         {% endif %}
     </div>
 </div>
-
-<script>
-// Game State
-let currentChallengeId = {{ current_challenge.id|default:"null" }};
-
-// Voice synthesis function for Captain Tessa
-function speakText(text) {
-    if (speechSynthesis) {
-        // Cancel any ongoing speech
-        speechSynthesis.cancel();
-        
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.3; // Faster, more engaging speech
-        utterance.pitch = 1.1; // Slightly higher pitch for friendly tone
-        utterance.volume = 0.8;
-        
-        // Try to use a kid-friendly voice
-        const voices = speechSynthesis.getVoices();
-        const friendlyVoice = voices.find(voice => 
-            voice.name.toLowerCase().includes('female') || 
-            voice.name.toLowerCase().includes('karen') ||
-            voice.name.toLowerCase().includes('zira') ||
-            voice.name.toLowerCase().includes('samantha')
-        );
-        
-        if (friendlyVoice) {
-            utterance.voice = friendlyVoice;
-        }
-        
-        // Show voice indicator
-        const voiceIndicator = document.getElementById('voiceIndicator');
-        if (voiceIndicator) {
-            voiceIndicator.style.display = 'block';
-        }
-        
-        utterance.onend = function() {
-            if (voiceIndicator) {
-                voiceIndicator.style.display = 'none';
-            }
-        };
-        
-        speechSynthesis.speak(utterance);
-    }
-}
-
-// Update Tessa dialogue with voice
-function updateTessaDialogue(message, useVoice = true) {
-    const tessaDialogue = document.getElementById('tessaDialogue');
-    if (tessaDialogue) {
-        tessaDialogue.style.animation = 'fadeOut 0.3s ease';
-        
-        setTimeout(() => {
-            tessaDialogue.innerHTML = `<strong class="text-orange-400">Captain Tessa:</strong><br>${message}`;
-            tessaDialogue.style.animation = 'fadeIn 0.5s ease';
-            
-            if (useVoice) {
-                // Extract just the spoken text without HTML
-                const spokenText = message.replace(/<[^>]*>/g, '');
-                speakText(spokenText);
-            }
-        }, 300);
-    }
-}
-
-// Initialize voices
-speechSynthesis.onvoiceschanged = function() {
-    // Voices are now loaded
-};
-
-function selectOption(option) {
-    try {
-        // Prevent selection during submission
-        if (document.querySelector('.submitting')) {
-            return;
-        }
-
-        // Remove previous selection with smooth transition
-        document.querySelectorAll('.option-btn').forEach(btn => {
-            btn.classList.remove('selected');
-            btn.style.transform = 'scale(1)';
-        });
-        
-        // Find and select the clicked option button
-        const optionButtons = document.querySelectorAll('.option-btn');
-        const optionIndex = option === 'A' ? 0 : option === 'B' ? 1 : 2;
-        const selectedBtn = optionButtons[optionIndex];
-        
-        if (selectedBtn) {
-            selectedBtn.classList.add('selected');
-            selectedBtn.style.transform = 'scale(1.02)';
-            selectedBtn.style.transition = 'all 0.2s ease';
-        }
-        
-        selectedAnswer = option;
-        console.log('Option selected:', option);
-        
-        // Enable submit button with correct ID
-        const submitBtn = document.getElementById('submitBtn');
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
-        }
-    } catch (error) {
-        console.error('Error selecting option:', error);
-    }
-}
-
-
-function submitAnswer() {
-    // Stop any ongoing speech first
-    if (speechSynthesis) {
-        speechSynthesis.cancel();
-    }
-    
-    // Enhanced validation and error handling
-    if (!selectedAnswer) {
-        console.warn('No answer selected');
-        return;
-    }
-    
-    if (!currentChallengeId) {
-        console.error('No challenge ID available');
-        alert('Error: No challenge available. Please refresh the page.');
-        return;
-    }
-    
-    // Prevent double submission
-    const submitBtn = document.getElementById('submitBtn');
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.classList.add('submitting');
-        submitBtn.innerHTML = '⏳ Submitting...';
-    }
-    
-    console.log('Submitting answer:', {
-        answer: selectedAnswer,
-        challengeId: currentChallengeId,
-        sessionCode: sessionCode
-    });
-    
-    // Submit answer with improved error handling
-    fetch(`/cyber-city/${sessionCode}/action/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-            action_type: 'submit_answer',
-            challenge_id: currentChallengeId,
-            answer: selectedAnswer,
-            time_taken: 30
-        })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.indexOf('application/json') !== -1) {
-            return response.json();
-        } else {
-            throw new Error('Response is not JSON');
-        }
-    })
-    .then(data => {
-        showResult(data);
-    })
-    .catch(error => {
-        console.error('Submit answer error:', error);
-        
-        // Re-enable submit button
-        const submitBtn = document.getElementById('submitBtn');
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('submitting');
-            submitBtn.innerHTML = '🚀 SUBMIT ANSWER';
-        }
-        
-        // Show user-friendly error message
-        const errorMsg = error.message.includes('HTTP') 
-            ? 'Server connection failed. Please check your internet and try again.'
-            : 'Failed to submit answer. Please try again.';
-            
-        alert(errorMsg);
-    });
-}
-
-function showResult(data) {
-    // Handle mission completion with enhanced completion screen
-    if (data.mission_complete) {
-        showPasswordGameCompletion(data);
-        return;
-    }
-    
-    // Create result overlay with improved readability and error handling
-    const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4';
-    
-    // Safely extract values with fallbacks to prevent undefined display
-    const pointsEarned = data.points_earned ?? 0;
-    const explanation = data.explanation || 'Challenge completed. Continue to learn more!';
-    const tessaTip = data.tessa_tip || '';
-    const badgesEarned = data.badges_earned || [];
-    
-    // Update Tessa's dialogue with voice feedback
-    const tessaMessage = data.is_correct 
-        ? `Great work! You've successfully secured this part of the Password Fortress. ${tessaTip || 'Your cybersecurity knowledge is impressive!'}`
-        : `Not quite right, but that's how we learn! ${tessaTip || 'Let me explain why this is important for password security.'}`;
-    
-    setTimeout(() => {
-        updateTessaDialogue(tessaMessage, true);
-    }, 1000);
-    
-    overlay.innerHTML = `
-        <div style="background: #1f2937; border: 2px solid #3b82f6; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);" class="p-8 max-w-lg mx-4 text-center">
-            <div class="text-6xl mb-4">
-                ${data.is_correct ? '✅' : '❌'}
-            </div>
-            <h3 class="text-3xl font-bold mb-6 ${data.is_correct ? 'text-green-400' : 'text-red-400'}">
-                ${data.is_correct ? 'FORTRESS SECURED!' : 'TRY AGAIN'}
-            </h3>
-            <div class="text-white mb-4 text-lg">
-                Points Earned: <span class="text-yellow-400 font-bold">${pointsEarned}</span>
-            </div>
-            <div class="text-gray-200 mb-6 text-left leading-relaxed">
-                <strong class="text-white">Security Analysis:</strong><br>
-                <span class="text-gray-300">${explanation}</span>
-            </div>
-            ${badgesEarned.length > 0 ? `
-                <div class="mb-6">
-                    <h4 class="text-white font-bold mb-2">🏆 New Badge Unlocked!</h4>
-                    <div style="background: linear-gradient(45deg, #3b82f6, #f59e0b);" class="p-3 rounded-lg">
-                        <span class="text-white font-bold">${badgesEarned[0]}</span>
-                    </div>
-                </div>
-            ` : ''}
-            <button onclick="continueGame(false, ${data.is_correct})" 
-                    style="background: linear-gradient(45deg, #00ffff, #0080ff); color: #000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);"
-                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 255, 255, 0.4)'"
-                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 255, 255, 0.3)'">
-                ${data.is_correct ? '➡️ CONTINUE MISSION' : '📚 CONTINUE LEARNING'}
-            </button>
-        </div>
-    `;
-    
-    document.body.appendChild(overlay);
-}
-
-// Password Game Completion Screen with Learning Summary
-function showPasswordGameCompletion(data) {
-    const completionOverlay = document.createElement('div');
-    completionOverlay.className = 'fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4 overflow-y-auto';
-    
-    const finalScore = data.final_score || data.points_earned || 0;
-    const correctAnswers = data.correct_answers || 0;
-    const wrongAnswers = data.wrong_answers || 0;
-    const totalChallenges = data.total_challenges || 5;
-    const completionMessage = data.completion_message || {
-        title: 'MISSION COMPLETE!',
-        message: 'You have completed the Password Fortress mission.',
-        performance: 'completed',
-        show_retry: false
-    };
-    
-    // Debug logging
-    console.log('Completion data received:', data);
-    console.log('Completion message:', completionMessage);
-    console.log('Final score:', finalScore);
-    console.log('Correct answers:', correctAnswers);
-    
-    // Captain Tessa's final message based on performance
-    let tessaFinalMessage;
-    if (correctAnswers >= 4) {
-        tessaFinalMessage = `Outstanding work, hero! You've mastered password security and are now a true guardian of Cyber City. Your cybersecurity skills are exceptional!`;
-    } else if (correctAnswers >= 3) {
-        tessaFinalMessage = `Good job, hero! You've learned important password security lessons and helped protect Cyber City. Keep practicing these skills!`;
-    } else if (correctAnswers >= 2) {
-        tessaFinalMessage = `You've made some progress, but password security needs more attention. Consider trying again to strengthen your cyber defense skills!`;
-    } else {
-        tessaFinalMessage = `Password security is crucial for protecting Cyber City. Let's try again to master these essential cybersecurity skills!`;
-    }
-    
-    setTimeout(() => {
-        updateTessaDialogue(tessaFinalMessage, true);
-    }, 2000);
-    
-    // Determine performance level based on correct answers if not provided
-    let performance = completionMessage.performance || 'completed';
-    if (!completionMessage.performance) {
-        if (correctAnswers >= 4) performance = 'excellent';
-        else if (correctAnswers >= 3) performance = 'good';
-        else if (correctAnswers >= 2) performance = 'needs_improvement';
-        else performance = 'needs_retry';
-    }
-    
-    // Prepare display values to avoid template string issues
-    const headerIcon = performance === 'excellent' ? '🏆' : 
-                      performance === 'good' ? '🛡️' : 
-                      performance === 'needs_improvement' ? '⚠️' : '🔄';
-    
-    const headerColor = (performance === 'excellent' || performance === 'good') ? 'text-cyan-400' : 'text-orange-400';
-    
-    const bodyIcons = performance === 'excellent' ? '🛡️🔐🦸‍♂️' : 
-                     performance === 'good' ? '🔐🛡️' : '🔄📚';
-    
-    const messageColor = (performance === 'excellent' || performance === 'good') ? 'text-cyan-300' : 'text-orange-300';
-    
-    completionOverlay.innerHTML = 
-        '<div style="background: linear-gradient(135deg, #0a0a23 0%, #1a1a3a 100%); border: 2px solid #00ffff; border-radius: 20px; box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);" class="p-8 max-w-4xl mx-4 text-center max-h-screen overflow-y-auto">' +
-            '<!-- Celebration Header -->' +
-            '<div class="celebration-header mb-8">' +
-                '<div class="text-8xl mb-4 animate-bounce">' + headerIcon + '</div>' +
-                '<h2 class="text-4xl font-bold ' + headerColor + ' mb-4 animate-pulse">' +
-                    completionMessage.title +
-                '</h2>' +
-                '<div class="text-6xl mb-4">' + bodyIcons + '</div>' +
-                '<p class="text-2xl ' + messageColor + ' mb-6">' +
-                    completionMessage.message +
-                '</p>' +
-            '</div>' +
-            
-            '<!-- Performance Message -->' +
-            '<div class="mb-8 p-6 bg-cyan-900/20 rounded-xl border border-cyan-500/30">' +
-                '<div class="flex items-center gap-3 mb-3">' +
-                    '<span class="text-2xl">🤖</span>' +
-                    '<span class="font-bold text-cyan-400">Captain Tessa</span>' +
-                '</div>' +
-                '<p class="text-cyan-300 text-lg italic">' +
-                    '"Excellent work! You have completed the Password Fortress mission and protected Cyber City. Your cybersecurity knowledge has grown stronger with each challenge!"' +
-                '</p>' +
-            '</div>' +
-
-            '<!-- Achievement Summary -->' +
-            '<div class="achievement-summary bg-cyan-900/30 rounded-xl p-8 mb-8 border border-cyan-500/50">' +
-                '<h3 class="text-2xl font-bold text-cyan-400 mb-6">🎯 Mission Summary</h3>' +
-                '<div class="grid md:grid-cols-2 gap-8">' +
-                    '<!-- Stats Column -->' +
-                    '<div class="stats-column">' +
-                        '<h4 class="text-lg font-bold text-orange-400 mb-4">Your Performance</h4>' +
-                        '<div class="space-y-3 text-cyan-300">' +
-                            '<div class="flex justify-between items-center">' +
-                                '<span>🎯 Mission Progress:</span>' +
-                                '<span class="font-bold text-green-400">100% COMPLETE</span>' +
-                            '</div>' +
-                            '<div class="flex justify-between items-center">' +
-                                '<span>🎯 Challenges Completed:</span>' +
-                                '<span class="font-bold text-cyan-400">' + totalChallenges + '/' + totalChallenges + '</span>' +
-                            '</div>' +
-                            '<div class="flex justify-between items-center">' +
-                                '<span>🏆 Final Score:</span>' +
-                                '<span class="font-bold text-cyan-400">' + finalScore + '</span>' +
-                            '</div>' +
-                            '<div class="flex justify-between items-center">' +
-                                '<span>✅ Correct Answers:</span>' +
-                                '<span class="font-bold ' + (correctAnswers >= 3 ? 'text-green-400' : 'text-orange-400') + '">' + correctAnswers + '/' + totalChallenges + '</span>' +
-                            '</div>' +
-                            '<div class="flex justify-between items-center">' +
-                                '<span>❌ Wrong Answers:</span>' +
-                                '<span class="font-bold ' + (wrongAnswers <= 2 ? 'text-green-400' : 'text-red-400') + '">' + wrongAnswers + '/' + totalChallenges + '</span>' +
-                            '</div>' +
-                            '<div class="flex justify-between items-center">' +
-                                '<span>🔐 Success Rate:</span>' +
-                                '<span class="font-bold ' + (Math.round((correctAnswers/totalChallenges)*100) >= 60 ? 'text-green-400' : 'text-orange-400') + '">' + (totalChallenges > 0 ? Math.round((correctAnswers/totalChallenges)*100) : 0) + '%</span>' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>' +
-
-                    '<!-- Badges Column -->' +
-                    '<div class="badges-column">' +
-                        '<h4 class="text-lg font-bold text-orange-400 mb-4">Badges Earned</h4>' +
-                        '<div class="space-y-2 text-cyan-300">' +
-                            '<div class="flex items-center space-x-3">' +
-                                '<span class="text-2xl">🔐</span>' +
-                                '<span>Password Guardian</span>' +
-                            '</div>' +
-                            '<div class="flex items-center space-x-3">' +
-                                '<span class="text-2xl">🛡️</span>' +
-                                '<span>Cyber Defender</span>' +
-                            '</div>' +
-                            '<div class="flex items-center space-x-3">' +
-                                '<span class="text-2xl">🏙️</span>' +
-                                '<span>City Protector</span>' +
-                            '</div>' +
-                            '<div class="flex items-center space-x-3">' +
-                                '<span class="text-2xl">⚡</span>' +
-                                '<span>Security Expert</span>' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-            '</div>' +
-            
-            '<!-- Simple Action Buttons -->' +
-            '<div class="text-center mt-8">' +
-                '<div class="space-y-4">' +
-                    '<button onclick="window.location.reload()" class="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-orange-400 hover:to-red-400 transition-all duration-300 transform hover:scale-105" style="box-shadow: 0 0 20px rgba(251, 146, 60, 0.3);">🔄 Play Again</button>' +
-                    '<a href="/games/cyber-security/" class="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-8 py-4 rounded-lg font-bold text-lg hover:from-cyan-300 hover:to-blue-400 transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center space-x-2 ml-4" style="box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);"><span>🎮</span><span>More Games</span></a>' +
-                '</div>' +
-            '</div>' +
-        '</div>';
-    
-    document.body.appendChild(completionOverlay);
-    
-    // Add celebration effects
-    createCelebrationEffects();
-}
-
-// Create celebration effects for game completion
-function createCelebrationEffects() {
-    // Create trophy/emoji rain
-    for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-            const celebration = document.createElement('div');
-            celebration.innerHTML = Math.random() > 0.5 ? '🏆' : (Math.random() > 0.5 ? '🎉' : '🔐');
-            celebration.style.cssText = `
-                position: fixed;
-                left: ${Math.random() * 100}%;
-                top: -50px;
-                font-size: 2rem;
-                z-index: 1000;
-                animation: celebrationFall 3s ease-out forwards;
-                pointer-events: none;
-            `;
-            document.body.appendChild(celebration);
-            
-            setTimeout(() => celebration.remove(), 3000);
-        }, i * 100);
-    }
-}
-
-function continueGame(missionComplete, isCorrect = true) {
-    try {
-        // Stop any ongoing speech first
-        if (speechSynthesis) {
-            speechSynthesis.cancel();
-        }
-        
-        // Remove overlay safely
-        const overlay = document.querySelector('.fixed.inset-0');
-        if (overlay) {
-            overlay.remove();
-        }
-        
-        // Handle mission completion or continue to next challenge
-        if (missionComplete) {
-            // Redirect to results page or reload with completed state
-            window.location.href = window.location.href;
-        } else {
-            // Continue to next challenge - handle both correct and wrong answers
-            if (isCorrect) {
-                // For correct answers, just reload to get next challenge
-                setTimeout(() => {
-                    window.location.reload();
-                }, 300);
-            } else {
-                // For wrong answers, progress to next Password Fortress challenge
-                progressPasswordAfterWrongAnswer();
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
-            }
-        }
-    } catch (error) {
-        console.error('Error in continueGame:', error);
-        // Fallback: just reload the page
-        window.location.reload();
-    }
-}
-
-// Progress to next Password Fortress challenge after wrong answer
-function progressPasswordAfterWrongAnswer() {
-    fetch(`/cyber-city/${sessionCode}/action/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-            action_type: 'progress_password_after_wrong_answer',
-            challenge_id: currentChallengeId
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Successfully progressed to next Password Fortress challenge');
-    })
-    .catch(error => {
-        console.error('Progress password challenge error:', error);
-    });
-}
-
-// Progress after wrong answer - calls backend to advance the game
-function progressAfterWrongAnswer() {
-    // Update backend to progress the challenge after wrong answer
-    fetch(`/cyber-city/${sessionCode}/action/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-            action_type: 'progress_after_wrong_answer',
-            challenge_id: currentChallengeId
-        })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.indexOf('application/json') !== -1) {
-            return response.json();
-        } else {
-            throw new Error('Response is not JSON');
-        }
-    })
-    .then(data => {
-        console.log('Successfully progressed after wrong answer');
-        // Don't reload here - continueGame will handle it
-    })
-    .catch(error => {
-        console.error('Progress after wrong answer error:', error);
-        // Don't reload here - continueGame will handle it
-    });
-}
-
-// Review System Functions
-let selectedRating = 0;
-
-function setRating(rating) {
-    selectedRating = rating;
-    
-    // Update star display
-    const stars = document.querySelectorAll('.star-btn');
-    stars.forEach((star, index) => {
-        if (index < rating) {
-            star.style.opacity = '1';
-            star.style.transform = 'scale(1.1)';
-        } else {
-            star.style.opacity = '0.3';
-            star.style.transform = 'scale(1)';
-        }
-    });
-    
-    // Update rating text
-    const ratingTexts = ['', 'Not Good 😔', 'Okay 😐', 'Good 🙂', 'Great 😊', 'Amazing! 🤩'];
-    document.getElementById('ratingText').textContent = ratingTexts[rating];
-    
-    // Enable submit button
-    document.getElementById('submitReviewBtn').disabled = false;
-    document.getElementById('submitReviewBtn').style.opacity = '1';
-}
-
-function submitGameReview() {
-    if (selectedRating === 0) {
-        alert('Please select a rating first!');
-        return;
-    }
-    
-    const submitBtn = document.getElementById('submitReviewBtn');
-    submitBtn.disabled = true;
-    submitBtn.textContent = '⏳ Submitting...';
-    
-    const reviewText = document.getElementById('reviewText').value.trim();
-    
-    // Submit review
-    fetch('/submit-game-review/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-            game_type: 'password_fortress',
-            rating: selectedRating,
-            review_text: reviewText || null,
-            session_id: sessionCode,
-            player_name: '{{ player.hero_nickname|default:"" }}'
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            // Show success message
-            document.querySelector('.review-section').style.display = 'none';
-            document.getElementById('reviewSuccess').classList.remove('hidden');
-            document.getElementById('reviewSuccess').style.display = 'block';
-            
-            // Show CTA section
-            setTimeout(() => {
-                document.getElementById('ctaSection').style.display = 'block';
-            }, 1000);
-        } else {
-            alert('Failed to submit review: ' + data.message);
-            submitBtn.disabled = false;
-            submitBtn.textContent = '✨ Submit Review';
-        }
-    })
-    .catch(error => {
-        console.error('Review submission error:', error);
-        alert('Failed to submit review. Please try again.');
-        submitBtn.disabled = false;
-        submitBtn.textContent = '✨ Submit Review';
-    });
-}
-
-// Character counter for review text
-document.addEventListener('DOMContentLoaded', function() {
-    const reviewTextarea = document.getElementById('reviewText');
-    const charCount = document.getElementById('charCount');
-    
-    if (reviewTextarea && charCount) {
-        reviewTextarea.addEventListener('input', function() {
-            const count = this.value.length;
-            charCount.textContent = count;
-            
-            if (count > 450) {
-                charCount.style.color = '#ff6b6b';
-            } else {
-                charCount.style.color = '#9ca3af';
-            }
-        });
-    }
-});
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-// Music Control Functions
-let musicEnabled = false;
-const music = document.getElementById('backgroundMusic');
-
-function toggleMusic() {
-    const musicIcon = document.getElementById('musicIcon');
-    
-    if (musicEnabled) {
-        music.pause();
-        musicIcon.className = 'fas fa-volume-mute text-lg';
-        musicEnabled = false;
-        localStorage.setItem('cyberCityMusic', 'disabled');
-    } else {
-        music.play().catch(e => {
-            console.log('Music autoplay prevented by browser:', e);
-        });
-        musicIcon.className = 'fas fa-volume-up text-lg';
-        musicEnabled = true;
-        localStorage.setItem('cyberCityMusic', 'enabled');
-    }
-}
-
-function initializeMusic() {
-    const savedPreference = localStorage.getItem('cyberCityMusic');
-    
-    // Set subtle volume for background ambiance
-    music.volume = 0.25;
-    
-    // Always start muted to comply with browser autoplay policies
-    musicEnabled = false;
-    document.getElementById('musicIcon').className = 'fas fa-volume-mute text-lg';
-    
-    // Add error handling for audio loading
-    music.addEventListener('error', function(e) {
-        console.log('Audio file could not be loaded:', e);
-        document.getElementById('musicToggle').style.display = 'none';
-    });
-    
-    music.addEventListener('loadeddata', function() {
-        console.log('Cyber City ambient audio ready');
-    });
-}
-
-// Initialize game
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Cyber City Protection Squad initialized');
-    initializeMusic();
-});
-</script>
-
-    </main>
-    
-    <!-- Mobile-Optimized Footer -->
-    <footer class="footer footer-center bg-gradient-to-t from-slate-100 to-slate-50 text-slate-700 p-6 sm:p-10">
-        <div class="grid grid-flow-col gap-4">
-            <div class="grid grid-flow-col gap-4">
-                <!-- Mobile-Optimized Company Info -->
-                <div class="text-center">
-                    <div class="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-                        <div class="text-2xl sm:text-3xl">🤖</div>
-                        <span class="text-xl sm:text-2xl font-bold text-slate-800">
-                            Decipherworld
-                        </span>
-                    </div>
-                    <p class="text-sm sm:text-base text-slate-600 max-w-md mx-auto mb-3 sm:mb-4 px-2">
-                        World's first game and team-based AI learning platform. 
-                        Transforming education for students and empowering teachers with 5X productivity.
-                    </p>
-                    <div class="flex flex-wrap justify-center gap-1 sm:gap-2 mb-3 sm:mb-4">
-                        <div class="badge badge-primary badge-xs sm:badge-sm">500+ Schools</div>
-                        <div class="badge badge-secondary badge-xs sm:badge-sm">AI Powered</div>
-                        <div class="badge badge-accent badge-xs sm:badge-sm">Game-Based</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Quick Links -->
-        <div class="grid grid-flow-col gap-8">
-            <div>
-                <span class="footer-title text-primary">Students</span> 
-                <a href="/courses/" class="link link-hover flex items-center gap-1">
-                    <i class="fas fa-robot text-xs"></i>AI Courses
-                </a>
-                <a href="/courses/" class="link link-hover flex items-center gap-1">
-                    <i class="fas fa-coins text-xs"></i>Financial Literacy
-                </a>
-            </div>
-            <div>
-                <span class="footer-title text-secondary">Teachers</span> 
-                <a href="/teachers/" class="link link-hover flex items-center gap-1">
-                    <i class="fas fa-chalkboard-teacher text-xs"></i>AI Training
-                </a>
-                <a href="/teachers/" class="link link-hover flex items-center gap-1">
-                    <i class="fas fa-handshake text-xs"></i>Classroom Support
-                </a>
-            </div>
-            <div>
-                <span class="footer-title text-accent">Connect</span> 
-                <a href="/contact/" class="link link-hover flex items-center gap-1">
-                    <i class="fas fa-rocket text-xs"></i>Get Started
-                </a>
-                <a href="/gallery/" class="link link-hover flex items-center gap-1">
-                    <i class="fas fa-images text-xs"></i>Success Stories
-                </a>
-                <a href="mailto:customerservice@decipherworld.com" class="link link-hover flex items-center gap-1">
-                    <i class="fas fa-envelope text-xs"></i>Contact Us
-                </a>
-            </div>
-        </div>
-        
-        <!-- Social Links -->
-        <div>
-            <div class="grid grid-flow-col gap-4">
-                <a href="#" class="btn btn-circle btn-outline btn-sm" title="LinkedIn">
-                    <i class="fab fa-linkedin-in"></i>
-                </a>
-                <a href="#" class="btn btn-circle btn-outline btn-sm" title="Twitter">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="#" class="btn btn-circle btn-outline btn-sm" title="YouTube">
-                    <i class="fab fa-youtube"></i>
-                </a>
-                <a href="#" class="btn btn-circle btn-outline btn-sm" title="Instagram">
-                    <i class="fab fa-instagram"></i>
-                </a>
-            </div>
-        </div>
-        
-        <!-- Copyright -->
-        <div class="border-t border-base-300 pt-6 w-full text-center">
-            <p class="text-base-content/60">
-                &copy; 2025 Decipherworld. All rights reserved. | 
-                <span class="text-primary font-semibold">Making Education Engaging & Effective</span> ⚡
-            </p>
-        </div>
-    </footer>
-    
-    <!-- Theme Toggle Script (Optional) -->
-    <script>
-        // Optional: Add theme toggle functionality
-        function toggleTheme() {
-            const theme = document.documentElement.getAttribute('data-theme');
-            const newTheme = theme === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        }
-        
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-    </script>
-    
-    
-    
-</body>
-</html>
+{% endblock %}
