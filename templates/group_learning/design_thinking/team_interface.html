@@ -1251,7 +1251,7 @@ function addManualRefreshButton() {
 function updateTeamStatus() {
     const sessionCode = document.querySelector('[data-session-code]').dataset.sessionCode;
     
-    fetch(`/learn/session/${sessionCode}/mission-control/`, {
+    fetch(`/learn/api/design-thinking/${sessionCode}/control/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -1507,7 +1507,7 @@ function updateTeamStatusBar() {
     // Update the mission progress counter in the team status bar
     const sessionCode = document.querySelector('[data-session-code]')?.dataset.sessionCode;
     
-    fetch(`/learn/session/${sessionCode}/mission-control/`, {
+    fetch(`/learn/api/design-thinking/${sessionCode}/control/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
