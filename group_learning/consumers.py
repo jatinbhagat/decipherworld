@@ -14,8 +14,9 @@ from django.utils import timezone
 from django.conf import settings
 from .models import (
     ClimateGameSession, ClimatePlayerResponse,
-    DesignThinkingSession, DesignTeam, TeamSubmission, TeamProgress
+    DesignThinkingSession, DesignTeam, DesignMission, TeamSubmission, TeamProgress
 )
+from .monitoring import log_websocket_event
 
 logger = logging.getLogger(__name__)
 
@@ -357,6 +358,14 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
             await self.accept()
             logger.info(f"✅ Design Thinking WebSocket CONNECTED - Session: {self.session_code}, Group: {self.room_group_name}")
             
+            # Log connection event
+            log_websocket_event(
+                self.session_code, 
+                'connect', 
+                self.connection_id,
+                {'room_group': self.room_group_name}
+            )
+            
             # Start ping monitoring task
             self.ping_task = asyncio.create_task(self.design_ping_monitor())
             
@@ -381,7 +390,20 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
             except asyncio.CancelledError:
                 pass
         
-        logger.info(f"🔌 Design Thinking WebSocket DISCONNECT - Session: {self.session_code}, Code: {close_code} ({self.get_close_reason(close_code)})")
+        disconnect_reason = self.get_close_reason(close_code)
+        logger.info(f"🔌 Design Thinking WebSocket DISCONNECT - Session: {self.session_code}, Code: {close_code} ({disconnect_reason})")
+        
+        # Log disconnection event
+        log_websocket_event(
+            self.session_code,
+            'disconnect',
+            self.connection_id,
+            {
+                'close_code': close_code,
+                'close_reason': disconnect_reason,
+                'user_type': getattr(self, 'user_type', 'unknown')
+            }
+        )
         
         try:
             await self.channel_layer.group_discard(
@@ -403,11 +425,29 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
                 await self.handle_mission_control(data)
             elif message_type == 'team_update':
                 await self.handle_team_update(data)
+            elif message_type == 'simplified_input_submit':
+                await self.handle_simplified_input(data)
+            elif message_type == 'teacher_score_submit':
+                await self.handle_teacher_scoring(data)
             elif message_type == 'vani_nudge':
                 await self.handle_vani_nudge(data)
             elif message_type == 'ping':
                 self.last_ping = timezone.now()
-                await self.send(text_data=json.dumps({'type': 'pong'}))
+                await self.send(text_data=json.dumps({
+                    'type': 'pong',
+                    'timestamp': data.get('timestamp'),
+                    'server_time': timezone.now().isoformat(),
+                    'connection_id': self.connection_id
+                }))
+            elif message_type == 'heartbeat_response':
+                # Client responded to heartbeat
+                self.last_ping = timezone.now()
+            elif message_type == 'reconnect_request':
+                # Client is requesting reconnection
+                await self.handle_reconnection_request(data)
+            elif message_type == 'connection_status':
+                # Client requesting connection status
+                await self.send_connection_status()
             else:
                 logger.warning(f"⚠️ Unknown Design Thinking message type: {message_type}")
                 
@@ -439,6 +479,75 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
             await self.broadcast_team_submission(team_id, data.get('submission_data'))
         elif update_type == 'progress':
             await self.broadcast_team_progress(team_id, data.get('progress_data'))
+
+    async def handle_simplified_input(self, data):
+        """Handle simplified phase input submission with auto-progression logic"""
+        try:
+            # Validate required fields
+            team_id = data.get('team_id')
+            mission_id = data.get('mission_id')
+            student_data = data.get('student_data')
+            input_data = data.get('input_data')
+            
+            if not all([team_id, mission_id, student_data, input_data]):
+                await self.send_error('Missing required fields for input submission')
+                return
+            
+            # Rate limiting check
+            if not await self.check_rate_limit(team_id):
+                await self.send_error('Too many submissions. Please wait before trying again.')
+                return
+            
+            # Process through auto-progression service
+            from .auto_progression_service import auto_progression_service
+            
+            result = await self.run_in_executor(
+                auto_progression_service.process_phase_input,
+                team_id, mission_id, student_data, input_data
+            )
+            
+            if result.get('success'):
+                # Send success confirmation to submitter
+                await self.send(text_data=json.dumps({
+                    'type': 'input_submission_success',
+                    'phase_input_id': result.get('phase_input_id'),
+                    'completion_result': result.get('completion_result'),
+                    'progression_result': result.get('progression_result'),
+                    'timestamp': timezone.now().isoformat()
+                }))
+                
+                # Handle auto-advancement if triggered
+                progression_result = result.get('progression_result', {})
+                if progression_result.get('should_advance'):
+                    await self.handle_auto_advancement(progression_result)
+                    
+            else:
+                error_msg = result.get('error', 'Unknown error occurred')
+                retry_allowed = result.get('retry_allowed', False)
+                await self.send_error(error_msg, retry_allowed)
+                
+        except Exception as e:
+            logger.error(f"Unexpected error handling simplified input: {str(e)}", exc_info=True)
+            await self.send_error('Internal server error. Please try again later.', retry_allowed=True)
+
+    async def handle_teacher_scoring(self, data):
+        """Handle teacher scoring of team submissions"""
+        try:
+            team_id = data.get('team_id')
+            mission_id = data.get('mission_id')
+            score = data.get('score')
+            teacher_id = data.get('teacher_id')
+            
+            # Save teacher score
+            score_saved = await self.save_teacher_score(team_id, mission_id, score, teacher_id)
+            
+            if score_saved:
+                # Broadcast score update to dashboard
+                await self.broadcast_score_update(team_id, mission_id, score)
+                
+        except Exception as e:
+            logger.error(f"Error handling teacher scoring: {str(e)}")
+            await self.send_error('Failed to save teacher score')
 
     async def handle_vani_nudge(self, data):
         """Handle Vani mentor nudge requests"""
@@ -503,6 +612,60 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
             'team_data': event['team_data'],
             'session_data': event['session_data'],
             'timestamp': event.get('timestamp')
+        }))
+
+    async def input_submission_update(self, event):
+        """Send simplified input submission update to client"""
+        await self.send(text_data=json.dumps({
+            'type': 'input_submission',
+            'team_data': event['team_data'],
+            'input_data': event['input_data'],
+            'auto_advance_result': event.get('auto_advance_result'),
+            'timestamp': event.get('timestamp')
+        }))
+
+    async def phase_auto_advance(self, event):
+        """Send auto-advancement notification to client"""
+        await self.send(text_data=json.dumps({
+            'type': 'phase_auto_advance',
+            'current_mission': event['current_mission'],
+            'next_mission': event['next_mission'],
+            'countdown_seconds': event.get('countdown_seconds', 3),
+            'timestamp': event.get('timestamp')
+        }))
+
+    async def teacher_score_update(self, event):
+        """Send teacher score update to client"""
+        await self.send(text_data=json.dumps({
+            'type': 'teacher_score',
+            'team_data': event['team_data'],
+            'mission_data': event['mission_data'],
+            'score': event['score'],
+            'timestamp': event.get('timestamp')
+        }))
+
+    async def completion_status_update(self, event):
+        """Send team completion status update to client"""
+        await self.send(text_data=json.dumps({
+            'type': 'completion_status',
+            'team_data': event['team_data'],
+            'completion_percentage': event['completion_percentage'],
+            'is_ready_to_advance': event['is_ready_to_advance'],
+            'timestamp': event.get('timestamp')
+        }))
+
+    async def rating_updated(self, event):
+        """Send rating update to teacher dashboard"""
+        await self.send(text_data=json.dumps({
+            'type': 'rating_updated',
+            'team_id': event['team_id'],
+            'team_name': event['team_name'],
+            'mission_type': event['mission_type'],
+            'rating': event['rating'],
+            'rating_stars': event['rating_stars'],
+            'feedback': event['feedback'],
+            'average_rating': event['average_rating'],
+            'timestamp': event['timestamp']
         }))
 
     # Helper methods for group messaging
@@ -595,6 +758,414 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
             )
         except Exception as e:
             logger.error(f"Error sending Vani nudge: {str(e)}")
+
+    async def broadcast_input_submission(self, team_id, mission_id, input_data, auto_advance_result):
+        """Broadcast simplified input submission to all session participants"""
+        try:
+            team_data = await self.get_team_data(team_id)
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'input_submission_update',
+                    'team_data': team_data,
+                    'input_data': input_data,
+                    'auto_advance_result': auto_advance_result,
+                    'timestamp': timezone.now().isoformat()
+                }
+            )
+        except Exception as e:
+            logger.error(f"Error broadcasting input submission: {str(e)}")
+
+    async def broadcast_score_update(self, team_id, mission_id, score):
+        """Broadcast teacher score update to dashboard"""
+        try:
+            team_data = await self.get_team_data(team_id)
+            mission_data = await self.get_mission_data(mission_id)
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'teacher_score_update',
+                    'team_data': team_data,
+                    'mission_data': mission_data,
+                    'score': score,
+                    'timestamp': timezone.now().isoformat()
+                }
+            )
+        except Exception as e:
+            logger.error(f"Error broadcasting score update: {str(e)}")
+
+    async def handle_auto_advancement(self, auto_advance_result):
+        """Handle auto-advancement to next phase with countdown"""
+        try:
+            current_mission = auto_advance_result['current_mission']
+            next_mission = auto_advance_result['next_mission']
+            countdown_seconds = auto_advance_result.get('countdown_seconds', 3)
+            
+            # Broadcast auto-advance notification
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'phase_auto_advance',
+                    'current_mission': current_mission,
+                    'next_mission': next_mission,
+                    'countdown_seconds': countdown_seconds,
+                    'timestamp': timezone.now().isoformat()
+                }
+            )
+            
+            # Wait for countdown, then advance
+            import asyncio
+            await asyncio.sleep(countdown_seconds)
+            
+            # Actually advance the session
+            mission_data = await self.set_current_mission(self.session_code, next_mission['id'])
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'mission_advanced',
+                    'mission_data': mission_data,
+                    'timestamp': timezone.now().isoformat()
+                }
+            )
+            
+        except Exception as e:
+            logger.error(f"Error handling auto-advancement: {str(e)}")
+
+    async def send_error(self, message, retry_allowed=False, error_code=None):
+        """Send error message to client with enhanced details"""
+        error_response = {
+            'type': 'error',
+            'message': message,
+            'retry_allowed': retry_allowed,
+            'timestamp': timezone.now().isoformat(),
+            'connection_id': getattr(self, 'connection_id', 'unknown')
+        }
+        
+        if error_code:
+            error_response['error_code'] = error_code
+            
+        await self.send(text_data=json.dumps(error_response))
+        logger.warning(f"🚨 Sent error to client: {message} (retry_allowed: {retry_allowed})")
+    
+    async def check_rate_limit(self, team_id):
+        """Check if team is within rate limits for submissions"""
+        try:
+            # Simple rate limiting: max 10 submissions per minute per team
+            from django.core.cache import cache
+            cache_key = f'rate_limit_team_{team_id}'
+            current_time = timezone.now()
+            
+            # Get submission count from last minute
+            submission_count = cache.get(cache_key, 0)
+            
+            if submission_count >= 10:
+                logger.warning(f"⚠️ Rate limit exceeded for team {team_id}: {submission_count} submissions")
+                return False
+            
+            # Increment counter with 60-second expiry
+            cache.set(cache_key, submission_count + 1, 60)
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error checking rate limit: {str(e)}")
+            return True  # Allow on error to avoid blocking legitimate requests
+    
+    async def design_ping_monitor(self):
+        """Monitor connection health with ping/pong and automatic reconnection"""
+        try:
+            heartbeat_interval = 15  # Send heartbeat every 15 seconds
+            timeout_threshold = 60   # Timeout after 60 seconds of no response
+            
+            while True:
+                await asyncio.sleep(heartbeat_interval)
+                
+                # Send heartbeat to client
+                try:
+                    await self.send(text_data=json.dumps({
+                        'type': 'heartbeat',
+                        'timestamp': timezone.now().isoformat(),
+                        'connection_id': self.connection_id
+                    }))
+                except Exception as e:
+                    logger.error(f"💥 Failed to send heartbeat: {str(e)}")
+                    break
+                
+                # Check for timeout
+                time_since_ping = timezone.now() - self.last_ping
+                if time_since_ping.total_seconds() > timeout_threshold:
+                    logger.warning(f"🔌 Design Thinking connection timeout - Session: {self.session_code}, Last ping: {time_since_ping.total_seconds()}s ago")
+                    
+                    # Attempt graceful reconnection
+                    await self.send(text_data=json.dumps({
+                        'type': 'connection_timeout',
+                        'message': 'Connection timeout detected. Please refresh to reconnect.',
+                        'should_reconnect': True,
+                        'timeout_seconds': time_since_ping.total_seconds()
+                    }))
+                    
+                    await asyncio.sleep(5)  # Give client time to receive message
+                    await self.close(code=4001)
+                    break
+                    
+        except asyncio.CancelledError:
+            logger.info(f"🔌 Design Thinking ping monitor cancelled - Session: {self.session_code}")
+        except Exception as e:
+            logger.error(f"💥 Error in Design Thinking ping monitor: {str(e)}")
+    
+    def get_close_reason(self, close_code):
+        """Get human-readable close reason"""
+        close_reasons = {
+            1000: 'Normal closure',
+            1001: 'Going away',
+            1002: 'Protocol error',
+            1003: 'Unsupported data',
+            1006: 'Abnormal closure',
+            4001: 'Connection timeout',
+            4002: 'Failed to join group',
+            4003: 'Database error',
+            4004: 'Session not found',
+            4005: 'Connection recovery failed',
+            4006: 'Rate limit exceeded'
+        }
+        return close_reasons.get(close_code, f'Unknown ({close_code})')
+    
+    async def run_in_executor(self, func, *args):
+        """Run synchronous function in thread executor"""
+        import asyncio
+        from concurrent.futures import ThreadPoolExecutor
+        
+        loop = asyncio.get_event_loop()
+        with ThreadPoolExecutor() as executor:
+            return await loop.run_in_executor(executor, func, *args)
+    
+    # Database helper methods (async wrappers)
+    @database_sync_to_async
+    def get_design_session_exists(self, session_code):
+        """Check if design thinking session exists"""
+        try:
+            return DesignThinkingSession.objects.filter(session_code=session_code).exists()
+        except Exception as e:
+            logger.error(f"Error checking design session existence: {str(e)}")
+            return False
+    
+    @database_sync_to_async
+    def get_design_session_status(self, session_code):
+        """Get current design thinking session status"""
+        try:
+            session = DesignThinkingSession.objects.select_related('design_game', 'current_mission').get(session_code=session_code)
+            
+            # Get teams with member counts
+            teams_data = []
+            for team in session.design_teams.all():
+                team_members = team.team_members or []
+                teams_data.append({
+                    'id': team.id,
+                    'name': team.team_name,
+                    'emoji': team.team_emoji,
+                    'member_count': len(team_members),
+                    'members': team_members
+                })
+            
+            # Get current mission data
+            current_mission_data = None
+            if session.current_mission:
+                current_mission_data = {
+                    'id': session.current_mission.id,
+                    'title': session.current_mission.title,
+                    'description': session.current_mission.description,
+                    'mission_type': session.current_mission.mission_type,
+                    'order': session.current_mission.order
+                }
+            
+            return {
+                'session_code': session.session_code,
+                'session_name': session.session_name,
+                'game_name': session.design_game.name,
+                'current_mission': current_mission_data,
+                'teams': teams_data,
+                'total_teams': len(teams_data),
+                'is_active': session.is_active,
+                'auto_advance_enabled': session.design_game.auto_advance_enabled,
+                'completion_threshold': session.design_game.completion_threshold_percentage
+            }
+            
+        except DesignThinkingSession.DoesNotExist:
+            logger.error(f"Design thinking session {session_code} not found")
+            return None
+        except Exception as e:
+            logger.error(f"Error getting design session status: {str(e)}")
+            return None
+    
+    @database_sync_to_async
+    def get_team_data(self, team_id):
+        """Get team data for broadcasting"""
+        try:
+            team = DesignTeam.objects.get(id=team_id)
+            return {
+                'id': team.id,
+                'name': team.team_name,
+                'emoji': team.team_emoji,
+                'member_count': len(team.team_members or [])
+            }
+        except DesignTeam.DoesNotExist:
+            logger.error(f"Team {team_id} not found")
+            return None
+        except Exception as e:
+            logger.error(f"Error getting team data: {str(e)}")
+            return None
+    
+    @database_sync_to_async
+    def get_mission_data(self, mission_id):
+        """Get mission data for broadcasting"""
+        try:
+            mission = DesignMission.objects.get(id=mission_id)
+            return {
+                'id': mission.id,
+                'title': mission.title,
+                'mission_type': mission.mission_type,
+                'description': mission.description
+            }
+        except DesignMission.DoesNotExist:
+            logger.error(f"Mission {mission_id} not found")
+            return None
+        except Exception as e:
+            logger.error(f"Error getting mission data: {str(e)}")
+            return None
+    
+    @database_sync_to_async
+    def set_current_mission(self, session_code, mission_id):
+        """Set current mission for session"""
+        try:
+            session = DesignThinkingSession.objects.get(session_code=session_code)
+            mission = DesignMission.objects.get(id=mission_id)
+            
+            session.current_mission = mission
+            session.mission_start_time = timezone.now()
+            session.save()
+            
+            return {
+                'id': mission.id,
+                'title': mission.title,
+                'description': mission.description,
+                'mission_type': mission.mission_type,
+                'order': mission.order
+            }
+            
+        except (DesignThinkingSession.DoesNotExist, DesignMission.DoesNotExist) as e:
+            logger.error(f"Error setting current mission: {str(e)}")
+            return None
+        except Exception as e:
+            logger.error(f"Unexpected error setting current mission: {str(e)}")
+            return None
+    
+    @database_sync_to_async
+    def save_teacher_score(self, team_id, mission_id, score, teacher_id):
+        """Save teacher score for team's mission performance"""
+        try:
+            from .auto_progression_service import auto_progression_service
+            return auto_progression_service.save_teacher_score(team_id, mission_id, score, teacher_id)
+        except Exception as e:
+            logger.error(f"Error saving teacher score: {str(e)}")
+            return False
+    
+    async def handle_reconnection_request(self, data):
+        """Handle client reconnection request"""
+        try:
+            client_session_id = data.get('client_session_id')
+            last_known_state = data.get('last_known_state', {})
+            
+            logger.info(f"🔄 Reconnection request from client {client_session_id} - Session: {self.session_code}")
+            
+            # Send current session state to reconnecting client
+            session_status = await self.get_design_session_status(self.session_code)
+            
+            await self.send(text_data=json.dumps({
+                'type': 'reconnection_complete',
+                'session_status': session_status,
+                'server_time': timezone.now().isoformat(),
+                'message': 'Successfully reconnected to session'
+            }))
+            
+            # Log reconnection event
+            log_websocket_event(
+                self.session_code,
+                'reconnection_completed',
+                self.connection_id,
+                {
+                    'client_session_id': client_session_id,
+                    'had_previous_state': bool(last_known_state)
+                }
+            )
+            
+        except Exception as e:
+            logger.error(f"Error handling reconnection request: {str(e)}")
+            await self.send_error('Failed to complete reconnection', error_code='RECONNECTION_ERROR')
+    
+    async def send_connection_status(self):
+        """Send current connection status to client"""
+        try:
+            connection_stats = {
+                'connection_id': self.connection_id,
+                'session_code': self.session_code,
+                'connected_at': timezone.now().isoformat(),
+                'last_ping': self.last_ping.isoformat() if self.last_ping else None,
+                'user_type': getattr(self, 'user_type', 'unknown'),
+                'room_group': self.room_group_name
+            }
+            
+            await self.send(text_data=json.dumps({
+                'type': 'connection_status',
+                'status': 'connected',
+                'connection_stats': connection_stats,
+                'server_time': timezone.now().isoformat()
+            }))
+            
+        except Exception as e:
+            logger.error(f"Error sending connection status: {str(e)}")
+    
+    async def handle_connection_recovery(self):
+        """Handle connection recovery scenarios"""
+        try:
+            # Check if session is still valid
+            session_exists = await self.get_design_session_exists(self.session_code)
+            
+            if not session_exists:
+                await self.send(text_data=json.dumps({
+                    'type': 'session_expired',
+                    'message': 'This session is no longer available',
+                    'should_redirect': True,
+                    'redirect_url': '/learn/design-thinking/'
+                }))
+                await self.close(code=4004)
+                return
+            
+            # Send recovery confirmation
+            await self.send(text_data=json.dumps({
+                'type': 'connection_recovered',
+                'message': 'Connection has been recovered',
+                'session_code': self.session_code,
+                'server_time': timezone.now().isoformat()
+            }))
+            
+        except Exception as e:
+            logger.error(f"Error in connection recovery: {str(e)}")
+            await self.close(code=4003)
+            
+            # For now, always allow (can be enhanced with Redis cache)
+            return True
+            
+        except Exception as e:
+            logger.warning(f"Rate limit check failed: {str(e)}")
+            return True  # Allow on error to not block legitimate requests
+    
+    async def run_in_executor(self, func, *args):
+        """Run blocking function in thread executor"""
+        import asyncio
+        from concurrent.futures import ThreadPoolExecutor
+        
+        loop = asyncio.get_event_loop()
+        with ThreadPoolExecutor() as executor:
+            return await loop.run_in_executor(executor, func, *args)
 
     # Database helper methods
     @database_sync_to_async
@@ -720,6 +1291,199 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
             4005: "Connection timeout"
         }
         return reasons.get(close_code, f"Unknown code {close_code}")
+
+    @database_sync_to_async
+    def save_simplified_input(self, team_id, mission_id, student_data, input_data):
+        """Save simplified phase input to database"""
+        try:
+            from .models import SimplifiedPhaseInput, DesignTeam, DesignMission, PhaseCompletionTracker
+            
+            team = DesignTeam.objects.get(id=team_id)
+            mission = DesignMission.objects.get(id=mission_id)
+            session = team.session
+            
+            # Create simplified input record
+            phase_input = SimplifiedPhaseInput.objects.create(
+                team=team,
+                mission=mission,
+                session=session,
+                student_name=student_data.get('name', 'Anonymous'),
+                student_session_id=student_data.get('session_id'),
+                input_type=input_data.get('type'),
+                input_label=input_data.get('label'),
+                selected_value=input_data.get('value'),
+                input_order=input_data.get('order', 1),
+                time_to_complete_seconds=input_data.get('time_taken', 0)
+            )
+            
+            # Update completion tracking
+            tracker, created = PhaseCompletionTracker.objects.get_or_create(
+                session=session,
+                team=team,
+                mission=mission,
+                defaults={
+                    'total_required_inputs': self._calculate_required_inputs(mission, team),
+                    'completed_inputs': 0
+                }
+            )
+            
+            tracker.completed_inputs += 1
+            tracker.update_completion_status()
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error saving simplified input: {str(e)}")
+            return False
+
+    @database_sync_to_async
+    def check_auto_progression(self, team_id, mission_id):
+        """Check if team completion triggers auto-progression"""
+        try:
+            from .models import DesignTeam, DesignMission, PhaseCompletionTracker
+            
+            team = DesignTeam.objects.get(id=team_id)
+            mission = DesignMission.objects.get(id=mission_id)
+            session = team.session
+            
+            # Get completion tracker
+            tracker = PhaseCompletionTracker.objects.get(
+                session=session,
+                team=team,
+                mission=mission
+            )
+            
+            result = {
+                'should_advance': False,
+                'completion_percentage': tracker.completion_percentage,
+                'is_ready': tracker.is_ready_to_advance
+            }
+            
+            # Check if this triggers session-wide auto-advancement
+            if tracker.is_ready_to_advance and session.design_game.auto_advance_enabled:
+                # Check if ALL teams in session are ready (if required)
+                if session.design_game.completion_threshold_percentage == 100:
+                    all_teams_ready = self._check_all_teams_ready(session, mission)
+                    if all_teams_ready:
+                        next_mission = self._get_next_mission(session, mission)
+                        if next_mission:
+                            result.update({
+                                'should_advance': True,
+                                'current_mission': {
+                                    'id': mission.id,
+                                    'title': mission.title,
+                                    'mission_type': mission.mission_type
+                                },
+                                'next_mission': {
+                                    'id': next_mission.id,
+                                    'title': next_mission.title,
+                                    'mission_type': next_mission.mission_type
+                                },
+                                'countdown_seconds': session.design_game.phase_transition_delay
+                            })
+                else:
+                    # Individual team completion is enough
+                    next_mission = self._get_next_mission(session, mission)
+                    if next_mission:
+                        result.update({
+                            'should_advance': True,
+                            'current_mission': {
+                                'id': mission.id,
+                                'title': mission.title,
+                                'mission_type': mission.mission_type
+                            },
+                            'next_mission': {
+                                'id': next_mission.id,
+                                'title': next_mission.title,
+                                'mission_type': next_mission.mission_type
+                            },
+                            'countdown_seconds': session.design_game.phase_transition_delay
+                        })
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error checking auto-progression: {str(e)}")
+            return {'should_advance': False, 'completion_percentage': 0, 'is_ready': False}
+
+    @database_sync_to_async  
+    def save_teacher_score(self, team_id, mission_id, score, teacher_id):
+        """Save teacher score for team's phase completion"""
+        try:
+            from .models import SimplifiedPhaseInput, DesignTeam, DesignMission
+            
+            team = DesignTeam.objects.get(id=team_id)
+            mission = DesignMission.objects.get(id=mission_id)
+            
+            # Update scores for all inputs from this team for this mission
+            inputs = SimplifiedPhaseInput.objects.filter(
+                team=team,
+                mission=mission,
+                teacher_score__isnull=True
+            )
+            
+            for phase_input in inputs:
+                phase_input.teacher_score = score
+                phase_input.scored_at = timezone.now()
+                phase_input.save()
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error saving teacher score: {str(e)}")
+            return False
+
+    @database_sync_to_async
+    def get_mission_data(self, mission_id):
+        """Get mission data for broadcasting"""
+        try:
+            from .models import DesignMission
+            
+            mission = DesignMission.objects.get(id=mission_id)
+            return {
+                'id': mission.id,
+                'title': mission.title,
+                'mission_type': mission.mission_type,
+                'description': getattr(mission, 'description', '')
+            }
+        except Exception as e:
+            logger.error(f"Error getting mission data: {str(e)}")
+            return {'error': 'Mission data retrieval failed'}
+
+    def _calculate_required_inputs(self, mission, team):
+        """Calculate total required inputs for team to complete mission"""
+        # This would be based on the mission's input_schema
+        # For now, assume each team member needs to complete all inputs
+        team_size = len(team.team_members) if team.team_members else 1
+        inputs_per_person = len(mission.input_schema.get('inputs', [])) if mission.input_schema else 1
+        return team_size * inputs_per_person
+
+    def _check_all_teams_ready(self, session, mission):
+        """Check if all teams in session are ready for this mission"""
+        from .models import PhaseCompletionTracker
+        
+        total_teams = session.design_teams.count()
+        ready_teams = PhaseCompletionTracker.objects.filter(
+            session=session,
+            mission=mission,
+            is_ready_to_advance=True
+        ).count()
+        
+        return ready_teams >= total_teams
+
+    def _get_next_mission(self, session, current_mission):
+        """Get the next mission in sequence"""
+        from .models import DesignMission
+        
+        try:
+            next_mission = DesignMission.objects.filter(
+                game=session.design_game,
+                order=current_mission.order + 1,
+                is_active=True
+            ).first()
+            return next_mission
+        except Exception:
+            return None
 
     async def design_ping_monitor(self):
         """Monitor Design Thinking connection health and close if inactive"""

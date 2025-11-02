@@ -1,0 +1,1060 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Design Thinking Innovation Hub{% endblock %}
+{% block description %}Create a new Design Thinking session or join an existing one with your team.{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Dual Purpose Hub Styling */
+:root {
+    --primary-color: #3b82f6;
+    --secondary-color: #06b6d4;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.hub-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.hub-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.hub-title {
+    font-size: 42px;
+    font-weight: bold;
+    color: var(--gray-800);
+    margin-bottom: 12px;
+}
+
+.hub-subtitle {
+    color: var(--gray-600);
+    font-size: 18px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.dual-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-top: 48px;
+}
+
+.column-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: var(--card-shadow);
+    border: 3px solid;
+    position: relative;
+    overflow: hidden;
+}
+
+.teacher-card {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, #dbeafe 0%, white 100%);
+}
+
+.student-card {
+    border-color: var(--secondary-color);
+    background: linear-gradient(135deg, #cffafe 0%, white 100%);
+}
+
+.column-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.column-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.column-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.teacher-card .column-title {
+    color: var(--primary-color);
+}
+
+.student-card .column-title {
+    color: var(--secondary-color);
+}
+
+.column-subtitle {
+    color: var(--gray-600);
+    font-size: 16px;
+}
+
+.feature-list {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 32px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: var(--gray-600);
+}
+
+.feature-item:last-child {
+    margin-bottom: 0;
+}
+
+.feature-icon {
+    color: var(--success-color);
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.student-card .form-input:focus {
+    border-color: var(--secondary-color);
+}
+
+select.form-input {
+    background-image: url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23374151' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6,9 12,15 18,9'></polyline></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+select.form-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.teacher-card select.form-input:focus {
+    border-color: var(--primary-color);
+}
+
+.form-help {
+    margin-top: 6px;
+    font-size: 14px;
+    color: var(--gray-600);
+}
+
+.action-btn {
+    color: white;
+    padding: 16px 32px;
+    border-radius: 12px;
+    border: none;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.teacher-btn {
+    background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.teacher-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.student-btn {
+    background: linear-gradient(135deg, var(--secondary-color), #0891b2);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+.student-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+}
+
+.action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.loading-spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffffff33;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-message {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.success-message {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #16a34a;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.emoji-option {
+    width: 48px;
+    height: 48px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.emoji-option:hover {
+    border-color: var(--secondary-color);
+    background: #cffafe;
+}
+
+.emoji-option.selected {
+    border-color: var(--secondary-color);
+    background: var(--secondary-color);
+    color: white;
+}
+
+.emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* Session Information Display */
+.session-info {
+    margin-bottom: 24px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.info-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid var(--secondary-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.1);
+}
+
+.info-card h4 {
+    margin: 0 0 16px 0;
+    color: var(--secondary-color);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.info-label {
+    font-size: 12px;
+    color: var(--gray-600);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-size: 14px;
+    color: var(--gray-800);
+    font-weight: 600;
+}
+
+/* Team Members Section */
+.team-members-container {
+    background: rgba(255, 255, 255, 0.7);
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.member-input-group {
+    margin-bottom: 16px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.member-input-group:last-child {
+    margin-bottom: 0;
+}
+
+.member-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-700);
+    margin-bottom: 6px;
+}
+
+.member-input {
+    border: 1px solid #d1d5db;
+    font-size: 15px;
+}
+
+.member-input:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.1);
+}
+
+.member-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    border: 2px solid var(--secondary-color);
+    background: white;
+    color: var(--secondary-color);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.member-count-display {
+    font-size: 14px;
+    color: var(--gray-600);
+    font-weight: 500;
+    text-align: center;
+    margin-top: 8px;
+    padding: 8px;
+    background: rgba(6, 182, 212, 0.1);
+    border-radius: 6px;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 968px) {
+    .dual-columns {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+    
+    .hub-container {
+        padding: 16px;
+    }
+    
+    .column-card {
+        padding: 24px;
+    }
+    
+    .hub-title {
+        font-size: 32px;
+    }
+    
+    .hub-subtitle {
+        font-size: 16px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hub-container">
+    <div class="hub-header">
+        <h1 class="hub-title">🎯 Design Thinking Innovation Hub</h1>
+        <p class="hub-subtitle">
+            Student-driven innovation challenge with automatic progression. Teachers create sessions, students join with team codes.
+        </p>
+    </div>
+
+    <div class="dual-columns">
+        <!-- Teacher Column -->
+        <div class="column-card teacher-card">
+            <div class="column-header">
+                <span class="column-icon">👩‍🏫</span>
+                <h2 class="column-title">For Teachers</h2>
+                <p class="column-subtitle">Create a new session for your students</p>
+            </div>
+
+            <!-- Teacher Features -->
+            <div class="feature-list">
+                <div class="feature-item">
+                    <span class="feature-icon">⚡</span>
+                    <span>Auto-progression when teams complete inputs</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    <span>Real-time dashboard with live scoring</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🎨</span>
+                    <span>5 phases: Empathy → Define → Ideate → Prototype → Test</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📱</span>
+                    <span>Mobile-responsive for all devices</span>
+                </div>
+            </div>
+
+            <!-- Teacher Form -->
+            {% if form.errors %}
+            <div class="error-message">
+                <strong>Please fix the following errors:</strong>
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <br>• {{ error }}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" id="teacher-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="school_name" class="form-label">School Name *</label>
+                    <input 
+                        type="text" 
+                        id="school_name" 
+                        name="school_name"
+                        class="form-input"
+                        placeholder="e.g., Lincoln Elementary School"
+                        maxlength="200"
+                        required
+                    >
+                    <div class="form-help">
+                        Name of your school or educational institution
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="grade_level" class="form-label">Grade Level *</label>
+                    <select 
+                        id="grade_level" 
+                        name="grade_level"
+                        class="form-input"
+                        required
+                    >
+                        <option value="">Select Grade Level</option>
+                        <option value="Grade 3">Grade 3</option>
+                        <option value="Grade 4">Grade 4</option>
+                        <option value="Grade 5">Grade 5</option>
+                        <option value="Grade 6">Grade 6</option>
+                        <option value="Grade 7">Grade 7</option>
+                        <option value="Grade 8">Grade 8</option>
+                        <option value="Grade 9">Grade 9</option>
+                        <option value="Grade 10">Grade 10</option>
+                        <option value="Grade 11">Grade 11</option>
+                        <option value="Grade 12">Grade 12</option>
+                    </select>
+                    <div class="form-help">
+                        Select the appropriate grade level for your students
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="session_name" class="form-label">Session Name (Optional)</label>
+                    <input 
+                        type="text" 
+                        id="session_name" 
+                        name="session_name" 
+                        class="form-input"
+                        placeholder="e.g., Period 3 - Innovation Challenge"
+                        maxlength="100"
+                    >
+                    <div class="form-help">
+                        A descriptive name for your session
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.facilitator_notes.id_for_label }}" class="form-label">
+                        Teacher Notes (Optional)
+                    </label>
+                    <textarea 
+                        id="{{ form.facilitator_notes.id_for_label }}"
+                        name="facilitator_notes" 
+                        class="form-input"
+                        placeholder="Learning objectives, student groups, session goals..."
+                        rows="3"
+                        style="resize: vertical; min-height: 80px;"
+                    ></textarea>
+                    <div class="form-help">
+                        Private notes about this session
+                    </div>
+                </div>
+
+                <button type="submit" class="action-btn teacher-btn" id="teacher-button">
+                    <div class="loading-spinner" id="teacher-spinner"></div>
+                    <span id="teacher-text">🚀 Create New Session</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Student Column -->
+        <div class="column-card student-card">
+            <div class="column-header">
+                <span class="column-icon">👥</span>
+                <h2 class="column-title">For Students</h2>
+                <p class="column-subtitle">Join an existing session with your team</p>
+            </div>
+
+            <!-- Student Instructions -->
+            <div class="feature-list">
+                <div class="feature-item">
+                    <span class="feature-icon">🔢</span>
+                    <span>Get the 6-digit session code from your teacher</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">👥</span>
+                    <span>Choose a creative team name</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">😊</span>
+                    <span>Pick a fun emoji to represent your team</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">⚡</span>
+                    <span>Start innovating immediately!</span>
+                </div>
+            </div>
+
+            <!-- Student Form -->
+            <form id="student-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="session_code" class="form-label">Session Code</label>
+                    <input 
+                        type="text" 
+                        id="session_code" 
+                        name="session_code" 
+                        class="form-input"
+                        placeholder="ABC123"
+                        maxlength="6"
+                        style="text-align: center; font-size: 20px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;"
+                        required
+                    >
+                    <div class="form-help">
+                        Ask your teacher for the 6-digit code
+                    </div>
+                </div>
+                
+                <!-- Session Information Display (hidden initially) -->
+                <div class="session-info" id="session-info" style="display: none;">
+                    <div class="info-card">
+                        <h4>📚 Session Information</h4>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">School:</span>
+                                <span class="info-value" id="session-school">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Grade Level:</span>
+                                <span class="info-value" id="session-grade">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="team_name" class="form-label">Team Name</label>
+                    <input 
+                        type="text" 
+                        id="team_name" 
+                        name="team_name" 
+                        class="form-input"
+                        placeholder="The Problem Solvers"
+                        maxlength="100"
+                        required
+                    >
+                    <div class="form-help">
+                        Choose a creative name for your team
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Team Emoji</label>
+                    <input type="hidden" id="team_emoji" name="team_emoji" value="💡">
+                    <div class="emoji-grid">
+                        <div class="emoji-option selected" data-emoji="💡">💡</div>
+                        <div class="emoji-option" data-emoji="🚀">🚀</div>
+                        <div class="emoji-option" data-emoji="🎯">🎯</div>
+                        <div class="emoji-option" data-emoji="⭐">⭐</div>
+                        <div class="emoji-option" data-emoji="🔥">🔥</div>
+                        <div class="emoji-option" data-emoji="🌟">🌟</div>
+                        <div class="emoji-option" data-emoji="🏆">🏆</div>
+                        <div class="emoji-option" data-emoji="💎">💎</div>
+                    </div>
+                    <div class="form-help">
+                        Pick an emoji that represents your team spirit
+                    </div>
+                </div>
+                
+                <!-- Team Members Section -->
+                <div class="form-group">
+                    <label class="form-label">Team Members (2-5 required) *</label>
+                    <div class="team-members-container" id="team-members-container">
+                        <div class="member-input-group">
+                            <label class="member-label">Member 1:</label>
+                            <input type="text" class="form-input member-input" name="member_1" placeholder="Enter first team member name" required maxlength="100">
+                        </div>
+                        <div class="member-input-group">
+                            <label class="member-label">Member 2:</label>
+                            <input type="text" class="form-input member-input" name="member_2" placeholder="Enter second team member name" required maxlength="100">
+                        </div>
+                        <div class="member-input-group" style="display: none;">
+                            <label class="member-label">Member 3:</label>
+                            <input type="text" class="form-input member-input" name="member_3" placeholder="Enter third team member name" maxlength="100">
+                        </div>
+                        <div class="member-input-group" style="display: none;">
+                            <label class="member-label">Member 4:</label>
+                            <input type="text" class="form-input member-input" name="member_4" placeholder="Enter fourth team member name" maxlength="100">
+                        </div>
+                        <div class="member-input-group" style="display: none;">
+                            <label class="member-label">Member 5:</label>
+                            <input type="text" class="form-input member-input" name="member_5" placeholder="Enter fifth team member name" maxlength="100">
+                        </div>
+                    </div>
+                    <div class="member-controls">
+                        <button type="button" class="control-btn add-member" id="add-member-btn" onclick="addTeamMember()">+ Add Member</button>
+                        <button type="button" class="control-btn remove-member" id="remove-member-btn" onclick="removeTeamMember()" style="display: none;">- Remove Member</button>
+                    </div>
+                    <div class="form-help">
+                        Add all team members who will participate (minimum 2, maximum 5)
+                    </div>
+                    <div class="member-count-display">
+                        <span id="member-count">2</span> / 5 members
+                    </div>
+                </div>
+
+                <button type="submit" class="action-btn student-btn" id="student-button">
+                    <div class="loading-spinner" id="student-spinner"></div>
+                    <span id="student-text">🎯 Join Session</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Teacher form handling
+document.getElementById('teacher-form').addEventListener('submit', function(e) {
+    const button = document.getElementById('teacher-button');
+    const spinner = document.getElementById('teacher-spinner');
+    const buttonText = document.getElementById('teacher-text');
+    
+    button.disabled = true;
+    spinner.style.display = 'inline-block';
+    buttonText.textContent = 'Creating Session...';
+});
+
+// Student form handling
+document.getElementById('student-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const sessionCode = document.getElementById('session_code').value.trim().toUpperCase();
+    const teamName = document.getElementById('team_name').value.trim();
+    const teamEmoji = document.getElementById('team_emoji').value;
+    
+    if (!sessionCode || sessionCode.length !== 6) {
+        alert('Please enter a valid 6-character session code.');
+        document.getElementById('session_code').focus();
+        return;
+    }
+    
+    if (!teamName) {
+        alert('Please enter a team name.');
+        document.getElementById('team_name').focus();
+        return;
+    }
+    
+    const button = document.getElementById('student-button');
+    const spinner = document.getElementById('student-spinner');
+    const buttonText = document.getElementById('student-text');
+    
+    button.disabled = true;
+    spinner.style.display = 'inline-block';
+    buttonText.textContent = 'Joining Session...';
+    
+    // Create form data and submit to join endpoint
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    formData.append('session_code', sessionCode);
+    formData.append('team_name', teamName);
+    formData.append('team_emoji', teamEmoji);
+    
+    fetch('/learn/design-thinking/join/', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+        } else {
+            return response.text();
+        }
+    })
+    .then(html => {
+        if (html) {
+            // If we get HTML back, there was an error - reload page with error
+            document.open();
+            document.write(html);
+            document.close();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+        button.disabled = false;
+        spinner.style.display = 'none';
+        buttonText.textContent = '🎯 Join Session';
+    });
+});
+
+// Session code input formatting
+document.getElementById('session_code').addEventListener('input', function(e) {
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+});
+
+// Emoji selection
+document.querySelectorAll('.emoji-option').forEach(option => {
+    option.addEventListener('click', function() {
+        // Remove selected class from all options
+        document.querySelectorAll('.emoji-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+        
+        // Add selected class to clicked option
+        this.classList.add('selected');
+        
+        // Update hidden input
+        document.getElementById('team_emoji').value = this.dataset.emoji;
+    });
+});
+
+// Team member management
+let currentMemberCount = 2;
+
+function addTeamMember() {
+    if (currentMemberCount >= 5) return;
+    
+    currentMemberCount++;
+    const memberGroup = document.querySelector(`.member-input-group:nth-child(${currentMemberCount})`);
+    if (memberGroup) {
+        memberGroup.style.display = 'block';
+        memberGroup.querySelector('.member-input').focus();
+    }
+    
+    updateMemberControls();
+    updateMemberCount();
+}
+
+function removeTeamMember() {
+    if (currentMemberCount <= 2) return;
+    
+    const memberGroup = document.querySelector(`.member-input-group:nth-child(${currentMemberCount})`);
+    if (memberGroup) {
+        memberGroup.style.display = 'none';
+        memberGroup.querySelector('.member-input').value = '';
+        memberGroup.querySelector('.member-input').removeAttribute('required');
+    }
+    
+    currentMemberCount--;
+    updateMemberControls();
+    updateMemberCount();
+}
+
+function updateMemberControls() {
+    const addBtn = document.getElementById('add-member-btn');
+    const removeBtn = document.getElementById('remove-member-btn');
+    
+    // Show/hide add button
+    addBtn.style.display = currentMemberCount >= 5 ? 'none' : 'inline-block';
+    
+    // Show/hide remove button
+    removeBtn.style.display = currentMemberCount <= 2 ? 'none' : 'inline-block';
+}
+
+function updateMemberCount() {
+    document.getElementById('member-count').textContent = currentMemberCount;
+}
+
+// Session code validation and info display
+function validateSessionCode() {
+    const sessionCode = document.getElementById('session_code').value.trim().toUpperCase();
+    const sessionInfo = document.getElementById('session-info');
+    
+    if (sessionCode.length === 6) {
+        // Fetch session information
+        fetch('/learn/design-thinking/validate-session/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: `session_code=${sessionCode}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.valid) {
+                // Show session information
+                document.getElementById('session-school').textContent = data.school_name || 'Not specified';
+                document.getElementById('session-grade').textContent = data.grade_level || 'Not specified';
+                sessionInfo.style.display = 'block';
+            } else {
+                sessionInfo.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error validating session:', error);
+            sessionInfo.style.display = 'none';
+        });
+    } else {
+        sessionInfo.style.display = 'none';
+    }
+}
+
+// Add event listener for session code validation
+document.getElementById('session_code').addEventListener('input', function(e) {
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    validateSessionCode();
+});
+
+// Enhanced student form validation with team members
+document.getElementById('student-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const sessionCode = document.getElementById('session_code').value.trim().toUpperCase();
+    const teamName = document.getElementById('team_name').value.trim();
+    const teamEmoji = document.getElementById('team_emoji').value;
+    
+    // Validate session code
+    if (!sessionCode || sessionCode.length !== 6) {
+        alert('Please enter a valid 6-character session code.');
+        document.getElementById('session_code').focus();
+        return;
+    }
+    
+    // Validate team name
+    if (!teamName) {
+        alert('Please enter a team name.');
+        document.getElementById('team_name').focus();
+        return;
+    }
+    
+    // Validate team members
+    const memberInputs = document.querySelectorAll('.member-input');
+    const teamMembers = [];
+    let filledMembers = 0;
+    
+    for (let i = 0; i < currentMemberCount; i++) {
+        const memberInput = memberInputs[i];
+        const memberName = memberInput.value.trim();
+        
+        if (memberName) {
+            teamMembers.push(memberName);
+            filledMembers++;
+        } else if (i < 2) { // First 2 members are required
+            alert(`Please enter the name for Member ${i + 1}.`);
+            memberInput.focus();
+            return;
+        }
+    }
+    
+    if (filledMembers < 2) {
+        alert('Please enter at least 2 team member names.');
+        memberInputs[0].focus();
+        return;
+    }
+    
+    const button = document.getElementById('student-button');
+    const spinner = document.getElementById('student-spinner');
+    const buttonText = document.getElementById('student-text');
+    
+    button.disabled = true;
+    spinner.style.display = 'inline-block';
+    buttonText.textContent = 'Joining Session...';
+    
+    // Create form data and submit to join endpoint
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    formData.append('session_code', sessionCode);
+    formData.append('team_name', teamName);
+    formData.append('team_emoji', teamEmoji);
+    formData.append('team_members', JSON.stringify(teamMembers));
+    
+    fetch('/learn/design-thinking/join/', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => {
+        // Reset button state first
+        button.disabled = false;
+        spinner.style.display = 'none';
+        buttonText.textContent = '🎯 Join Session';
+        
+        if (response.redirected) {
+            // Success - redirect to student dashboard
+            window.location.href = response.url;
+        } else if (response.ok) {
+            // Check if response is JSON (error response) or HTML
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        } else {
+            // HTTP error status
+            if (response.headers.get('content-type')?.includes('application/json')) {
+                return response.json().then(data => {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                });
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+        }
+    })
+    .then(data => {
+        if (typeof data === 'object' && data.error) {
+            // JSON error response - show specific error
+            alert(data.error);
+            
+            // Focus on the problematic field if specified
+            if (data.field) {
+                const field = document.getElementById(data.field);
+                if (field) field.focus();
+            }
+        } else if (typeof data === 'string' && data.includes('error')) {
+            // HTML response with error - reload page
+            document.open();
+            document.write(data);
+            document.close();
+        }
+    })
+    .catch(error => {
+        console.error('Error joining session:', error);
+        alert('Failed to join session. Please check your information and try again.');
+        
+        // Ensure button state is reset
+        button.disabled = false;
+        spinner.style.display = 'none';
+        buttonText.textContent = '🎯 Join Session';
+    });
+});
+
+// Auto-focus on school name for teachers
+document.getElementById('school_name').focus();
+</script>
+{% endblock %}

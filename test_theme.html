@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Theme Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            daisyui: {
+                themes: [
+                    {
+                        games: {
+                            "primary": "#2563eb",
+                            "base-100": "transparent",
+                            "base-200": "transparent", 
+                            "base-300": "transparent",
+                        }
+                    }
+                ]
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #f0fdf4 100%) !important;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body data-theme="games">
+    <div class="p-8">
+        <h1 class="text-2xl font-bold">Theme Test</h1>
+        <div class="bg-base-100 p-4 mt-4 rounded">
+            This should be transparent and show the blue background
+        </div>
+    </div>
+</body>
+</html>

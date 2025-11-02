@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Decipherworld Games{% endblock %}</title>
+    
+    <!-- Tailwind CSS with DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Games Theme Configuration - Transparent base for custom backgrounds -->
+    <script>
+        tailwind.config = {
+            daisyui: {
+                themes: [
+                    {
+                        games: {
+                            "primary": "#2563eb",        // Modern blue
+                            "secondary": "#7c3aed",      // Modern purple
+                            "accent": "#f59e0b",         // Modern amber
+                            "neutral": "#374151",        // Modern gray
+                            "base-100": "transparent",   // TRANSPARENT - allows custom backgrounds
+                            "base-200": "transparent",   // TRANSPARENT - allows custom backgrounds
+                            "base-300": "transparent",   // TRANSPARENT - allows custom backgrounds
+                            "info": "#0ea5e9",          // Modern sky blue
+                            "success": "#10b981",        // Modern emerald
+                            "warning": "#f59e0b",        // Modern amber
+                            "error": "#ef4444",          // Modern red
+                        }
+                    }
+                ]
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{% block description %}Immersive learning games and educational experiences.{% endblock %}">
+    <meta name="robots" content="index, follow">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body data-theme="games">
+    <!-- MINIMAL GAMES TEMPLATE - NO MAIN SITE HEADER -->
+    <!-- Clean body without bg-base-100 class to allow custom backgrounds -->
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

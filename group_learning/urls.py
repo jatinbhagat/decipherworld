@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, climate_views
+from . import views, climate_views, rating_api
 
 app_name = 'group_learning'
 
@@ -70,16 +70,24 @@ urlpatterns = [
     path('api/diagnostics/', views.ProductionDiagnosticsAPI.as_view(), name='production_diagnostics_api'),
     path('api/setup-production/', views.ProductionSetupAPI.as_view(), name='production_setup_api'),
     
-    # Design Thinking / Classroom Innovators Challenge URLs
-    path('design-thinking/', views.DesignThinkingStartView.as_view(), name='design_thinking_start'),
-    path('design-thinking/create/', views.DesignThinkingCreateView.as_view(), name='design_thinking_create'),
+    # Design Thinking URLs (Simplified System Only)
     path('design-thinking/join/', views.DesignThinkingJoinView.as_view(), name='design_thinking_join'),
-    path('design-thinking/<str:session_code>/facilitator/', views.DesignThinkingFacilitatorView.as_view(), name='design_thinking_facilitator'),
-    path('design-thinking/<str:session_code>/play/', views.DesignThinkingPlayView.as_view(), name='design_thinking_play'),
+    path('design-thinking/validate-session/', views.ValidateSessionView.as_view(), name='validate_session'),
     
-    # Design Thinking API endpoints
-    path('api/design-thinking/<str:session_code>/submit/', views.DesignThinkingSubmissionAPI.as_view(), name='design_thinking_submit'),
-    path('api/design-thinking/<str:session_code>/control/', views.DesignThinkingMissionControlAPI.as_view(), name='design_thinking_control'),
-    path('api/design-thinking/<str:session_code>/status/', views.DesignThinkingStatusAPI.as_view(), name='design_thinking_status'),
-    path('session/<str:session_code>/mission-interface/', views.DesignThinkingMissionInterfaceAPI.as_view(), name='design_thinking_mission_interface'),
+    # Simplified Design Thinking URLs (Auto-Progression)
+    path('simplified/create/', views.CreateSimplifiedSessionView.as_view(), name='create_simplified_session'),
+    path('simplified/<str:session_code>/student/', views.SimplifiedStudentDashboardView.as_view(), name='simplified_student_dashboard'),
+    path('simplified/<str:session_code>/teacher/', views.SimplifiedTeacherDashboardView.as_view(), name='simplified_teacher_dashboard'),
+    
+    # Simplified API endpoints
+    path('api/simplified/<str:session_code>/input/', views.SimplifiedInputSubmissionView.as_view(), name='simplified_input_submit'),
+    path('api/simplified/<str:session_code>/score/', views.TeacherScoringView.as_view(), name='simplified_teacher_score'),
+    path('api/simplified/<str:session_code>/score-submission/', views.ScoreSubmissionView.as_view(), name='score_submission'),
+    path('api/simplified/<str:session_code>/feedback/', views.SimplifiedFeedbackAPI.as_view(), name='simplified_feedback_api'),
+    
+    # Rating API endpoints
+    path('api/<str:session_code>/ratings/', rating_api.TeamRatingAPIView.as_view(), name='team_rating_api'),
+    path('api/<str:session_code>/team/<int:team_id>/mission/<str:mission_type>/', rating_api.TeamSubmissionDetailView.as_view(), name='team_submission_detail'),
+    path('api/<str:session_code>/export/', rating_api.SessionRatingsExportView.as_view(), name='ratings_export'),
+    path('api/<str:session_code>/statistics/', rating_api.PhaseStatisticsView.as_view(), name='phase_statistics'),
 ]

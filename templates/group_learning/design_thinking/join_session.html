@@ -15,18 +15,23 @@
 {% block content %}
 <div class="max-w-2xl mx-auto py-8 px-4">
   <div class="text-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">🎓 Join Innovation Challenge</h1>
-    <p class="text-gray-600">Enter your session code and team details to start innovating</p>
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">🎯 Join Design Thinking Challenge</h1>
+    <p class="text-gray-600">Enter your session code to join an innovation session</p>
+    <div class="mt-2">
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+        🚀 Auto-Progression Enabled
+      </span>
+    </div>
   </div>
 
   <!-- Instructions Card -->
   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-    <div class="text-sm font-semibold text-blue-700 mb-2">How to Join</div>
+    <div class="text-sm font-semibold text-blue-700 mb-2">🎯 How to Join the Innovation Challenge</div>
     <ol class="text-xs text-blue-700 pl-4 space-y-1">
       <li>Get the 6-digit session code from your teacher</li>
       <li>Enter it below and choose your team name</li>
       <li>Pick a fun emoji to represent your team</li>
-      <li>Start the Design Thinking challenge!</li>
+      <li>Start the simplified Design Thinking challenge with auto-progression!</li>
     </ol>
   </div>
 
@@ -84,24 +89,13 @@
         <div class="text-xs text-gray-500 mt-1">Pick an emoji that represents your team spirit</div>
       </div>
 
-      <!-- Team Member Info (Optional) -->
-      <div class="mb-6">
-        <label for="team_members" class="block text-sm font-medium text-gray-700 mb-2">Team Members (Optional)</label>
-        <input type="text" 
-               id="team_members" 
-               name="team_members" 
-               maxlength="300"
-               placeholder="Alex, Jordan, Sam, Casey"
-               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200">
-        <div class="text-xs text-gray-500 mt-1">List your team members' names (comma-separated)</div>
-      </div>
 
       <!-- Action Buttons -->
       <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 text-white font-medium py-3 px-6 rounded-lg hover:from-cyan-600 hover:to-cyan-700 transition-all duration-200 mb-3" id="join-btn">
         🚀 Join Session & Start Challenge
       </button>
       
-      <a href="{% url 'group_learning:design_thinking_start' %}" class="block w-full text-center bg-gray-100 text-gray-700 font-medium py-3 px-6 rounded-lg hover:bg-gray-200 transition-all duration-200">
+      <a href="{% url 'group_learning:create_simplified_session' %}" class="block w-full text-center bg-gray-100 text-gray-700 font-medium py-3 px-6 rounded-lg hover:bg-gray-200 transition-all duration-200">
         ← Back to Start Page
       </a>
     </form>
@@ -132,36 +126,134 @@ document.querySelectorAll('.emoji-option').forEach(option => {
     });
 });
 
-// Form validation
+// Form validation and AJAX submission
 document.getElementById('join-form').addEventListener('submit', function(e) {
+    e.preventDefault(); // Always prevent default form submission
+    
     const sessionCode = document.getElementById('session_code').value.trim();
     const teamName = document.getElementById('team_name').value.trim();
+    const button = document.getElementById('join-btn');
     
+    // Clear any existing error messages
+    clearErrorMessages();
+    
+    // Client-side validation with visual feedback
     if (!sessionCode) {
-        e.preventDefault();
-        alert('Please enter a session code to continue.');
-        document.getElementById('session_code').focus();
+        showFieldError('session_code', 'Please enter a session code to continue.');
         return;
     }
     
     if (sessionCode.length !== 6) {
-        e.preventDefault();
-        alert('Session code must be 6 characters long.');
-        document.getElementById('session_code').focus();
+        showFieldError('session_code', 'Session code must be 6 characters long.');
         return;
     }
     
     if (!teamName) {
-        e.preventDefault();
-        alert('Please enter a team name to continue.');
-        document.getElementById('team_name').focus();
+        showFieldError('team_name', 'Please enter a team name to continue.');
         return;
     }
     
-    // Disable button to prevent double submission
-    document.getElementById('join-btn').disabled = true;
-    document.getElementById('join-btn').textContent = 'Joining Session...';
+    // Show loading state
+    button.disabled = true;
+    const originalText = button.textContent;
+    button.innerHTML = '<span class="inline-flex items-center"><svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Joining Session...</span>';
+    
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    formData.append('session_code', sessionCode);
+    formData.append('team_name', teamName);
+    formData.append('team_emoji', document.getElementById('team_emoji').value);
+    
+    // Submit via AJAX
+    fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => {
+        // Reset button state
+        button.disabled = false;
+        button.textContent = originalText;
+        
+        if (response.redirected) {
+            // Success - redirect to student dashboard
+            window.location.href = response.url;
+            return;
+        }
+        
+        // Check if response is JSON (error response)
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return response.json().then(data => {
+                if (!data.success) {
+                    // Show specific field error or general error
+                    if (data.field) {
+                        showFieldError(data.field, data.error);
+                    } else {
+                        showGeneralError(data.error);
+                    }
+                }
+            });
+        }
+        
+        // If not JSON and not redirected, there might be an unexpected error
+        if (!response.ok) {
+            showGeneralError('An unexpected error occurred. Please try again.');
+        }
+    })
+    .catch(error => {
+        // Reset button state
+        button.disabled = false;
+        button.textContent = originalText;
+        
+        console.error('Error:', error);
+        showGeneralError('Unable to connect to the server. Please check your internet connection and try again.');
+    });
 });
+
+// Helper functions for error display
+function clearErrorMessages() {
+    // Remove any existing error messages
+    document.querySelectorAll('.error-message').forEach(el => el.remove());
+    document.querySelectorAll('.border-red-500').forEach(el => {
+        el.classList.remove('border-red-500');
+        el.classList.add('border-gray-300');
+    });
+}
+
+function showFieldError(fieldName, message) {
+    const field = document.getElementById(fieldName);
+    if (field) {
+        // Add red border to field
+        field.classList.remove('border-gray-300');
+        field.classList.add('border-red-500');
+        
+        // Create error message element
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message text-red-600 text-sm mt-1';
+        errorDiv.textContent = message;
+        
+        // Insert after the field
+        field.parentNode.insertBefore(errorDiv, field.nextSibling);
+        
+        // Focus the field
+        field.focus();
+    }
+}
+
+function showGeneralError(message) {
+    // Create general error message at top of form
+    const form = document.getElementById('join-form');
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message p-3 rounded-lg mb-4 text-sm bg-red-100 border border-red-200 text-red-700';
+    errorDiv.textContent = message;
+    
+    // Insert at beginning of form
+    form.insertBefore(errorDiv, form.firstChild);
+}
 
 // Auto-focus session code input
 document.getElementById('session_code').focus();

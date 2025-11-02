@@ -1,0 +1,3710 @@
+{% extends 'games/base.html' %}
+{% load static %}
+
+{% block title %}{{ team.team_name }} - Design Challenge{% endblock %}
+{% block description %}Simplified student interface for Design Thinking Challenge. Quick inputs and auto-progression.{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Simplified Student Dashboard Design System */
+:root {
+    --primary-color: #3b82f6;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-600: #4b5563;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    
+    /* Classroom Theme Colors */
+    --classroom-blue: #e0f2fe;
+    --classroom-green: #f0fdf4;
+    --classroom-yellow: #fffbeb;
+    --classroom-purple: #faf5ff;
+    --chalkboard-green: #065f46;
+    --paper-white: #fefefe;
+}
+
+/* BULLETPROOF Immersive classroom background with maximum specificity */
+body[data-theme="games"], body[data-theme="modern"], body {
+    background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #f0fdf4 100%) !important;
+    background-attachment: fixed !important;
+    min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '' !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        /* Subtle desk pattern */
+        radial-gradient(circle at 25% 25%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+        /* Chalkboard grid pattern */
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) !important;
+    background-size: 
+        300px 300px,
+        400px 400px,
+        20px 20px,
+        20px 20px !important;
+    background-position: 
+        0 0,
+        100px 100px,
+        0 0,
+        0 0 !important;
+    pointer-events: none;
+    z-index: -1 !important;
+    display: block !important;
+}
+
+/* CRITICAL FIX: Ensure main content doesn't block classroom background */
+main {
+    background: transparent !important;
+    min-height: 100vh;
+}
+
+/* Mobile-first simplified layout - with transparent background to show classroom theme */
+.student-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+    position: relative;
+    z-index: 1;
+    background: transparent; /* Allow classroom background to show through */
+}
+
+/* Phase progress bar - classroom themed */
+.phase-progress {
+    background: rgba(255, 255, 255, 0.8);
+    height: 12px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.phase-progress-fill {
+    background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+    height: 100%;
+    transition: width 0.5s ease;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.phase-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: progressShimmer 2s infinite;
+}
+
+@keyframes progressShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Current phase card */
+.phase-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 20px;
+    border: 2px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Classroom-themed backgrounds for each phase */
+.empathy-card {
+    background: linear-gradient(135deg, var(--classroom-blue) 0%, #f0f9ff 100%);
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><g fill="none" fill-rule="evenodd"><g fill="%23e0f2fe" fill-opacity="0.3"><circle cx="30" cy="30" r="2"/></g></g></svg>');
+    border: 3px solid #0ea5e9;
+}
+
+.define-card {
+    background: linear-gradient(135deg, var(--classroom-yellow) 0%, #fef3c7 100%);
+    background-image: 
+        radial-gradient(circle at 25% 75%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 25%, rgba(217, 119, 6, 0.1) 0%, transparent 50%),
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><g fill="none" fill-rule="evenodd"><g fill="%23fbbf24" fill-opacity="0.2"><polygon points="20,1 40,40 1,40"/></g></g></svg>');
+    border: 3px solid #f59e0b;
+}
+
+.ideate-card {
+    background: linear-gradient(135deg, var(--classroom-purple) 0%, #f3e8ff 100%);
+    background-image: 
+        radial-gradient(circle at 30% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 70% 30%, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><g fill="none" fill-rule="evenodd"><g fill="%23a855f7" fill-opacity="0.2"><path d="M25,5 L35,20 L15,20 Z M25,45 L35,30 L15,30 Z"/></g></g></svg>');
+    border: 3px solid #8b5cf6;
+}
+
+.prototype-card {
+    background: linear-gradient(135deg, var(--classroom-green) 0%, #dcfce7 100%);
+    background-image: 
+        radial-gradient(circle at 35% 65%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 65% 35%, rgba(22, 163, 74, 0.1) 0%, transparent 50%),
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><g fill="none" fill-rule="evenodd"><g fill="%2322c55e" fill-opacity="0.2"><rect width="6" height="6" x="12" y="12"/><rect width="4" height="4" x="2" y="2"/><rect width="4" height="4" x="24" y="24"/></g></g></svg>');
+    border: 3px solid #16a34a;
+}
+
+.phase-card.completed {
+    border-color: var(--success-color);
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+}
+
+.phase-card.waiting {
+    border-color: var(--warning-color);
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+}
+
+/* Simple form inputs */
+.simple-input-group {
+    margin-bottom: 20px;
+}
+
+.simple-input-group label {
+    display: block;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--gray-50);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.radio-option:hover {
+    background: var(--gray-100);
+    border-color: var(--primary-color);
+}
+
+.radio-option.selected {
+    background: #dbeafe;
+    border-color: var(--primary-color);
+}
+
+.radio-option input[type="radio"] {
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.dropdown-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 16px;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.dropdown-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.text-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.text-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Submit button */
+.submit-btn {
+    background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Team status indicator */
+.team-status {
+    background: var(--gray-50);
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.team-status.completed {
+    background: #f0fdf4;
+    color: var(--success-color);
+}
+
+.team-status.waiting {
+    background: #fffbeb;
+    color: var(--warning-color);
+}
+
+/* Auto-advance notification */
+.auto-advance-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--success-color);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    z-index: 1000;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.auto-advance-notification.show {
+    transform: translateX(0);
+}
+
+/* Loading states */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.loading-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #ffffff33;
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Simplified inputs styling for themed cards */
+.simplified-inputs-container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 20px 0;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.simplified-inputs-container .simple-input-group {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.simplified-inputs-container .simple-input-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--chalkboard-green);
+    margin-bottom: 12px;
+    display: block;
+}
+
+.simplified-inputs-container .radio-group {
+    display: grid;
+    gap: 8px;
+}
+
+.simplified-inputs-container .radio-option {
+    background: var(--paper-white);
+    border: 2px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.simplified-inputs-container .radio-option:hover {
+    border-color: var(--primary-color);
+    background: var(--classroom-blue);
+    transform: translateY(-1px);
+}
+
+.simplified-inputs-container .radio-option.selected {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+/* Simplified mode enhancements */
+.phase-card.simplified-mode {
+    transition: all 0.5s ease;
+}
+
+.phase-card.simplified-mode .phase-header {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.phase-card.simplified-mode .simplified-inputs-container {
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced phase card animations */
+.phase-card {
+    animation: slideInFromRight 0.6s ease;
+}
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .student-container {
+        padding: 12px;
+    }
+    
+    .phase-card {
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+    
+    .radio-group {
+        gap: 8px;
+    }
+    
+    .radio-option {
+        padding: 10px 12px;
+    }
+    
+    .submit-btn {
+        padding: 14px 24px;
+    }
+}
+
+/* Completion Screen Styles */
+.completion-screen {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    border: 3px solid #06b6d4;
+    box-shadow: 0 10px 25px rgba(6, 182, 212, 0.15);
+}
+
+.completion-header {
+    margin-bottom: 32px;
+}
+
+.completion-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.completion-subtitle {
+    font-size: 18px;
+    color: #64748b;
+}
+
+.completion-content {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.team-info {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 2px solid #e2e8f0;
+}
+
+.team-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0f172a;
+    margin-bottom: 16px;
+}
+
+.completion-stats {
+    display: flex;
+    justify-content: space-around;
+    gap: 16px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    color: #0f172a;
+}
+
+.feedback-section {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 2px solid #e2e8f0;
+    text-align: left;
+}
+
+.feedback-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0f172a;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.feedback-pending {
+    text-align: center;
+    padding: 16px;
+    background: #fef3c7;
+    border-radius: 8px;
+    border: 1px solid #fbbf24;
+}
+
+.pending-icon {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.pending-text {
+    font-weight: 600;
+    color: #92400e;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.pending-description {
+    font-size: 14px;
+    color: #92400e;
+    margin: 0;
+}
+
+.feedback-given {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.feedback-text {
+    font-size: 16px;
+    color: #0f172a;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.feedback-date {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 8px;
+    text-align: right;
+}
+
+.completion-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.action-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.action-btn.primary {
+    background: #06b6d4;
+    color: white;
+}
+
+.action-btn.primary:hover {
+    background: #0891b2;
+    transform: translateY(-1px);
+}
+
+.action-btn.secondary {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+.action-btn.secondary:hover {
+    background: #e2e8f0;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+    .completion-screen {
+        padding: 20px;
+    }
+    
+    .completion-title {
+        font-size: 24px;
+    }
+    
+    .completion-subtitle {
+        font-size: 16px;
+    }
+    
+    .completion-actions {
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        width: 100%;
+    }
+}
+
+/* Game Introduction Styles */
+.game-intro-card {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    border: 3px solid #3b82f6;
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+    margin-bottom: 24px;
+}
+
+.intro-header {
+    margin-bottom: 32px;
+}
+
+.intro-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #0f172a;
+    margin-bottom: 20px;
+}
+
+.challenge-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #3b82f6;
+    margin-bottom: 8px;
+}
+
+.challenge-text {
+    font-size: 18px;
+    color: #0f172a;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.challenge-subtitle {
+    font-size: 16px;
+    color: #64748b;
+}
+
+.steps-overview {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.step-item:hover {
+    border-color: #3b82f6;
+    transform: translateY(-1px);
+}
+
+.step-icon {
+    font-size: 24px;
+    margin-right: 16px;
+    min-width: 32px;
+}
+
+.step-content {
+    text-align: left;
+}
+
+.step-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.step-desc {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.start-game-btn {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 12px;
+    border: none;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.start-game-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Empathy Phase Styles */
+.empathy-card, .define-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 3px solid #10b981;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
+    margin-bottom: 24px;
+}
+
+.phase-header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.phase-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.phase-subtitle {
+    font-size: 18px;
+    color: #10b981;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.phase-description {
+    font-size: 16px;
+    color: #64748b;
+    margin-bottom: 12px;
+}
+
+.why-it-matters {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.insight-icon {
+    font-size: 18px;
+}
+
+.insight-text {
+    font-size: 14px;
+    color: #166534;
+    font-weight: 500;
+}
+
+.empathy-content {
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0f172a;
+    margin-bottom: 12px;
+}
+
+.selection-requirement {
+    font-size: 14px;
+    color: #f59e0b;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.selection-counter {
+    background: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #92400e;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: inline-block;
+}
+
+.pain-points-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.pain-point-item {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pain-point-item:hover {
+    border-color: #3b82f6;
+    background: #f0f9ff;
+}
+
+.pain-point-item.selected {
+    border-color: #10b981;
+    background: #f0fdf4;
+}
+
+.pain-point-checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 2px solid #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: white;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.pain-point-item.selected .pain-point-checkbox {
+    background: #10b981;
+    border-color: #10b981;
+}
+
+.pain-point-text {
+    font-size: 14px;
+    color: #374151;
+    flex: 1;
+}
+
+.custom-pain-point {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 24px;
+}
+
+.custom-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 8px;
+    transition: border-color 0.2s ease;
+}
+
+.custom-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* Custom Pain Points Styles */
+.custom-pain-points-section {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 24px;
+}
+
+.section-description {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 16px;
+}
+
+.add-pain-point-btn {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-bottom: 12px;
+}
+
+.add-pain-point-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.add-pain-point-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.custom-pain-input-group {
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.custom-pain-input {
+    width: 100%;
+    padding: 10px 40px 10px 12px;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.custom-pain-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.remove-pain-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ef4444;
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-counter {
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+}
+
+/* Builder Input Styles */
+.builder-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 8px;
+    transition: border-color 0.2s ease;
+}
+
+.builder-input:focus {
+    outline: none;
+    border-color: #f59e0b;
+}
+
+/* Custom HMW Styles */
+.hmw-choice-section {
+    margin-bottom: 24px;
+}
+
+.hmw-toggle {
+    margin-bottom: 16px;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.toggle-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.custom-hmw-section {
+    background: #fffbeb;
+    border: 2px solid #fbbf24;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.hmw-helper {
+    font-size: 12px;
+    color: #92400e;
+    margin-bottom: 8px;
+    font-style: italic;
+}
+
+.custom-hmw-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    min-height: 80px;
+    resize: vertical;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.custom-hmw-textarea:focus {
+    outline: none;
+    border-color: #f59e0b;
+}
+
+/* Ideas Section Enhancements */
+.idea-progress {
+    background: #faf5ff;
+    border: 2px solid #d8b4fe;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.idea-counter {
+    font-size: 18px;
+    font-weight: bold;
+    color: #7c3aed;
+    margin-bottom: 8px;
+}
+
+.idea-encouragement {
+    font-size: 14px;
+    color: #6b46c1;
+    font-weight: 500;
+}
+
+.add-idea-btn {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-top: 16px;
+    width: 100%;
+}
+
+.add-idea-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.add-idea-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Define Phase Styles */
+.define-card {
+    border-color: #f59e0b;
+}
+
+.define-card .phase-title {
+    color: #0f172a;
+}
+
+.define-card .phase-subtitle {
+    color: #f59e0b;
+}
+
+.define-card .why-it-matters {
+    background: #fffbeb;
+    border-color: #fbbf24;
+}
+
+.define-card .insight-text {
+    color: #92400e;
+}
+
+.hmw-builder {
+    margin-bottom: 24px;
+}
+
+.builder-step {
+    margin-bottom: 20px;
+}
+
+.builder-label {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.builder-select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    transition: border-color 0.2s ease;
+}
+
+.builder-select:focus {
+    outline: none;
+    border-color: #f59e0b;
+}
+
+.hmw-preview {
+    background: #fffbeb;
+    border: 2px solid #fbbf24;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+    text-align: center;
+}
+
+.hmw-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #92400e;
+    margin-bottom: 12px;
+}
+
+.hmw-question {
+    font-size: 16px;
+    color: #0f172a;
+    font-weight: 600;
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #fbbf24;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.phase-submit-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.phase-submit-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.phase-submit-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Step 3: Ideate Phase Styles */
+.ideate-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 3px solid #8b5cf6; /* Purple theme for ideate */
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.15);
+    margin-bottom: 24px;
+}
+
+.ideate-card .phase-subtitle {
+    color: #8b5cf6;
+}
+
+.ideate-card .why-it-matters {
+    background: #faf5ff;
+    border-color: #c4b5fd;
+}
+
+.ideate-card .insight-text {
+    color: #6b21a8;
+}
+
+.hmw-reminder {
+    background: linear-gradient(135deg, #fef3c7, #fbbf24);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 2px solid #f59e0b;
+}
+
+.reminder-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #92400e;
+    margin-bottom: 8px;
+}
+
+.hmw-display {
+    background: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+    border: 1px solid #fbbf24;
+    font-style: italic;
+}
+
+.ideas-section {
+    margin-bottom: 24px;
+}
+
+.idea-input-group {
+    margin-bottom: 20px;
+}
+
+.idea-label {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.idea-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #d1d5db;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.idea-input:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.favorite-selection {
+    background: #faf5ff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 2px solid #c4b5fd;
+}
+
+.selection-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #6b21a8;
+    margin-bottom: 8px;
+}
+
+.selection-description {
+    font-size: 14px;
+    color: #6b21a8;
+    margin-bottom: 16px;
+}
+
+.favorite-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.favorite-option {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.favorite-option:hover {
+    border-color: #8b5cf6;
+    transform: translateY(-1px);
+}
+
+.favorite-option.selected {
+    background: #f3f4f6;
+    border-color: #8b5cf6;
+}
+
+/* Step 4: Prototype Phase Styles */
+.prototype-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 3px solid #f97316; /* Orange theme for prototype */
+    box-shadow: 0 10px 25px rgba(249, 115, 22, 0.15);
+    margin-bottom: 24px;
+}
+
+.prototype-card .phase-subtitle {
+    color: #f97316;
+}
+
+.prototype-card .why-it-matters {
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.prototype-card .insight-text {
+    color: #c2410c;
+}
+
+.selected-idea-display {
+    background: linear-gradient(135deg, #fef3c7, #fbbf24);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 2px solid #f59e0b;
+}
+
+.display-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #92400e;
+    margin-bottom: 8px;
+}
+
+.idea-showcase {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+    border: 1px solid #fbbf24;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+}
+
+.prototype-section {
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.section-description {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 12px;
+}
+
+.prototype-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 16px;
+    border: 2px solid #d1d5db;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    resize: vertical;
+    transition: all 0.2s ease;
+}
+
+.prototype-textarea:focus {
+    outline: none;
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+.prototype-tips {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 2px solid #e5e7eb;
+}
+
+.tips-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #374151;
+    margin-bottom: 12px;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.tip-item {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+.prototype-completion {
+    background: #f0fdf4;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 2px solid #bbf7d0;
+}
+
+.completion-check {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.completion-check input[type="checkbox"] {
+    transform: scale(1.3);
+    accent-color: #10b981;
+}
+
+.completion-check label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #065f46;
+    cursor: pointer;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .game-intro-card, .empathy-card, .define-card, .ideate-card, .prototype-card {
+        padding: 20px;
+    }
+    
+    .intro-title {
+        font-size: 24px;
+    }
+    
+    .phase-title {
+        font-size: 20px;
+    }
+    
+    .steps-overview {
+        gap: 12px;
+    }
+    
+    .step-item {
+        padding: 12px;
+    }
+    
+    .step-icon {
+        font-size: 20px;
+        margin-right: 12px;
+    }
+    
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .favorite-options {
+        gap: 8px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="student-container">
+    <!-- Phase Progress Bar -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ team.team_name }} 🎯</h2>
+        <div class="flex justify-between text-sm text-gray-600 mb-2">
+            <span>Progress</span>
+            <span id="progress-text">Phase 1 of 5</span>
+        </div>
+        <div class="phase-progress">
+            <div class="phase-progress-fill" id="progress-fill" style="width: 20%"></div>
+        </div>
+    </div>
+
+    <!-- Team Status -->
+    <div class="team-status" id="team-status">
+        <p id="status-text">Waiting for all team members to join...</p>
+    </div>
+
+    <!-- Game Introduction Screen -->
+    <div class="game-intro-card" id="game-intro" style="display: none;">
+        <div class="intro-header">
+            <h2 class="intro-title">🧠 Design Thinking Game: Fix Our Classroom!</h2>
+            <div class="main-challenge">
+                <h3 class="challenge-title">🎯 Main Challenge</h3>
+                <p class="challenge-text">"How can we make our classroom a better place to learn?"</p>
+                <p class="challenge-subtitle">You'll go through 5 fun steps — just like real designers do!</p>
+            </div>
+        </div>
+        
+        <div class="steps-overview">
+            <div class="step-item">
+                <span class="step-icon">👀</span>
+                <div class="step-content">
+                    <h4 class="step-title">EMPATHY</h4>
+                    <p class="step-desc">Find the Real Problem</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <span class="step-icon">🧩</span>
+                <div class="step-content">
+                    <h4 class="step-title">DEFINE</h4>
+                    <p class="step-desc">Turn It into a Clear Question</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <span class="step-icon">💡</span>
+                <div class="step-content">
+                    <h4 class="step-title">IDEATE</h4>
+                    <p class="step-desc">Brainstorm Solutions</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <span class="step-icon">🛠️</span>
+                <div class="step-content">
+                    <h4 class="step-title">PROTOTYPE</h4>
+                    <p class="step-desc">Build Your Idea</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <span class="step-icon">🧪</span>
+                <div class="step-content">
+                    <h4 class="step-title">TEST</h4>
+                    <p class="step-desc">See If It Works</p>
+                </div>
+            </div>
+        </div>
+        
+        <button class="start-game-btn" onclick="startGame()">
+            🚀 Start the Design Challenge!
+        </button>
+    </div>
+
+    <!-- Step 1: Empathy Phase -->
+    <div class="phase-card empathy-card" id="empathy-phase" style="display: none;">
+        <div class="phase-header">
+            <h3 class="phase-title">👀 Step 1: EMPATHY – Find the Real Problem</h3>
+            <p class="phase-subtitle">Look at your classroom like a detective!</p>
+            <p class="phase-description">Your job: discover what really bothers students.</p>
+            <div class="why-it-matters">
+                <span class="insight-icon">💡</span>
+                <span class="insight-text">Why it matters: Designers look carefully at both people's feelings and their surroundings before jumping to solutions.</span>
+            </div>
+        </div>
+
+        <div class="empathy-content">
+            <div class="pain-points-section">
+                <h4 class="section-title">👀 Select all the pain points you see in the classroom that bother you or your classmates!</h4>
+                <p class="selection-requirement">Select at least 3 options</p>
+                <div class="selection-counter">
+                    <span id="selection-count">0</span> / 3 minimum selected
+                </div>
+                
+                <div class="pain-points-grid" id="pain-points-grid">
+                    <!-- Pain points will be dynamically populated -->
+                </div>
+            </div>
+            
+            <div class="custom-pain-points-section">
+                <h4 class="section-title">✍️ Add your own pain points (optional)</h4>
+                <p class="section-description">Think of pain points not listed above? Add up to 3 custom ones!</p>
+                <div id="custom-pain-points-container">
+                    <!-- Custom pain point inputs will be added here -->
+                </div>
+                <button type="button" id="add-pain-point-btn" class="add-pain-point-btn" onclick="addCustomPainPoint()">
+                    + Add Pain Point
+                </button>
+                <div class="custom-counter">
+                    <span id="custom-pain-count">0</span> / 3 custom pain points added
+                </div>
+            </div>
+        </div>
+
+        <!-- Simplified input container for empathy phase -->
+        <div class="simplified-inputs-container" id="empathy-simplified-inputs" style="display: none;">
+            <!-- Dynamic simplified inputs will be inserted here -->
+        </div>
+        
+        <button class="phase-submit-btn" id="empathy-submit" onclick="submitEmpathy()" disabled>
+            Complete Empathy
+        </button>
+    </div>
+
+    <!-- Step 2: Define Phase -->
+    <div class="phase-card define-card" id="define-phase" style="display: none;">
+        <div class="phase-header">
+            <h3 class="phase-title">🧩 Step 2: DEFINE – Turn It into a Clear Question</h3>
+            <p class="phase-subtitle">Now turn your problem into a challenge you can solve!</p>
+            <div class="why-it-matters">
+                <span class="insight-icon">💡</span>
+                <span class="insight-text">Tip: This is the magic step where complaints turn into design challenges!</span>
+            </div>
+        </div>
+
+        <div class="hmw-builder">
+            <div class="builder-step">
+                <label class="builder-label">🧩 What's the one pain point you want to solve?</label>
+                <select id="pain-point-select" class="builder-select" onchange="updateHMW()">
+                    <option value="">Choose a pain point...</option>
+                </select>
+            </div>
+            
+            <div class="builder-step">
+                <label class="builder-label">🕵️‍♀️ Who faces this pain point the most?</label>
+                <select id="audience-select" class="builder-select" onchange="updateHMW()">
+                    <option value="">Select audience...</option>
+                    <option value="I">I</option>
+                    <option value="My classmates">My classmates</option>
+                    <option value="Everyone in class">Everyone in class</option>
+                    <option value="The teacher">The teacher</option>
+                    <option value="Some students only">Some students only</option>
+                </select>
+            </div>
+            
+            <div class="builder-step">
+                <label class="builder-label">💬 What causes this problem?</label>
+                <select id="cause-select" class="builder-select" onchange="handleCauseSelection()">
+                    <option value="">Select cause...</option>
+                    <option value="Rules or systems in school">Rules or systems in school</option>
+                    <option value="Classroom setup or furniture">Classroom setup or furniture</option>
+                    <option value="People's behavior or teamwork">People's behavior or teamwork</option>
+                    <option value="Lack of confidence">Lack of confidence</option>
+                    <option value="Other">Other (I'll type mine)</option>
+                </select>
+                <div id="custom-cause-container" style="display: none;">
+                    <input type="text" id="custom-cause-input" class="builder-input" placeholder="Describe the cause..." maxlength="100">
+                    <div class="char-counter"><span id="cause-char-count">0</span>/100</div>
+                </div>
+            </div>
+            
+            <div class="builder-step">
+                <label class="builder-label">💡 What do you want to change or improve?</label>
+                <select id="action-select" class="builder-select" onchange="updateHMW()">
+                    <option value="">Select action...</option>
+                    <option value="make it easier">Make it easier</option>
+                    <option value="make it more fun">Make it more fun</option>
+                    <option value="reduce or eliminate it">Reduce or eliminate it</option>
+                    <option value="fix it completely">Fix it completely</option>
+                    <option value="help people handle it better">Help people handle it better</option>
+                    <option value="make it faster">Make it faster</option>
+                    <option value="make it more organized">Make it more organized</option>
+                    <option value="make it more inclusive">Make it more inclusive</option>
+                    <option value="make it more engaging">Make it more engaging</option>
+                    <option value="make it more accessible">Make it more accessible</option>
+                    <option value="create a better system for it">Create a better system for it</option>
+                    <option value="find an alternative to it">Find an alternative to it</option>
+                </select>
+            </div>
+            
+            <div class="builder-step">
+                <label class="builder-label">🌈 What good thing will happen if you fix it?</label>
+                <select id="result-select" class="builder-select" onchange="handleResultSelection()">
+                    <option value="">Select result...</option>
+                    <option value="everyone can learn better">Everyone can learn better</option>
+                    <option value="people will feel happier">People will feel happier</option>
+                    <option value="teamwork will improve">Teamwork will improve</option>
+                    <option value="class will be calmer">Class will be calmer</option>
+                    <option value="other">Other (I'll write mine)</option>
+                </select>
+                <div id="custom-result-container" style="display: none;">
+                    <input type="text" id="custom-result-input" class="builder-input" placeholder="Describe the positive outcome..." maxlength="100">
+                    <div class="char-counter"><span id="result-char-count">0</span>/100</div>
+                </div>
+            </div>
+            
+            <div class="hmw-choice-section">
+                <div class="hmw-toggle">
+                    <label class="toggle-container">
+                        <input type="checkbox" id="custom-hmw-toggle" onchange="toggleCustomHMW()">
+                        <span class="toggle-label">✍️ I want to write my own "How Might We" question</span>
+                    </label>
+                </div>
+                
+                <div class="hmw-preview" id="auto-hmw-section">
+                    <h4 class="hmw-title">🧠 Your Design Question:</h4>
+                    <div class="hmw-question" id="hmw-question">
+                        Complete the steps above to generate your "How Might We" question!
+                    </div>
+                </div>
+                
+                <div class="custom-hmw-section" id="custom-hmw-section" style="display: none;">
+                    <h4 class="hmw-title">🧠 Write Your Own Design Question:</h4>
+                    <p class="hmw-helper">Start with "How might we..." and be specific about your challenge</p>
+                    <textarea id="custom-hmw-input" class="custom-hmw-textarea" placeholder="How might we..." maxlength="200"></textarea>
+                    <div class="char-counter"><span id="hmw-char-count">0</span>/200</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simplified input container for define phase -->
+        <div class="simplified-inputs-container" id="define-simplified-inputs" style="display: none;">
+            <!-- Dynamic simplified inputs will be inserted here -->
+        </div>
+        
+        <button class="phase-submit-btn" id="define-submit" onclick="submitDefine()" disabled>
+            Finalize Design Question
+        </button>
+    </div>
+
+    <!-- Step 3: Ideate Phase -->
+    <div class="phase-card ideate-card" id="ideate-phase" style="display: none;">
+        <div class="phase-header">
+            <h3 class="phase-title">💡 Step 3: IDEATE — Think of Awesome Ideas!</h3>
+            <p class="phase-subtitle">Now turn your "How Might We" question into creative solutions!</p>
+            <div class="why-it-matters">
+                <span class="insight-icon">🌟</span>
+                <span class="insight-text">Remember: The more ideas, the better! Wild and creative ideas often lead to breakthrough solutions.</span>
+            </div>
+        </div>
+
+        <!-- Display HMW Question from Step 2 -->
+        <div class="hmw-reminder">
+            <h4 class="reminder-title">🎯 Your Challenge:</h4>
+            <div class="hmw-display" id="hmw-reminder-text">
+                <!-- Populated from defineData.hmwQuestion -->
+            </div>
+        </div>
+
+        <!-- Dynamic Idea Generation Section -->
+        <div class="ideas-section">
+            <div class="idea-progress">
+                <div class="idea-counter">
+                    <span id="idea-count">0</span>/10 ideas - The more, the better! 🌟
+                </div>
+                <div class="idea-encouragement" id="idea-encouragement">
+                    Start with your first idea and keep the creativity flowing!
+                </div>
+            </div>
+            
+            <div id="ideas-container">
+                <div class="idea-input-group">
+                    <label class="idea-label">🧠 Idea 1 — What's your first solution?</label>
+                    <input type="text" id="idea-1" class="idea-input" placeholder="Type your first idea..." maxlength="100" onchange="updateIdeaCount()">
+                    <div class="char-counter"><span id="idea1-count">0</span>/100</div>
+                </div>
+                
+                <div class="idea-input-group">
+                    <label class="idea-label">🚀 Idea 2 — What's a wilder or cooler version?</label>
+                    <input type="text" id="idea-2" class="idea-input" placeholder="Think outside the box..." maxlength="100" onchange="updateIdeaCount()">
+                    <div class="char-counter"><span id="idea2-count">0</span>/100</div>
+                </div>
+                
+                <div class="idea-input-group">
+                    <label class="idea-label">🎨 Idea 3 — What's something totally different?</label>
+                    <input type="text" id="idea-3" class="idea-input" placeholder="Try a completely new approach..." maxlength="100" onchange="updateIdeaCount()">
+                    <div class="char-counter"><span id="idea3-count">0</span>/100</div>
+                </div>
+            </div>
+            
+            <button type="button" id="add-idea-btn" class="add-idea-btn" onclick="addIdeaInput()">
+                + Add Another Idea
+            </button>
+        </div>
+
+        <!-- Favorite Idea Selection -->
+        <div class="favorite-selection">
+            <h4 class="selection-title">🎯 Mini Challenge: Pick Your Favorite!</h4>
+            <p class="selection-description">Which idea are you most excited about trying?</p>
+            <div class="favorite-options" id="favorite-options">
+                <!-- Radio buttons populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Simplified input container for ideate phase -->
+        <div class="simplified-inputs-container" id="ideate-simplified-inputs" style="display: none;">
+            <!-- Dynamic simplified inputs will be inserted here -->
+        </div>
+        
+        <button class="phase-submit-btn" id="ideate-submit" onclick="submitIdeate()" disabled>
+            Complete Ideation 💡
+        </button>
+    </div>
+
+    <!-- Step 4: Prototype Phase -->
+    <div class="phase-card prototype-card" id="prototype-phase" style="display: none;">
+        <div class="phase-header">
+            <h3 class="phase-title">🛠️ Step 4: PROTOTYPE — Make It Real!</h3>
+            <p class="phase-subtitle">Turn your favorite idea into something you can explain!</p>
+            <div class="why-it-matters">
+                <span class="insight-icon">💡</span>
+                <span class="insight-text">A prototype helps you test your idea before building the real thing. Keep it simple and focus on how someone would use your idea!</span>
+            </div>
+        </div>
+
+        <!-- Show Selected Idea -->
+        <div class="selected-idea-display">
+            <h4 class="display-title">🎯 Your Chosen Idea:</h4>
+            <div class="idea-showcase" id="chosen-idea-display">
+                <!-- Populated from ideateData.favoriteIdea -->
+            </div>
+        </div>
+
+        <!-- Prototype Description -->
+        <div class="prototype-section">
+            <h4 class="section-title">🏗️ Describe Your Prototype</h4>
+            <p class="section-description">Explain how your idea will work. What will people see? What will they do? How will it solve the problem?</p>
+            
+            <textarea 
+                id="prototype-description" 
+                class="prototype-textarea" 
+                placeholder="Our solution works by... Students will be able to... The teacher can... When someone uses this, they will..."
+                maxlength="300"
+            ></textarea>
+            <div class="char-counter">
+                <span id="prototype-char-count">0</span>/300 characters
+            </div>
+        </div>
+
+        <!-- Prototype Tips -->
+        <div class="prototype-tips">
+            <h4 class="tips-title">💡 Tips for Great Prototypes</h4>
+            <div class="tips-grid">
+                <div class="tip-item">📝 Keep it simple and quick</div>
+                <div class="tip-item">🎯 Focus on how someone would use it</div>
+                <div class="tip-item">🔧 Think about what people will see and do</div>
+                <div class="tip-item">🚀 Ready for feedback and testing</div>
+            </div>
+        </div>
+
+        <!-- Prototype Completion -->
+        <div class="prototype-completion">
+            <div class="completion-check">
+                <input type="checkbox" id="prototype-ready" onchange="updatePrototypeSubmitButton()">
+                <label for="prototype-ready">✅ My prototype is ready for presentation</label>
+            </div>
+        </div>
+
+        <!-- Simplified input container for prototype phase -->
+        <div class="simplified-inputs-container" id="prototype-simplified-inputs" style="display: none;">
+            <!-- Dynamic simplified inputs will be inserted here -->
+        </div>
+        
+        <button class="phase-submit-btn" id="prototype-submit" onclick="submitPrototype()" disabled>
+            Complete Prototype 🎉
+        </button>
+    </div>
+
+    <!-- Current Phase Card (for later phases) -->
+    <div class="phase-card" id="phase-card" style="display: none;">
+        <div class="mb-4">
+            <h3 class="text-xl font-bold text-gray-800 mb-2" id="phase-title">Loading...</h3>
+            <p class="text-gray-600" id="phase-description">Please wait while we load your current phase.</p>
+        </div>
+
+        <!-- Dynamic Input Forms (populated via JavaScript) -->
+        <div id="input-forms-container">
+            <!-- Forms will be dynamically inserted here -->
+        </div>
+
+        <!-- Submit Button -->
+        <button class="submit-btn" id="submit-btn" onclick="submitPhaseInputs()" disabled>
+            <span id="submit-text">Complete Phase</span>
+        </button>
+    </div>
+
+    <!-- Game Completion Screen (initially hidden) -->
+    <div class="completion-screen" id="completion-screen" style="display: none;">
+        <div class="completion-header">
+            <h2 class="completion-title">🎉 Challenge Completed! 🎉</h2>
+            <p class="completion-subtitle">Congratulations on finishing the Design Thinking Innovation Challenge!</p>
+        </div>
+        
+        <div class="completion-content">
+            <div class="team-info">
+                <h3 class="team-name">{{ team.team_name }} {{ team.team_emoji }}</h3>
+                <div class="completion-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Phases Completed:</span>
+                        <span class="stat-value">5/5</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Your Score:</span>
+                        <span class="stat-value" id="final-score">Pending Review</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="feedback-section">
+                <h4 class="feedback-title">Teacher Feedback</h4>
+                <div class="feedback-content" id="feedback-content">
+                    <div class="feedback-pending">
+                        <span class="pending-icon">⏳</span>
+                        <span class="pending-text">Feedback Pending</span>
+                        <p class="pending-description">Your teacher is reviewing your work and will provide feedback soon.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="completion-actions">
+                <button class="action-btn secondary" onclick="location.href='/learn/simplified/create/'">
+                    🚀 Join Another Session
+                </button>
+                <button class="action-btn primary" onclick="checkForFeedback()">
+                    🔄 Check for Feedback
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Auto-Advance Notification -->
+<div class="auto-advance-notification" id="auto-advance-notification">
+    <p><strong>Phase Complete!</strong></p>
+    <p>Moving to next phase in <span id="countdown">3</span> seconds...</p>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+</div>
+
+<script>
+// Simplified Student Dashboard JavaScript
+let websocket = null;
+let currentSession = null;
+let currentTeam = null;
+let currentMission = null;
+let phaseInputs = {};
+let studentData = {
+    name: 'Student', // Will be set from session
+    session_id: generateSessionId()
+};
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    initializeStudentDashboard();
+    connectWebSocket();
+});
+
+function generateSessionId() {
+    return 'student_' + Math.random().toString(36).substr(2, 9);
+}
+
+function initializeStudentDashboard() {
+    // Get session data from Django template context
+    currentSession = {
+        code: '{{ session.session_code }}',
+        id: {{ session.id }},
+        status: '{{ session.status }}',
+        is_facilitator_controlled: {{ session.is_facilitator_controlled|yesno:"true,false" }}
+    };
+    
+    currentTeam = {
+        id: {{ team.id }},
+        name: '{{ team.team_name }}',
+        emoji: '{{ team.team_emoji }}',
+        members: {{ team.team_members|safe }}
+    };
+
+    // Use team name as student identifier
+    studentData.name = currentTeam.name || 'Student';
+
+    console.log('🎯 Student Dashboard initialized', { currentSession, currentTeam, studentData });
+    
+    // For simplified sessions, auto-start the game immediately
+    if (!currentSession.is_facilitator_controlled) {
+        console.log('🚀 Auto-starting simplified session game');
+        setTimeout(() => {
+            showGameIntroduction();
+        }, 1000); // Small delay to let the page fully load
+    }
+}
+
+function connectWebSocket() {
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${wsProtocol}//${window.location.host}/ws/design-thinking/${currentSession.code}/`;
+    
+    websocket = new WebSocket(wsUrl);
+    
+    websocket.onopen = function(event) {
+        console.log('✅ WebSocket connected to Design Thinking session');
+        // Join as student
+        websocket.send(JSON.stringify({
+            type: 'join_as_student',
+            team_id: currentTeam.id,
+            student_data: studentData
+        }));
+    };
+    
+    websocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        handleWebSocketMessage(data);
+    };
+    
+    websocket.onclose = function(event) {
+        console.log('❌ WebSocket disconnected:', event.code);
+        // Attempt to reconnect after 3 seconds
+        setTimeout(connectWebSocket, 3000);
+    };
+    
+    websocket.onerror = function(error) {
+        console.error('💥 WebSocket error:', error);
+    };
+}
+
+function handleWebSocketMessage(data) {
+    console.log('📨 Received message:', data.type, data);
+    
+    switch (data.type) {
+        case 'session_status':
+            updateSessionStatus(data.data);
+            break;
+        case 'mission_advanced':
+            handleMissionAdvanced(data.mission_data);
+            break;
+        case 'phase_auto_advance':
+            showAutoAdvanceNotification(data);
+            break;
+        case 'input_submission':
+            handleInputSubmissionUpdate(data);
+            break;
+        case 'completion_status':
+            updateCompletionStatus(data);
+            break;
+        case 'error':
+            showError(data.message);
+            break;
+    }
+}
+
+function updateSessionStatus(sessionData) {
+    if (sessionData.current_mission) {
+        currentMission = sessionData.current_mission;
+        loadCurrentPhase();
+    }
+    
+    // Update team status
+    const statusEl = document.getElementById('team-status');
+    const statusTextEl = document.getElementById('status-text');
+    
+    // For simplified sessions, always show as active (no teacher dependency)
+    if (sessionData.status === 'in_progress' || !sessionData.is_facilitator_controlled) {
+        statusEl.className = 'team-status';
+        statusTextEl.textContent = `Active session - Let's solve classroom problems!`;
+        
+        // Auto-show game introduction for simplified sessions
+        if (!sessionData.is_facilitator_controlled && !currentMission) {
+            showGameIntroduction();
+        }
+    } else {
+        statusEl.className = 'team-status waiting';
+        statusTextEl.textContent = 'Waiting for teacher to start session...';
+    }
+}
+
+function loadCurrentPhase() {
+    if (!currentMission) return;
+    
+    // Hide all phase cards first
+    hideAllPhaseCards();
+    
+    // Update progress bar
+    const phaseNumber = getPhaseNumber(currentMission.mission_type);
+    const progressPercent = (phaseNumber / 5) * 100;
+    document.getElementById('progress-fill').style.width = progressPercent + '%';
+    document.getElementById('progress-text').textContent = `Phase ${phaseNumber} of 5`;
+    
+    // Show the appropriate themed phase card
+    showThemedPhaseCard(currentMission.mission_type);
+}
+
+function hideAllPhaseCards() {
+    // Hide generic card
+    document.getElementById('phase-card').style.display = 'none';
+    
+    // Hide all themed cards
+    document.getElementById('empathy-phase').style.display = 'none';
+    document.getElementById('define-phase').style.display = 'none';
+    document.getElementById('ideate-phase').style.display = 'none';
+    document.getElementById('prototype-phase').style.display = 'none';
+    document.getElementById('game-intro').style.display = 'none';
+    document.getElementById('completion-screen').style.display = 'none';
+}
+
+function showThemedPhaseCard(missionType) {
+    console.log('🎨 Showing themed card for:', missionType);
+    
+    switch(missionType) {
+        case 'empathy':
+            document.getElementById('empathy-phase').style.display = 'block';
+            // Load simplified inputs into the themed card
+            loadSimplifiedInputsToThemedCard('empathy');
+            break;
+        case 'define':
+            document.getElementById('define-phase').style.display = 'block';
+            loadSimplifiedInputsToThemedCard('define');
+            break;
+        case 'ideate':
+            document.getElementById('ideate-phase').style.display = 'block';
+            loadSimplifiedInputsToThemedCard('ideate');
+            break;
+        case 'prototype':
+            document.getElementById('prototype-phase').style.display = 'block';
+            loadSimplifiedInputsToThemedCard('prototype');
+            break;
+        default:
+            // Fallback to generic card for other phases
+            document.getElementById('phase-card').style.display = 'block';
+            document.getElementById('phase-title').textContent = currentMission.title;
+            document.getElementById('phase-description').textContent = currentMission.description;
+            loadSimplifiedInputs(missionType);
+    }
+}
+
+function getPhaseNumber(missionType) {
+    const phases = ['kickoff', 'empathy', 'define', 'ideate', 'prototype', 'showcase'];
+    return phases.indexOf(missionType) + 1;
+}
+
+function loadSimplifiedInputsToThemedCard(missionType) {
+    console.log('🎨 Loading simplified inputs for themed card:', missionType);
+    
+    // Get the appropriate container for this phase
+    const containerId = `${missionType}-simplified-inputs`;
+    const container = document.getElementById(containerId);
+    
+    if (!container) {
+        console.warn('⚠️ No simplified inputs container found for', missionType);
+        return;
+    }
+    
+    // Show the simplified inputs container and hide the complex interface
+    container.style.display = 'block';
+    container.innerHTML = '';
+    
+    // Hide the complex phase-specific interfaces
+    hideComplexPhaseInterfaces(missionType);
+    
+    // Load the simplified inputs using the existing function logic
+    loadSimplifiedInputsIntoContainer(container, missionType);
+}
+
+function hideComplexPhaseInterfaces(missionType) {
+    // Hide the complex interfaces but keep the beautiful headers
+    // Add a smooth transition to the simplified mode
+    const phaseCard = document.getElementById(`${missionType}-phase`);
+    if (phaseCard) {
+        phaseCard.classList.add('simplified-mode');
+    }
+    
+    switch(missionType) {
+        case 'empathy':
+            const empathyContent = document.querySelector('#empathy-phase .empathy-content');
+            if (empathyContent) {
+                empathyContent.style.transition = 'opacity 0.3s ease';
+                empathyContent.style.opacity = '0.3';
+                setTimeout(() => empathyContent.style.display = 'none', 300);
+            }
+            break;
+        case 'define':
+            const defineContent = document.querySelector('#define-phase .define-content');
+            if (defineContent) {
+                defineContent.style.transition = 'opacity 0.3s ease';
+                defineContent.style.opacity = '0.3';
+                setTimeout(() => defineContent.style.display = 'none', 300);
+            }
+            break;
+        case 'ideate':
+            const ideateContent = document.querySelector('#ideate-phase .ideate-content');
+            if (ideateContent) {
+                ideateContent.style.transition = 'opacity 0.3s ease';
+                ideateContent.style.opacity = '0.3';
+                setTimeout(() => ideateContent.style.display = 'none', 300);
+            }
+            break;
+        case 'prototype':
+            const prototypeContent = document.querySelector('#prototype-phase .prototype-content');
+            if (prototypeContent) {
+                prototypeContent.style.transition = 'opacity 0.3s ease';
+                prototypeContent.style.opacity = '0.3';
+                setTimeout(() => prototypeContent.style.display = 'none', 300);
+            }
+            break;
+    }
+}
+
+function loadSimplifiedInputsIntoContainer(container, missionType) {
+    // Use the existing simplified inputs logic but target the themed container
+    const originalContainer = document.getElementById('input-forms-container');
+    
+    // Temporarily redirect the function to use our container
+    const originalGetElementById = document.getElementById;
+    document.getElementById = function(id) {
+        if (id === 'input-forms-container') {
+            return container;
+        }
+        return originalGetElementById.call(document, id);
+    };
+    
+    // Call the original function
+    loadSimplifiedInputs(missionType);
+    
+    // Restore the original function
+    document.getElementById = originalGetElementById;
+}
+
+function loadSimplifiedInputs(missionType) {
+    const container = document.getElementById('input-forms-container');
+    container.innerHTML = '';
+    
+    // Define simplified inputs for each phase
+    const phaseInputs = {
+        empathy: [
+            {
+                type: 'radio',
+                label: 'What frustrates students most in classrooms?',
+                options: [
+                    'Boring lessons and lectures',
+                    'Too much homework and pressure',
+                    'Difficulty understanding concepts',
+                    'Not enough hands-on activities'
+                ]
+            },
+            {
+                type: 'radio',
+                label: 'Who struggles most with learning?',
+                options: [
+                    'Students who learn differently',
+                    'Students who are shy or quiet',
+                    'Students who fall behind',
+                    'Students who get distracted easily'
+                ]
+            }
+        ],
+        define: [
+            {
+                type: 'dropdown',
+                label: 'Problem category:',
+                options: [
+                    'Student engagement',
+                    'Learning differences',
+                    'Teacher-student communication',
+                    'Classroom environment',
+                    'Study habits and motivation'
+                ]
+            },
+            {
+                type: 'text_short',
+                label: 'Problem statement (50 characters max):',
+                placeholder: 'Students need...'
+            }
+        ],
+        ideate: [
+            {
+                type: 'checkbox',
+                label: 'Select 3 ideas to solve the problem:',
+                options: [
+                    'Interactive digital tools',
+                    'Peer tutoring system',
+                    'Flexible seating arrangements',
+                    'Gamified learning activities',
+                    'Regular feedback sessions',
+                    'Creative project options'
+                ],
+                max_selections: 3
+            }
+        ],
+        prototype: [
+            {
+                type: 'text_medium',
+                label: 'Describe your solution (200 characters max):',
+                placeholder: 'Our solution works by...'
+            }
+        ],
+        showcase: [
+            {
+                type: 'rating',
+                label: 'How satisfied are you with your team\'s solution?',
+                max_rating: 5
+            },
+            {
+                type: 'rating',
+                label: 'How well did your team collaborate?',
+                max_rating: 5
+            }
+        ]
+    };
+    
+    const inputs = phaseInputs[missionType] || [];
+    
+    inputs.forEach((input, index) => {
+        const inputElement = createInputElement(input, index);
+        container.appendChild(inputElement);
+    });
+    
+    // Enable submit button if there are inputs
+    document.getElementById('submit-btn').disabled = inputs.length === 0;
+}
+
+function createInputElement(input, index) {
+    const div = document.createElement('div');
+    div.className = 'simple-input-group';
+    
+    const label = document.createElement('label');
+    label.textContent = input.label;
+    div.appendChild(label);
+    
+    switch (input.type) {
+        case 'radio':
+            const radioGroup = document.createElement('div');
+            radioGroup.className = 'radio-group';
+            
+            input.options.forEach((option, optionIndex) => {
+                const radioDiv = document.createElement('div');
+                radioDiv.className = 'radio-option';
+                radioDiv.onclick = () => selectRadioOption(radioDiv, index, option);
+                
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.name = `input_${index}`;
+                radioInput.value = option;
+                
+                const radioLabel = document.createElement('span');
+                radioLabel.textContent = option;
+                
+                radioDiv.appendChild(radioInput);
+                radioDiv.appendChild(radioLabel);
+                radioGroup.appendChild(radioDiv);
+            });
+            
+            div.appendChild(radioGroup);
+            break;
+            
+        case 'dropdown':
+            const select = document.createElement('select');
+            select.className = 'dropdown-select';
+            select.id = `input_${index}`;
+            
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Select an option...';
+            select.appendChild(defaultOption);
+            
+            input.options.forEach(option => {
+                const optionEl = document.createElement('option');
+                optionEl.value = option;
+                optionEl.textContent = option;
+                select.appendChild(optionEl);
+            });
+            
+            div.appendChild(select);
+            break;
+            
+        case 'text_short':
+        case 'text_medium':
+            const textInput = document.createElement(input.type === 'text_medium' ? 'textarea' : 'input');
+            textInput.className = 'text-input';
+            textInput.id = `input_${index}`;
+            textInput.placeholder = input.placeholder || '';
+            
+            if (input.type === 'text_short') {
+                textInput.type = 'text';
+                textInput.maxLength = 50;
+            } else {
+                textInput.rows = 3;
+                textInput.maxLength = 200;
+            }
+            
+            div.appendChild(textInput);
+            break;
+            
+        case 'checkbox':
+            const checkboxGroup = document.createElement('div');
+            checkboxGroup.className = 'radio-group'; // Reuse styling
+            
+            input.options.forEach((option, optionIndex) => {
+                const checkboxDiv = document.createElement('div');
+                checkboxDiv.className = 'radio-option';
+                checkboxDiv.onclick = () => selectCheckboxOption(checkboxDiv, index, option, input.max_selections);
+                
+                const checkboxInput = document.createElement('input');
+                checkboxInput.type = 'checkbox';
+                checkboxInput.name = `input_${index}`;
+                checkboxInput.value = option;
+                
+                const checkboxLabel = document.createElement('span');
+                checkboxLabel.textContent = option;
+                
+                checkboxDiv.appendChild(checkboxInput);
+                checkboxDiv.appendChild(checkboxLabel);
+                checkboxGroup.appendChild(checkboxDiv);
+            });
+            
+            div.appendChild(checkboxGroup);
+            break;
+            
+        case 'rating':
+            const ratingDiv = document.createElement('div');
+            ratingDiv.className = 'radio-group';
+            ratingDiv.style.flexDirection = 'row';
+            ratingDiv.style.justifyContent = 'center';
+            ratingDiv.style.gap = '8px';
+            
+            for (let i = 1; i <= input.max_rating; i++) {
+                const starDiv = document.createElement('div');
+                starDiv.className = 'radio-option';
+                starDiv.style.width = '48px';
+                starDiv.style.height = '48px';
+                starDiv.style.display = 'flex';
+                starDiv.style.alignItems = 'center';
+                starDiv.style.justifyContent = 'center';
+                starDiv.style.fontSize = '24px';
+                starDiv.textContent = '⭐';
+                starDiv.onclick = () => selectRating(index, i, input.max_rating);
+                starDiv.dataset.rating = i;
+                
+                ratingDiv.appendChild(starDiv);
+            }
+            
+            div.appendChild(ratingDiv);
+            break;
+    }
+    
+    return div;
+}
+
+function selectRadioOption(optionDiv, inputIndex, value) {
+    // Clear other selections in this group
+    const group = optionDiv.parentNode;
+    group.querySelectorAll('.radio-option').forEach(el => {
+        el.classList.remove('selected');
+        el.querySelector('input').checked = false;
+    });
+    
+    // Select this option
+    optionDiv.classList.add('selected');
+    optionDiv.querySelector('input').checked = true;
+    
+    // Store value
+    phaseInputs[inputIndex] = value;
+    checkFormCompletion();
+}
+
+function selectCheckboxOption(optionDiv, inputIndex, value, maxSelections) {
+    const checkbox = optionDiv.querySelector('input');
+    const isSelected = checkbox.checked;
+    
+    if (!isSelected) {
+        // Check if we've reached max selections
+        const selectedCount = document.querySelectorAll(`input[name="input_${inputIndex}"]:checked`).length;
+        if (selectedCount >= maxSelections) {
+            return; // Don't allow more selections
+        }
+        
+        // Select this option
+        optionDiv.classList.add('selected');
+        checkbox.checked = true;
+    } else {
+        // Deselect this option
+        optionDiv.classList.remove('selected');
+        checkbox.checked = false;
+    }
+    
+    // Update stored values
+    const selectedValues = Array.from(document.querySelectorAll(`input[name="input_${inputIndex}"]:checked`))
+        .map(input => input.value);
+    phaseInputs[inputIndex] = selectedValues;
+    checkFormCompletion();
+}
+
+function selectRating(inputIndex, rating, maxRating) {
+    // Update visual state
+    const ratingContainer = document.querySelector(`#input-forms-container .simple-input-group:nth-child(${inputIndex + 1}) .radio-group`);
+    const stars = ratingContainer.querySelectorAll('.radio-option');
+    
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.classList.add('selected');
+        } else {
+            star.classList.remove('selected');
+        }
+    });
+    
+    // Store value
+    phaseInputs[inputIndex] = rating;
+    checkFormCompletion();
+}
+
+function checkFormCompletion() {
+    const inputs = document.querySelectorAll('#input-forms-container .simple-input-group');
+    let allCompleted = true;
+    
+    inputs.forEach((inputGroup, index) => {
+        const input = inputGroup.querySelector('input, select, textarea');
+        if (input) {
+            if (input.type === 'radio') {
+                const checked = inputGroup.querySelector('input:checked');
+                if (!checked) allCompleted = false;
+            } else if (input.type === 'checkbox') {
+                const checked = inputGroup.querySelectorAll('input:checked');
+                if (checked.length === 0) allCompleted = false;
+            } else if (input.tagName === 'SELECT') {
+                if (!input.value) allCompleted = false;
+            } else {
+                if (!input.value.trim()) allCompleted = false;
+            }
+        } else {
+            // Check for rating input
+            if (!phaseInputs[index]) allCompleted = false;
+        }
+    });
+    
+    document.getElementById('submit-btn').disabled = !allCompleted;
+}
+
+function submitPhaseInputs() {
+    // Collect all input values
+    const inputs = [];
+    const inputGroups = document.querySelectorAll('#input-forms-container .simple-input-group');
+    
+    inputGroups.forEach((inputGroup, index) => {
+        const label = inputGroup.querySelector('label').textContent;
+        let value = phaseInputs[index];
+        
+        if (!value) {
+            // Try to get value from DOM elements
+            const input = inputGroup.querySelector('input:checked, select, textarea, input[type="text"]');
+            if (input) {
+                value = input.value;
+            }
+        }
+        
+        if (value) {
+            inputs.push({
+                order: index + 1,
+                type: getInputType(inputGroup),
+                label: label,
+                value: Array.isArray(value) ? value.join(', ') : value
+            });
+        }
+    });
+    
+    if (inputs.length === 0) {
+        showError('Please complete all inputs before submitting.');
+        return;
+    }
+    
+    // Show loading
+    showLoading(true);
+    
+    // Send to WebSocket
+    const messageData = {
+        type: 'simplified_input_submit',
+        team_id: currentTeam.id,
+        mission_id: currentMission.id,
+        student_data: studentData,
+        input_data: inputs
+    };
+    
+    console.log('📤 Submitting inputs:', messageData);
+    websocket.send(JSON.stringify(messageData));
+    
+    // Disable submit button
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('submit-text').textContent = 'Submitted ✓';
+}
+
+function getInputType(inputGroup) {
+    if (inputGroup.querySelector('input[type="radio"]')) return 'radio';
+    if (inputGroup.querySelector('input[type="checkbox"]')) return 'checkbox';
+    if (inputGroup.querySelector('select')) return 'dropdown';
+    if (inputGroup.querySelector('textarea')) return 'text_medium';
+    if (inputGroup.querySelector('input[type="text"]')) return 'text_short';
+    if (inputGroup.querySelector('.radio-option[data-rating]')) return 'rating';
+    return 'unknown';
+}
+
+function handleMissionAdvanced(missionData) {
+    currentMission = missionData;
+    showLoading(false);
+    
+    // Reset form state
+    phaseInputs = {};
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-text').textContent = 'Complete Phase';
+    
+    loadCurrentPhase();
+    
+    console.log('🎯 Mission advanced to:', missionData.title);
+}
+
+function showAutoAdvanceNotification(data) {
+    const notification = document.getElementById('auto-advance-notification');
+    const countdownEl = document.getElementById('countdown');
+    
+    notification.classList.add('show');
+    
+    let countdown = data.countdown_seconds || 3;
+    countdownEl.textContent = countdown;
+    
+    const countdownInterval = setInterval(() => {
+        countdown--;
+        countdownEl.textContent = countdown;
+        
+        if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            notification.classList.remove('show');
+        }
+    }, 1000);
+    
+    // Hide notification after countdown + 1 second
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, (data.countdown_seconds + 1) * 1000);
+}
+
+function handleInputSubmissionUpdate(data) {
+    showLoading(false);
+    
+    if (data.auto_advance_result && data.auto_advance_result.should_advance) {
+        showAutoAdvanceNotification(data.auto_advance_result);
+    } else {
+        // Update status to show waiting
+        const statusEl = document.getElementById('team-status');
+        const statusTextEl = document.getElementById('status-text');
+        statusEl.className = 'team-status waiting';
+        statusTextEl.textContent = 'Waiting for other team members to complete...';
+    }
+}
+
+function updateCompletionStatus(data) {
+    const statusEl = document.getElementById('team-status');
+    const statusTextEl = document.getElementById('status-text');
+    
+    if (data.is_ready_to_advance) {
+        statusEl.className = 'team-status completed';
+        statusTextEl.textContent = `Phase complete! (${data.completion_percentage}%)`;
+    } else {
+        statusEl.className = 'team-status waiting';
+        statusTextEl.textContent = `Progress: ${data.completion_percentage}% complete`;
+    }
+}
+
+function showLoading(show) {
+    const overlay = document.getElementById('loading-overlay');
+    if (show) {
+        overlay.classList.add('show');
+    } else {
+        overlay.classList.remove('show');
+    }
+}
+
+function showError(message) {
+    alert('Error: ' + message);
+    showLoading(false);
+}
+
+// Completion screen functions
+function showCompletionScreen(teamData) {
+    // Hide the regular game interface
+    document.getElementById('phase-card').style.display = 'none';
+    document.querySelector('.phase-progress').style.display = 'none';
+    
+    // Show completion screen
+    const completionScreen = document.getElementById('completion-screen');
+    completionScreen.style.display = 'block';
+    
+    // Update progress to 100%
+    document.getElementById('progress-text').textContent = 'Complete! 🎉';
+    document.getElementById('progress-fill').style.width = '100%';
+    
+    // Update team status
+    document.getElementById('team-status').innerHTML = '<p class="completed">🏆 Challenge Completed Successfully!</p>';
+    
+    // Load feedback and score
+    checkForFeedback();
+}
+
+function checkForFeedback() {
+    const button = document.querySelector('.action-btn.primary');
+    button.disabled = true;
+    button.textContent = '🔄 Checking...';
+    
+    fetch(`/learn/api/simplified/${currentSession.code}/feedback/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        updateFeedbackDisplay(data);
+    })
+    .catch(error => {
+        console.error('Error checking feedback:', error);
+    })
+    .finally(() => {
+        button.disabled = false;
+        button.textContent = '🔄 Check for Feedback';
+    });
+}
+
+function updateFeedbackDisplay(data) {
+    const feedbackContent = document.getElementById('feedback-content');
+    const finalScore = document.getElementById('final-score');
+    
+    // Update score
+    if (data.score) {
+        finalScore.textContent = `${data.score} (${getScoreDescription(data.score)})`;
+        finalScore.className = `stat-value score-${data.score.toLowerCase()}`;
+    }
+    
+    // Update feedback
+    if (data.feedback && data.feedback.trim()) {
+        feedbackContent.innerHTML = `
+            <div class="feedback-given">
+                <p class="feedback-text">${data.feedback}</p>
+                <div class="feedback-date">Given on ${formatDate(data.feedback_date)}</div>
+            </div>
+        `;
+    } else {
+        // Keep the pending message
+        feedbackContent.innerHTML = `
+            <div class="feedback-pending">
+                <span class="pending-icon">⏳</span>
+                <span class="pending-text">Feedback Pending</span>
+                <p class="pending-description">Your teacher is reviewing your work and will provide feedback soon.</p>
+            </div>
+        `;
+    }
+}
+
+function getScoreDescription(score) {
+    const descriptions = {
+        'A': 'Excellent Work!',
+        'B': 'Good Job!',
+        'C': 'Needs Improvement'
+    };
+    return descriptions[score] || 'Under Review';
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Check if game is completed on load
+function checkGameCompletion() {
+    // This will be called when we receive team progress updates
+    if (currentTeam && currentTeam.completion_percentage >= 100) {
+        showCompletionScreen(currentTeam);
+    }
+}
+
+// New game flow variables
+let selectedPainPoints = new Set();
+let customPainPoint = '';
+let empathyData = {};
+let defineData = {};
+let ideateData = {
+    ideas: ['', '', ''],
+    favoriteIdea: null
+};
+let prototypeData = {
+    description: '',
+    isReady: false
+};
+
+// Pain points data
+const painPointsData = [
+    // Learning & Focus
+    'Too noisy/distracting to concentrate',
+    'Waiting too long for the teacher\'s help',
+    'Lessons move too fast/slowly',
+    'Material is boring or irrelevant',
+    'Don\'t understand why the material matters',
+    'Too much homework/busywork',
+    'Too many long tests/exams',
+    'Fear of asking questions or seeming wrong',
+    
+    // Physical Environment
+    'Seats/desks are uncomfortable or stiff',
+    'Room is too hot, cold, or stuffy',
+    'Hard to find materials or tools (messy)',
+    'Lighting is too dim or too bright',
+    'No good spaces for group work',
+    'Classroom feels too cramped/crowded',
+    
+    // Social & Emotional
+    'Group members don\'t share the workload',
+    'Feel stressed or anxious about grades',
+    'Feel excluded or ignored by classmates',
+    'Teacher doesn\'t notice when I\'m struggling',
+    'Not enough time for creative projects',
+    'Rules feel unfair or too strict',
+    
+    // Technology & Tools
+    'The technology often doesn\'t work (e.g., projector, Wi-Fi)',
+    'Don\'t know how to use the learning software',
+    'Need access to better or different tools'
+];
+
+// Initialize game
+function initializeGame() {
+    console.log('🎯 Initializing new Design Thinking game');
+    
+    // Check if we should start with introduction
+    if (!currentTeam || !currentTeam.current_mission) {
+        showGameIntroduction();
+    } else {
+        // Resume from current phase
+        loadCurrentPhase();
+    }
+}
+
+// Show game introduction
+function showGameIntroduction() {
+    console.log('🎮 Showing game introduction');
+    
+    // Hide other elements
+    document.getElementById('phase-card').style.display = 'none';
+    document.getElementById('empathy-phase').style.display = 'none';
+    document.getElementById('define-phase').style.display = 'none';
+    
+    // Show introduction
+    document.getElementById('game-intro').style.display = 'block';
+    
+    // Update progress
+    document.getElementById('progress-text').textContent = 'Ready to Start';
+    document.getElementById('progress-fill').style.width = '0%';
+}
+
+// Start the game
+function startGame() {
+    console.log('🚀 Starting Design Thinking game');
+    
+    // Hide introduction
+    document.getElementById('game-intro').style.display = 'none';
+    
+    // Show empathy phase
+    showEmpathyPhase();
+}
+
+// Show empathy phase
+function showEmpathyPhase() {
+    console.log('👀 Starting Empathy phase');
+    
+    // Show empathy card
+    document.getElementById('empathy-phase').style.display = 'block';
+    
+    // Update progress
+    document.getElementById('progress-text').textContent = 'Step 1 of 5: Empathy';
+    document.getElementById('progress-fill').style.width = '20%';
+    
+    // Populate pain points
+    populatePainPoints();
+    
+    // Set up custom input listener
+    setupCustomPainPointInput();
+}
+
+// Populate pain points grid
+function populatePainPoints() {
+    const grid = document.getElementById('pain-points-grid');
+    grid.innerHTML = '';
+    
+    painPointsData.forEach((painPoint, index) => {
+        const item = document.createElement('div');
+        item.className = 'pain-point-item';
+        item.dataset.painPoint = painPoint;
+        item.onclick = () => togglePainPoint(item, painPoint);
+        
+        item.innerHTML = `
+            <div class="pain-point-checkbox">✓</div>
+            <div class="pain-point-text">${painPoint}</div>
+        `;
+        
+        grid.appendChild(item);
+    });
+}
+
+// Toggle pain point selection
+function togglePainPoint(element, painPoint) {
+    if (element.classList.contains('selected')) {
+        element.classList.remove('selected');
+        selectedPainPoints.delete(painPoint);
+    } else {
+        element.classList.add('selected');
+        selectedPainPoints.add(painPoint);
+    }
+    
+    updateSelectionCounter();
+    updateEmpathySubmitButton();
+}
+
+// Update selection counter - Fixed to include both selected and custom pain points
+function updateSelectionCounter() {
+    const totalPainPoints = selectedPainPoints.size + customPainPoints.filter(p => p.trim()).length;
+    document.getElementById('selection-count').textContent = totalPainPoints;
+    
+    const counter = document.querySelector('.selection-counter');
+    if (totalPainPoints >= 3) {
+        counter.style.background = '#d1fae5';
+        counter.style.borderColor = '#10b981';
+        counter.style.color = '#065f46';
+        counter.innerHTML = `✓ ${totalPainPoints} pain points selected (minimum met)`;
+    } else {
+        counter.style.background = '#fef3c7';
+        counter.style.borderColor = '#fbbf24';
+        counter.style.color = '#92400e';
+        counter.innerHTML = `${totalPainPoints} / 3 minimum selected`;
+    }
+}
+
+// Setup custom pain point functionality
+function setupCustomPainPointInput() {
+    // Initialize custom pain points management
+    customPainPoints = [];
+    setupCharacterCounters();
+}
+
+// Update empathy submit button - Simplified to avoid duplication
+function updateEmpathySubmitButton() {
+    const submitBtn = document.getElementById('empathy-submit');
+    const totalPainPoints = selectedPainPoints.size + customPainPoints.filter(p => p.trim()).length;
+    submitBtn.disabled = totalPainPoints < 3;
+    
+    // Let updateSelectionCounter handle the visual counter updates
+    updateSelectionCounter();
+}
+
+// Submit empathy phase
+function submitEmpathy() {
+    console.log('✅ Submitting empathy data');
+    
+    empathyData = {
+        selectedPainPoints: Array.from(selectedPainPoints),
+        customPainPoints: customPainPoints.filter(p => p.trim())
+    };
+    
+    // Show success animation
+    const submitBtn = document.getElementById('empathy-submit');
+    submitBtn.textContent = 'Great Detective Work! 🕵️';
+    submitBtn.disabled = true;
+    
+    // Move to define phase after delay
+    setTimeout(() => {
+        showDefinePhase();
+    }, 1500);
+}
+
+// Enhanced Custom Pain Points Functions
+let customPainPoints = [];
+
+function addCustomPainPoint() {
+    if (customPainPoints.length >= 3) return;
+    
+    const container = document.getElementById('custom-pain-points-container');
+    const index = customPainPoints.length;
+    
+    const inputGroup = document.createElement('div');
+    inputGroup.className = 'custom-pain-input-group';
+    inputGroup.innerHTML = `
+        <input type="text" id="custom-pain-${index}" class="custom-pain-input" 
+               placeholder="Describe a pain point you notice..." maxlength="50"
+               oninput="updateCustomPainPoint(${index})">
+        <button type="button" class="remove-pain-btn" onclick="removeCustomPainPoint(${index})">×</button>
+        <div class="char-counter"><span id="custom-char-${index}">0</span>/50</div>
+    `;
+    
+    container.appendChild(inputGroup);
+    customPainPoints.push('');
+    updateCustomPainCounter();
+    updateAddButtonState();
+}
+
+function removeCustomPainPoint(index) {
+    const container = document.getElementById('custom-pain-points-container');
+    const inputGroups = container.children;
+    if (inputGroups[index]) {
+        container.removeChild(inputGroups[index]);
+        customPainPoints.splice(index, 1);
+        
+        // Re-index remaining inputs
+        const remainingGroups = container.children;
+        for (let i = 0; i < remainingGroups.length; i++) {
+            const input = remainingGroups[i].querySelector('input');
+            const charSpan = remainingGroups[i].querySelector('.char-counter span');
+            const removeBtn = remainingGroups[i].querySelector('.remove-pain-btn');
+            
+            input.id = `custom-pain-${i}`;
+            input.setAttribute('oninput', `updateCustomPainPoint(${i})`);
+            charSpan.id = `custom-char-${i}`;
+            removeBtn.setAttribute('onclick', `removeCustomPainPoint(${i})`);
+        }
+    }
+    updateCustomPainCounter();
+    updateAddButtonState();
+    updateEmpathySubmitButton();
+}
+
+function updateCustomPainPoint(index) {
+    const input = document.getElementById(`custom-pain-${index}`);
+    const charSpan = document.getElementById(`custom-char-${index}`);
+    
+    customPainPoints[index] = input.value;
+    charSpan.textContent = input.value.length;
+    updateEmpathySubmitButton();
+}
+
+function updateCustomPainCounter() {
+    const counter = document.getElementById('custom-pain-count');
+    counter.textContent = customPainPoints.length;
+}
+
+function updateAddButtonState() {
+    const addBtn = document.getElementById('add-pain-point-btn');
+    addBtn.disabled = customPainPoints.length >= 3;
+    
+    if (customPainPoints.length >= 3) {
+        addBtn.textContent = '✓ Maximum reached (3/3)';
+    } else {
+        addBtn.textContent = '+ Add Pain Point';
+    }
+}
+
+// Enhanced Define Step Functions
+function handleCauseSelection() {
+    const select = document.getElementById('cause-select');
+    const customContainer = document.getElementById('custom-cause-container');
+    
+    if (select.value === 'Other') {
+        customContainer.style.display = 'block';
+        setupCustomCauseInput();
+    } else {
+        customContainer.style.display = 'none';
+    }
+    updateHMW();
+}
+
+function handleResultSelection() {
+    const select = document.getElementById('result-select');
+    const customContainer = document.getElementById('custom-result-container');
+    
+    if (select.value === 'other') {
+        customContainer.style.display = 'block';
+        setupCustomResultInput();
+    } else {
+        customContainer.style.display = 'none';
+    }
+    updateHMW();
+}
+
+function setupCustomCauseInput() {
+    const input = document.getElementById('custom-cause-input');
+    const charSpan = document.getElementById('cause-char-count');
+    
+    if (input && !input.hasAttribute('data-listener-added')) {
+        input.addEventListener('input', function() {
+            charSpan.textContent = this.value.length;
+            updateHMW();
+        });
+        input.setAttribute('data-listener-added', 'true');
+    }
+}
+
+function setupCustomResultInput() {
+    const input = document.getElementById('custom-result-input');
+    const charSpan = document.getElementById('result-char-count');
+    
+    if (input && !input.hasAttribute('data-listener-added')) {
+        input.addEventListener('input', function() {
+            charSpan.textContent = this.value.length;
+            updateHMW();
+        });
+        input.setAttribute('data-listener-added', 'true');
+    }
+}
+
+function toggleCustomHMW() {
+    const toggle = document.getElementById('custom-hmw-toggle');
+    const autoSection = document.getElementById('auto-hmw-section');
+    const customSection = document.getElementById('custom-hmw-section');
+    
+    if (toggle.checked) {
+        autoSection.style.display = 'none';
+        customSection.style.display = 'block';
+        setupCustomHMWInput();
+    } else {
+        autoSection.style.display = 'block';
+        customSection.style.display = 'none';
+    }
+    updateDefineSubmitButton();
+}
+
+function setupCustomHMWInput() {
+    const textarea = document.getElementById('custom-hmw-input');
+    const charSpan = document.getElementById('hmw-char-count');
+    
+    if (textarea && !textarea.hasAttribute('data-listener-added')) {
+        textarea.addEventListener('input', function() {
+            charSpan.textContent = this.value.length;
+            updateDefineSubmitButton();
+        });
+        textarea.setAttribute('data-listener-added', 'true');
+    }
+}
+
+// Enhanced Ideas Functions
+let ideaCount = 3; // Start with 3 ideas
+const maxIdeas = 10;
+
+function addIdeaInput() {
+    if (ideaCount >= maxIdeas) return;
+    
+    ideaCount++;
+    const container = document.getElementById('ideas-container');
+    
+    const ideaGroup = document.createElement('div');
+    ideaGroup.className = 'idea-input-group';
+    
+    const encouragementTexts = [
+        '🌟 Bonus idea - What else could work?',
+        '🚀 Creative boost - Think differently!',
+        '💎 Innovation mode - Keep them coming!',
+        '🎯 Brilliant thinking - More ideas!',
+        '⚡ Supercharged creativity - Amazing!',
+        '🌈 Idea machine - You\'re on fire!',
+        '🔥 Unstoppable innovation - Incredible!'
+    ];
+    
+    const encouragement = encouragementTexts[Math.min(ideaCount - 4, encouragementTexts.length - 1)];
+    
+    ideaGroup.innerHTML = `
+        <label class="idea-label">${encouragement}</label>
+        <input type="text" id="idea-${ideaCount}" class="idea-input" 
+               placeholder="Another creative solution..." maxlength="100" 
+               onchange="updateIdeaCount()">
+        <div class="char-counter"><span id="idea${ideaCount}-count">0</span>/100</div>
+    `;
+    
+    container.appendChild(ideaGroup);
+    updateIdeaProgress();
+    updateAddIdeaButtonState();
+    setupIdeaCharCounter(ideaCount);
+}
+
+function updateIdeaCount() {
+    const filledIdeas = [];
+    for (let i = 1; i <= ideaCount; i++) {
+        const input = document.getElementById(`idea-${i}`);
+        if (input && input.value.trim()) {
+            filledIdeas.push(input.value.trim());
+        }
+    }
+    
+    document.getElementById('idea-count').textContent = filledIdeas.length;
+    updateIdeaEncouragement(filledIdeas.length);
+    updateFavoriteOptions();
+    updateIdeateSubmitButton();
+}
+
+function updateIdeaEncouragement(count) {
+    const encouragement = document.getElementById('idea-encouragement');
+    const messages = [
+        'Start with your first idea and keep the creativity flowing!',
+        'Great start! One idea down, more to go! 🎯',
+        'Awesome! Two ideas brewing! 🔥',
+        'Fantastic! Three solid ideas! 🌟',
+        'Incredible! Four ideas and counting! 🚀',
+        'Outstanding! Five ideas - you\'re on a roll! 💎',
+        'Amazing! Six ideas - creativity overload! ⚡',
+        'Phenomenal! Seven ideas - pure genius! 🌈',
+        'Extraordinary! Eight ideas - unstoppable! 🎨',
+        'Legendary! Nine ideas - innovation master! 🏆',
+        'EPIC! Ten ideas - you\'ve maxed out creativity! 🎉'
+    ];
+    
+    encouragement.textContent = messages[Math.min(count, messages.length - 1)];
+}
+
+function updateAddIdeaButtonState() {
+    const addBtn = document.getElementById('add-idea-btn');
+    addBtn.disabled = ideaCount >= maxIdeas;
+    
+    if (ideaCount >= maxIdeas) {
+        addBtn.textContent = '🎉 Maximum reached - 10 amazing ideas!';
+    } else {
+        addBtn.textContent = '+ Add Another Idea';
+    }
+}
+
+function setupIdeaCharCounter(ideaNum) {
+    const input = document.getElementById(`idea-${ideaNum}`);
+    const charSpan = document.getElementById(`idea${ideaNum}-count`);
+    
+    input.addEventListener('input', function() {
+        charSpan.textContent = this.value.length;
+    });
+}
+
+function updateIdeaProgress() {
+    // Visual feedback for progress
+    const progressEl = document.querySelector('.idea-progress');
+    if (ideaCount >= 6) {
+        progressEl.style.background = 'linear-gradient(135deg, #fef3c7, #fed7aa)';
+        progressEl.style.borderColor = '#f59e0b';
+    }
+}
+
+function setupCharacterCounters() {
+    // Setup all character counters for various inputs
+    setTimeout(() => {
+        // Setup existing counters
+        const inputs = document.querySelectorAll('[maxlength]');
+        inputs.forEach(input => {
+            const counterId = input.id + '-count';
+            const counter = document.getElementById(counterId);
+            if (counter) {
+                input.addEventListener('input', function() {
+                    counter.textContent = this.value.length;
+                });
+            }
+        });
+    }, 100);
+}
+
+// Show define phase
+function showDefinePhase() {
+    console.log('🧩 Starting Define phase');
+    
+    // Hide empathy phase
+    document.getElementById('empathy-phase').style.display = 'none';
+    
+    // Show define phase
+    document.getElementById('define-phase').style.display = 'block';
+    
+    // Update progress
+    document.getElementById('progress-text').textContent = 'Step 2 of 5: Define';
+    document.getElementById('progress-fill').style.width = '40%';
+    
+    // Populate pain point dropdown
+    populatePainPointDropdown();
+    
+    // Setup define phase listeners
+    setupDefinePhaseListeners();
+}
+
+// Populate pain point dropdown from empathy selections
+function populatePainPointDropdown() {
+    const select = document.getElementById('pain-point-select');
+    select.innerHTML = '<option value="">Choose a pain point...</option>';
+    
+    // Add selected pain points
+    empathyData.selectedPainPoints.forEach(painPoint => {
+        const option = document.createElement('option');
+        option.value = painPoint;
+        option.textContent = painPoint;
+        select.appendChild(option);
+    });
+    
+    // Add custom pain points if provided
+    empathyData.customPainPoints.forEach(painPoint => {
+        if (painPoint.trim()) {
+            const option = document.createElement('option');
+            option.value = painPoint;
+            option.textContent = painPoint;
+            select.appendChild(option);
+        }
+    });
+}
+
+function setupDefinePhaseListeners() {
+    // Add listeners to all dropdowns
+    const selects = ['pain-point-select', 'audience-select', 'cause-select', 'action-select', 'result-select'];
+    selects.forEach(selectId => {
+        const select = document.getElementById(selectId);
+        if (select && !select.hasAttribute('data-listener-added')) {
+            select.addEventListener('change', function() {
+                if (selectId === 'cause-select') {
+                    handleCauseSelection();
+                } else if (selectId === 'result-select') {
+                    handleResultSelection();
+                } else {
+                    updateHMW();
+                }
+            });
+            select.setAttribute('data-listener-added', 'true');
+        }
+    });
+    
+    // Setup custom HMW toggle
+    const toggle = document.getElementById('custom-hmw-toggle');
+    if (toggle && !toggle.hasAttribute('data-listener-added')) {
+        toggle.addEventListener('change', toggleCustomHMW);
+        toggle.setAttribute('data-listener-added', 'true');
+    }
+}
+
+// Update HMW question
+function updateHMW() {
+    const painPoint = document.getElementById('pain-point-select').value;
+    const audience = document.getElementById('audience-select').value;
+    let cause = document.getElementById('cause-select').value;
+    const action = document.getElementById('action-select').value;
+    let result = document.getElementById('result-select').value;
+    
+    // Handle custom cause input
+    if (cause === 'Other') {
+        const customCause = document.getElementById('custom-cause-input').value.trim();
+        cause = customCause || '';
+    }
+    
+    // Handle custom result input
+    if (result === 'other') {
+        const customResult = document.getElementById('custom-result-input').value.trim();
+        result = customResult || '';
+    }
+    
+    const hmwQuestion = document.getElementById('hmw-question');
+    
+    if (painPoint && action && result) {
+        const question = `How might we ${action} "${painPoint}" so that ${result}?`;
+        hmwQuestion.textContent = question;
+        hmwQuestion.style.fontStyle = 'normal';
+    } else {
+        hmwQuestion.textContent = 'Complete the steps above to generate your "How Might We" question!';
+        hmwQuestion.style.fontStyle = 'italic';
+    }
+    
+    // Update submit button using enhanced function
+    updateDefineSubmitButton();
+}
+
+function updateDefineSubmitButton() {
+    const submitBtn = document.getElementById('define-submit');
+    const customToggle = document.getElementById('custom-hmw-toggle');
+    
+    if (customToggle && customToggle.checked) {
+        // Custom HMW mode
+        const customHMW = document.getElementById('custom-hmw-input').value.trim();
+        submitBtn.disabled = !customHMW || customHMW.length < 10;
+    } else {
+        // Auto-generated HMW mode
+        const painPoint = document.getElementById('pain-point-select').value;
+        const audience = document.getElementById('audience-select').value;
+        let cause = document.getElementById('cause-select').value;
+        const action = document.getElementById('action-select').value;
+        let result = document.getElementById('result-select').value;
+        
+        // Check custom inputs
+        if (cause === 'Other') {
+            const customCauseInput = document.getElementById('custom-cause-input');
+            cause = customCauseInput ? customCauseInput.value.trim() : '';
+        }
+        if (result === 'other') {
+            const customResultInput = document.getElementById('custom-result-input');
+            result = customResultInput ? customResultInput.value.trim() : '';
+        }
+        
+        // All fields must be filled (including custom inputs when "Other" is selected)
+        const allFieldsFilled = painPoint && audience && cause && action && result;
+        submitBtn.disabled = !allFieldsFilled;
+        
+        console.log('Define validation:', {painPoint, audience, cause, action, result, allFieldsFilled});
+    }
+}
+
+// Submit define phase
+function submitDefine() {
+    console.log('✅ Submitting define data');
+    
+    let hmwQuestion;
+    const customToggle = document.getElementById('custom-hmw-toggle');
+    
+    if (customToggle.checked) {
+        // Use custom HMW question
+        hmwQuestion = document.getElementById('custom-hmw-input').value.trim();
+    } else {
+        // Use auto-generated HMW question
+        hmwQuestion = document.getElementById('hmw-question').textContent;
+    }
+    
+    let cause = document.getElementById('cause-select').value;
+    let result = document.getElementById('result-select').value;
+    
+    // Get custom inputs if "Other" was selected
+    if (cause === 'Other') {
+        cause = document.getElementById('custom-cause-input').value.trim();
+    }
+    if (result === 'other') {
+        result = document.getElementById('custom-result-input').value.trim();
+    }
+    
+    defineData = {
+        painPoint: document.getElementById('pain-point-select').value,
+        audience: document.getElementById('audience-select').value,
+        cause: cause,
+        action: document.getElementById('action-select').value,
+        result: result,
+        hmwQuestion: hmwQuestion,
+        isCustomHMW: customToggle.checked
+    };
+    
+    // Show success animation
+    const submitBtn = document.getElementById('define-submit');
+    submitBtn.textContent = 'Perfect Challenge Created! 🎯';
+    submitBtn.disabled = true;
+    
+    // Continue to next phase after delay
+    setTimeout(() => {
+        showIdeatePhase();
+    }, 1500);
+}
+
+// Show Step 3: Ideate phase
+function showIdeatePhase() {
+    console.log('💡 Starting Ideate phase');
+    
+    // Hide define phase
+    document.getElementById('define-phase').style.display = 'none';
+    
+    // Show ideate phase
+    document.getElementById('ideate-phase').style.display = 'block';
+    
+    // Update progress
+    document.getElementById('progress-text').textContent = 'Step 3 of 5: Ideate';
+    document.getElementById('progress-fill').style.width = '60%';
+    
+    // Display HMW question from Step 2
+    document.getElementById('hmw-reminder-text').textContent = defineData.hmwQuestion;
+    
+    // Set up input listeners
+    setupIdeateInputs();
+}
+
+// Set up input listeners for ideate phase
+function setupIdeateInputs() {
+    // Initialize ideas array to accommodate up to 10 ideas
+    ideateData.ideas = [];
+    
+    // Set up listeners for initial 3 ideas
+    for (let i = 1; i <= 3; i++) {
+        setupIdeaCharCounter(i);
+    }
+    
+    // Initialize idea tracking
+    updateIdeaCount();
+}
+
+// Update favorite options based on entered ideas
+function updateFavoriteOptions() {
+    const container = document.getElementById('favorite-options');
+    container.innerHTML = '';
+    
+    const filledIdeas = [];
+    for (let i = 1; i <= ideaCount; i++) {
+        const input = document.getElementById(`idea-${i}`);
+        if (input && input.value.trim()) {
+            filledIdeas.push({text: input.value.trim(), index: i});
+        }
+    }
+    
+    filledIdeas.forEach((idea, arrayIndex) => {
+        const option = document.createElement('div');
+        option.className = 'favorite-option';
+        option.onclick = () => selectFavoriteIdea(option, idea.index);
+        
+        option.innerHTML = `
+            <input type="radio" name="favorite-idea" value="${idea.index}" style="margin-right: 12px;">
+            <span>💡 ${idea.text}</span>
+        `;
+        
+        container.appendChild(option);
+    });
+}
+
+// Select favorite idea
+function selectFavoriteIdea(element, index) {
+    document.querySelectorAll('.favorite-option').forEach(el => el.classList.remove('selected'));
+    element.classList.add('selected');
+    element.querySelector('input').checked = true;
+    ideateData.favoriteIdea = index;
+    updateIdeateSubmitButton();
+}
+
+// Update ideate submit button state
+function updateIdeateSubmitButton() {
+    const submitBtn = document.getElementById('ideate-submit');
+    const hasAllIdeas = ideateData.ideas.every(idea => idea.trim().length > 0);
+    const hasFavorite = ideateData.favoriteIdea !== null;
+    
+    submitBtn.disabled = !(hasAllIdeas && hasFavorite);
+}
+
+// Submit ideate phase
+function submitIdeate() {
+    // Collect all ideas from all input fields
+    const allIdeas = [];
+    for (let i = 1; i <= ideaCount; i++) {
+        const input = document.getElementById(`idea-${i}`);
+        if (input && input.value.trim()) {
+            allIdeas.push(input.value.trim());
+        }
+    }
+    
+    // Get selected favorite idea
+    const favoriteRadio = document.querySelector('input[name="favorite-idea"]:checked');
+    const favoriteIndex = favoriteRadio ? parseInt(favoriteRadio.value) : null;
+    const favoriteIdea = favoriteIndex ? document.getElementById(`idea-${favoriteIndex}`).value.trim() : '';
+    
+    ideateData = {
+        ideas: allIdeas,
+        favoriteIdea: favoriteIdea,
+        totalIdeasGenerated: allIdeas.length
+    };
+    
+    console.log('✅ Submitting ideate data', ideateData);
+    
+    // Show success animation
+    const submitBtn = document.getElementById('ideate-submit');
+    submitBtn.textContent = `Amazing ${allIdeas.length} Ideas Created! 🌟`;
+    submitBtn.disabled = true;
+    
+    // Move to prototype phase
+    setTimeout(() => {
+        showPrototypePhase();
+    }, 1500);
+}
+
+// Show Step 4: Prototype phase
+function showPrototypePhase() {
+    console.log('🛠️ Starting Prototype phase');
+    
+    // Hide ideate phase
+    document.getElementById('ideate-phase').style.display = 'none';
+    
+    // Show prototype phase
+    document.getElementById('prototype-phase').style.display = 'block';
+    
+    // Update progress
+    document.getElementById('progress-text').textContent = 'Step 4 of 5: Prototype';
+    document.getElementById('progress-fill').style.width = '80%';
+    
+    // Display chosen idea
+    const chosenIdea = ideateData.ideas[ideateData.favoriteIdea];
+    document.getElementById('chosen-idea-display').textContent = chosenIdea;
+    
+    // Set up input listeners
+    setupPrototypeInputs();
+}
+
+// Set up input listeners for prototype phase
+function setupPrototypeInputs() {
+    const textarea = document.getElementById('prototype-description');
+    const charCount = document.getElementById('prototype-char-count');
+    
+    textarea.addEventListener('input', function() {
+        prototypeData.description = this.value;
+        charCount.textContent = this.value.length;
+        updatePrototypeSubmitButton();
+    });
+}
+
+// Update prototype submit button state
+function updatePrototypeSubmitButton() {
+    const submitBtn = document.getElementById('prototype-submit');
+    const checkbox = document.getElementById('prototype-ready');
+    
+    prototypeData.isReady = checkbox.checked;
+    const hasDescription = prototypeData.description.trim().length >= 50; // Minimum 50 chars
+    
+    submitBtn.disabled = !(hasDescription && prototypeData.isReady);
+}
+
+// Submit prototype phase
+function submitPrototype() {
+    console.log('✅ Submitting prototype data', prototypeData);
+    
+    // Show success animation
+    const submitBtn = document.getElementById('prototype-submit');
+    submitBtn.textContent = 'Prototype Complete! 🏆';
+    submitBtn.disabled = true;
+    
+    // Move to final phase (test/showcase)
+    setTimeout(() => {
+        continueToFinalPhase();
+    }, 1500);
+}
+
+// Continue to final phase (test/showcase)
+function continueToFinalPhase() {
+    console.log('🎉 Moving to final phase...');
+    
+    // Hide prototype phase
+    document.getElementById('prototype-phase').style.display = 'none';
+    
+    // Show completion screen (final phase)
+    showCompletionScreen();
+    
+    // Update progress to show completion
+    document.getElementById('progress-text').textContent = 'Challenge Complete! 🎉';
+    document.getElementById('progress-fill').style.width = '100%';
+}
+
+// Ping WebSocket to keep connection alive
+setInterval(() => {
+    if (websocket && websocket.readyState === WebSocket.OPEN) {
+        websocket.send(JSON.stringify({ type: 'ping' }));
+    }
+}, 30000);
+</script>
+{% endblock %}
