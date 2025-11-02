@@ -1,8 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 import uuid
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class LearningModule(models.Model):
@@ -421,6 +426,18 @@ class GameSession(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
+    
+    # School Information (added for enhanced session management)
+    school_name = models.CharField(
+        max_length=200, 
+        help_text="Name of the school or educational institution",
+        blank=True  # Make optional for backward compatibility
+    )
+    grade_level = models.CharField(
+        max_length=50,
+        help_text="Grade level or class (e.g., '6th Grade', '7-8', 'High School')",
+        blank=True  # Make optional for backward compatibility
+    )
     
     # Settings
     allow_spectators = models.BooleanField(default=True)
@@ -1713,36 +1730,51 @@ class ClimateRoundResult(models.Model):
 class DesignThinkingGame(Game):
     """
     Design Thinking Game - "The Classroom Innovators Challenge"
-    Extends base Game model for facilitator-controlled Design Thinking sessions
+    Simplified student-driven Design Thinking sessions with auto-progression
     """
-    # Facilitator Control Settings
-    auto_advance_missions = models.BooleanField(
-        default=False,
-        help_text="Automatically advance missions when all teams complete"
+    # Auto-Progression Settings (Enhanced validation)
+    auto_advance_enabled = models.BooleanField(
+        default=True,
+        help_text="Enable automatic phase progression when teams complete inputs",
+        db_index=True
     )
-    default_mission_duration = models.IntegerField(
-        default=15,
-        help_text="Default duration for each mission in minutes"
+    completion_threshold_percentage = models.IntegerField(
+        default=100,
+        help_text="Percentage of team members required to complete phase (50-100%)",
+        validators=[MinValueValidator(50), MaxValueValidator(100)]
     )
-    require_all_teams_complete = models.BooleanField(
-        default=False,
-        help_text="Require all teams to complete before advancing to next mission"
+    phase_transition_delay = models.IntegerField(
+        default=3,
+        help_text="Seconds to wait before auto-advancing to next phase",
+        validators=[MinValueValidator(1), MaxValueValidator(30)]
     )
     
-    # Virtual Mentor (Vani) Configuration
-    enable_mentor_prompts = models.BooleanField(
+    # Simplified Scoring Settings (Enhanced)
+    enable_teacher_scoring = models.BooleanField(
         default=True,
-        help_text="Enable Vani (Virtual Mentor) prompts during gameplay"
+        help_text="Enable real-time teacher scoring of team submissions"
     )
-    mentor_prompt_frequency = models.CharField(
-        max_length=20,
+    scoring_system = models.CharField(
+        max_length=10,
         choices=[
-            ('low', 'Minimal prompts'),
-            ('medium', 'Regular prompts'),
-            ('high', 'Frequent prompts')
+            ('abc', 'A/B/C Letter Grades'),
+            ('numeric', '1-10 Numeric Scale'),
+            ('stars', '1-5 Star Rating')
         ],
-        default='medium',
-        help_text="How frequently Vani provides guidance"
+        default='numeric',
+        help_text="Scoring system for teacher dashboard"
+    )
+    
+    # Additional production settings
+    max_teams_per_session = models.IntegerField(
+        default=10,
+        help_text="Maximum number of teams allowed per session",
+        validators=[MinValueValidator(1), MaxValueValidator(50)]
+    )
+    session_timeout_minutes = models.IntegerField(
+        default=120,
+        help_text="Session timeout in minutes (default 2 hours)",
+        validators=[MinValueValidator(30), MaxValueValidator(480)]
     )
     
     class Meta:
@@ -1783,18 +1815,18 @@ class DesignMission(models.Model):
         help_text="Minimum time before mission can be advanced"
     )
     
-    # Mission-Specific Configuration
-    requires_file_upload = models.BooleanField(
-        default=False,
-        help_text="Teams must upload files/photos during this mission"
+    # Simplified Input Configuration
+    input_schema = models.JSONField(
+        default=dict,
+        help_text="Simplified input requirements for this mission (radio, dropdown, text)"
     )
-    requires_text_submission = models.BooleanField(
+    requires_all_team_members = models.BooleanField(
         default=True,
-        help_text="Teams must submit text responses"
+        help_text="All team members must complete inputs (vs. just one per team)"
     )
-    max_submissions = models.IntegerField(
-        default=1,
-        help_text="Maximum submissions per team for this mission"
+    allow_optional_upload = models.BooleanField(
+        default=False,
+        help_text="Allow optional file upload (simplified from required)"
     )
     
     # Learning Objectives
@@ -1930,6 +1962,58 @@ class DesignThinkingSession(GameSession):
         return self.current_mission == all_missions.last()
 
 
+class TeamPhaseRating(models.Model):
+    """
+    Stores teacher ratings for teams on specific phases
+    """
+    RATING_CHOICES = [
+        (1, '1 Star - Needs Significant Improvement'),
+        (2, '2 Stars - Below Expectations'),
+        (3, '3 Stars - Meets Expectations'),
+        (4, '4 Stars - Above Expectations'),
+        (5, '5 Stars - Exceptional Work')
+    ]
+    
+    # Relationships
+    team = models.ForeignKey('DesignTeam', on_delete=models.CASCADE, related_name='phase_ratings')
+    mission = models.ForeignKey(DesignMission, on_delete=models.CASCADE, related_name='team_ratings')
+    session = models.ForeignKey(DesignThinkingSession, on_delete=models.CASCADE, related_name='ratings')
+    teacher = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='given_ratings')
+    
+    # Rating Data
+    rating = models.PositiveIntegerField(choices=RATING_CHOICES)
+    feedback = models.TextField(blank=True, help_text="Detailed feedback for the team")
+    quick_notes = models.CharField(max_length=200, blank=True, help_text="Quick teacher notes")
+    
+    # Submission Context (snapshot)
+    submission_data = models.JSONField(default=dict, help_text="Snapshot of team submission when rated")
+    submission_summary = models.CharField(max_length=500, blank=True, help_text="Auto-generated summary")
+    
+    # Metadata
+    rated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_final = models.BooleanField(default=False, help_text="Final rating (prevents changes)")
+    
+    class Meta:
+        unique_together = ['team', 'mission']
+        ordering = ['-rated_at']
+        indexes = [
+            models.Index(fields=['session', 'mission']),
+            models.Index(fields=['team', 'rating']),
+        ]
+    
+    def __str__(self):
+        return f"{self.team.team_name} - {self.mission.get_mission_type_display()} - {self.rating}⭐"
+    
+    @property
+    def rating_stars(self):
+        return "⭐" * self.rating
+    
+    @property
+    def rating_description(self):
+        return dict(self.RATING_CHOICES)[self.rating]
+
+
 class DesignTeam(models.Model):
     """
     Team participating in Design Thinking session
@@ -1977,6 +2061,18 @@ class DesignTeam(models.Model):
         help_text="Target user identified by team"
     )
     
+    # Teacher Feedback
+    teacher_feedback = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Teacher's feedback for this team's work"
+    )
+    feedback_given_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text="When teacher provided feedback"
+    )
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -1997,6 +2093,112 @@ class DesignTeam(models.Model):
         # Count actually completed missions from TeamProgress records
         completed_missions = self.mission_progress.filter(is_completed=True).count()
         return (completed_missions / total_missions) * 100
+    
+    @property
+    def average_rating(self):
+        """Calculate average rating across all phases"""
+        from django.db.models import Avg
+        ratings = self.phase_ratings.all()
+        if not ratings:
+            return None
+        avg = ratings.aggregate(avg=Avg('rating'))['avg']
+        return round(avg, 1) if avg else None
+    
+    @property
+    def completed_phases_count(self):
+        """Count of phases with ratings"""
+        return self.phase_ratings.count()
+    
+    def validate_team_members(self):
+        """Validate team member requirements"""
+        # Skip validation for simplified sessions (auto_advance_enabled)
+        try:
+            if self.session and self.session.design_game and self.session.design_game.auto_advance_enabled:
+                return  # No validation required for simplified sessions
+        except:
+            # If session/design_game relationship not accessible, skip validation
+            return
+            
+        # For non-simplified sessions, validate team members
+        if not self.team_members:
+            # Allow empty team members for now - this is metadata
+            return
+        
+        member_count = len(self.team_members) if self.team_members else 0
+        if member_count > 5:  # Only check max limit
+            raise ValidationError("Team cannot have more than 5 members")
+        
+        # Check for empty names
+        for i, member in enumerate(self.team_members):
+            if isinstance(member, dict):
+                name = member.get('name', '').strip()
+            else:
+                name = str(member).strip()
+            
+            if not name:
+                raise ValidationError(f"Member {i+1} name cannot be empty")
+    
+    def clean(self):
+        """Custom model validation"""
+        super().clean()
+        self.validate_team_members()
+    
+    def save(self, *args, **kwargs):
+        """Override save to validate before saving"""
+        self.clean()
+        super().save(*args, **kwargs)
+    
+    @property 
+    def member_count(self):
+        """Get the number of team members"""
+        return len(self.team_members) if self.team_members else 0
+    
+    @property
+    def member_names(self):
+        """Get list of member names"""
+        if not self.team_members:
+            return []
+        
+        names = []
+        for member in self.team_members:
+            if isinstance(member, dict):
+                names.append(member.get('name', ''))
+            else:
+                names.append(str(member))
+        return [name.strip() for name in names if name.strip()]
+    
+    def get_phase_rating(self, mission_type):
+        """Get rating for specific phase"""
+        return self.phase_ratings.filter(mission__mission_type=mission_type).first()
+    
+    def get_latest_submission_summary(self):
+        """Get formatted summary of latest submission"""
+        if not self.current_mission:
+            return "No active mission"
+        
+        # Get latest submission for current mission
+        latest_submission = self.team_inputs.filter(mission=self.current_mission).order_by('-submitted_at').first()
+        if not latest_submission:
+            return "No submission yet"
+        
+        # Format based on mission type
+        mission_type = self.current_mission.mission_type
+        input_data = latest_submission.input_data
+        
+        if mission_type == 'empathy':
+            pain_points = [inp.get('value', '') for inp in input_data if 'pain point' in inp.get('label', '').lower()]
+            return f"Selected {len(pain_points)} pain points"
+        elif mission_type == 'define':
+            hmw = next((inp.get('value', '') for inp in input_data if 'how might we' in inp.get('label', '').lower()), '')
+            return hmw[:100] + '...' if len(hmw) > 100 else hmw
+        elif mission_type == 'ideate':
+            ideas = [inp.get('value', '') for inp in input_data if 'idea' in inp.get('label', '').lower()]
+            return f"Generated {len(ideas)} ideas"
+        elif mission_type == 'prototype':
+            prototype = next((inp.get('value', '') for inp in input_data if 'prototype' in inp.get('label', '').lower()), '')
+            return prototype[:100] + '...' if len(prototype) > 100 else prototype
+        
+        return "Submission completed"
 
 
 class TeamProgress(models.Model):
@@ -2044,6 +2246,358 @@ class TeamProgress(models.Model):
         # Update team's overall progress
         self.team.missions_completed = self.team.mission_progress.filter(is_completed=True).count()
         self.team.save()
+    
+    def check_auto_completion(self):
+        """
+        Check if team should auto-complete this mission based on simplified inputs
+        Returns True if team meets completion threshold for auto-progression
+        """
+        try:
+            completion_tracker = PhaseCompletionTracker.objects.get(
+                session=self.session,
+                team=self.team,
+                mission=self.mission
+            )
+            return completion_tracker.is_ready_to_advance
+        except PhaseCompletionTracker.DoesNotExist:
+            return False
+    
+    def get_completion_percentage(self):
+        """Get completion percentage for this team's current mission"""
+        try:
+            completion_tracker = PhaseCompletionTracker.objects.get(
+                session=self.session,
+                team=self.team,
+                mission=self.mission
+            )
+            return completion_tracker.completion_percentage
+        except PhaseCompletionTracker.DoesNotExist:
+            return 0.0
+
+
+class SimplifiedPhaseInput(models.Model):
+    """
+    Individual student inputs for simplified Design Thinking phases
+    Replaces complex TeamSubmission for student-driven auto-progression
+    """
+    INPUT_TYPES = [
+        ('radio', 'Radio Button Selection'),
+        ('dropdown', 'Dropdown Selection'), 
+        ('checkbox', 'Checkbox Selection'),
+        ('text_short', 'Short Text Input (50 chars)'),
+        ('text_medium', 'Medium Text Input (200 chars)'),
+        ('rating', 'Star Rating (1-5)'),
+    ]
+    
+    SCORE_CHOICES = [
+        ('A', 'A - Excellent'),
+        ('B', 'B - Good'),
+        ('C', 'C - Needs Improvement'),
+        ('1', '1 Star'),
+        ('2', '2 Stars'),
+        ('3', '3 Stars'),
+        ('4', '4 Stars'),
+        ('5', '5 Stars'),
+        ('6', '6 Points'),
+        ('7', '7 Points'),
+        ('8', '8 Points'),
+        ('9', '9 Points'),
+        ('10', '10 Points'),
+    ]
+    
+    team = models.ForeignKey(
+        DesignTeam, 
+        on_delete=models.CASCADE, 
+        related_name='phase_inputs',
+        db_index=True
+    )
+    mission = models.ForeignKey(
+        DesignMission, 
+        on_delete=models.CASCADE, 
+        related_name='student_inputs',
+        db_index=True
+    )
+    session = models.ForeignKey(
+        DesignThinkingSession, 
+        on_delete=models.CASCADE, 
+        related_name='all_inputs',
+        db_index=True
+    )
+    
+    # Student Information (Enhanced validation)
+    student_name = models.CharField(
+        max_length=100,
+        blank=False,
+        null=False,
+        help_text="Name of individual student (for individual completion tracking)"
+    )
+    student_session_id = models.CharField(
+        max_length=100,
+        blank=False,
+        null=False,
+        db_index=True,
+        help_text="Anonymous session ID for student"
+    )
+    
+    # Input Data (Enhanced validation)
+    input_type = models.CharField(
+        max_length=15, 
+        choices=INPUT_TYPES,
+        blank=False,
+        null=False
+    )
+    input_label = models.CharField(
+        max_length=200, 
+        blank=False,
+        null=False,
+        help_text="Question/prompt for this input"
+    )
+    selected_value = models.CharField(
+        max_length=500, 
+        blank=False,
+        null=False,
+        help_text="Student's selected/entered value"
+    )
+    
+    # Additional context for multi-input phases
+    input_order = models.PositiveIntegerField(
+        default=1, 
+        help_text="Order of this input within the phase",
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    
+    # Metadata
+    submitted_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    time_to_complete_seconds = models.PositiveIntegerField(
+        default=0,
+        help_text="Time taken to complete this specific input",
+        validators=[MaxValueValidator(3600)]  # Max 1 hour
+    )
+    
+    # Teacher Scoring (Enhanced validation)
+    teacher_score = models.CharField(
+        max_length=10,
+        blank=True,
+        null=True,
+        choices=SCORE_CHOICES,
+        help_text="Teacher's score for this input"
+    )
+    scored_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    
+    # Audit fields
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = "Simplified Phase Input"
+        verbose_name_plural = "Simplified Phase Inputs"
+        ordering = ['-submitted_at']
+        unique_together = ['team', 'mission', 'student_session_id', 'input_order']
+        indexes = [
+            models.Index(fields=['team', 'mission', 'submitted_at']),
+            models.Index(fields=['session', 'submitted_at']),
+            models.Index(fields=['student_session_id', 'submitted_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.team.team_name} - {self.student_name} - {self.mission.get_mission_type_display()}"
+    
+    def clean(self):
+        """Custom validation for input data"""
+        super().clean()
+        
+        # Validate input value based on type
+        if self.input_type == 'text_short' and len(self.selected_value) > 50:
+            raise ValidationError('Short text input cannot exceed 50 characters')
+        elif self.input_type == 'text_medium' and len(self.selected_value) > 200:
+            raise ValidationError('Medium text input cannot exceed 200 characters')
+        elif self.input_type == 'rating':
+            try:
+                rating = int(self.selected_value)
+                if not 1 <= rating <= 5:
+                    raise ValidationError('Rating must be between 1 and 5')
+            except ValueError:
+                raise ValidationError('Rating must be a valid number')
+        
+        # Validate student name is not empty after stripping
+        if not self.student_name.strip():
+            raise ValidationError('Student name cannot be empty')
+        
+        # Validate session consistency
+        if self.team.session != self.session:
+            raise ValidationError('Team must belong to the same session')
+        
+        if self.mission.game != self.session.design_game:
+            raise ValidationError('Mission must belong to the same game as session')
+    
+    def save(self, *args, **kwargs):
+        """Enhanced save with validation"""
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+
+class PhaseCompletionTracker(models.Model):
+    """
+    Track phase completion status for auto-progression logic
+    Determines when teams/sessions are ready to advance
+    """
+    session = models.ForeignKey(
+        DesignThinkingSession, 
+        on_delete=models.CASCADE, 
+        related_name='completion_tracking',
+        db_index=True
+    )
+    team = models.ForeignKey(
+        DesignTeam, 
+        on_delete=models.CASCADE, 
+        related_name='completion_status',
+        db_index=True
+    )
+    mission = models.ForeignKey(
+        DesignMission, 
+        on_delete=models.CASCADE,
+        db_index=True
+    )
+    
+    # Completion Metrics (Enhanced validation)
+    total_required_inputs = models.PositiveIntegerField(
+        help_text="Total inputs required for this team to complete this phase",
+        validators=[MinValueValidator(1), MaxValueValidator(100)]
+    )
+    completed_inputs = models.PositiveIntegerField(
+        default=0,
+        help_text="Number of inputs completed by team members",
+        validators=[MinValueValidator(0)]
+    )
+    completion_percentage = models.FloatField(
+        default=0.0,
+        help_text="Percentage of required inputs completed (0.0-100.0)",
+        validators=[MinValueValidator(0.0), MaxValueValidator(100.0)]
+    )
+    
+    # Status Tracking (Enhanced)
+    is_ready_to_advance = models.BooleanField(
+        default=False,
+        help_text="Team has met completion threshold for auto-progression",
+        db_index=True
+    )
+    phase_completed_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    auto_advanced_at = models.DateTimeField(null=True, blank=True)
+    
+    # WebSocket Notification Status
+    completion_broadcasted = models.BooleanField(
+        default=False,
+        help_text="Whether completion status was broadcast via WebSocket"
+    )
+    last_broadcast_at = models.DateTimeField(null=True, blank=True)
+    
+    # Audit fields
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = "Phase Completion Tracker"
+        verbose_name_plural = "Phase Completion Trackers"
+        ordering = ['-phase_completed_at', '-updated_at']
+        unique_together = ['session', 'team', 'mission']
+        indexes = [
+            models.Index(fields=['session', 'mission', 'is_ready_to_advance']),
+            models.Index(fields=['team', 'mission', 'phase_completed_at']),
+            models.Index(fields=['session', 'is_ready_to_advance', 'updated_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.team.team_name} - {self.mission.get_mission_type_display()} ({self.completion_percentage}%)"
+    
+    def clean(self):
+        """Custom validation for completion tracker"""
+        super().clean()
+        
+        # Validate completion metrics
+        if self.completed_inputs > self.total_required_inputs:
+            raise ValidationError('Completed inputs cannot exceed total required inputs')
+        
+        # Validate percentage calculation
+        if self.total_required_inputs > 0:
+            expected_percentage = (self.completed_inputs / self.total_required_inputs) * 100
+            if abs(self.completion_percentage - expected_percentage) > 0.1:
+                raise ValidationError('Completion percentage does not match calculated value')
+        
+        # Validate session consistency
+        if self.team.session != self.session:
+            raise ValidationError('Team must belong to the same session')
+        
+        if self.mission.game != self.session.design_game:
+            raise ValidationError('Mission must belong to the same game as session')
+        
+        # Validate date consistency
+        if self.auto_advanced_at and self.phase_completed_at:
+            if self.auto_advanced_at < self.phase_completed_at:
+                raise ValidationError('Auto-advance time cannot be before completion time')
+    
+    def update_completion_status(self):
+        """
+        Update completion percentage and ready-to-advance status
+        Called whenever a team member submits an input
+        Returns: bool - whether team is ready to advance
+        """
+        try:
+            if self.total_required_inputs > 0:
+                # Recalculate percentage
+                old_percentage = self.completion_percentage
+                self.completion_percentage = (self.completed_inputs / self.total_required_inputs) * 100
+                
+                # Check if team meets completion threshold
+                threshold = self.session.design_game.completion_threshold_percentage
+                old_ready_status = self.is_ready_to_advance
+                self.is_ready_to_advance = self.completion_percentage >= threshold
+                
+                # Set completion timestamp if just became ready
+                if self.is_ready_to_advance and not old_ready_status:
+                    self.phase_completed_at = timezone.now()
+                    logger.info(f"🎯 Team {self.team.team_name} completed {self.mission.title} at {self.phase_completed_at}")
+                
+                # Save changes
+                self.save(update_fields=['completion_percentage', 'is_ready_to_advance', 'phase_completed_at', 'updated_at'])
+                
+                # Log significant changes
+                if abs(old_percentage - self.completion_percentage) >= 10:
+                    logger.info(f"📈 Team {self.team.team_name} progress: {old_percentage:.1f}% → {self.completion_percentage:.1f}%")
+                
+                return self.is_ready_to_advance
+            
+            return False
+            
+        except Exception as e:
+            logger.error(f"💥 Error updating completion status for {self.team.team_name}: {str(e)}")
+            return False
+    
+    def mark_broadcasted(self):
+        """Mark that completion status has been broadcast"""
+        self.completion_broadcasted = True
+        self.last_broadcast_at = timezone.now()
+        self.save(update_fields=['completion_broadcasted', 'last_broadcast_at', 'updated_at'])
+    
+    def reset_for_new_phase(self):
+        """Reset tracker for a new phase while preserving history"""
+        self.completed_inputs = 0
+        self.completion_percentage = 0.0
+        self.is_ready_to_advance = False
+        self.phase_completed_at = None
+        self.auto_advanced_at = None
+        self.completion_broadcasted = False
+        self.last_broadcast_at = None
+        self.save()
+        
+        logger.info(f"🔄 Reset completion tracker for {self.team.team_name} - {self.mission.title}")
+    
+    def save(self, *args, **kwargs):
+        """Enhanced save with validation"""
+        if not kwargs.get('skip_validation', False):
+            self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class TeamSubmission(models.Model):

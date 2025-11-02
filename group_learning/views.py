@@ -9,6 +9,7 @@ from django.forms import ModelForm, CharField, ChoiceField
 from django.core.exceptions import ValidationError
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -2170,542 +2171,99 @@ class ProductionSetupAPI(View):
 # DESIGN THINKING / CLASSROOM INNOVATORS CHALLENGE VIEWS
 # ==================================================================================
 
-class DesignThinkingStartView(TemplateView):
-    """Quick start page for Design Thinking sessions"""
-    template_name = 'group_learning/design_thinking/quick_start.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # Get or create the Design Thinking game
-        design_game, created = DesignThinkingGame.objects.get_or_create(
-            title='The Classroom Innovators Challenge',
-            defaults={
-                'subtitle': 'Design Thinking for Real Classroom Problems',
-                'description': 'Transform your classroom environment through collaborative Design Thinking. Teams work through Empathy, Define, Ideate, and Prototype missions to solve real problems in their learning space.',
-                'context': 'Students become classroom detectives and innovators, identifying problems and creating solutions for their own learning environment.',
-                'game_type': 'community_building',
-                'min_players': 3,
-                'max_players': 30,
-                'estimated_duration': 90,
-                'target_age_min': 8,
-                'target_age_max': 18,
-                'difficulty_level': 2,
-                'introduction_text': 'Welcome to the Classroom Innovators Challenge! You will work in teams to identify and solve real problems in your classroom environment using Design Thinking.',
-                'is_active': True,
-                'auto_advance_missions': False,
-                'default_mission_duration': 15,
-                'require_all_teams_complete': False,
-                'enable_mentor_prompts': True,
-                'mentor_prompt_frequency': 'medium'
-            }
-        )
-        
-        # Create default missions if they don't exist
-        if created or not design_game.missions.exists():
-            self._create_default_missions(design_game)
-        
-        context['game'] = design_game
-        context['missions'] = design_game.missions.filter(is_active=True).order_by('order')
-        
-        return context
-    
-    def _create_default_missions(self, game):
-        """Create the default 5 missions for Design Thinking"""
-        missions_data = [
-            {
-                'mission_type': 'kickoff',
-                'order': 1,
-                'title': 'Energizing Kickoff',
-                'description': 'Get energized and understand the challenge ahead',
-                'instructions': 'Teams introduce themselves and get ready to become classroom innovators. Look around your classroom with fresh eyes!',
-                'estimated_duration': 10,
-                'minimum_time': 5,
-                'requires_file_upload': False,
-                'requires_text_submission': False,
-                'max_submissions': 0,
-                'learning_focus': 'Team building and problem awareness',
-                'success_criteria': 'Teams are energized and ready to start observing'
-            },
-            {
-                'mission_type': 'empathy',
-                'order': 2,
-                'title': 'Empathy Mission - Become Classroom Detectives',
-                'description': 'Observe and document problems in your classroom environment',
-                'instructions': 'Look beyond yourself. Observe how different students use the space. Take photos of problem areas. Who feels most left out? What frustrates both students and teachers?',
-                'estimated_duration': 20,
-                'minimum_time': 15,
-                'requires_file_upload': True,
-                'requires_text_submission': True,
-                'max_submissions': 10,
-                'learning_focus': 'Empathy, observation skills, perspective-taking',
-                'success_criteria': 'Multiple observations with photos and notes about different user needs'
-            },
-            {
-                'mission_type': 'define',
-                'order': 3,
-                'title': 'Define Mission - Choose Your Focus',
-                'description': 'Transform observations into a specific problem statement',
-                'instructions': 'Review your observations and create a Point of View statement: "A [Target User] needs to [User Need] because [Insight]"',
-                'estimated_duration': 15,
-                'minimum_time': 10,
-                'requires_file_upload': False,
-                'requires_text_submission': True,
-                'max_submissions': 1,
-                'learning_focus': 'Problem definition, synthesis, clear communication',
-                'success_criteria': 'Clear, specific problem statement focused on a target user'
-            },
-            {
-                'mission_type': 'ideate',
-                'order': 4,
-                'title': 'Ideate Mission - Brainstorm Solutions',
-                'description': 'Generate as many creative solutions as possible',
-                'instructions': 'Brainstorm rapidly! No idea is bad. Try "How might we..." questions. Combine crazy ideas. Go for quantity over quality!',
-                'estimated_duration': 20,
-                'minimum_time': 15,
-                'requires_file_upload': False,
-                'requires_text_submission': True,
-                'max_submissions': 20,
-                'learning_focus': 'Creative thinking, ideation techniques, building on ideas',
-                'success_criteria': 'Many diverse ideas generated, with at least one selected for prototyping'
-            },
-            {
-                'mission_type': 'prototype',
-                'order': 5,
-                'title': 'Prototype Mission - Make It Real',
-                'description': 'Build a simple prototype of your best solution',
-                'instructions': 'Build a quick prototype using whatever materials you have. It doesn\'t need to be perfect - just real enough to test and show others!',
-                'estimated_duration': 20,
-                'minimum_time': 15,
-                'requires_file_upload': True,
-                'requires_text_submission': True,
-                'max_submissions': 3,
-                'learning_focus': 'Prototyping, iteration, hands-on building',
-                'success_criteria': 'Working prototype with photos and description of how it solves the problem'
-            },
-            {
-                'mission_type': 'showcase',
-                'order': 6,
-                'title': 'Final Showcase - Share Your Innovation',
-                'description': 'Present your solution to the class',
-                'instructions': 'Share your prototype and explain how it solves the classroom problem. Get feedback and celebrate everyone\'s innovations!',
-                'estimated_duration': 15,
-                'minimum_time': 10,
-                'requires_file_upload': False,
-                'requires_text_submission': True,
-                'max_submissions': 1,
-                'learning_focus': 'Presentation skills, reflection, celebration of learning',
-                'success_criteria': 'Clear presentation of solution with reflection on the process'
-            }
-        ]
-        
-        for mission_data in missions_data:
-            DesignMission.objects.create(game=game, **mission_data)
-        
-        # Create default mentor nudges for each mission
-        self._create_default_mentor_nudges(game)
-    
-    def _create_default_mentor_nudges(self, game):
-        """Create default Vani mentor nudges for each mission"""
-        missions = game.missions.all()
-        
-        nudges_data = [
-            # Kickoff Mission Nudges
-            {
-                'mission_type': 'kickoff',
-                'trigger_type': 'mission_start',
-                'trigger_time_seconds': 0,
-                'nudge_type': 'encouragement',
-                'title': 'Welcome to Innovation!',
-                'message': 'Hey innovators! 🚀 Ready to transform your classroom? Remember, every great invention started with someone noticing a problem. Let\'s begin this amazing journey together!',
-                'emoji': '🚀',
-                'background_color': '#10B981',
-                'display_duration': 8
-            },
-            
-            # Empathy Mission Nudges
-            {
-                'mission_type': 'empathy',
-                'trigger_type': 'mission_start',
-                'trigger_time_seconds': 0,
-                'nudge_type': 'instruction',
-                'title': 'Detective Mode: ON!',
-                'message': 'Time to become classroom detectives! 🔍 Look beyond yourself - observe how others use this space. What problems do they face? Take photos and notes of everything you notice!',
-                'emoji': '🔍',
-                'background_color': '#3B82F6',
-                'display_duration': 10
-            },
-            {
-                'mission_type': 'empathy',
-                'trigger_type': 'time_based',
-                'trigger_time_seconds': 600,  # 10 minutes
-                'nudge_type': 'prompt',
-                'title': 'Dig Deeper!',
-                'message': 'Great observations so far! 👀 Now think: Who feels left out in this space? What frustrates the teacher? Look for problems that aren\'t obvious at first glance.',
-                'emoji': '👀',
-                'background_color': '#8B5CF6',
-                'display_duration': 8
-            },
-            
-            # Define Mission Nudges
-            {
-                'mission_type': 'define',
-                'trigger_type': 'mission_start',
-                'trigger_time_seconds': 0,
-                'nudge_type': 'instruction',
-                'title': 'Problem Focus Time!',
-                'message': 'Time to focus! 🎯 Review all your observations and pick ONE specific problem to solve. Remember: A [User] needs to [Do Something] because [Why it matters].',
-                'emoji': '🎯',
-                'background_color': '#F59E0B',
-                'display_duration': 10
-            },
-            {
-                'mission_type': 'define',
-                'trigger_type': 'time_based',
-                'trigger_time_seconds': 420,  # 7 minutes
-                'nudge_type': 'prompt',
-                'title': 'Be Specific!',
-                'message': 'Make your problem statement super specific! 📝 Instead of "students need better classroom," try "students in the back row need better lighting because they get headaches." Specificity = Solutions!',
-                'emoji': '📝',
-                'background_color': '#EF4444',
-                'display_duration': 8
-            },
-            
-            # Ideate Mission Nudges
-            {
-                'mission_type': 'ideate',
-                'trigger_type': 'mission_start',
-                'trigger_time_seconds': 0,
-                'nudge_type': 'encouragement',
-                'title': 'Idea Storm Time!',
-                'message': 'Brainstorm mode: ACTIVATED! ⚡ No idea is too crazy! Go for quantity over quality. Try to generate 10+ ideas. Build on each other\'s thoughts and let your creativity run wild!',
-                'emoji': '⚡',
-                'background_color': '#F59E0B',
-                'display_duration': 10
-            },
-            {
-                'mission_type': 'ideate',
-                'trigger_type': 'time_based',
-                'trigger_time_seconds': 300,  # 5 minutes
-                'nudge_type': 'refocus',
-                'title': 'No Judging Zone!',
-                'message': 'Remember: NO idea is bad! 🚫❌ Don\'t judge or dismiss ideas yet. Keep generating! Try combining two different ideas together. What if you mixed idea #3 with idea #7?',
-                'emoji': '🌟',
-                'background_color': '#8B5CF6',
-                'display_duration': 8
-            },
-            {
-                'mission_type': 'ideate',
-                'trigger_type': 'time_based',
-                'trigger_time_seconds': 900,  # 15 minutes
-                'nudge_type': 'celebration',
-                'title': 'Ideas Flowing!',
-                'message': 'Wow! Look at all those brilliant ideas! 🎉 You\'re thinking like true innovators. Now start thinking about which idea excites you most for building a prototype!',
-                'emoji': '🎉',
-                'background_color': '#10B981',
-                'display_duration': 8
-            },
-            
-            # Prototype Mission Nudges
-            {
-                'mission_type': 'prototype',
-                'trigger_type': 'mission_start',
-                'trigger_time_seconds': 0,
-                'nudge_type': 'instruction',
-                'title': 'Build Time!',
-                'message': 'Time to make it real! 🔧 Pick your best idea and build a simple prototype. Use whatever materials you have - paper, cardboard, even role-playing! Make it testable!',
-                'emoji': '🔧',
-                'background_color': '#10B981',
-                'display_duration': 10
-            },
-            {
-                'mission_type': 'prototype',
-                'trigger_type': 'time_based',
-                'trigger_time_seconds': 600,  # 10 minutes
-                'nudge_type': 'encouragement',
-                'title': 'Progress Check!',
-                'message': 'How\'s your prototype coming along? 🛠️ Remember: it doesn\'t need to be perfect! Focus on the main function. Can someone test it or see how it works? That\'s good enough!',
-                'emoji': '🛠️',
-                'background_color': '#F59E0B',
-                'display_duration': 8
-            },
-            
-            # Showcase Mission Nudges
-            {
-                'mission_type': 'showcase',
-                'trigger_type': 'mission_start',
-                'trigger_time_seconds': 0,
-                'nudge_type': 'celebration',
-                'title': 'Showcase Time!',
-                'message': 'You did it! 🏆 Time to share your amazing innovation with everyone. Prepare to tell your story: the problem, your solution, and how it will help people. You should be proud!',
-                'emoji': '🏆',
-                'background_color': '#F59E0B',
-                'display_duration': 10
-            },
-            {
-                'mission_type': 'showcase',
-                'trigger_type': 'time_based',
-                'trigger_time_seconds': 420,  # 7 minutes
-                'nudge_type': 'encouragement',
-                'title': 'Innovation Celebration!',
-                'message': 'Look at all these incredible solutions! 🌟 You\'ve learned to think like designers, builders, and problem-solvers. These skills will help you tackle any challenge in life!',
-                'emoji': '🌟',
-                'background_color': '#8B5CF6',
-                'display_duration': 8
-            }
-        ]
-        
-        for nudge_data in nudges_data:
-            mission_type = nudge_data.pop('mission_type')
-            mission = missions.filter(mission_type=mission_type).first()
-            if mission:
-                MentorNudge.objects.create(mission=mission, **nudge_data)
-    
-    def post(self, request):
-        """Handle session creation and team setup"""
-        session_code = request.POST.get('session_code', '').strip().upper()
-        team_name = request.POST.get('team_name', '').strip()
-        team_emoji = request.POST.get('team_emoji', '💡')
-        facilitator_mode = request.POST.get('facilitator_mode') == 'on'
-        
-        if not team_name:
-            messages.error(request, 'Team name is required')
-            return redirect('group_learning:design_thinking_start')
-        
-        # Get the Design Thinking game
-        try:
-            design_game = DesignThinkingGame.objects.get(title='The Classroom Innovators Challenge')
-        except DesignThinkingGame.DoesNotExist:
-            messages.error(request, 'Design Thinking game not found. Please refresh and try again.')
-            return redirect('group_learning:design_thinking_start')
-        
-        # Handle session - either join existing or create new
-        if session_code:
-            try:
-                session = DesignThinkingSession.objects.get(session_code=session_code)
-                if session.design_game != design_game:
-                    messages.error(request, 'This session code is not for the Design Thinking game')
-                    return redirect('group_learning:design_thinking_start')
-                
-                # Check session status
-                if session.status == 'completed':
-                    messages.error(request, 'This session has already been completed')
-                    return redirect('group_learning:design_thinking_start')
-                elif session.status == 'abandoned':
-                    messages.error(request, 'This session is no longer active')
-                    return redirect('group_learning:design_thinking_start')
-                
-                # Check team limit (100 teams maximum)
-                current_team_count = session.design_teams.count()
-                if current_team_count >= 100:
-                    messages.error(request, 'This session is full (maximum 100 teams)')
-                    return redirect('group_learning:design_thinking_start')
-                    
-            except DesignThinkingSession.DoesNotExist:
-                messages.error(request, f'Session code {session_code} not found')
-                return redirect('group_learning:design_thinking_start')
-        else:
-            # Create new session
-            session = DesignThinkingSession.objects.create(
-                game=design_game,
-                design_game=design_game,
-                session_code=self._generate_session_code(),
-                status='waiting',
-                is_facilitator_controlled=True
-            )
-        
-        # Create team
-        team = DesignTeam.objects.create(
-            session=session,
-            team_name=team_name,
-            team_emoji=team_emoji,
-            team_members=[{'name': 'Team Lead', 'role': 'organizer'}]
-        )
-        
-        # Store team info in Django session
-        request.session['design_team_id'] = team.id
-        request.session['design_session_code'] = session.session_code
-        
-        # Redirect based on mode
-        if facilitator_mode:
-            return redirect('group_learning:design_thinking_facilitator', session_code=session.session_code)
-        else:
-            return redirect('group_learning:design_thinking_play', session_code=session.session_code)
-    
-    def _generate_session_code(self):
-        """Generate unique session code"""
-        while True:
-            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-            if not DesignThinkingSession.objects.filter(session_code=code).exists():
-                return code
 
-
-class DesignThinkingCreateView(TemplateView):
-    """Teacher session creation page"""
-    template_name = 'group_learning/design_thinking/create_session.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # Get or create the Design Thinking game
-        design_game, created = DesignThinkingGame.objects.get_or_create(
-            title='The Classroom Innovators Challenge',
-            defaults={
-                'subtitle': 'Design Thinking for Real Classroom Problems',
-                'description': 'Transform your classroom environment through collaborative Design Thinking. Teams work through Empathy, Define, Ideate, and Prototype missions to solve real problems in their learning space.',
-                'context': 'Students become classroom detectives and innovators, identifying problems and creating solutions for their own learning environment.',
-                'game_type': 'community_building',
-                'min_players': 3,
-                'max_players': 30,
-                'estimated_duration': 90,
-                'target_age_min': 8,
-                'target_age_max': 18,
-                'difficulty_level': 2,
-                'introduction_text': 'Welcome to the Classroom Innovators Challenge! Today you will work as teams to identify real problems in your learning environment and design creative solutions.',
-            }
-        )
-        
-        context['game'] = design_game
-        return context
-    
-    def post(self, request):
-        """Handle teacher session creation"""
-        facilitator_name = request.POST.get('facilitator_name', '').strip()
-        session_name = request.POST.get('session_name', '').strip()
-        class_info = request.POST.get('class_info', '').strip()
-        auto_advance = request.POST.get('auto_advance') == 'on'
-        require_all_teams = request.POST.get('require_all_teams') == 'on'
-        enable_peer_viewing = request.POST.get('enable_peer_viewing') == 'on'
-        
-        if not facilitator_name:
-            messages.error(request, 'Facilitator name is required')
-            return redirect('group_learning:design_thinking_create')
-        
-        # Get the Design Thinking game
-        try:
-            design_game = DesignThinkingGame.objects.get(title='The Classroom Innovators Challenge')
-        except DesignThinkingGame.DoesNotExist:
-            messages.error(request, 'Design Thinking game not found. Please refresh and try again.')
-            return redirect('group_learning:design_thinking_create')
-        
-        # Create or get facilitator user
-        facilitator, created = get_user_model().objects.get_or_create(
-            username=f'facilitator_{facilitator_name.lower().replace(" ", "_")}',
-            defaults={
-                'first_name': facilitator_name.split()[0] if facilitator_name.split() else facilitator_name,
-                'last_name': ' '.join(facilitator_name.split()[1:]) if len(facilitator_name.split()) > 1 else '',
-            }
-        )
-        
-        # Create new session
-        session = DesignThinkingSession.objects.create(
-            game=design_game,
-            design_game=design_game,
-            session_code=self._generate_session_code(),
-            facilitator=facilitator,
-            status='waiting',
-            is_facilitator_controlled=True,
-            facilitator_notes=f"Session: {session_name}\nClass: {class_info}" if session_name or class_info else "",
-            enable_peer_viewing=enable_peer_viewing
-        )
-        
-        # Update game settings
-        if auto_advance:
-            design_game.auto_advance_missions = True
-            design_game.save()
-        if require_all_teams:
-            design_game.require_all_teams_complete = True
-            design_game.save()
-        
-        # Set first mission
-        first_mission = DesignMission.objects.filter(game=design_game).order_by('order').first()
-        if first_mission:
-            session.current_mission = first_mission
-            session.save()
-        
-        # Store session info for facilitator
-        request.session['facilitator_session_code'] = session.session_code
-        request.session['is_facilitator'] = True
-        
-        messages.success(request, f'Session created successfully! Share code "{session.session_code}" with your students.')
-        return redirect('group_learning:design_thinking_facilitator', session_code=session.session_code)
-    
-    def _generate_session_code(self):
-        """Generate unique session code"""
-        while True:
-            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-            if not DesignThinkingSession.objects.filter(session_code=code).exists():
-                return code
 
 
 class DesignThinkingJoinView(TemplateView):
     """Student session joining page"""
     template_name = 'group_learning/design_thinking/join_session.html'
     
+    def _handle_error(self, request, message, field=None):
+        """Handle error response - AJAX or redirect"""
+        is_ajax = (
+            request.headers.get('X-Requested-With') == 'XMLHttpRequest' or
+            'application/json' in request.headers.get('Accept', '') or
+            request.headers.get('Content-Type', '').startswith('multipart/form-data')
+        )
+        
+        if is_ajax:
+            return JsonResponse({
+                'success': False,
+                'error': message,
+                'field': field
+            }, status=400)
+        else:
+            messages.error(request, message)
+            return redirect('group_learning:create_simplified_session')
+    
     def post(self, request):
         """Handle student session joining"""
         session_code = request.POST.get('session_code', '').strip().upper()
         team_name = request.POST.get('team_name', '').strip()
         team_emoji = request.POST.get('team_emoji', '💡')
-        team_members = request.POST.get('team_members', '').strip()
+        team_members_json = request.POST.get('team_members', '[]')
         
         if not session_code:
-            messages.error(request, 'Session code is required')
-            return redirect('group_learning:design_thinking_join')
+            return self._handle_error(request, 'Session code is required', 'session_code')
             
         if not team_name:
-            messages.error(request, 'Team name is required')
-            return redirect('group_learning:design_thinking_join')
+            return self._handle_error(request, 'Team name is required', 'team_name')
         
-        # Get the Design Thinking game
+        # Parse and validate team members
         try:
-            design_game = DesignThinkingGame.objects.get(title='The Classroom Innovators Challenge')
-        except DesignThinkingGame.DoesNotExist:
-            messages.error(request, 'Design Thinking game not found. Please refresh and try again.')
-            return redirect('group_learning:design_thinking_join')
+            team_members = json.loads(team_members_json) if team_members_json else []
+            if not isinstance(team_members, list):
+                team_members = []
+        except (json.JSONDecodeError, TypeError):
+            team_members = []
+        
+        # Team members are optional metadata for simplified flow
+        team_members = [member.strip() for member in team_members if member.strip()]
+        
+        # No validation required - team members are just metadata
+        
+        # Get the simplified Design Thinking game
+        try:
+            design_game = DesignThinkingGame.objects.filter(
+                auto_advance_enabled=True
+            ).first()
+            
+            if not design_game:
+                return self._handle_error(request, 'Simplified Design Thinking game not found. Please refresh and try again.')
+        except Exception as e:
+            return self._handle_error(request, 'Design Thinking game not found. Please refresh and try again.')
         
         # Find and validate session
         try:
             session = DesignThinkingSession.objects.get(session_code=session_code)
-            if session.design_game != design_game:
-                messages.error(request, 'This session code is not for the Design Thinking game')
-                return redirect('group_learning:design_thinking_join')
+            # Check if session uses any simplified game (auto_advance_enabled=True)
+            if not session.design_game or not session.design_game.auto_advance_enabled:
+                return self._handle_error(request, 'This session code is not for the Simplified Design Thinking game', 'session_code')
             
             # Check session status
             if session.status == 'completed':
-                messages.error(request, 'This session has already been completed')
-                return redirect('group_learning:design_thinking_join')
+                return self._handle_error(request, 'This session has already been completed', 'session_code')
             elif session.status == 'abandoned':
-                messages.error(request, 'This session is no longer active')
-                return redirect('group_learning:design_thinking_join')
+                return self._handle_error(request, 'This session is no longer active', 'session_code')
             
             # Check team limit (100 teams maximum)
             current_team_count = session.design_teams.count()
             if current_team_count >= 100:
-                messages.error(request, 'This session is full (maximum 100 teams)')
-                return redirect('group_learning:design_thinking_join')
+                return self._handle_error(request, 'This session is full (maximum 100 teams)', 'session_code')
                 
         except DesignThinkingSession.DoesNotExist:
-            messages.error(request, f'Session code {session_code} not found')
-            return redirect('group_learning:design_thinking_join')
-        
-        # Parse team members
-        team_members_list = []
-        if team_members:
-            members = [m.strip() for m in team_members.split(',') if m.strip()]
-            team_members_list = [{'name': name, 'role': 'member'} for name in members]
+            return self._handle_error(request, f'Session code {session_code} not found', 'session_code')
         
         # Check for duplicate team name in session
         if DesignTeam.objects.filter(session=session, team_name=team_name).exists():
-            messages.error(request, f'Team name "{team_name}" is already taken in this session. Please choose a different name.')
-            return redirect('group_learning:design_thinking_join')
+            return self._handle_error(request, f'Team name "{team_name}" is already taken. Please choose a different name.', 'team_name')
         
-        # Create team
+        # Create team with members
         team = DesignTeam.objects.create(
             session=session,
             team_name=team_name,
             team_emoji=team_emoji,
-            team_members=team_members_list
+            team_members=team_members
         )
         
         # Create TeamProgress records for all missions up to current mission
@@ -2742,7 +2300,7 @@ class DesignThinkingJoinView(TemplateView):
         self._broadcast_team_joined(session.session_code, team)
         
         messages.success(request, f'Successfully joined session! Welcome, Team {team_name} {team_emoji}')
-        return redirect('group_learning:design_thinking_play', session_code=session.session_code)
+        return redirect('group_learning:simplified_student_dashboard', session_code=session.session_code)
     
     def _broadcast_team_joined(self, session_code, team):
         """Broadcast team join event to all connected clients"""
@@ -2758,7 +2316,7 @@ class DesignThinkingJoinView(TemplateView):
                 'name': team.team_name,
                 'emoji': team.team_emoji,
                 'color': team.team_color,
-                'members': team.team_members
+                'members': team.team_members or []
             }
             
             # Get updated session status including new team count
@@ -2815,779 +2373,745 @@ class DesignThinkingJoinView(TemplateView):
             return {'error': 'Status retrieval failed'}
 
 
-class DesignThinkingFacilitatorView(TemplateView):
-    """Mission Control Dashboard for facilitators"""
-    template_name = 'group_learning/design_thinking/facilitator_dashboard.html'
+@method_decorator(csrf_exempt, name='dispatch')
+class ValidateSessionView(View):
+    """API endpoint to validate session code and return session information"""
     
-    def get(self, request, *args, **kwargs):
-        session_code = kwargs['session_code']
+    def post(self, request):
+        """Validate session code and return session info"""
+        session_code = request.POST.get('session_code', '').strip().upper()
         
-        try:
-            session = DesignThinkingSession.objects.select_related('design_game').get(session_code=session_code)
-        except DesignThinkingSession.DoesNotExist:
-            messages.error(request, 'Session not found')
-            return redirect('group_learning:design_thinking_start')
-        
-        return super().get(request, *args, **kwargs)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        session_code = kwargs['session_code']
-        
-        session = DesignThinkingSession.objects.select_related('design_game').get(session_code=session_code)
-        
-        context['session'] = session
-        context['game'] = session.design_game
-        context['missions'] = session.design_game.missions.filter(is_active=True).order_by('order')
-        
-        # Get detailed team data with progress information
-        teams_with_progress = []
-        for team in session.design_teams.all().order_by('team_name'):
-            # Get mission-specific progress for this team
-            empathy_observations_count = 0
-            current_mission_submissions = 0
-            mission_completed = False
-            
-            if session.current_mission:
-                # Get current mission progress
-                try:
-                    current_progress = TeamProgress.objects.get(
-                        session=session,
-                        team=team,
-                        mission=session.current_mission
-                    )
-                    mission_completed = current_progress.is_completed
-                    current_mission_submissions = current_progress.submission_count
-                except TeamProgress.DoesNotExist:
-                    # Create missing progress record
-                    current_progress = TeamProgress.objects.create(
-                        session=session,
-                        team=team,
-                        mission=session.current_mission
-                    )
-                
-                # Get empathy-specific data
-                if session.current_mission.mission_type == 'empathy':
-                    empathy_observations_count = team.submissions.filter(
-                        mission=session.current_mission,
-                        submission_type='empathy_observation'
-                    ).count()
-            
-            # Add computed fields to team object
-            team.empathy_observations_count = empathy_observations_count
-            team.current_mission_submissions = current_mission_submissions
-            team.mission_completed = mission_completed
-            team.actual_progress_percentage = team.get_progress_percentage()
-            
-            teams_with_progress.append(team)
-        
-        context['teams'] = teams_with_progress
-        context['current_mission'] = session.current_mission
-        
-        # Get next mission for UI
-        if session.current_mission:
-            next_mission = session.design_game.missions.filter(
-                is_active=True,
-                order__gt=session.current_mission.order
-            ).order_by('order').first()
-            context['next_mission'] = next_mission
-        else:
-            # If no current mission, next is the first mission
-            context['next_mission'] = session.design_game.missions.filter(is_active=True).order_by('order').first()
-        
-        # Get mission progress
-        context['mission_progress'] = session.get_mission_progress()
-        
-        # Get recent submissions
-        context['recent_submissions'] = TeamSubmission.objects.filter(
-            team__session=session
-        ).select_related('team', 'mission').order_by('-submitted_at')[:10]
-        
-        return context
-
-
-class DesignThinkingPlayView(TemplateView):
-    """Student team interface for playing the game"""
-    template_name = 'group_learning/design_thinking/team_interface.html'
-    
-    def dispatch(self, request, *args, **kwargs):
-        team_id = request.session.get('design_team_id')
-        session_code = kwargs['session_code']
-        
-        if not team_id:
-            messages.error(request, 'Please join a team first')
-            return redirect('group_learning:design_thinking_start')
-        
-        try:
-            session = DesignThinkingSession.objects.select_related('design_game').get(session_code=session_code)
-            team = DesignTeam.objects.get(id=team_id, session=session)
-        except (DesignThinkingSession.DoesNotExist, DesignTeam.DoesNotExist):
-            messages.error(request, 'Session or team not found')
-            return redirect('group_learning:design_thinking_start')
-        
-        return super().dispatch(request, *args, **kwargs)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        session_code = kwargs['session_code']
-        team_id = self.request.session.get('design_team_id')
-        
-        # Check if specific mission is requested via URL parameter
-        requested_mission_type = self.request.GET.get('mission')
-        
-        # These should exist because dispatch already validated them, but add safety check
-        try:
-            session = DesignThinkingSession.objects.select_related('design_game').get(session_code=session_code)
-            team = DesignTeam.objects.get(id=team_id, session=session)
-        except (DesignThinkingSession.DoesNotExist, DesignTeam.DoesNotExist):
-            # This should not happen if dispatch worked correctly, but handle gracefully
-            context['error'] = 'Session or team data not available'
-            return context
-        
-        # Handle mission navigation - allow teams to view missions they've earned access to
-        display_mission = session.current_mission  # Default to session's current mission
-        
-        if requested_mission_type and session.current_mission:
-            # Find the requested mission
-            requested_mission = session.design_game.missions.filter(
-                is_active=True,
-                mission_type=requested_mission_type
-            ).first()
-            
-            if requested_mission:
-                # Check if team has earned access to this mission
-                can_access = False
-                
-                if requested_mission.order <= session.current_mission.order:
-                    # Mission is current or earlier - always accessible
-                    can_access = True
-                else:
-                    # Mission is ahead - check if team completed all previous missions
-                    previous_missions = session.design_game.missions.filter(
-                        is_active=True,
-                        order__lt=requested_mission.order
-                    ).order_by('order')
-                    
-                    all_completed = True
-                    for prev_mission in previous_missions:
-                        try:
-                            progress = TeamProgress.objects.get(
-                                session=session,
-                                team=team,
-                                mission=prev_mission
-                            )
-                            if not progress.is_completed:
-                                all_completed = False
-                                break
-                        except TeamProgress.DoesNotExist:
-                            all_completed = False
-                            break
-                    
-                    can_access = all_completed
-                
-                if can_access:
-                    display_mission = requested_mission
-                    context['mission_navigation'] = {
-                        'navigated_to': requested_mission.mission_type,
-                        'message': f'Viewing {requested_mission.title}'
-                    }
-                else:
-                    context['mission_navigation'] = {
-                        'navigated_to': None,
-                        'message': 'Complete previous missions to access this one'
-                    }
-        
-        context['session'] = session
-        context['team'] = team
-        context['game'] = session.design_game
-        context['current_mission'] = display_mission  # Use the display mission (may be different from session's current)
-        context['session_current_mission'] = session.current_mission  # Keep original for reference
-        context['missions'] = session.design_game.missions.filter(is_active=True).order_by('order')
-        
-        # Get team's submissions for the mission being displayed
-        if display_mission:
-            context['team_submissions'] = team.submissions.filter(
-                mission=display_mission
-            ).order_by('-submitted_at')
-        else:
-            context['team_submissions'] = []
-        
-        # Calculate actual team progress based on completed missions, not current position
-        completed_missions_count = 0
-        current_mission_position = 0
-        
-        if session.current_mission:
-            # Get all missions ordered by sequence
-            all_missions = list(session.design_game.missions.filter(is_active=True).order_by('order'))
-            
-            # Count actually completed missions for this team
-            completed_missions_count = team.mission_progress.filter(
-                is_completed=True,
-                mission__in=all_missions
-            ).count()
-            
-            # Get current mission position (1-based) for display purposes
-            try:
-                current_mission_position = next(i for i, mission in enumerate(all_missions) 
-                                              if mission.id == session.current_mission.id) + 1
-            except StopIteration:
-                current_mission_position = 1
-        
-        # team_progress now represents actual completed missions, not current position
-        context['team_progress'] = completed_missions_count
-        context['current_mission_position'] = current_mission_position
-        context['total_missions'] = session.design_game.missions.filter(is_active=True).count()
-        
-        # Add mission position to each mission for template use
-        all_missions = list(session.design_game.missions.filter(is_active=True).order_by('order'))
-        for i, mission in enumerate(all_missions):
-            mission.position = i + 1  # 1-based position (1-6)
-        context['missions'] = all_missions
-        
-        return context
-
-
-class DesignThinkingSubmissionAPI(View):
-    """API for team submissions during missions"""
-    
-    def post(self, request, session_code):
-        import logging
-        logger = logging.getLogger(__name__)
-        
-        # Enhanced debugging for submission issues
-        team_id = request.session.get('design_team_id')
-        logger.info(f"Submission API called for session {session_code}, team_id: {team_id}")
-        
-        if not team_id:
-            logger.warning(f"No team_id in session for {session_code}")
-            return JsonResponse({'error': 'Team not found in session', 'debug': 'No design_team_id in session'}, status=400)
+        if not session_code or len(session_code) != 6:
+            return JsonResponse({'valid': False, 'error': 'Invalid session code format'})
         
         try:
             session = DesignThinkingSession.objects.get(session_code=session_code)
-            team = DesignTeam.objects.get(id=team_id, session=session)
-            logger.info(f"Found team {team.team_name} (ID: {team.id}) in session {session_code}")
-        except DesignThinkingSession.DoesNotExist:
-            logger.error(f"Session {session_code} not found")
-            return JsonResponse({'error': 'Session not found'}, status=404)
-        except DesignTeam.DoesNotExist:
-            logger.error(f"Team {team_id} not found in session {session_code}")
-            return JsonResponse({'error': 'Team not found in session'}, status=404)
-        
-        if not session.current_mission:
-            logger.warning(f"No active mission for session {session_code}")
-            return JsonResponse({'error': 'No active mission'}, status=400)
-        
-        # Get submission data
-        submission_type = request.POST.get('submission_type')
-        content = request.POST.get('content', '')
-        title = request.POST.get('title', '')
-        submitted_by = request.POST.get('submitted_by', 'Anonymous')
-        
-        logger.info(f"Creating submission: type={submission_type}, content_length={len(content)}")
-        
-        # Handle file upload
-        uploaded_file = request.FILES.get('file')
-        file_type = None  # Default to None for text-only submissions
-        if uploaded_file:
-            if uploaded_file.content_type.startswith('image/'):
-                file_type = 'image'
-            elif uploaded_file.content_type.startswith('audio/'):
-                file_type = 'audio'
-            else:
-                file_type = 'document'
-        
-        try:
-            # Create submission using centralized service
-            submission = SubmissionService.create_submission(
-                team=team,
-                mission=session.current_mission,
-                submission_type=submission_type,
-                content=content,
-                title=title,
-                uploaded_file=uploaded_file
-            )
-            logger.info(f"Successfully created submission {submission.id} for team {team.team_name}")
-        except Exception as e:
-            logger.error(f"Failed to create submission: {e}")
-            return JsonResponse({'error': f'Failed to create submission: {str(e)}'}, status=500)
-        
-        # Update team submission count
-        team.total_submissions += 1
-        team.save()
-        
-        # Check if mission should be marked complete for this team
-        progress, created = TeamProgress.objects.get_or_create(
-            session=session,
-            team=team,
-            mission=session.current_mission
-        )
-        if created:
-            logger.info(f"Created new TeamProgress for team {team.team_name}, mission {session.current_mission.title}")
-        
-        progress.submission_count += 1
-        
-        # Specific logic for empathy mission - check observation count
-        if session.current_mission.mission_type == 'empathy':
-            empathy_observations = team.submissions.filter(
-                mission=session.current_mission, 
-                submission_type='empathy_observation'
-            ).count()
-            logger.info(f"Team {team.team_name} has {empathy_observations} empathy observations")
             
-            # Mark empathy mission complete if team has 5+ observations
-            if empathy_observations >= 5 and not progress.is_completed:
-                progress.mark_completed()
-                logger.info(f"Empathy mission completed for team {team.team_name} with {empathy_observations} observations")
-            else:
-                progress.save()
-        else:
-            # General mission completion logic for other missions
-            if (not session.current_mission.requires_text_submission or 
-                team.submissions.filter(mission=session.current_mission, content__isnull=False).exists()) and \
-               (not session.current_mission.requires_file_upload or 
-                team.submissions.filter(mission=session.current_mission, uploaded_file__isnull=False).exists()):
-                progress.mark_completed()
-            else:
-                progress.save()
-        
-        # Broadcast team submission via WebSocket
-        self._broadcast_team_submission(session.session_code, team, submission)
-        
-        # Calculate current mission progress for response
-        current_mission_submissions = team.submissions.filter(mission=session.current_mission).count()
-        empathy_observations = team.submissions.filter(
-            mission=session.current_mission, 
-            submission_type='empathy_observation'
-        ).count() if session.current_mission.mission_type == 'empathy' else 0
-        
-        response_data = {
-            'success': True,
-            'submission_id': submission.id,
-            'team_submissions_count': current_mission_submissions,
-            'mission_completed': progress.is_completed,
-            'empathy_observations_count': empathy_observations,
-            'can_advance': progress.is_completed,
-            'mission_type': session.current_mission.mission_type,
-            'debug_info': {
-                'team_id': team.id,
-                'session_code': session_code,
-                'mission_title': session.current_mission.title
-            }
-        }
-        
-        logger.info(f"Submission response: {response_data}")
-        return JsonResponse(response_data)
+            # Check session status
+            if session.status in ['completed', 'abandoned']:
+                return JsonResponse({'valid': False, 'error': 'Session is no longer active'})
+            
+            # Return session information
+            return JsonResponse({
+                'valid': True,
+                'school_name': session.school_name or '',
+                'grade_level': session.grade_level or '',
+                'session_code': session.session_code,
+                'current_teams': session.design_teams.count()
+            })
+            
+        except DesignThinkingSession.DoesNotExist:
+            return JsonResponse({'valid': False, 'error': 'Session not found'})
 
 
-class DesignThinkingMissionControlAPI(View):
-    """API for facilitator mission control - uses centralized DesignThinkingService"""
+# ==================================================================================
+# SIMPLIFIED DESIGN THINKING VIEWS (Auto-Progression)
+# ==================================================================================
+
+class SimplifiedStudentDashboardView(TemplateView):
+    """
+    Simplified student dashboard for auto-progression Design Thinking sessions
+    Replaces complex team interface with streamlined input forms
+    """
+    template_name = 'group_learning/design_thinking/simplified_student_dashboard.html'
     
+    def get_context_data(self, **kwargs):
+        logger = logging.getLogger(__name__)  # Define logger in method scope
+        logger.info(f"🎯 SimplifiedStudentDashboardView.get_context_data called with kwargs: {kwargs}")
+        context = super().get_context_data(**kwargs)
+        
+        session_code = kwargs.get('session_code')
+        if not session_code:
+            logger.error("No session code provided to SimplifiedStudentDashboardView")
+            context['error'] = 'Session code is required'
+            return context
+            
+        try:
+            session = DesignThinkingSession.objects.select_related(
+                'design_game', 'current_mission'
+            ).get(session_code=session_code)
+            
+            # Validate session is configured for simplified mode
+            # Check if session has required data (DesignThinkingSession doesn't have is_active field)
+            if not session.design_game:
+                context['error'] = 'This session is not properly configured'
+                return context
+                
+            if not getattr(session.design_game, 'auto_advance_enabled', False):
+                logger.warning(f"Session {session_code} accessed on simplified dashboard but auto-advance is disabled")
+                context['warning'] = 'This session may not support auto-progression'
+            
+            # Auto-start simplified sessions (no teacher dependency)
+            if session.status == 'waiting' and not session.is_facilitator_controlled:
+                session.status = 'in_progress'
+                session.started_at = timezone.now()
+                
+                # Set the first mission as current if not already set
+                if not session.current_mission:
+                    first_mission = session.design_game.missions.filter(is_active=True).order_by('order').first()
+                    if first_mission:
+                        session.current_mission = first_mission
+                        session.mission_start_time = timezone.now()
+                        logger.info(f"Set first mission for session {session_code}: {first_mission.title}")
+                
+                session.save()
+                logger.info(f"Auto-started simplified session {session_code}")
+            
+            # Handle case where session is in progress but has no current mission (repair broken sessions)
+            elif session.status == 'in_progress' and not session.current_mission:
+                first_mission = session.design_game.missions.filter(is_active=True).order_by('order').first()
+                if first_mission:
+                    session.current_mission = first_mission
+                    session.mission_start_time = timezone.now()
+                    session.save()
+                    logger.info(f"Repaired session {session_code}: Set missing current_mission to {first_mission.title}")
+            
+            # Get or create team for this student
+            try:
+                team = self._get_or_create_student_team(session)
+                
+                # Ensure TeamProgress records exist for current mission (repair existing teams)
+                if session.current_mission:
+                    logger.info(f"🔧 About to call _ensure_team_progress_exists for team {team.team_name}")
+                    self._ensure_team_progress_exists(team, session)
+                else:
+                    logger.warning(f"🔧 No current mission for session {session.session_code}, skipping TeamProgress creation")
+                    
+            except Exception as e:
+                logger.error(f"Error getting/creating team for session {session_code}: {str(e)}")
+                context['error'] = 'Unable to join or create team. Please try again.'
+                return context
+            
+            context.update({
+                'session': session,
+                'team': team,
+                'current_mission': session.current_mission,
+                'game_config': {
+                    'auto_advance_enabled': session.design_game.auto_advance_enabled,
+                    'completion_threshold': session.design_game.completion_threshold_percentage,
+                    'phase_transition_delay': session.design_game.phase_transition_delay,
+                    'scoring_system': getattr(session.design_game, 'scoring_system', 'numeric')
+                }
+            })
+            
+        except DesignThinkingSession.DoesNotExist:
+            logger.warning(f"Attempted access to non-existent session: {session_code}")
+            context['error'] = f'Session {session_code} not found. Please check the session code.'
+        except Exception as e:
+            logger.error(f"Error loading simplified student dashboard: {str(e)}", exc_info=True)
+            context['error'] = 'Unable to load session data. Please try again later.'
+            
+        return context
+    
+    def _get_or_create_student_team(self, session):
+        """Get existing team or create new one for student with enhanced error handling"""
+        import logging
+        from django.db import transaction
+        logger = logging.getLogger(__name__)
+        try:
+            # Check for existing teams first
+            team = session.design_teams.first()
+            
+            if team:
+                logger.info(f"Student joined existing team: {team.team_name} (ID: {team.id})")
+                return team
+            
+            # Create a default team if none exists
+            with transaction.atomic():
+                team = DesignTeam.objects.create(
+                    session=session,
+                    team_name='Team Alpha',
+                    team_emoji='🚀',
+                    team_members=[]
+                )
+                logger.info(f"Created new team for session {session.session_code}: {team.team_name} (ID: {team.id})")
+                return team
+                
+        except Exception as e:
+            logger.error(f"Error creating/getting team for session {session.session_code}: {str(e)}")
+            raise
+    
+    def _ensure_team_progress_exists(self, team, session):
+        """Ensure TeamProgress records exist for team up to current mission"""
+        logger = logging.getLogger(__name__)
+        logger.info(f"🔧 _ensure_team_progress_exists called for team {team.team_name} in session {session.session_code}")
+        try:
+            from .models import TeamProgress
+            
+            if not session.current_mission:
+                return
+            
+            # Get all missions up to and including current mission
+            current_mission_order = session.current_mission.order
+            missions_up_to_current = session.design_game.missions.filter(
+                is_active=True, 
+                order__lte=current_mission_order
+            ).order_by('order')
+            
+            # Create TeamProgress records for missing missions
+            created_count = 0
+            for mission in missions_up_to_current:
+                progress, created = TeamProgress.objects.get_or_create(
+                    session=session,
+                    team=team,
+                    mission=mission,
+                    defaults={
+                        'is_completed': False,
+                        'submission_count': 0
+                    }
+                )
+                if created:
+                    created_count += 1
+            
+            if created_count > 0:
+                logger.info(f"Created {created_count} TeamProgress records for team {team.team_name}")
+                
+        except Exception as e:
+            logger.error(f"Error ensuring team progress exists: {str(e)}")
+            # Don't raise - this is a repair operation, shouldn't break the main flow
+
+
+class SimplifiedTeacherDashboardView(TemplateView):
+    """
+    Simplified teacher dashboard for real-time scoring and oversight
+    Shows live team progress and enables quick scoring
+    """
+    template_name = 'group_learning/design_thinking/simplified_teacher_dashboard.html'
+    
+    def get_context_data(self, **kwargs):
+        logger = logging.getLogger(__name__)  # Define logger in method scope
+        context = super().get_context_data(**kwargs)
+        
+        session_code = kwargs.get('session_code')
+        if not session_code:
+            logger.error("No session code provided to SimplifiedTeacherDashboardView")
+            context['error'] = 'Session code is required'
+            return context
+            
+        try:
+            session = DesignThinkingSession.objects.select_related(
+                'design_game', 'current_mission', 'facilitator'
+            ).prefetch_related(
+                'design_teams',
+                'all_inputs__team',
+                'completion_tracking__team'
+            ).get(session_code=session_code)
+            
+            # Validate session state (DesignThinkingSession doesn't have is_active field)
+            # Check if session is accessible by verifying it has required data
+            if not session.design_game:
+                context['error'] = 'This session is not properly configured'
+                return context
+                
+            # Verify teacher access (optional - could add permission checks here)
+            if self.request.user.is_authenticated and session.facilitator:
+                if session.facilitator != self.request.user:
+                    logger.warning(f"User {self.request.user} accessing session {session_code} not facilitated by them")
+                    context['warning'] = 'You are not the original facilitator of this session'
+                    
+            try:
+                session_stats = self._get_session_stats(session)
+            except Exception as e:
+                logger.error(f"Error calculating session stats for {session_code}: {str(e)}")
+                session_stats = {'error': 'Unable to calculate session statistics'}
+            
+            # Get submission review data
+            from .models import SimplifiedPhaseInput
+            
+            # Get all submissions for this session
+            all_submissions = SimplifiedPhaseInput.objects.filter(
+                session=session
+            ).select_related('team', 'mission').order_by('submitted_at')
+            
+            # Get unscored submissions
+            unscored_submissions = all_submissions.filter(
+                teacher_score__isnull=True
+            )
+            
+            # Get current submission to review (first unscored)
+            current_submission = unscored_submissions.first()
+            
+            # Calculate scoring progress
+            total_submissions = all_submissions.count()
+            scored_submissions = all_submissions.filter(
+                teacher_score__isnull=False
+            ).count()
+            
+            scoring_progress = {
+                'scored': scored_submissions,
+                'total': total_submissions,
+                'percentage': round((scored_submissions / total_submissions * 100), 1) if total_submissions > 0 else 0,
+                'remaining': total_submissions - scored_submissions
+            }
+            
+            # Organize submissions by team for template (JSON-serializable)
+            team_submissions = {}
+            for team in session.design_teams.all():
+                team_submissions_list = all_submissions.filter(team=team).order_by('-submitted_at')
+                latest_submission = team_submissions_list.first()
+                
+                latest_submission_data = None
+                if latest_submission:
+                    latest_submission_data = {
+                        'id': latest_submission.id,
+                        'mission_title': latest_submission.mission.title if latest_submission.mission else 'Current Phase',
+                        'submission_data': latest_submission.selected_value or 'No data',
+                        'submitted_at': latest_submission.submitted_at.isoformat(),
+                        'student_name': latest_submission.student_name or 'Unknown',
+                        'teacher_score': latest_submission.teacher_score
+                    }
+                
+                team_submissions[team.id] = {
+                    'latest_submission': latest_submission_data,
+                    'submission_count': team_submissions_list.count(),
+                    'submissions': []  # Simplified for JSON
+                }
+
+            context.update({
+                'session': session,
+                'teams': session.design_teams.all(),
+                'current_mission': session.current_mission,
+                'game_config': {
+                    'auto_advance_enabled': session.design_game.auto_advance_enabled,
+                    'completion_threshold': session.design_game.completion_threshold_percentage,
+                    'scoring_system': getattr(session.design_game, 'scoring_system', 'numeric')
+                },
+                'session_stats': session_stats,
+                # Submission review data
+                'all_submissions': all_submissions,
+                'unscored_submissions': unscored_submissions,
+                'current_submission': current_submission,
+                'scoring_progress': scoring_progress,
+                'team_submissions': team_submissions,
+                'team_submissions_json': json.dumps(team_submissions)
+            })
+            
+        except DesignThinkingSession.DoesNotExist:
+            logger.warning(f"Teacher attempted access to non-existent session: {session_code}")
+            context['error'] = f'Session {session_code} not found. Please verify the session code.'
+        except Exception as e:
+            logger.error(f"Error loading simplified teacher dashboard: {str(e)}", exc_info=True)
+            context['error'] = 'Unable to load session data. Please try again later.'
+            
+        return context
+    
+    def _get_session_stats(self, session):
+        """Get session statistics for teacher dashboard with error handling"""
+        try:
+            total_teams = session.design_teams.count()
+            
+            # Initialize default stats
+            completion_stats = {
+                'total_teams': total_teams, 
+                'completed_teams': 0, 
+                'in_progress_teams': 0,
+                'completion_percentage': 0.0
+            }
+            
+            if session.current_mission and total_teams > 0:
+                from .models import PhaseCompletionTracker
+                
+                try:
+                    completed_teams = PhaseCompletionTracker.objects.filter(
+                        session=session,
+                        mission=session.current_mission,
+                        is_ready_to_advance=True
+                    ).count()
+                    
+                    in_progress_teams = PhaseCompletionTracker.objects.filter(
+                        session=session,
+                        mission=session.current_mission,
+                        is_ready_to_advance=False,
+                        completed_inputs__gt=0
+                    ).count()
+                    
+                    completion_percentage = (completed_teams / total_teams) * 100 if total_teams > 0 else 0
+                    
+                    completion_stats.update({
+                        'completed_teams': completed_teams,
+                        'in_progress_teams': in_progress_teams,
+                        'completion_percentage': round(completion_percentage, 1)
+                    })
+                    
+                except Exception as e:
+                    logger.error(f"Error calculating completion stats: {str(e)}")
+                    completion_stats['error'] = 'Unable to calculate completion statistics'
+            
+            # Add recent activity stats
+            try:
+                from django.utils import timezone
+                from datetime import timedelta
+                
+                recent_cutoff = timezone.now() - timedelta(minutes=5)
+                recent_submissions = session.all_inputs.filter(
+                    submitted_at__gte=recent_cutoff
+                ).count()
+                
+                completion_stats['recent_activity'] = {
+                    'submissions_last_5min': recent_submissions,
+                    'active_session': recent_submissions > 0
+                }
+                
+            except Exception as e:
+                logger.error(f"Error calculating recent activity: {str(e)}")
+                completion_stats['recent_activity'] = {'error': 'Unable to calculate recent activity'}
+            
+            return completion_stats
+            
+        except Exception as e:
+            logger.error(f"Error in _get_session_stats: {str(e)}")
+            return {
+                'error': 'Unable to calculate session statistics', 
+                'total_teams': 0, 
+                'completed_teams': 0,
+                'in_progress_teams': 0,
+                'completion_percentage': 0
+            }
+        
+        return completion_stats
+
+
+class ScoreSubmissionView(View):
+    """
+    API endpoint to score student submissions (1-10 scale)
+    """
     def post(self, request, session_code):
-        action = request.POST.get('action')
+        logger = logging.getLogger(__name__)
         
         try:
-            session = DesignThinkingSession.objects.select_related('design_game').get(session_code=session_code)
-        except DesignThinkingSession.DoesNotExist:
-            return JsonResponse({'error': 'Session not found'}, status=404)
-        
-        # Initialize service for this session
-        service = DesignThinkingService(session)
-        
-        if action == 'advance_mission':
-            mission_order = request.POST.get('mission_order')
+            # Get submission data from request
+            submission_id = request.POST.get('submission_id')
+            score = request.POST.get('score')
+            feedback = request.POST.get('feedback', '').strip()
             
-            if not mission_order:
-                # If no specific order provided, advance to next mission
-                try:
-                    result = service.advance_to_next_mission()
-                    return JsonResponse(result)
-                except MissionAdvancementError as e:
-                    return JsonResponse({'error': str(e)}, status=400)
-            else:
-                # Advance to specific mission order
-                try:
-                    mission_order = int(mission_order)
-                    result = service.advance_to_mission(mission_order)
-                    return JsonResponse(result)
-                except (ValueError, MissionAdvancementError) as e:
-                    return JsonResponse({'error': str(e)}, status=400)
-        
-        elif action == 'start_session':
-            # Start session with first mission (Kickoff)
+            # Validate inputs
+            if not submission_id:
+                return JsonResponse({'error': 'Submission ID is required'}, status=400)
+            
+            if not score:
+                return JsonResponse({'error': 'Score is required'}, status=400)
+                
             try:
-                result = service.advance_to_mission(1)  # Start with Kickoff mission
-                return JsonResponse({
-                    'success': True,
-                    'status': 'started',
-                    'message': 'Session started successfully!',
-                    **result
-                })
-            except MissionAdvancementError as e:
-                return JsonResponse({'error': str(e)}, status=400)
-        
-        elif action == 'end_session':
-            # Use the new complete_session method
-            session.complete_session()
+                score_int = int(score)
+                if not (1 <= score_int <= 10):
+                    return JsonResponse({'error': 'Score must be between 1 and 10'}, status=400)
+            except (ValueError, TypeError):
+                return JsonResponse({'error': 'Score must be a valid number'}, status=400)
             
-            # Broadcast session completion via WebSocket
-            self._broadcast_session_completed(session_code)
+            # Get the submission
+            from .models import SimplifiedPhaseInput, DesignThinkingSession
+            
+            try:
+                submission = SimplifiedPhaseInput.objects.select_related(
+                    'team', 'mission', 'session'
+                ).get(id=submission_id)
+            except SimplifiedPhaseInput.DoesNotExist:
+                return JsonResponse({'error': 'Submission not found'}, status=404)
+            
+            # Verify session code matches
+            if submission.session.session_code != session_code:
+                return JsonResponse({'error': 'Session mismatch'}, status=400)
+            
+            # Update submission with score
+            from django.utils import timezone
+            submission.teacher_score = str(score_int)
+            submission.scored_at = timezone.now()
+            submission.save()
+            
+            logger.info(f"Scored submission {submission_id}: {score_int}/10 by teacher")
+            
+            # Get next unscored submission
+            next_submission = SimplifiedPhaseInput.objects.filter(
+                session=submission.session,
+                teacher_score__isnull=True
+            ).select_related('team', 'mission').first()
+            
+            # Calculate updated progress
+            total_submissions = SimplifiedPhaseInput.objects.filter(
+                session=submission.session
+            ).count()
+            scored_submissions = SimplifiedPhaseInput.objects.filter(
+                session=submission.session,
+                teacher_score__isnull=False
+            ).count()
+            
+            progress = {
+                'scored': scored_submissions,
+                'total': total_submissions,
+                'percentage': round((scored_submissions / total_submissions * 100), 1) if total_submissions > 0 else 0,
+                'remaining': total_submissions - scored_submissions
+            }
+            
+            # Prepare next submission data
+            next_submission_data = None
+            if next_submission:
+                next_submission_data = {
+                    'id': next_submission.id,
+                    'team_name': next_submission.team.team_name,
+                    'phase_name': next_submission.mission.get_mission_type_display() if hasattr(next_submission.mission, 'get_mission_type_display') else next_submission.mission.mission_type.title(),
+                    'student_name': next_submission.student_name,
+                    'input_label': next_submission.input_label,
+                    'content': next_submission.selected_value
+                }
             
             return JsonResponse({
                 'success': True,
-                'status': 'completed',
-                'message': 'Session completed successfully!'
+                'message': f'Submission scored: {score_int}/10',
+                'next_submission': next_submission_data,
+                'progress': progress,
+                'all_completed': next_submission is None
             })
-        
-        elif action == 'complete_showcase':
-            # Complete the final showcase mission and end session
-            if session.is_final_mission():
-                session.complete_session()
-                
-                # Broadcast session completion
-                self._broadcast_session_completed(session_code)
-                
-                return JsonResponse({
-                    'success': True,
-                    'status': 'completed',
-                    'message': 'Showcase completed! Session ended successfully!'
-                })
-            else:
-                return JsonResponse({'error': 'Not in final mission'}, status=400)
-        
-        elif action == 'get_progress':
-            # Get comprehensive session progress
-            try:
-                progress_data = service.get_session_progress()
-                return JsonResponse({
-                    'success': True,
-                    'progress': progress_data
-                })
-            except Exception as e:
-                return JsonResponse({'error': f'Failed to get progress: {str(e)}'}, status=500)
-        
-        return JsonResponse({'error': 'Invalid action'}, status=400)
-    
-    def _broadcast_team_submission(self, session_code, team, submission):
-        """Broadcast team submission to all connected clients"""
-        from channels.layers import get_channel_layer
-        from asgiref.sync import async_to_sync
-        
-        channel_layer = get_channel_layer()
-        if channel_layer:
-            group_name = f'design_thinking_{session_code}'
-            team_data = {
-                'id': team.id,
-                'name': team.team_name,
-                'emoji': team.team_emoji,
-                'color': team.team_color
-            }
-            submission_data = {
-                'id': submission.id,
-                'type': submission.submission_type,
-                'title': submission.title,
-                'content': submission.content[:100] + '...' if len(submission.content) > 100 else submission.content,
-                'submitted_by': submission.submitted_by,
-                'has_file': bool(submission.uploaded_file)
-            }
             
-            async_to_sync(channel_layer.group_send)(
-                group_name,
-                {
-                    'type': 'team_submission_update',
-                    'team_data': team_data,
-                    'submission_data': submission_data,
-                    'timestamp': timezone.now().isoformat()
-                }
-            )
-    
-    def _broadcast_mission_advanced(self, session_code, mission):
-        """Broadcast mission advancement to all connected clients"""
-        from channels.layers import get_channel_layer
-        from asgiref.sync import async_to_sync
-        
-        channel_layer = get_channel_layer()
-        if channel_layer:
-            group_name = f'design_thinking_{session_code}'
-            message_data = {
-                'id': mission.id,
-                'title': mission.title,
-                'mission_type': mission.mission_type,
-                'description': mission.description,
-                'instructions': mission.instructions
-            }
-            
-            async_to_sync(channel_layer.group_send)(
-                group_name,
-                {
-                    'type': 'mission_advanced',
-                    'mission_data': message_data,
-                    'timestamp': timezone.now().isoformat()
-                }
-            )
-    
-    def _broadcast_session_completed(self, session_code):
-        """Broadcast session completion to all connected clients"""
-        from channels.layers import get_channel_layer
-        from asgiref.sync import async_to_sync
-        
-        channel_layer = get_channel_layer()
-        if channel_layer:
-            group_name = f'design_thinking_{session_code}'
-            
-            async_to_sync(channel_layer.group_send)(
-                group_name,
-                {
-                    'type': 'session_completed',
-                    'message': 'Session has been completed!',
-                    'timestamp': timezone.now().isoformat()
-                }
-            )
-
-
-class DesignThinkingStatusAPI(View):
-    """API for real-time session status updates"""
-    
-    def get(self, request, session_code):
-        try:
-            session = DesignThinkingSession.objects.select_related('current_mission').get(session_code=session_code)
-        except DesignThinkingSession.DoesNotExist:
-            return JsonResponse({'error': 'Session not found'}, status=404)
-        
-        # Get team-specific data if team_id is in session
-        team_id = request.session.get('design_team_id')
-        team_specific_data = {}
-        
-        if team_id:
-            try:
-                team = DesignTeam.objects.get(id=team_id, session=session)
-                
-                # Get team progress for current mission
-                current_mission_progress = None
-                if session.current_mission:
-                    progress, created = TeamProgress.objects.get_or_create(
-                        session=session,
-                        team=team,
-                        mission=session.current_mission
-                    )
-                    
-                    # Get empathy observations count
-                    empathy_observations_count = 0
-                    if session.current_mission.mission_type == 'empathy':
-                        empathy_observations_count = team.submissions.filter(
-                            mission=session.current_mission,
-                            submission_type='empathy_observation'
-                        ).count()
-                    
-                    team_specific_data = {
-                        'team_id': team.id,
-                        'team_name': team.team_name,
-                        'mission_completed': progress.is_completed,
-                        'can_advance': progress.is_completed,
-                        'empathy_observations_count': empathy_observations_count,
-                        'current_mission_submissions': team.submissions.filter(mission=session.current_mission).count()
-                    }
-            except DesignTeam.DoesNotExist:
-                pass
-        
-        # Get teams and their detailed progress data
-        teams_data = []
-        for team in session.design_teams.all():
-            # Get mission-specific progress
-            mission_progress_data = {}
-            empathy_observations_count = 0
-            current_mission_submissions = 0
-            
-            if session.current_mission:
-                # Get current mission progress
-                try:
-                    current_progress = TeamProgress.objects.get(
-                        session=session,
-                        team=team,
-                        mission=session.current_mission
-                    )
-                    mission_progress_data = {
-                        'is_completed': current_progress.is_completed,
-                        'submission_count': current_progress.submission_count,
-                        'started_at': current_progress.started_at.isoformat() if current_progress.started_at else None,
-                        'completed_at': current_progress.completed_at.isoformat() if current_progress.completed_at else None
-                    }
-                except TeamProgress.DoesNotExist:
-                    mission_progress_data = {
-                        'is_completed': False,
-                        'submission_count': 0,
-                        'started_at': None,
-                        'completed_at': None
-                    }
-                
-                # Get empathy-specific data
-                if session.current_mission.mission_type == 'empathy':
-                    empathy_observations_count = team.submissions.filter(
-                        mission=session.current_mission,
-                        submission_type='empathy_observation'
-                    ).count()
-                
-                # Get current mission submissions
-                current_mission_submissions = team.submissions.filter(
-                    mission=session.current_mission
-                ).count()
-            
-            teams_data.append({
-                'id': team.id,
-                'name': team.team_name,
-                'emoji': team.team_emoji,
-                'color': team.team_color,
-                'missions_completed': team.mission_progress.filter(is_completed=True).count(),
-                'total_submissions': team.total_submissions,
-                'progress_percentage': team.get_progress_percentage(),
-                'current_mission_progress': mission_progress_data,
-                'empathy_observations_count': empathy_observations_count,
-                'current_mission_submissions': current_mission_submissions,
-                'created_at': team.created_at.isoformat() if hasattr(team, 'created_at') else None
-            })
-        
-        # Get active Vani nudges for current mission
-        active_nudges = []
-        if session.current_mission and session.mission_start_time:
-            from django.utils import timezone
-            mission_elapsed_seconds = (timezone.now() - session.mission_start_time).total_seconds()
-            
-            # Get nudges that should be triggered
-            nudges = session.current_mission.mentor_nudges.filter(
-                is_active=True,
-                trigger_time_seconds__lte=mission_elapsed_seconds
-            ).order_by('trigger_time_seconds')
-            
-            for nudge in nudges:
-                active_nudges.append({
-                    'id': nudge.id,
-                    'title': nudge.title,
-                    'message': nudge.message,
-                    'emoji': nudge.emoji,
-                    'background_color': nudge.background_color,
-                    'nudge_type': nudge.nudge_type,
-                    'display_duration': nudge.display_duration,
-                    'is_dismissible': nudge.is_dismissible
-                })
-
-        response_data = {
-            'success': True,
-            'status': session.status,
-            'current_mission': session.current_mission.mission_type if session.current_mission else None,
-            'current_mission_details': {
-                'id': session.current_mission.id,
-                'title': session.current_mission.title,
-                'mission_type': session.current_mission.mission_type,
-                'description': session.current_mission.description
-            } if session.current_mission else None,
-            'teams': teams_data,
-            'teams_count': len(teams_data),
-            'mission_progress': session.get_mission_progress(),
-            'session_started': session.started_at.isoformat() if session.started_at else None,
-            'mission_started': session.mission_start_time.isoformat() if session.mission_start_time else None,
-            'active_nudges': active_nudges
-        }
-        
-        # Add team-specific data if available
-        response_data.update(team_specific_data)
-        
-        return JsonResponse(response_data)
-
-
-class DesignThinkingMissionInterfaceAPI(View):
-    """API endpoint to get just the mission interface HTML for dynamic updates"""
-    
-    def get(self, request, session_code):
-        try:
-            # Get session
-            session = DesignThinkingSession.objects.select_related('design_game').get(
-                session_code=session_code
-            )
-            
-            # Get team from session
-            team_id = request.session.get('design_team_id')
-            if not team_id:
-                return HttpResponseBadRequest('No team session found')
-            
-            try:
-                team = DesignTeam.objects.get(id=team_id, session=session)
-            except DesignTeam.DoesNotExist:
-                return HttpResponseBadRequest('Team not found in this session')
-            
-            # Get current mission and team data (same logic as DesignThinkingPlayView)
-            current_mission = session.current_mission
-            
-            if not current_mission:
-                # Return waiting state HTML
-                html_content = '''
-                <div class="card p-8 text-center mb-6">
-                    <div class="text-6xl mb-4">⏳</div>
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Ready to Start!</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Your team is ready. Waiting for your teacher to begin the challenge.
-                    </p>
-                    <div class="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg">
-                        <span class="w-2 h-2 rounded-full bg-yellow-500 mr-2"></span>
-                        <span>Waiting for teacher</span>
-                    </div>
-                </div>
-                '''
-                return HttpResponse(html_content)
-            
-            # Prepare context for mission interface template
-            context = {
-                'session': session,
-                'team': team,
-                'current_mission': current_mission,
-                'team_submissions': team.submissions.filter(mission=current_mission).order_by('-submitted_at')[:10],
-                'team_progress': TeamProgress.objects.filter(session=session, team=team).count(),
-                'total_missions': session.design_game.missions.filter(is_active=True).count(),
-            }
-            
-            # Render the mission interface template based on mission type
-            mission_template_map = {
-                'kickoff': 'group_learning/design_thinking/missions/kickoff.html',
-                'empathy': 'group_learning/design_thinking/missions/empathy.html',
-                'define': 'group_learning/design_thinking/missions/define.html',
-                'ideate': 'group_learning/design_thinking/missions/ideate.html',
-                'prototype': 'group_learning/design_thinking/missions/prototype.html',
-                'showcase': 'group_learning/design_thinking/missions/showcase.html',
-            }
-            
-            mission_template = mission_template_map.get(current_mission.mission_type)
-            
-            if mission_template:
-                # Render the specific mission template
-                from django.template.loader import render_to_string
-                html_content = render_to_string(mission_template, context, request=request)
-            else:
-                # Fallback to basic mission display
-                html_content = f'''
-                <div class="card p-6 mb-6">
-                    <div class="flex items-start space-x-4 mb-6">
-                        <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">
-                            📋
-                        </div>
-                        <div class="flex-1">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-2">{current_mission.title}</h2>
-                            <p class="text-gray-600 mb-3">{current_mission.description}</p>
-                            <div class="flex items-center space-x-4">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                    Active Mission
-                                </span>
-                                <span class="text-sm text-gray-500">
-                                    📅 {current_mission.estimated_duration} minutes
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    {f'<div class="bg-blue-50 rounded-lg p-4 mb-6"><h3 class="font-bold text-gray-800 mb-2">🎯 Your Mission</h3><p class="text-gray-700">{current_mission.instructions}</p></div>' if current_mission.instructions else ''}
-                </div>
-                '''
-            
-            return HttpResponse(html_content)
-            
-        except DesignThinkingSession.DoesNotExist:
-            return HttpResponseBadRequest('Session not found')
         except Exception as e:
-            logger.error(f"Mission interface API error: {str(e)}")
-            return HttpResponseBadRequest(f'Error loading mission interface: {str(e)}')
+            logger.error(f"Error scoring submission: {str(e)}", exc_info=True)
+            return JsonResponse({
+                'error': 'An error occurred while scoring the submission'
+            }, status=500)
+
+
+
+class SimplifiedInputSubmissionView(View):
+    """
+    Handle simplified phase input submissions via AJAX
+    Processes inputs and triggers auto-progression logic
+    """
+    
+    def post(self, request, session_code):
+        try:
+            # Parse JSON data
+            data = json.loads(request.body)
+            team_id = data.get('team_id')
+            mission_id = data.get('mission_id')
+            student_data = data.get('student_data', {})
+            input_data = data.get('input_data', [])
+            
+            if not all([team_id, mission_id, input_data]):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Missing required fields: team_id, mission_id, input_data'
+                })
+            
+            # Process input submission through auto-progression service
+            from .auto_progression_service import auto_progression_service
+            
+            result = auto_progression_service.process_phase_input(
+                team_id, mission_id, student_data, input_data
+            )
+            
+            if result['success']:
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Input submitted successfully',
+                    'completion_result': result.get('completion_result'),
+                    'progression_result': result.get('progression_result')
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'error': result.get('error', 'Unknown error occurred')
+                })
+                
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid JSON data',
+                'retry_allowed': False
+            }, status=400)
+        except Exception as e:
+            logger.error(f"Error processing simplified input submission: {str(e)}", exc_info=True)
+            return JsonResponse({
+                'success': False,
+                'error': 'Internal server error. Please try again later.',
+                'retry_allowed': True,
+                'debug_info': str(e) if getattr(settings, 'DEBUG', False) else None
+            }, status=500)
+
+
+class TeacherScoringView(View):
+    """
+    Handle teacher scoring submissions via AJAX
+    Saves scores and broadcasts updates
+    """
+    
+    def post(self, request, session_code):
+        try:
+            data = json.loads(request.body)
+            team_id = data.get('team_id')
+            mission_id = data.get('mission_id')
+            score = data.get('score')
+            teacher_id = data.get('teacher_id', f'teacher_{request.user.id if request.user.is_authenticated else "anonymous"}')
+            
+            if not all([team_id, mission_id, score]):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Missing required fields: team_id, mission_id, score'
+                })
+            
+            # Save teacher score through auto-progression service
+            from .auto_progression_service import auto_progression_service
+            
+            success = auto_progression_service.save_teacher_score(
+                team_id, mission_id, score, teacher_id
+            )
+            
+            if success:
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Score saved successfully'
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Failed to save score'
+                })
+                
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid JSON data',
+                'retry_allowed': False
+            }, status=400)
+        except Exception as e:
+            logger.error(f"Error saving teacher score: {str(e)}", exc_info=True)
+            return JsonResponse({
+                'success': False,
+                'error': 'Failed to save score. Please try again.',
+                'retry_allowed': True,
+                'debug_info': str(e) if getattr(settings, 'DEBUG', False) else None
+            }, status=500)
+
+
+class SimplifiedFeedbackAPI(View):
+    """
+    Handle teacher feedback submissions and retrieval for simplified Design Thinking sessions
+    """
+    
+    def get(self, request, session_code):
+        """Get feedback for the current user's team"""
+        try:
+            # For now, get the first team (simplified approach)
+            # In a full implementation, you'd identify the specific team
+            session = get_object_or_404(DesignThinkingSession, session_code=session_code)
+            teams = session.design_teams.all()
+            
+            if not teams:
+                return JsonResponse({
+                    'feedback': None,
+                    'feedback_date': None,
+                    'score': None
+                })
+            
+            # Get the first team's data (simplified approach)
+            team = teams.first()
+            
+            return JsonResponse({
+                'feedback': team.teacher_feedback,
+                'feedback_date': team.feedback_given_at.isoformat() if team.feedback_given_at else None,
+                'score': getattr(team, 'teacher_score', None)  # Assuming score field exists
+            })
+            
+        except Exception as e:
+            logger.error(f"Error getting feedback: {str(e)}", exc_info=True)
+            return JsonResponse({
+                'error': 'Failed to get feedback'
+            }, status=500)
+    
+    def post(self, request, session_code):
+        try:
+            data = json.loads(request.body)
+            team_id = data.get('team_id')
+            feedback = data.get('feedback', '').strip()
+            
+            if not team_id:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Missing team_id'
+                })
+            
+            # Get the team
+            team = get_object_or_404(DesignTeam, id=team_id, session__session_code=session_code)
+            
+            # Update feedback
+            team.teacher_feedback = feedback
+            team.feedback_given_at = timezone.now() if feedback else None
+            team.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Feedback saved successfully'
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid JSON data'
+            }, status=400)
+        except Exception as e:
+            logger.error(f"Error saving feedback: {str(e)}", exc_info=True)
+            return JsonResponse({
+                'success': False,
+                'error': 'Failed to save feedback. Please try again.'
+            }, status=500)
+
+
+class CreateSimplifiedSessionView(CreateView):
+    """
+    Create new simplified Design Thinking session with auto-progression
+    """
+    model = DesignThinkingSession
+    template_name = 'group_learning/design_thinking/create_simplified_session.html'
+    fields = ['school_name', 'grade_level', 'facilitator_notes']
+    
+    def form_valid(self, form):
+        # Get or create simplified Design Thinking game
+        try:
+            simplified_game = DesignThinkingGame.objects.filter(
+                title__icontains='Simplified',
+                auto_advance_enabled=True
+            ).first()
+            
+            if not simplified_game:
+                # Create default simplified game if it doesn't exist
+                from django.core.management import call_command
+                call_command('setup_simplified_design_thinking')
+                simplified_game = DesignThinkingGame.objects.filter(
+                    auto_advance_enabled=True
+                ).first()
+            
+            # Create session
+            session = form.save(commit=False)
+            session.game = simplified_game
+            session.design_game = simplified_game
+            session.facilitator = self.request.user if self.request.user.is_authenticated else None
+            session.status = 'waiting'
+            session.is_facilitator_controlled = False  # Auto-progression mode
+            session.auto_advance_enabled = True
+            
+            # Handle optional session name from form
+            session_name = self.request.POST.get('session_name', '').strip()
+            if session_name:
+                # Store in session_data for now (could add as a separate field later)
+                session.session_data = session.session_data or {}
+                session.session_data['session_name'] = session_name
+            
+            # Generate unique session code
+            session.generate_session_code()
+            session.save()
+            
+            messages.success(
+                self.request, 
+                f'Simplified Design Thinking session created: {session.session_code}'
+            )
+            
+            return redirect('group_learning:simplified_teacher_dashboard', session_code=session.session_code)
+            
+        except Exception as e:
+            logger.error(f"Error creating simplified session: {str(e)}", exc_info=True)
+            messages.error(
+                self.request,
+                'Failed to create session. Please try again or contact support.'
+            )
+            return self.form_invalid(form)
+            logger.error(f"Error creating simplified session: {str(e)}")
+            form.add_error(None, f'Error creating session: {str(e)}')
+            return self.form_invalid(form)

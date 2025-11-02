@@ -1,0 +1,3457 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Teacher Dashboard - {{ session.session_code }}{% endblock %}
+{% block description %}Real-time teacher dashboard for Design Thinking sessions with simplified scoring.{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Simplified Teacher Dashboard Design System */
+:root {
+    --primary-color: #3b82f6;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Dashboard layout */
+.teacher-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.dashboard-header {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.session-info h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--gray-800);
+    margin-bottom: 4px;
+}
+
+.session-meta {
+    color: var(--gray-600);
+    font-size: 14px;
+}
+
+.session-controls {
+    display: flex;
+    gap: 12px;
+}
+
+.control-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-btn.primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.control-btn.success {
+    background: var(--success-color);
+    color: white;
+}
+
+.control-btn.showcase {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.control-btn.showcase:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.control-btn.danger {
+    background: var(--danger-color);
+    color: white;
+}
+
+.control-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Teams grid */
+.teams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+    gap: 28px;
+    margin-bottom: 32px;
+}
+
+.team-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.team-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+.team-card.not-started {
+    border-color: var(--gray-200);
+    background: linear-gradient(135deg, #ffffff, #f8fafc);
+}
+
+.team-card.not-started::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #e2e8f0, #cbd5e1);
+    border-radius: 16px 16px 0 0;
+}
+
+.team-card.in-progress {
+    border-color: var(--warning-color);
+    background: linear-gradient(135deg, #fffbeb, #fef3c7, #fde68a);
+}
+
+.team-card.in-progress::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24, #fcd34d);
+    border-radius: 16px 16px 0 0;
+}
+
+.team-card.completed {
+    border-color: var(--success-color);
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5, #d1fae5);
+}
+
+.team-card.completed::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #10b981, #34d399, #6ee7b7);
+    border-radius: 16px 16px 0 0;
+}
+
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 1;
+}
+
+.team-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.team-emoji {
+    font-size: 28px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.team-status-badge {
+    padding: 8px 16px;
+    border-radius: 24px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.team-status-badge.not-started {
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.team-status-badge.in-progress {
+    background: #fbbf24;
+    color: white;
+}
+
+.team-status-badge.completed {
+    background: var(--success-color);
+    color: white;
+}
+
+.team-progress {
+    margin-bottom: 16px;
+}
+
+.progress-bar {
+    background: var(--gray-100);
+    height: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+    height: 100%;
+    transition: width 0.5s ease;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.progress-text {
+    font-size: 14px;
+    color: var(--gray-700);
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Latest submission preview */
+.latest-submission {
+    background: var(--gray-50);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.submission-label {
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 4px;
+}
+
+.submission-value {
+    color: var(--gray-800);
+}
+
+/* Quick scoring buttons */
+.scoring-section {
+    border-top: 1px solid var(--gray-200);
+    padding-top: 16px;
+}
+
+.scoring-label {
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.scoring-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.score-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    border: 2px solid var(--gray-200);
+    background: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.score-btn:hover {
+    border-color: var(--primary-color);
+    background: #dbeafe;
+}
+
+.score-btn.selected {
+    border-color: var(--success-color);
+    background: var(--success-color);
+    color: white;
+}
+
+.score-btn.grade-a {
+    color: var(--success-color);
+}
+
+.score-btn.grade-b {
+    color: var(--warning-color);
+}
+
+.score-btn.grade-c {
+    color: var(--danger-color);
+}
+
+/* Feedback Section Styles */
+.feedback-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--gray-200);
+}
+
+.feedback-label {
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.feedback-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid var(--gray-200);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 60px;
+    transition: border-color 0.2s ease;
+}
+
+.feedback-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.feedback-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.feedback-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.feedback-btn:hover {
+    background: #2563eb;
+}
+
+.feedback-btn:disabled {
+    background: var(--gray-400);
+    cursor: not-allowed;
+}
+
+.feedback-status {
+    font-size: 11px;
+    color: var(--success-color);
+    font-weight: 500;
+}
+
+/* Progress stream */
+.progress-stream {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--card-shadow);
+}
+
+.stream-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.stream-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--gray-800);
+}
+
+.stream-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.stream-item:last-child {
+    border-bottom: none;
+}
+
+.stream-time {
+    font-size: 12px;
+    color: var(--gray-600);
+    width: 60px;
+    flex-shrink: 0;
+}
+
+.stream-content {
+    flex: 1;
+    margin-left: 12px;
+}
+
+.stream-team {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.stream-action {
+    color: var(--gray-600);
+    font-size: 14px;
+}
+
+/* Phase indicator */
+.current-phase {
+    background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.phase-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.phase-description {
+    opacity: 0.9;
+    font-size: 14px;
+}
+
+/* Auto-advance indicator */
+.auto-advance-status {
+    background: var(--success-color);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.auto-advance-status.disabled {
+    background: var(--gray-200);
+    color: var(--gray-600);
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .teams-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .teacher-dashboard {
+        padding: 12px;
+    }
+    
+    .teams-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .scoring-buttons {
+        flex-wrap: wrap;
+    }
+}
+
+/* Live update animations */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.updating {
+    animation: pulse 1s infinite;
+}
+
+/* Notification toast */
+.notification-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--success-color);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    z-index: 1000;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.notification-toast.show {
+    transform: translateX(0);
+}
+
+/* Enhanced Rating System Styles */
+.rating-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--gray-200);
+}
+
+.rating-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.rating-label {
+    font-weight: 600;
+    color: var(--gray-600);
+    font-size: 14px;
+}
+
+.current-rating {
+    font-size: 12px;
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+/* Score Selector Styles */
+.score-selector {
+    margin: 12px 0;
+}
+
+.score-slider-container {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.score-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--gray-200);
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.score-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.score-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.score-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.score-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 4px;
+}
+
+.score-display {
+    text-align: center;
+    margin-top: 8px;
+}
+
+.score-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.score-label {
+    font-size: 14px;
+    color: var(--gray-600);
+    margin-left: 2px;
+}
+
+.score-label-text {
+    font-weight: 600;
+    color: var(--gray-700);
+}
+
+.current-score {
+    color: var(--gray-500);
+    font-size: 14px;
+}
+
+.submission-preview {
+    background: var(--gray-50);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    max-height: 60px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+}
+
+.submission-preview:hover {
+    background: #f0f9ff;
+}
+
+.submission-preview.expanded {
+    max-height: none;
+}
+
+.phase-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.phase-tab {
+    padding: 8px 16px;
+    background: var(--gray-100);
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.phase-tab:hover {
+    background: var(--gray-200);
+}
+
+.phase-tab.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.feedback-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--gray-50);
+    border-radius: 12px;
+    border: 1px solid var(--gray-200);
+}
+
+.feedback-group {
+    margin-bottom: 16px;
+}
+
+.feedback-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 8px;
+}
+
+.reasoning-input, .feedback-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: 10px;
+    font-size: 14px;
+    background: white;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.reasoning-input {
+    min-height: 80px;
+    line-height: 1.5;
+}
+
+.reasoning-input:focus, .feedback-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+}
+
+.reasoning-input::placeholder, .feedback-input::placeholder {
+    color: var(--gray-400);
+    font-style: italic;
+}
+
+.save-score-btn, .save-rating-btn {
+    background: linear-gradient(135deg, var(--success-color), #059669);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.save-score-btn:hover, .save-rating-btn:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.save-score-btn:disabled, .save-rating-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
+}
+
+/* Team Details Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal-content {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--gray-800);
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--gray-600);
+    padding: 4px;
+}
+
+.close-modal:hover {
+    color: var(--gray-800);
+}
+
+/* Session Statistics */
+.session-stats {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: var(--card-shadow);
+}
+
+.stats-header {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--gray-800);
+    margin-bottom: 16px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+    display: block;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Auto-refresh indicator */
+.auto-refresh-indicator {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--success-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 100;
+}
+
+.auto-refresh-indicator.show {
+    opacity: 1;
+}
+
+/* Submission Preview Styles */
+.submission-preview {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.submission-preview:hover {
+    background: var(--gray-100);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.submission-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.submission-type {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 14px;
+    text-transform: capitalize;
+}
+
+.submission-time {
+    font-size: 12px;
+    color: var(--gray-500);
+}
+
+.submission-content {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--gray-700);
+    max-height: 60px;
+    overflow: hidden;
+    position: relative;
+}
+
+.submission-content.truncated::after {
+    content: '...';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--gray-50);
+    padding-left: 20px;
+    background: linear-gradient(to right, transparent, var(--gray-50) 50%);
+}
+
+.submission-student {
+    font-size: 11px;
+    color: var(--gray-500);
+    margin-top: 6px;
+    font-style: italic;
+}
+
+.no-submissions {
+    text-align: center;
+    color: var(--gray-400);
+    font-style: italic;
+    padding: 20px;
+    background: var(--gray-50);
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+/* Full submission modal styles */
+.submission-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.submission-modal.show {
+    display: flex;
+}
+
+.submission-modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.submission-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.submission-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.submission-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--gray-400);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.submission-modal-close:hover {
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.submission-full-content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--gray-700);
+}
+
+/* Submission Review Styles */
+.submission-review-container {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid #e2e8f0;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.review-header h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--gray-800);
+    margin: 0;
+}
+
+.review-progress {
+    text-align: right;
+    min-width: 200px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.progress-text {
+    font-size: 14px;
+    color: var(--gray-600);
+}
+
+.progress-percentage {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.progress-bar {
+    width: 200px;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+    transition: width 0.3s ease;
+}
+
+/* Active Review Panel */
+.active-review-panel {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 2px solid #e2e8f0;
+}
+
+.submission-header {
+    margin-bottom: 16px;
+}
+
+.submission-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.team-name, .phase-name, .student-name {
+    background: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid #d1d5db;
+}
+
+.team-name {
+    color: var(--primary-color);
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.phase-name {
+    color: #7c3aed;
+    background: #faf5ff;
+    border-color: #d8b4fe;
+}
+
+.student-name {
+    color: var(--success-color);
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+/* Submission Content */
+.submission-content {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.content-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 8px;
+}
+
+.content-text {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--gray-800);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Scoring Section */
+.scoring-section {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.score-label {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--gray-800);
+}
+
+.score-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.score-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    border: 2px solid #d1d5db;
+    background: white;
+    color: var(--gray-700);
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.score-btn:hover {
+    border-color: var(--primary-color);
+    background: #eff6ff;
+    transform: translateY(-1px);
+}
+
+.score-btn.selected {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.feedback-section {
+    margin-bottom: 20px;
+}
+
+.feedback-section label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--gray-700);
+}
+
+.feedback-section textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 60px;
+}
+
+.feedback-section textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.btn-secondary, .btn-primary {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-size: 14px;
+}
+
+.btn-secondary {
+    background: #f3f4f6;
+    color: var(--gray-700);
+    border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+    background: #e5e7eb;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* All Reviewed State */
+.all-reviewed {
+    text-align: center;
+    padding: 40px 20px;
+    background: #f0fdf4;
+    border-radius: 12px;
+    border: 2px solid #bbf7d0;
+}
+
+.completion-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.all-reviewed h3 {
+    font-size: 24px;
+    color: var(--success-color);
+    margin-bottom: 8px;
+}
+
+.all-reviewed p {
+    color: var(--gray-600);
+    font-size: 16px;
+}
+
+/* Submission Queue */
+.submission-queue {
+    margin-top: 24px;
+}
+
+.submission-queue h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--gray-800);
+}
+
+.queue-list {
+    display: grid;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.queue-item {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.queue-item:hover {
+    border-color: var(--primary-color);
+    background: #eff6ff;
+}
+
+.queue-item.current {
+    border-color: var(--primary-color);
+    background: #eff6ff;
+    border-width: 2px;
+}
+
+.queue-meta {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.queue-team {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.queue-phase {
+    font-size: 12px;
+    color: var(--gray-600);
+    background: #f3f4f6;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.queue-preview {
+    font-size: 14px;
+    color: var(--gray-700);
+    line-height: 1.4;
+}
+
+.submission-full-content h4 {
+    color: var(--primary-color);
+    margin: 16px 0 8px 0;
+    font-size: 14px;
+}
+
+.submission-full-content ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.submission-full-content li {
+    margin: 4px 0;
+}
+
+/* Showcase Modal Styles */
+.showcase-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    padding: 20px;
+}
+
+.showcase-modal.show {
+    display: flex;
+}
+
+.showcase-modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 1200px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    width: 100%;
+}
+
+.showcase-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.showcase-modal-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-align: center;
+    flex: 1;
+}
+
+.showcase-modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: var(--gray-400);
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.showcase-modal-close:hover {
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.showcase-content {
+    margin-bottom: 32px;
+}
+
+.showcase-footer {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    padding-top: 24px;
+    border-top: 2px solid var(--gray-200);
+}
+
+.team-showcase {
+    background: var(--gray-50);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    border: 2px solid var(--gray-200);
+}
+
+.team-showcase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.team-showcase-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.team-showcase-score {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--success-color);
+}
+
+.team-showcase-feedback {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+}
+
+.feedback-reasoning {
+    margin-bottom: 12px;
+    font-style: italic;
+    color: var(--gray-700);
+}
+
+.feedback-quick {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .teacher-dashboard {
+        padding: 12px;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+    
+    .teams-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .team-card {
+        padding: 24px;
+        min-height: 400px;
+    }
+    
+    .team-name {
+        font-size: 20px;
+    }
+    
+    .team-emoji {
+        font-size: 24px;
+    }
+    
+    .control-btn {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+    
+    .modal-content {
+        margin: 20px;
+        max-width: none;
+        max-height: calc(100vh - 40px);
+    }
+    
+    .phase-tabs {
+        justify-content: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .score-selector {
+        margin: 16px 0;
+    }
+    
+    .score-display {
+        margin-top: 12px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="teacher-dashboard">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="session-info">
+            <h1>Design Thinking Session: {{ session.session_code }}</h1>
+            <div class="session-meta">
+                <span>{{ session.design_teams.count }} teams</span> •
+                <span id="session-status">{{ session.status|title }}</span> •
+                <span id="current-time"></span>
+            </div>
+        </div>
+        <div class="session-controls">
+            <button class="control-btn primary" onclick="refreshDashboard()">🔄 Refresh</button>
+            <button class="control-btn success" onclick="exportRatings()">📊 Export Ratings</button>
+            <button class="control-btn primary" onclick="showSessionStats()">📈 Statistics</button>
+            <button class="control-btn showcase" onclick="showSessionShowcase()">🏆 Final Showcase</button>
+        </div>
+    </div>
+
+    <!-- Session Statistics (initially hidden) -->
+    <div class="session-stats" id="session-stats" style="display: none;">
+        <div class="stats-header">📊 Session Overview</div>
+        <div class="stats-grid" id="stats-grid">
+            <!-- Statistics will be populated dynamically -->
+        </div>
+    </div>
+
+    <!-- Phase Filter Tabs -->
+    <div class="phase-tabs" id="phase-tabs">
+        <button class="phase-tab active" onclick="filterPhase('all')">All Phases</button>
+        <button class="phase-tab" onclick="filterPhase('empathy')">👀 Empathy</button>
+        <button class="phase-tab" onclick="filterPhase('define')">🧩 Define</button>
+        <button class="phase-tab" onclick="filterPhase('ideate')">💡 Ideate</button>
+        <button class="phase-tab" onclick="filterPhase('prototype')">🛠️ Prototype</button>
+    </div>
+
+    <!-- Current Phase Indicator -->
+    <div class="current-phase" id="current-phase">
+        <div class="phase-title" id="phase-title">Waiting to Start</div>
+        <div class="phase-description" id="phase-description">Teams are joining the session</div>
+        <div class="auto-advance-status" id="auto-advance-status">
+            <span>🤖</span>
+            <span>Auto-progression enabled</span>
+        </div>
+    </div>
+
+    <!-- Submission Review Section -->
+    {% if scoring_progress.total > 0 %}
+    <div class="submission-review-container">
+        <div class="review-header">
+            <h2>📝 Submission Review</h2>
+            <div class="review-progress">
+                <div class="progress-info">
+                    <span class="progress-text">{{ scoring_progress.scored }}/{{ scoring_progress.total }} submissions scored</span>
+                    <span class="progress-percentage">{{ scoring_progress.percentage }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ scoring_progress.percentage }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        {% if current_submission %}
+        <!-- Active Review Panel -->
+        <div class="active-review-panel" id="review-panel">
+            <div class="submission-header">
+                <div class="submission-meta">
+                    <span class="team-name">🎯 {{ current_submission.team.team_name }}</span>
+                    <span class="phase-name">{{ current_submission.mission.get_mission_type_display|default:current_submission.mission.mission_type|title }}</span>
+                    <span class="student-name">👤 {{ current_submission.student_name }}</span>
+                </div>
+            </div>
+            
+            <div class="submission-content">
+                <div class="content-label">{{ current_submission.input_label }}:</div>
+                <div class="content-text">{{ current_submission.selected_value }}</div>
+            </div>
+            
+            <div class="scoring-section">
+                <div class="score-label">Score (1-10):</div>
+                <div class="score-buttons" id="score-buttons">
+                    {% for i in "1234567890" %}
+                        <button class="score-btn" onclick="selectScore({% if i == '0' %}10{% else %}{{ i }}{% endif %})" 
+                                data-score="{% if i == '0' %}10{% else %}{{ i }}{% endif %}">
+                            {% if i == '0' %}10{% else %}{{ i }}{% endif %}
+                        </button>
+                    {% endfor %}
+                </div>
+                
+                <div class="feedback-section">
+                    <label for="feedback-input">Quick Feedback (optional):</label>
+                    <textarea id="feedback-input" placeholder="Brief feedback for the student..." rows="2"></textarea>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn-secondary" onclick="skipSubmission()">Skip for Now</button>
+                    <button class="btn-primary" onclick="scoreAndNext()" id="score-submit-btn" disabled>
+                        Score & Next ({{ scoring_progress.remaining }} remaining)
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- All Reviewed State -->
+        <div class="all-reviewed">
+            <div class="completion-icon">🎉</div>
+            <h3>All submissions reviewed!</h3>
+            <p>Great job! You have scored all {{ scoring_progress.total }} student submissions.</p>
+        </div>
+        {% endif %}
+
+        <!-- Submission Queue -->
+        {% if unscored_submissions.count > 1 %}
+        <div class="submission-queue">
+            <h4>📋 Remaining Submissions ({{ unscored_submissions.count }})</h4>
+            <div class="queue-list">
+                {% for submission in unscored_submissions %}
+                <div class="queue-item {% if submission == current_submission %}current{% endif %}" 
+                     onclick="jumpToSubmission({{ submission.id }})">
+                    <div class="queue-meta">
+                        <span class="queue-team">{{ submission.team.team_name }}</span>
+                        <span class="queue-phase">{{ submission.mission.get_mission_type_display|default:submission.mission.mission_type|title }}</span>
+                    </div>
+                    <div class="queue-preview">{{ submission.selected_value|truncatechars:60 }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Teams Grid - Server-side rendered with progressive enhancement -->
+    <div class="teams-grid" id="teams-grid">
+        {% for team in teams %}
+            <div class="team-card not-started" data-team-id="{{ team.id }}" id="team-card-{{ team.id }}">
+                <div class="team-header">
+                    <div class="team-name">
+                        <span class="team-emoji">{{ team.team_emoji }}</span>
+                        <span>{{ team.team_name }}</span>
+                    </div>
+                    <div class="team-status-badge not-started">Not Started</div>
+                </div>
+                
+                <div class="team-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0% complete</div>
+                </div>
+                
+                <div class="submission-preview" onclick="showTeamDetails({{ team.id }})">
+                    <div class="submission-label">Latest Submission:</div>
+                    <div class="submission-value" id="submission-{{ team.id }}">
+                        No submission yet
+                    </div>
+                </div>
+                
+                <div class="rating-section">
+                    <div class="rating-header">
+                        <span class="score-label-text">Score Current Phase:</span>
+                        <span class="current-score" id="current-score-{{ team.id }}">Not scored</span>
+                    </div>
+                    <div class="rating-buttons" id="rating-buttons-{{ team.id }}">
+                        <button class="score-btn score-a" onclick="scoreTeam({{ team.id }}, 'A')" title="Excellent work">A</button>
+                        <button class="score-btn score-b" onclick="scoreTeam({{ team.id }}, 'B')" title="Good effort">B</button>
+                        <button class="score-btn score-c" onclick="scoreTeam({{ team.id }}, 'C')" title="Needs improvement">C</button>
+                        <button class="score-btn score-f" onclick="scoreTeam({{ team.id }}, 'F')" title="Incomplete">F</button>
+                    </div>
+                </div>
+                
+                <div class="feedback-section">
+                    <div class="feedback-label">Quick Feedback:</div>
+                    <textarea class="feedback-input" id="feedback-{{ team.id }}" 
+                              placeholder="Optional feedback for this team..."></textarea>
+                    <button class="feedback-btn" onclick="saveFeedback({{ team.id }})">Save Feedback</button>
+                    <div class="feedback-status" id="feedback-status-{{ team.id }}"></div>
+                </div>
+                
+                <div class="team-actions">
+                    <button class="action-btn secondary" onclick="showTeamDetails({{ team.id }})">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+            </div>
+        {% empty %}
+            <div class="no-teams-message" id="no-teams-message">
+                <div class="empty-state">
+                    <div class="empty-icon">👥</div>
+                    <h3>No Teams Yet</h3>
+                    <p>Teams will appear here as they join the session.</p>
+                    <p>Share the session code: <strong>{{ session.session_code }}</strong></p>
+                    <div class="session-link">
+                        <p>Student link: <code>{{ request.scheme }}://{{ request.get_host }}{% url 'group_learning:simplified_student_dashboard' session.session_code %}</code></p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Live Progress Stream -->
+    <div class="progress-stream">
+        <div class="stream-header">
+            <h3 class="stream-title">Live Activity Stream</h3>
+            <button class="control-btn primary" onclick="clearStream()">Clear</button>
+        </div>
+        <div id="activity-stream">
+            <div class="stream-item">
+                <div class="stream-time">--:--</div>
+                <div class="stream-content">
+                    <div class="stream-action">Waiting for activity...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Team Details Modal -->
+<div class="modal-overlay" id="team-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modal-team-name">Team Details</h2>
+            <button class="close-modal" onclick="closeTeamModal()">&times;</button>
+        </div>
+        <div id="modal-content">
+            <!-- Team details will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- Auto-refresh indicator -->
+<div class="auto-refresh-indicator" id="auto-refresh-indicator">
+    Auto-updated
+</div>
+
+<!-- Notification Toast -->
+<div class="notification-toast" id="notification-toast">
+    <div id="toast-content">Score saved!</div>
+</div>
+
+<!-- Submission Details Modal -->
+<div class="submission-modal" id="submission-modal">
+    <div class="submission-modal-content">
+        <div class="submission-modal-header">
+            <h3 class="submission-modal-title" id="submission-modal-title">Submission Details</h3>
+            <button class="submission-modal-close" onclick="closeSubmissionModal()">&times;</button>
+        </div>
+        <div class="submission-full-content" id="submission-full-content">
+            <!-- Full submission content will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- Session Showcase Modal -->
+<div class="showcase-modal" id="showcase-modal">
+    <div class="showcase-modal-content">
+        <div class="showcase-modal-header">
+            <h2 class="showcase-modal-title">🏆 Design Thinking Session Showcase</h2>
+            <button class="showcase-modal-close" onclick="closeShowcaseModal()">&times;</button>
+        </div>
+        <div class="showcase-content" id="showcase-content">
+            <!-- Showcase content will be loaded here -->
+        </div>
+        <div class="showcase-footer">
+            <button class="control-btn success" onclick="exportShowcaseReport()">📄 Export Report</button>
+            <button class="control-btn primary" onclick="shareShowcase()">📤 Share Results</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Simplified Teacher Dashboard JavaScript
+let websocket = null;
+let currentSession = null;
+let teamsData = {};
+let currentMission = null;
+let activityStream = [];
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    initializeTeacherDashboard();
+    connectWebSocket();
+    startWebSocketHeartbeat();
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 1000);
+});
+
+function initializeTeacherDashboard() {
+    currentSession = {
+        code: '{{ session.session_code }}',
+        id: {{ session.id }},
+        status: '{{ session.status }}',
+        auto_advance_enabled: {{ session.design_game.auto_advance_enabled|yesno:"true,false" }},
+        scoring_system: '{{ session.design_game.scoring_system }}'
+    };
+    
+    console.log('🎓 Teacher Dashboard initialized', currentSession);
+    
+    // Update auto-advance status
+    updateAutoAdvanceStatus();
+    
+    // Load initial teams data from Django context with actual submission data
+    const teamSubmissions = {{ team_submissions_json|safe }};
+    {% for team in session.design_teams.all %}
+    const teamData{{ team.id }} = teamSubmissions[{{ team.id }}] || {};
+    const latestSubmission{{ team.id }} = teamData{{ team.id }}.latest_submission;
+    teamsData[{{ team.id }}] = {
+        id: {{ team.id }},
+        name: '{{ team.team_name }}',
+        emoji: '{{ team.team_emoji }}',
+        members: {{ team.team_members|safe }},
+        completion_percentage: teamData{{ team.id }}.submission_count > 0 ? 75 : 0,
+        status: teamData{{ team.id }}.submission_count > 0 ? 'in-progress' : 'not-started',
+        current_mission: {{ session.current_mission.id|default:"null" }},
+        latest_submission: latestSubmission{{ team.id }} ? {
+            type: 'simplified_input',
+            phase: latestSubmission{{ team.id }}.mission_title || 'current phase',
+            data: latestSubmission{{ team.id }}.submission_data || 'No data',
+            submitted_at: latestSubmission{{ team.id }}.submitted_at,
+            student_name: latestSubmission{{ team.id }}.student_name || 'Unknown'
+        } : null,
+        teacher_score: latestSubmission{{ team.id }} ? latestSubmission{{ team.id }}.teacher_score : null,
+        submission_count: teamData{{ team.id }}.submission_count || 0
+    };
+    {% endfor %}
+    
+    // Progressive enhancement - enhance existing server-rendered cards
+    enhanceTeamCards();
+}
+
+// Progressive enhancement function - enhance existing cards instead of replacing
+function enhanceTeamCards() {
+    // Hide "no teams" message if teams exist
+    const noTeamsMessage = document.getElementById('no-teams-message');
+    if (Object.keys(teamsData).length > 0 && noTeamsMessage) {
+        noTeamsMessage.style.display = 'none';
+    }
+    
+    // Enhance each existing team card
+    Object.values(teamsData).forEach(team => {
+        const existingCard = document.getElementById(`team-card-${team.id}`);
+        if (existingCard) {
+            updateTeamCardData(existingCard, team);
+        } else {
+            // If card doesn't exist server-side, create it (for new teams via WebSocket)
+            const newCard = createTeamCard(team);
+            document.getElementById('teams-grid').appendChild(newCard);
+        }
+    });
+}
+
+// Update existing card data without recreating the entire card
+function updateTeamCardData(cardElement, teamData) {
+    if (!cardElement || !teamData) return;
+    
+    // Update progress bar
+    const progressFill = cardElement.querySelector('.progress-fill');
+    const progressText = cardElement.querySelector('.progress-text');
+    if (progressFill && progressText) {
+        progressFill.style.width = `${teamData.completion_percentage || 0}%`;
+        progressText.textContent = `${Math.round(teamData.completion_percentage || 0)}% complete`;
+    }
+    
+    // Update status badge
+    const statusBadge = cardElement.querySelector('.team-status-badge');
+    if (statusBadge) {
+        const status = teamData.status || 'not-started';
+        statusBadge.className = `team-status-badge ${status}`;
+        statusBadge.textContent = status.replace('-', ' ');
+        
+        // Update card class
+        cardElement.className = `team-card ${status}`;
+    }
+    
+    // Update latest submission
+    const submissionValue = cardElement.querySelector(`#submission-${teamData.id}`);
+    if (submissionValue) {
+        submissionValue.textContent = teamData.latest_submission || 'No submission yet';
+    }
+    
+    // Update current score
+    const currentScore = cardElement.querySelector(`#current-score-${teamData.id}`);
+    if (currentScore) {
+        currentScore.textContent = teamData.teacher_score || 'Not scored';
+    }
+}
+
+function updateCurrentTime() {
+    const now = new Date();
+    document.getElementById('current-time').textContent = now.toLocaleTimeString();
+}
+
+function updateAutoAdvanceStatus() {
+    const statusEl = document.getElementById('auto-advance-status');
+    if (currentSession.auto_advance_enabled) {
+        statusEl.className = 'auto-advance-status';
+        statusEl.innerHTML = '<span>🤖</span><span>Auto-progression enabled</span>';
+    } else {
+        statusEl.className = 'auto-advance-status disabled';
+        statusEl.innerHTML = '<span>⏸️</span><span>Manual progression</span>';
+    }
+}
+
+function connectWebSocket() {
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${wsProtocol}//${window.location.host}/ws/design-thinking/${currentSession.code}/`;
+    
+    websocket = new WebSocket(wsUrl);
+    
+    websocket.onopen = function(event) {
+        console.log('✅ Teacher WebSocket connected');
+        // Join as facilitator
+        websocket.send(JSON.stringify({
+            type: 'join_as_facilitator'
+        }));
+    };
+    
+    websocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        handleWebSocketMessage(data);
+    };
+    
+    websocket.onclose = function(event) {
+        console.log('❌ Teacher WebSocket disconnected:', event.code);
+        setTimeout(connectWebSocket, 3000);
+    };
+    
+    websocket.onerror = function(error) {
+        console.error('💥 Teacher WebSocket error:', error);
+    };
+}
+
+function handleWebSocketMessage(data) {
+    console.log('📨 Teacher received:', data.type, data);
+    
+    switch (data.type) {
+        case 'session_status':
+            updateSessionStatus(data.data);
+            break;
+        case 'input_submission':
+        case 'simplified_input_submit':
+            handleSimplifiedInputSubmission(data);
+            break;
+        case 'input_submission_update':
+            handleInputSubmissionUpdate(data);
+            break;
+        case 'completion_status':
+            updateTeamCompletion(data);
+            break;
+        case 'phase_auto_advance':
+            handlePhaseAutoAdvance(data);
+            break;
+        case 'mission_advanced':
+            handleMissionAdvanced(data.mission_data);
+            break;
+        case 'team_joined':
+            handleTeamJoined(data);
+            break;
+        case 'team_progress_update':
+            updateTeamProgress(data);
+            break;
+        case 'rating_updated':
+        case 'score_updated':
+            handleScoreUpdate(data);
+            break;
+        case 'pong':
+            // Heartbeat response
+            break;
+        case 'error':
+            showNotification(data.message, 'error');
+            break;
+        default:
+            console.log('Unknown message type:', data.type);
+    }
+    
+    // Show auto-refresh indicator
+    showAutoRefreshIndicator();
+}
+
+function updateSessionStatus(sessionData) {
+    document.getElementById('session-status').textContent = sessionData.status.replace('_', ' ').toTitleCase();
+    
+    if (sessionData.current_mission) {
+        currentMission = sessionData.current_mission;
+        updateCurrentPhase();
+    }
+    
+    // Update teams data
+    if (sessionData.teams) {
+        sessionData.teams.forEach(team => {
+            if (teamsData[team.id]) {
+                Object.assign(teamsData[team.id], team);
+            }
+        });
+        renderTeamsGrid();
+    }
+}
+
+function updateCurrentPhase() {
+    if (currentMission) {
+        document.getElementById('phase-title').textContent = currentMission.title;
+        document.getElementById('phase-description').textContent = currentMission.description;
+    }
+}
+
+function handleInputSubmission(data) {
+    // Delegate to enhanced handler
+    handleSimplifiedInputSubmission(data);
+}
+
+// Enhanced WebSocket handlers for real-time updates
+function handleSimplifiedInputSubmission(data) {
+    console.log('🎯 Handling simplified input submission:', data);
+    
+    const teamId = data.team_id || (data.team_data && data.team_data.id);
+    if (!teamId || !teamsData[teamId]) {
+        console.warn('Team not found for submission:', teamId);
+        return;
+    }
+
+    // Update team data with latest submission
+    teamsData[teamId].latest_submission = {
+        type: data.input_type || 'simplified_input',
+        phase: data.mission_type || data.phase,
+        data: data.input_data || data.submission_data,
+        submitted_at: new Date().toISOString(),
+        student_name: data.student_name || (data.student_data && data.student_data.name)
+    };
+
+    // Update team status and progress
+    if (data.completion_result || data.auto_advance_result) {
+        const result = data.completion_result || data.auto_advance_result;
+        teamsData[teamId].completion_percentage = result.completion_percentage || 0;
+        teamsData[teamId].status = result.is_ready ? 'completed' : 'in-progress';
+    }
+
+    // Re-render teams grid
+    renderTeamsGrid();
+    
+    // Show live notification
+    const teamName = teamsData[teamId].name;
+    const phase = data.mission_type || data.phase || 'current phase';
+    showNotification(`📝 ${teamName} submitted ${phase} input`, 'success');
+    
+    // Add to activity stream
+    addActivityStreamItem(teamName, `submitted ${phase} inputs`);
+}
+
+function updateTeamCompletion(data) {
+    const teamId = data.team_data.id;
+    
+    if (teamsData[teamId]) {
+        teamsData[teamId].completion_percentage = data.completion_percentage;
+        teamsData[teamId].status = data.is_ready_to_advance ? 'completed' : 'in-progress';
+        renderTeamsGrid();
+    }
+}
+
+function handlePhaseAutoAdvance(data) {
+    addActivityStreamItem('System', `Auto-advancing from ${data.current_mission.title} to ${data.next_mission.title}`);
+    showNotification(`Phase advancing in ${data.countdown_seconds} seconds...`, 'success');
+}
+
+function handleMissionAdvanced(missionData) {
+    currentMission = missionData;
+    updateCurrentPhase();
+    
+    // Reset all teams status for new phase
+    Object.values(teamsData).forEach(team => {
+        team.status = 'not-started';
+        team.completion_percentage = 0;
+        team.latest_submission = null;
+        team.teacher_score = null;
+    });
+    
+    renderTeamsGrid();
+    addActivityStreamItem('System', `Advanced to ${missionData.title}`);
+}
+
+function handleTeamJoined(data) {
+    const teamData = data.team_data;
+    const teamId = teamData.id;
+    
+    // Add or update team data with enhanced structure
+    teamsData[teamId] = {
+        ...teamData,
+        scores: {},
+        latest_submission: null,
+        completion_percentage: 0,
+        status: 'not-started'
+    };
+    
+    // Re-render teams grid to show new team
+    renderTeamsGrid();
+    
+    // Add activity stream item
+    addActivityStreamItem(teamData.name, 'joined the session');
+    
+    // Update team count
+    const teamCount = Object.keys(teamsData).length;
+    const teamCountElement = document.querySelector('.team-count');
+    if (teamCountElement) {
+        teamCountElement.textContent = `${teamCount} team${teamCount !== 1 ? 's' : ''}`;
+    }
+}
+
+// Additional enhanced WebSocket handlers
+function handleInputSubmissionUpdate(data) {
+    console.log('📊 Handling input submission update:', data);
+    
+    // Similar to handleSimplifiedInputSubmission but for different data structure
+    if (data.team_data && data.input_data) {
+        handleSimplifiedInputSubmission({
+            team_id: data.team_data.id,
+            team_data: data.team_data,
+            input_data: data.input_data,
+            mission_type: data.mission_type,
+            completion_result: data.auto_advance_result
+        });
+    }
+}
+
+function updateTeamProgress(data) {
+    console.log('📈 Updating team progress:', data);
+    
+    const teamId = data.team_id || (data.team_data && data.team_data.id);
+    if (!teamId || !teamsData[teamId]) return;
+
+    // Update progress data
+    if (data.progress_data) {
+        teamsData[teamId].completion_percentage = data.progress_data.completion_percentage || 0;
+        teamsData[teamId].status = data.progress_data.status || teamsData[teamId].status;
+    }
+
+    // Re-render teams grid
+    renderTeamsGrid();
+}
+
+function handleScoreUpdate(data) {
+    console.log('⭐ Handling score update:', data);
+    
+    const teamId = data.team_id;
+    if (!teamId || !teamsData[teamId]) return;
+
+    // Update team's score data
+    if (!teamsData[teamId].scores) {
+        teamsData[teamId].scores = {};
+    }
+    
+    teamsData[teamId].scores[data.mission_type] = {
+        score: data.score || data.rating,
+        feedback: data.feedback,
+        reasoning: data.reasoning,
+        scored_at: new Date().toISOString()
+    };
+
+    // Update average score
+    const scores = Object.values(teamsData[teamId].scores);
+    teamsData[teamId].average_score = scores.reduce((sum, s) => sum + (s.score || 0), 0) / scores.length;
+
+    // Re-render teams grid
+    renderTeamsGrid();
+    
+    // Show notification
+    showNotification(`✅ Score updated for ${teamsData[teamId].name}`, 'success');
+}
+
+function showAutoRefreshIndicator() {
+    const indicator = document.querySelector('.auto-refresh-indicator');
+    if (indicator) {
+        indicator.classList.add('show');
+        setTimeout(() => {
+            indicator.classList.remove('show');
+        }, 2000);
+    }
+}
+
+// WebSocket heartbeat to maintain connection
+function startWebSocketHeartbeat() {
+    setInterval(() => {
+        if (websocket && websocket.readyState === WebSocket.OPEN) {
+            websocket.send(JSON.stringify({
+                type: 'ping',
+                timestamp: new Date().toISOString()
+            }));
+        }
+    }, 30000); // Send ping every 30 seconds
+}
+
+function renderTeamsGrid() {
+    // Use progressive enhancement instead of clearing and recreating
+    enhanceTeamCards();
+}
+
+function createTeamCard(team) {
+    const card = document.createElement('div');
+    card.className = `team-card ${team.status}`;
+    card.innerHTML = `
+        <div class="team-header">
+            <div class="team-name">
+                <span class="team-emoji">${team.emoji}</span>
+                <span>${team.name}</span>
+            </div>
+            <div class="team-status-badge ${team.status}">
+                ${team.status.replace('-', ' ')}
+            </div>
+        </div>
+        
+        <div class="team-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: ${team.completion_percentage}%"></div>
+            </div>
+            <div class="progress-text">${team.completion_percentage}% complete</div>
+        </div>
+        
+        ${team.latest_submission ? createSubmissionPreview(team.latest_submission) : ''}
+        
+        <div class="scoring-section">
+            <div class="scoring-label">Quick Score:</div>
+            <div class="scoring-buttons">
+                ${createScoringButtons(team)}
+            </div>
+        </div>
+        
+        <div class="feedback-section">
+            <div class="feedback-label">Team Feedback:</div>
+            <textarea 
+                class="feedback-input" 
+                id="feedback-${team.id}"
+                placeholder="Enter feedback for this team..."
+                rows="3"
+                maxlength="1000"
+            >${team.teacher_feedback || ''}</textarea>
+            <div class="feedback-actions">
+                <button class="feedback-btn" onclick="saveFeedback(${team.id})">
+                    💾 Save Feedback
+                </button>
+                ${team.feedback_given_at ? `<div class="feedback-status">✅ Saved ${formatDate(team.feedback_given_at)}</div>` : ''}
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+function createSubmissionPreview(submission) {
+    if (!submission) return '<div class="no-submission">No submissions yet</div>';
+    
+    // Handle different submission data structures
+    let submissionData, phase, submittedAt, studentName;
+    
+    if (submission.inputs && submission.inputs.length > 0) {
+        // Legacy format
+        const latestInput = submission.inputs[submission.inputs.length - 1];
+        submissionData = latestInput.value;
+        phase = latestInput.label;
+    } else if (submission.data) {
+        // New simplified format
+        submissionData = formatSubmissionData(submission.data, submission.phase);
+        phase = submission.phase || submission.type;
+        submittedAt = submission.submitted_at;
+        studentName = submission.student_name;
+    } else {
+        return '<div class="no-submission">No submission data</div>';
+    }
+    
+    const timeAgo = submittedAt ? getTimeAgo(submittedAt) : 'Recently';
+    
+    return `
+        <div class="latest-submission" onclick="showFullSubmission('${JSON.stringify(submission).replace(/'/g, '\\\'')}')" style="cursor: pointer;">
+            <div class="submission-header">
+                <div class="submission-phase">${phase || 'Latest Submission'}</div>
+                <div class="submission-time">${timeAgo}</div>
+            </div>
+            <div class="submission-preview-content">
+                ${submissionData}
+            </div>
+            ${studentName ? `<div class="submission-student">by ${studentName}</div>` : ''}
+            <div class="submission-hint">💡 Click to view full submission</div>
+        </div>
+    `;
+}
+
+function formatSubmissionData(data, phase) {
+    if (!data) return 'No data available';
+    
+    try {
+        if (typeof data === 'string') {
+            return data.length > 100 ? data.substring(0, 100) + '...' : data;
+        }
+        
+        if (Array.isArray(data)) {
+            // Handle empathy pain points
+            if (phase === 'empathy') {
+                const painPoints = data.filter(item => item.value && item.value.trim());
+                return `Selected ${painPoints.length} pain points: ${painPoints.slice(0, 2).map(p => p.value).join(', ')}${painPoints.length > 2 ? '...' : ''}`;
+            }
+            
+            // Handle ideate ideas
+            if (phase === 'ideate') {
+                const ideas = data.filter(item => item.value && item.value.trim());
+                return `Generated ${ideas.length} ideas: ${ideas.slice(0, 2).map(i => i.value).join(', ')}${ideas.length > 2 ? '...' : ''}`;
+            }
+            
+            // Generic array handling
+            return `${data.length} items submitted`;
+        }
+        
+        if (typeof data === 'object') {
+            // Handle structured data
+            const keys = Object.keys(data);
+            if (keys.length > 0) {
+                const firstValue = data[keys[0]];
+                return typeof firstValue === 'string' ? 
+                    (firstValue.length > 100 ? firstValue.substring(0, 100) + '...' : firstValue) :
+                    `Structured data with ${keys.length} fields`;
+            }
+        }
+        
+        return JSON.stringify(data).substring(0, 100) + '...';
+    } catch (e) {
+        return 'Unable to preview submission';
+    }
+}
+
+function getTimeAgo(timestamp) {
+    try {
+        const now = new Date();
+        const submitted = new Date(timestamp);
+        const diffMs = now - submitted;
+        const diffMins = Math.floor(diffMs / 60000);
+        
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`;
+        return `${Math.floor(diffMins / 1440)}d ago`;
+    } catch (e) {
+        return 'Recently';
+    }
+}
+
+function showFullSubmission(submissionJson) {
+    try {
+        const submission = JSON.parse(submissionJson);
+        // This will be enhanced in the UI redesign phase
+        alert(`Full submission data:\n${JSON.stringify(submission, null, 2)}`);
+    } catch (e) {
+        console.error('Error showing submission:', e);
+    }
+}
+
+function createScoringButtons(team) {
+    const system = currentSession.scoring_system;
+    let buttons = '';
+    
+    if (system === 'abc') {
+        ['A', 'B', 'C'].forEach(grade => {
+            const isSelected = team.teacher_score === grade;
+            buttons += `
+                <button class="score-btn grade-${grade.toLowerCase()} ${isSelected ? 'selected' : ''}" 
+                        onclick="scoreTeam(${team.id}, '${grade}')">
+                    ${grade}
+                </button>
+            `;
+        });
+    } else if (system === 'numeric') {
+        for (let i = 1; i <= 10; i++) {
+            const isSelected = team.teacher_score === i.toString();
+            buttons += `
+                <button class="score-btn ${isSelected ? 'selected' : ''}" 
+                        onclick="scoreTeam(${team.id}, '${i}')">
+                    ${i}
+                </button>
+            `;
+        }
+    } else if (system === 'stars') {
+        for (let i = 1; i <= 5; i++) {
+            const isSelected = team.teacher_score === i.toString();
+            buttons += `
+                <button class="score-btn ${isSelected ? 'selected' : ''}" 
+                        onclick="scoreTeam(${team.id}, '${i}')">
+                    ⭐
+                </button>
+            `;
+        }
+    }
+    
+    return buttons;
+}
+
+function scoreTeam(teamId, score) {
+    console.log('📊 Scoring team:', teamId, 'Score:', score);
+    
+    // Update UI immediately
+    teamsData[teamId].teacher_score = score;
+    renderTeamsGrid();
+    
+    // Send to WebSocket
+    websocket.send(JSON.stringify({
+        type: 'teacher_score_submit',
+        team_id: teamId,
+        mission_id: currentMission ? currentMission.id : null,
+        score: score,
+        teacher_id: 'teacher_{{ user.id|default:"anonymous" }}'
+    }));
+    
+    // Show confirmation
+    showNotification(`Scored ${teamsData[teamId].name}: ${score}`, 'success');
+    addActivityStreamItem('Teacher', `scored ${teamsData[teamId].name}: ${score}`);
+}
+
+// Session control functions removed - game is now fully student-driven
+
+function addActivityStreamItem(actor, action) {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { 
+        hour12: false, 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+    
+    activityStream.unshift({
+        time: timeStr,
+        actor: actor,
+        action: action,
+        timestamp: now
+    });
+    
+    // Keep only last 20 items
+    if (activityStream.length > 20) {
+        activityStream = activityStream.slice(0, 20);
+    }
+    
+    renderActivityStream();
+}
+
+function renderActivityStream() {
+    const streamContainer = document.getElementById('activity-stream');
+    streamContainer.innerHTML = '';
+    
+    if (activityStream.length === 0) {
+        streamContainer.innerHTML = `
+            <div class="stream-item">
+                <div class="stream-time">--:--</div>
+                <div class="stream-content">
+                    <div class="stream-action">Waiting for activity...</div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    activityStream.forEach(item => {
+        const streamItem = document.createElement('div');
+        streamItem.className = 'stream-item';
+        streamItem.innerHTML = `
+            <div class="stream-time">${item.time}</div>
+            <div class="stream-content">
+                <div class="stream-team">${item.actor}</div>
+                <div class="stream-action">${item.action}</div>
+            </div>
+        `;
+        streamContainer.appendChild(streamItem);
+    });
+}
+
+function clearStream() {
+    activityStream = [];
+    renderActivityStream();
+}
+
+function showNotification(message, type = 'success') {
+    const toast = document.getElementById('notification-toast');
+    const content = document.getElementById('toast-content');
+    
+    content.textContent = message;
+    toast.className = `notification-toast ${type}`;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Utility function
+String.prototype.toTitleCase = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+};
+
+// Feedback functions
+function saveFeedback(teamId) {
+    const feedbackText = document.getElementById(`feedback-${teamId}`).value.trim();
+    const button = document.querySelector(`#feedback-${teamId}`).parentNode.querySelector('.feedback-btn');
+    
+    // Disable button during save
+    button.disabled = true;
+    button.textContent = '💾 Saving...';
+    
+    fetch(`/learn/api/simplified/${currentSession.code}/feedback/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            team_id: teamId,
+            feedback: feedbackText
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update team data
+            if (teamsData[teamId]) {
+                teamsData[teamId].teacher_feedback = feedbackText;
+                teamsData[teamId].feedback_given_at = new Date().toISOString();
+            }
+            
+            showNotification('Feedback saved successfully!', 'success');
+            addActivityStreamItem('Teacher', `gave feedback to ${teamsData[teamId].name}`);
+            
+            // Update the feedback status display
+            const statusDiv = button.parentNode.querySelector('.feedback-status');
+            if (statusDiv) {
+                statusDiv.textContent = `✅ Saved ${formatDate(new Date())}`;
+            } else {
+                const newStatus = document.createElement('div');
+                newStatus.className = 'feedback-status';
+                newStatus.textContent = `✅ Saved ${formatDate(new Date())}`;
+                button.parentNode.appendChild(newStatus);
+            }
+        } else {
+            showNotification('Error saving feedback: ' + data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error saving feedback:', error);
+        showNotification('Error saving feedback', 'error');
+    })
+    .finally(() => {
+        // Re-enable button
+        button.disabled = false;
+        button.textContent = '💾 Save Feedback';
+    });
+}
+
+function formatDate(date) {
+    if (typeof date === 'string') {
+        date = new Date(date);
+    }
+    return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Enhanced Rating System Functions
+
+let currentFilter = 'all';
+let scoresData = {};
+
+function renderTeamsGrid() {
+    // Use progressive enhancement instead of clearing and recreating
+    enhanceTeamCards();
+    
+    // Load existing ratings
+    loadTeamRatings();
+}
+
+function shouldShowTeam(team) {
+    if (currentFilter === 'all') return true;
+    
+    // Filter by current mission type
+    return team.current_mission && team.current_mission.mission_type === currentFilter;
+}
+
+function createTeamCard(team) {
+    const card = document.createElement('div');
+    card.className = `team-card ${team.status}`;
+    card.innerHTML = `
+        <div class="team-header">
+            <div class="team-name">
+                <span class="team-emoji">${team.emoji}</span>
+                <span>${team.name}</span>
+            </div>
+            <div class="team-status-badge ${team.status}">${team.status.replace('-', ' ')}</div>
+        </div>
+        
+        <div class="team-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: ${team.completion_percentage}%"></div>
+            </div>
+            <div class="progress-text">${Math.round(team.completion_percentage)}% Complete</div>
+        </div>
+        
+        <div class="submission-preview" onclick="toggleSubmissionPreview(${team.id})">
+            <div class="submission-label">Latest Submission:</div>
+            <div class="submission-value" id="submission-${team.id}">
+                ${team.latest_submission || 'No submission yet'}
+            </div>
+        </div>
+        
+        <div class="rating-section">
+            <div class="rating-header">
+                <span class="score-label-text">Score Current Phase:</span>
+                <span class="current-score" id="current-score-${team.id}">Not scored</span>
+            </div>
+            
+            <div class="score-selector" id="score-selector-${team.id}">
+                <div class="score-slider-container">
+                    <input type="range" class="score-slider" id="score-slider-${team.id}" 
+                           min="1" max="10" value="5" 
+                           oninput="updateScoreDisplay(${team.id}, this.value)"
+                           onchange="setScore(${team.id}, this.value)">
+                    <div class="score-labels">
+                        <span>1</span>
+                        <span>5</span>
+                        <span>10</span>
+                    </div>
+                </div>
+                <div class="score-display">
+                    <span class="score-value" id="score-value-${team.id}">5</span>
+                    <span class="score-label">/10 points</span>
+                </div>
+            </div>
+            
+            <div class="feedback-section">
+                <div class="feedback-group">
+                    <label class="feedback-label">💭 Reasoning for Score:</label>
+                    <textarea 
+                        placeholder="Why did you give this score? What did the team do well or need to improve?" 
+                        id="reasoning-${team.id}" 
+                        maxlength="500"
+                        rows="3"
+                        class="reasoning-input"></textarea>
+                </div>
+                
+                <div class="feedback-group">
+                    <label class="feedback-label">💬 Quick Feedback:</label>
+                    <input type="text" 
+                           placeholder="Brief encouragement or next steps..." 
+                           id="feedback-${team.id}" 
+                           maxlength="200"
+                           class="feedback-input">
+                </div>
+                
+                <button class="save-score-btn" onclick="saveScore(${team.id})" id="save-btn-${team.id}" disabled>
+                    💾 Save Score & Feedback
+                </button>
+            </div>
+        </div>
+        
+        <div class="team-actions">
+            <button class="control-btn secondary" onclick="showTeamDetails(${team.id})">👁️ View Details</button>
+            <button class="control-btn primary" onclick="showTeamHistory(${team.id})">📊 History</button>
+        </div>
+    `;
+    
+    return card;
+}
+
+function updateScoreDisplay(teamId, score) {
+    // Update score display
+    document.getElementById(`score-value-${teamId}`).textContent = score;
+}
+
+function setScore(teamId, score) {
+    // Enable save button
+    const saveBtn = document.getElementById(`save-btn-${teamId}`);
+    saveBtn.disabled = false;
+    
+    // Store score
+    if (!scoresData[teamId]) scoresData[teamId] = {};
+    scoresData[teamId].score = parseInt(score);
+    
+    // Update current score display
+    document.getElementById(`current-score-${teamId}`).textContent = `${score}/10 points`;
+}
+
+function saveScore(teamId) {
+    const team = teamsData[teamId];
+    if (!team || !team.current_mission) {
+        showNotification('No active mission to score', 'error');
+        return;
+    }
+    
+    const score = scoresData[teamId]?.score;
+    const feedback = document.getElementById(`feedback-${teamId}`).value.trim();
+    const reasoning = document.getElementById(`reasoning-${teamId}`).value.trim();
+    
+    if (!score) {
+        showNotification('Please select a score first', 'error');
+        return;
+    }
+    
+    if (!reasoning) {
+        showNotification('Please provide reasoning for your score', 'error');
+        return;
+    }
+    
+    const saveBtn = document.getElementById(`save-btn-${teamId}`);
+    saveBtn.disabled = true;
+    saveBtn.textContent = '💾 Saving...';
+    
+    fetch(`/learn/api/${currentSession.code}/ratings/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            team_id: teamId,
+            mission_type: team.current_mission.mission_type,
+            rating: score, // Backend still expects 'rating' field
+            feedback: feedback,
+            quick_notes: feedback,
+            reasoning: reasoning
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Score saved successfully!', 'success');
+            
+            // Update team average score (converted from rating)
+            if (data.team_average) {
+                team.average_score = data.team_average * 2; // Convert 5-star to 10-point
+            }
+            
+            // Clear form
+            document.getElementById(`feedback-${teamId}`).value = '';
+            document.getElementById(`reasoning-${teamId}`).value = '';
+            saveBtn.textContent = '✅ Saved';
+            
+            // Auto-refresh indicator
+            showAutoRefreshIndicator();
+            
+        } else {
+            showNotification(data.error || 'Failed to save score', 'error');
+            saveBtn.disabled = false;
+            saveBtn.textContent = '💾 Save Score';
+        }
+    })
+    .catch(error => {
+        console.error('Error saving score:', error);
+        showNotification('Error saving score', 'error');
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 Save Score';
+    });
+}
+
+function loadTeamRatings() {
+    fetch(`/learn/api/${currentSession.code}/ratings/`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            data.ratings.forEach(rating => {
+                // Update UI with existing ratings
+                updateTeamScoreDisplay(rating.team_id, rating);
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error loading ratings:', error);
+    });
+}
+
+function updateTeamScoreDisplay(teamId, score) {
+    const currentScoreEl = document.getElementById(`current-score-${teamId}`);
+    if (currentScoreEl) {
+        // Convert 5-star rating to 10-point score if needed
+        const displayScore = typeof score.rating === 'number' ? score.rating * 2 : score.rating;
+        currentScoreEl.textContent = `${displayScore}/10 points`;
+    }
+    
+    // Update slider display
+    const slider = document.getElementById(`score-slider-${teamId}`);
+    const scoreValue = document.getElementById(`score-value-${teamId}`);
+    if (slider && scoreValue) {
+        const displayScore = typeof score.rating === 'number' ? score.rating * 2 : score.rating;
+        slider.value = displayScore;
+        scoreValue.textContent = displayScore;
+    }
+    
+    // Update feedback
+    const feedbackEl = document.getElementById(`feedback-${teamId}`);
+    if (feedbackEl && score.quick_notes) {
+        feedbackEl.value = score.quick_notes;
+    }
+}
+
+function filterPhase(phase) {
+    currentFilter = phase;
+    
+    // Update tab active state
+    document.querySelectorAll('.phase-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Re-render teams grid
+    renderTeamsGrid();
+}
+
+function showTeamDetails(teamId) {
+    const team = teamsData[teamId];
+    if (!team) return;
+    
+    document.getElementById('modal-team-name').textContent = `${team.emoji} ${team.name}`;
+    
+    // Load detailed team data
+    loadTeamDetailedData(teamId);
+    
+    // Show modal
+    document.getElementById('team-modal').classList.add('show');
+}
+
+function loadTeamDetailedData(teamId) {
+    const modalContent = document.getElementById('modal-content');
+    modalContent.innerHTML = '<div>Loading team details...</div>';
+    
+    // Load all missions for this team
+    const missions = ['empathy', 'define', 'ideate', 'prototype'];
+    
+    Promise.all(missions.map(missionType => 
+        fetch(`/learn/api/${currentSession.code}/team/${teamId}/mission/${missionType}/`)
+        .then(response => response.json())
+        .catch(() => ({ success: false, mission_type: missionType }))
+    ))
+    .then(results => {
+        modalContent.innerHTML = createTeamDetailedHTML(results);
+    });
+}
+
+function createTeamDetailedHTML(missionData) {
+    return `
+        <div class="phase-details">
+            ${missionData.map(data => {
+                if (!data.success) {
+                    return `
+                        <div class="phase-detail-card">
+                            <div class="phase-detail-header">
+                                <span class="phase-name">${data.mission_type || 'Unknown'}</span>
+                                <span class="phase-rating">Not started</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                return `
+                    <div class="phase-detail-card ${data.existing_rating ? 'has-rating' : ''}">
+                        <div class="phase-detail-header">
+                            <span class="phase-name">${data.mission.title}</span>
+                            <span class="phase-rating">
+                                ${data.existing_rating ? data.existing_rating.rating_stars : 'Not rated'}
+                            </span>
+                        </div>
+                        
+                        ${data.submissions.length > 0 ? `
+                            <div class="submission-details">
+                                <div class="submission-text">
+                                    ${JSON.stringify(data.submissions[0].input_data, null, 2)}
+                                </div>
+                            </div>
+                        ` : '<div class="submission-details">No submissions yet</div>'}
+                        
+                        <div class="rating-controls">
+                            <div class="rating-stars">
+                                ${[1,2,3,4,5].map(i => 
+                                    `<button class="star-btn ${data.existing_rating && i <= data.existing_rating.rating ? 'active' : ''}" 
+                                             onclick="setDetailedRating('${data.mission.type}', ${i})">${i}⭐</button>`
+                                ).join('')}
+                            </div>
+                            <textarea class="detailed-feedback" placeholder="Detailed feedback for this phase..." 
+                                      id="detailed-feedback-${data.mission.type}">${data.existing_rating?.feedback || ''}</textarea>
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+        
+        <div class="modal-actions">
+            <button class="control-btn success" onclick="saveAllDetailedRatings()">💾 Save All Ratings</button>
+            <button class="control-btn secondary" onclick="closeTeamModal()">Close</button>
+        </div>
+    `;
+}
+
+function closeTeamModal() {
+    document.getElementById('team-modal').classList.remove('show');
+}
+
+function showSessionStats() {
+    const statsContainer = document.getElementById('session-stats');
+    const isVisible = statsContainer.style.display !== 'none';
+    
+    if (isVisible) {
+        statsContainer.style.display = 'none';
+        return;
+    }
+    
+    // Load and show statistics
+    fetch(`/learn/api/${currentSession.code}/statistics/`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateSessionStatistics(data.statistics);
+            statsContainer.style.display = 'block';
+        }
+    })
+    .catch(error => {
+        console.error('Error loading statistics:', error);
+    });
+}
+
+function updateSessionStatistics(stats) {
+    const statsGrid = document.getElementById('stats-grid');
+    statsGrid.innerHTML = `
+        <div class="stat-item">
+            <span class="stat-value">${stats.session_overview.total_teams}</span>
+            <span class="stat-label">Total Teams</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">${stats.session_overview.completion_rate}%</span>
+            <span class="stat-label">Completion Rate</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">${stats.session_overview.average_rating}</span>
+            <span class="stat-label">Avg Rating</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">${stats.session_overview.total_phases}</span>
+            <span class="stat-label">Total Phases</span>
+        </div>
+    `;
+}
+
+function exportRatings() {
+    window.open(`/learn/api/${currentSession.code}/export/?format=csv`, '_blank');
+    showNotification('Ratings export started', 'success');
+}
+
+function refreshDashboard() {
+    location.reload();
+}
+
+function showAutoRefreshIndicator() {
+    const indicator = document.getElementById('auto-refresh-indicator');
+    indicator.classList.add('show');
+    setTimeout(() => {
+        indicator.classList.remove('show');
+    }, 2000);
+}
+
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+}
+
+// Enhanced WebSocket message handling for ratings
+function handleWebSocketMessage(data) {
+    console.log('📨 Received message:', data.type, data);
+    
+    switch (data.type) {
+        case 'rating_updated':
+            handleRatingUpdate(data);
+            break;
+        case 'team_status_update':
+            updateTeamStatus(data);
+            break;
+        case 'session_update':
+            updateSessionInfo(data);
+            break;
+        default:
+            // Handle existing message types
+            break;
+    }
+}
+
+function handleRatingUpdate(data) {
+    const teamId = data.team_id;
+    if (teamsData[teamId]) {
+        teamsData[teamId].average_rating = data.average_rating;
+        updateTeamScoreDisplay(teamId, {
+            rating: data.rating,
+            rating_stars: data.rating_stars,
+            quick_notes: data.feedback
+        });
+        
+        showAutoRefreshIndicator();
+        addActivityStreamItem(`${data.team_name} scored ${data.rating * 2}/10 points for ${data.mission_type}`);
+    }
+}
+
+// Close submission modal function
+function closeSubmissionModal() {
+    const modal = document.getElementById('submission-modal');
+    modal.classList.remove('show');
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('submission-modal');
+    if (e.target === modal) {
+        closeSubmissionModal();
+    }
+});
+
+// Close modal with escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeSubmissionModal();
+        closeShowcaseModal();
+    }
+});
+
+// Session Showcase Functions
+function showSessionShowcase() {
+    const modal = document.getElementById('showcase-modal');
+    const content = document.getElementById('showcase-content');
+    
+    // Generate showcase content
+    content.innerHTML = generateShowcaseContent();
+    modal.classList.add('show');
+}
+
+function closeShowcaseModal() {
+    const modal = document.getElementById('showcase-modal');
+    modal.classList.remove('show');
+}
+
+function generateShowcaseContent() {
+    const teams = Object.values(teamsData);
+    
+    if (teams.length === 0) {
+        return '<div class="no-teams">No teams found in this session.</div>';
+    }
+    
+    // Session summary
+    let html = `
+        <div class="session-summary">
+            <h3>📊 Session Summary</h3>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <span class="stat-value">${teams.length}</span>
+                    <span class="stat-label">Total Teams</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">${teams.filter(t => t.teacher_score).length}</span>
+                    <span class="stat-label">Teams Scored</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">${Math.round(teams.reduce((sum, t) => sum + (t.completion_percentage || 0), 0) / teams.length)}%</span>
+                    <span class="stat-label">Avg Completion</span>
+                </div>
+            </div>
+        </div>
+        
+        <h3>🏆 Team Results</h3>
+    `;
+    
+    // Sort teams by score (highest first)
+    const sortedTeams = teams.sort((a, b) => (b.teacher_score || 0) - (a.teacher_score || 0));
+    
+    sortedTeams.forEach((team, index) => {
+        const rank = index + 1;
+        const medal = rank <= 3 ? ['🥇', '🥈', '🥉'][rank - 1] : '🏅';
+        
+        html += `
+            <div class="team-showcase">
+                <div class="team-showcase-header">
+                    <div class="team-showcase-name">
+                        ${medal} #${rank} - ${team.emoji} ${team.name}
+                    </div>
+                    <div class="team-showcase-score">
+                        ${team.teacher_score || 'Not scored'}/10
+                    </div>
+                </div>
+                
+                <div class="team-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${team.completion_percentage || 0}%"></div>
+                    </div>
+                    <div class="progress-text">${Math.round(team.completion_percentage || 0)}% Complete</div>
+                </div>
+                
+                ${team.teacher_feedback ? `
+                    <div class="team-showcase-feedback">
+                        ${team.teacher_reasoning ? `
+                            <div class="feedback-reasoning">
+                                <strong>💭 Teacher's Reasoning:</strong><br>
+                                "${team.teacher_reasoning}"
+                            </div>
+                        ` : ''}
+                        
+                        ${team.teacher_feedback ? `
+                            <div class="feedback-quick">
+                                <strong>💬 Feedback:</strong> "${team.teacher_feedback}"
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : '<div class="no-feedback">No feedback provided yet.</div>'}
+            </div>
+        `;
+    });
+    
+    return html;
+}
+
+function exportShowcaseReport() {
+    // Create a comprehensive report
+    const teams = Object.values(teamsData);
+    const sessionCode = currentSession.code;
+    const timestamp = new Date().toLocaleString();
+    
+    let report = `Design Thinking Session Report
+Session Code: ${sessionCode}
+Generated: ${timestamp}
+
+========================================
+SESSION OVERVIEW
+========================================
+Total Teams: ${teams.length}
+Teams Scored: ${teams.filter(t => t.teacher_score).length}
+Average Completion: ${Math.round(teams.reduce((sum, t) => sum + (t.completion_percentage || 0), 0) / teams.length)}%
+
+========================================
+TEAM RESULTS
+========================================
+`;
+
+    const sortedTeams = teams.sort((a, b) => (b.teacher_score || 0) - (a.teacher_score || 0));
+    
+    sortedTeams.forEach((team, index) => {
+        const rank = index + 1;
+        report += `
+${rank}. ${team.name} ${team.emoji}
+   Score: ${team.teacher_score || 'Not scored'}/10
+   Completion: ${Math.round(team.completion_percentage || 0)}%
+   
+   Teacher's Reasoning:
+   ${team.teacher_reasoning || 'No reasoning provided'}
+   
+   Feedback:
+   ${team.teacher_feedback || 'No feedback provided'}
+   
+   ---
+`;
+    });
+    
+    // Download as text file
+    const blob = new Blob([report], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `design-thinking-report-${sessionCode}-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showNotification('Report exported successfully!', 'success');
+}
+
+function shareShowcase() {
+    if (navigator.share) {
+        const sessionCode = currentSession.code;
+        navigator.share({
+            title: `Design Thinking Session Results - ${sessionCode}`,
+            text: `Check out the results from our Design Thinking session! ${Object.values(teamsData).length} teams participated.`,
+            url: window.location.href
+        });
+    } else {
+        // Fallback: copy URL to clipboard
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            showNotification('Session URL copied to clipboard!', 'success');
+        });
+    }
+}
+
+// Submission Review Functions
+let selectedScore = null;
+
+function selectScore(score) {
+    // Remove previous selection
+    document.querySelectorAll('.score-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    
+    // Select new score
+    selectedScore = score;
+    event.target.classList.add('selected');
+    
+    // Enable submit button
+    const submitBtn = document.querySelector('.submit-score-btn');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        submitBtn.classList.add('hover:bg-blue-600');
+    }
+}
+
+async function scoreAndNext() {
+    if (!selectedScore) {
+        showNotification('Please select a score before proceeding', 'error');
+        return;
+    }
+    
+    const submissionId = document.querySelector('.active-review-panel')?.dataset.submissionId;
+    if (!submissionId) {
+        showNotification('No submission to score', 'error');
+        return;
+    }
+    
+    try {
+        // Show loading state
+        const submitBtn = document.querySelector('.submit-score-btn');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Scoring...';
+        submitBtn.disabled = true;
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Submit score
+        const response = await fetch(`/learn/api/simplified/{{ session_code }}/score-submission/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrfToken
+            },
+            body: `submission_id=${submissionId}&score=${selectedScore}`
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification(`Scored submission ${selectedScore}/10`, 'success');
+            
+            // Update progress
+            const progressText = document.querySelector('.progress-text');
+            if (progressText) {
+                progressText.textContent = `${data.scored_count}/${data.total_count} submissions scored`;
+            }
+            
+            const progressBar = document.querySelector('.progress-fill');
+            if (progressBar) {
+                const percentage = (data.scored_count / data.total_count) * 100;
+                progressBar.style.width = `${percentage}%`;
+            }
+            
+            // Load next submission or show completion
+            if (data.next_submission) {
+                loadSubmission(data.next_submission);
+            } else {
+                showCompletionMessage();
+            }
+            
+        } else {
+            showNotification(data.message || 'Error scoring submission', 'error');
+        }
+        
+    } catch (error) {
+        console.error('Error scoring submission:', error);
+        showNotification('Network error. Please try again.', 'error');
+    } finally {
+        // Reset button
+        const submitBtn = document.querySelector('.submit-score-btn');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+function loadSubmission(submission) {
+    // Update submission content
+    const contentEl = document.querySelector('.submission-content');
+    if (contentEl) {
+        contentEl.textContent = submission.selected_value;
+    }
+    
+    // Update submission info
+    const infoEl = document.querySelector('.submission-info');
+    if (infoEl) {
+        infoEl.innerHTML = `
+            <span class="team-name">${submission.team_name}</span>
+            <span class="student-name">${submission.student_name}</span>
+            <span class="mission-name">${submission.mission_display}</span>
+        `;
+    }
+    
+    // Update dataset
+    const reviewPanel = document.querySelector('.active-review-panel');
+    if (reviewPanel) {
+        reviewPanel.dataset.submissionId = submission.id;
+    }
+    
+    // Reset score selection
+    selectedScore = null;
+    document.querySelectorAll('.score-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    
+    // Disable submit button
+    const submitBtn = document.querySelector('.submit-score-btn');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        submitBtn.classList.remove('hover:bg-blue-600');
+    }
+}
+
+function showCompletionMessage() {
+    const reviewContainer = document.querySelector('.submission-review-container');
+    if (reviewContainer) {
+        reviewContainer.innerHTML = `
+            <div class="completion-message">
+                <div class="completion-icon">
+                    <svg class="w-16 h-16 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 text-center mt-4">All Submissions Reviewed!</h3>
+                <p class="text-gray-600 text-center mt-2">Great job! You have scored all student submissions.</p>
+                <button onclick="location.reload()" class="mt-6 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors mx-auto block">
+                    Refresh Dashboard
+                </button>
+            </div>
+        `;
+    }
+}
+
+function jumpToSubmission(index) {
+    // This would be used for submission navigation if implemented
+    console.log('Jump to submission:', index);
+}
+
+// Ping WebSocket to keep connection alive
+setInterval(() => {
+    if (websocket && websocket.readyState === WebSocket.OPEN) {
+        websocket.send(JSON.stringify({ type: 'ping' }));
+    }
+}, 30000);
+</script>
+{% endblock %}
