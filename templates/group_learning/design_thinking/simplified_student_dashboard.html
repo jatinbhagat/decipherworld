@@ -2954,6 +2954,10 @@ function showEmpathyPhase() {
     
     // Set up custom input listener
     setupCustomPainPointInput();
+    
+    // Initialize selection counter and submit button
+    updateSelectionCounter();
+    updateEmpathySubmitButton();
 }
 
 // Populate pain points grid
@@ -2987,7 +2991,6 @@ function togglePainPoint(element, painPoint) {
     }
     
     updateSelectionCounter();
-    updateEmpathySubmitButton();
 }
 
 // Update selection counter - Fixed to include both selected and custom pain points
@@ -3007,6 +3010,9 @@ function updateSelectionCounter() {
         counter.style.color = '#92400e';
         counter.innerHTML = `${totalPainPoints} / 3 minimum selected`;
     }
+    
+    // Update submit button state
+    updateEmpathySubmitButton();
 }
 
 // Setup custom pain point functionality
@@ -3019,11 +3025,13 @@ function setupCustomPainPointInput() {
 // Update empathy submit button - Simplified to avoid duplication
 function updateEmpathySubmitButton() {
     const submitBtn = document.getElementById('empathy-submit');
-    const totalPainPoints = selectedPainPoints.size + customPainPoints.filter(p => p.trim()).length;
-    submitBtn.disabled = totalPainPoints < 3;
-    
-    // Let updateSelectionCounter handle the visual counter updates
-    updateSelectionCounter();
+    if (submitBtn) {
+        const totalPainPoints = selectedPainPoints.size + customPainPoints.filter(p => p.trim()).length;
+        submitBtn.disabled = totalPainPoints < 3;
+        
+        // Debug logging
+        console.log(`📊 Pain points: ${totalPainPoints}, Button disabled: ${submitBtn.disabled}`);
+    }
 }
 
 // Submit empathy phase

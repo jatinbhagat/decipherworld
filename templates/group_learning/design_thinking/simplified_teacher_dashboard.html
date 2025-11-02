@@ -2372,6 +2372,12 @@ function createSubmissionPreview(submission) {
         phase = submission.phase || submission.type;
         submittedAt = submission.submitted_at;
         studentName = submission.student_name;
+    } else if (submission.submission_data) {
+        // Direct submission format from view context
+        submissionData = submission.submission_data;
+        phase = submission.mission_title || 'Current Phase';
+        submittedAt = submission.submitted_at;
+        studentName = submission.student_name;
     } else {
         return '<div class="no-submission">No submission data</div>';
     }
@@ -2462,39 +2468,17 @@ function showFullSubmission(submissionJson) {
 }
 
 function createScoringButtons(team) {
-    const system = currentSession.scoring_system;
+    // Always use 1-10 numeric scoring system
     let buttons = '';
     
-    if (system === 'abc') {
-        ['A', 'B', 'C'].forEach(grade => {
-            const isSelected = team.teacher_score === grade;
-            buttons += `
-                <button class="score-btn grade-${grade.toLowerCase()} ${isSelected ? 'selected' : ''}" 
-                        onclick="scoreTeam(${team.id}, '${grade}')">
-                    ${grade}
-                </button>
-            `;
-        });
-    } else if (system === 'numeric') {
-        for (let i = 1; i <= 10; i++) {
-            const isSelected = team.teacher_score === i.toString();
-            buttons += `
-                <button class="score-btn ${isSelected ? 'selected' : ''}" 
-                        onclick="scoreTeam(${team.id}, '${i}')">
-                    ${i}
-                </button>
-            `;
-        }
-    } else if (system === 'stars') {
-        for (let i = 1; i <= 5; i++) {
-            const isSelected = team.teacher_score === i.toString();
-            buttons += `
-                <button class="score-btn ${isSelected ? 'selected' : ''}" 
-                        onclick="scoreTeam(${team.id}, '${i}')">
-                    ⭐
-                </button>
-            `;
-        }
+    for (let i = 1; i <= 10; i++) {
+        const isSelected = team.teacher_score === i.toString();
+        buttons += `
+            <button class="score-btn ${isSelected ? 'selected' : ''}" 
+                    onclick="scoreTeam(${team.id}, '${i}')">
+                ${i}
+            </button>
+        `;
     }
     
     return buttons;
@@ -2668,110 +2652,6 @@ function formatDate(date) {
     });
 }
 
-// Enhanced Rating System Functions
-
-let currentFilter = 'all';
-let scoresData = {};
-
-function renderTeamsGrid() {
-    // Use progressive enhancement instead of clearing and recreating
-    enhanceTeamCards();
-    
-    // Load existing ratings
-    loadTeamRatings();
-}
-
-function shouldShowTeam(team) {
-    if (currentFilter === 'all') return true;
-    
-    // Filter by current mission type
-    return team.current_mission && team.current_mission.mission_type === currentFilter;
-}
-
-function createTeamCard(team) {
-    const card = document.createElement('div');
-    card.className = `team-card ${team.status}`;
-    card.innerHTML = `
-        <div class="team-header">
-            <div class="team-name">
-                <span class="team-emoji">${team.emoji}</span>
-                <span>${team.name}</span>
-            </div>
-            <div class="team-status-badge ${team.status}">${team.status.replace('-', ' ')}</div>
-        </div>
-        
-        <div class="team-progress">
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: ${team.completion_percentage}%"></div>
-            </div>
-            <div class="progress-text">${Math.round(team.completion_percentage)}% Complete</div>
-        </div>
-        
-        <div class="submission-preview" onclick="toggleSubmissionPreview(${team.id})">
-            <div class="submission-label">Latest Submission:</div>
-            <div class="submission-value" id="submission-${team.id}">
-                ${team.latest_submission || 'No submission yet'}
-            </div>
-        </div>
-        
-        <div class="rating-section">
-            <div class="rating-header">
-                <span class="score-label-text">Score Current Phase:</span>
-                <span class="current-score" id="current-score-${team.id}">Not scored</span>
-            </div>
-            
-            <div class="score-selector" id="score-selector-${team.id}">
-                <div class="score-slider-container">
-                    <input type="range" class="score-slider" id="score-slider-${team.id}" 
-                           min="1" max="10" value="5" 
-                           oninput="updateScoreDisplay(${team.id}, this.value)"
-                           onchange="setScore(${team.id}, this.value)">
-                    <div class="score-labels">
-                        <span>1</span>
-                        <span>5</span>
-                        <span>10</span>
-                    </div>
-                </div>
-                <div class="score-display">
-                    <span class="score-value" id="score-value-${team.id}">5</span>
-                    <span class="score-label">/10 points</span>
-                </div>
-            </div>
-            
-            <div class="feedback-section">
-                <div class="feedback-group">
-                    <label class="feedback-label">💭 Reasoning for Score:</label>
-                    <textarea 
-                        placeholder="Why did you give this score? What did the team do well or need to improve?" 
-                        id="reasoning-${team.id}" 
-                        maxlength="500"
-                        rows="3"
-                        class="reasoning-input"></textarea>
-                </div>
-                
-                <div class="feedback-group">
-                    <label class="feedback-label">💬 Quick Feedback:</label>
-                    <input type="text" 
-                           placeholder="Brief encouragement or next steps..." 
-                           id="feedback-${team.id}" 
-                           maxlength="200"
-                           class="feedback-input">
-                </div>
-                
-                <button class="save-score-btn" onclick="saveScore(${team.id})" id="save-btn-${team.id}" disabled>
-                    💾 Save Score & Feedback
-                </button>
-            </div>
-        </div>
-        
-        <div class="team-actions">
-            <button class="control-btn secondary" onclick="showTeamDetails(${team.id})">👁️ View Details</button>
-            <button class="control-btn primary" onclick="showTeamHistory(${team.id})">📊 History</button>
-        </div>
-    `;
-    
-    return card;
-}
 
 function updateScoreDisplay(teamId, score) {
     // Update score display
