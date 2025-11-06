@@ -11,7 +11,7 @@ import sys
 import io
 from .models import (
     DemoRequest, Course, SchoolDemoRequest, GameReview,
-    PhotoCategory, PhotoGallery, VideoTestimonial, SchoolReferral
+    PhotoCategory, PhotoGallery, VideoTestimonial, SchoolReferral, School
 )
 from .forms import DemoRequestForm, SchoolDemoRequestForm, SchoolReferralForm
 from .analytics import track_page_view, track_form_submission, track_error
@@ -1276,3 +1276,89 @@ def school_referral_success(request):
         'page_title': 'Referral Submitted Successfully!',
         'reward_amount': '₹50,000'
     })
+
+
+@csrf_exempt
+def upload_schools_csv(request):
+    """
+    Admin interface for uploading schools CSV data
+    Accessible via web interface for easy bulk school imports
+    """
+    if request.method == 'GET':
+        # Show upload form
+        return JsonResponse({
+            'status': 'ready',
+            'message': 'Schools CSV Upload Interface',
+            'instructions': 'POST a CSV file with schools data to import',
+            'endpoint': '/upload-schools-csv/',
+            'sample_csv_path': '/sample_schools.csv',
+            'admin_link': '/admin/core/school/'
+        })
+    
+    elif request.method == 'POST':
+        try:
+            # Handle CSV upload
+            if 'csv_file' in request.FILES:
+                csv_file = request.FILES['csv_file']
+                
+                # Read CSV content
+                csv_content = csv_file.read().decode('utf-8')
+                csv_reader = csv.DictReader(io.StringIO(csv_content))
+                
+                imported_count = 0
+                errors = []
+                
+                for row_num, row in enumerate(csv_reader, 1):
+                    try:
+                        # Create or update school
+                        school, created = School.objects.get_or_create(
+                            name=row.get('name', '').strip(),
+                            defaults={
+                                'address': row.get('address', '').strip(),
+                                'city': row.get('city', '').strip(),
+                                'state': row.get('state', '').strip(),
+                                'postal_code': row.get('postal_code', '').strip(),
+                                'phone': row.get('phone', '').strip(),
+                                'email': row.get('email', '').strip(),
+                                'principal_name': row.get('principal_name', '').strip(),
+                                'website': row.get('website', '').strip(),
+                                'student_count': int(row.get('student_count', 0) or 0),
+                                'grade_levels': row.get('grade_levels', '').strip(),
+                                'school_type': row.get('school_type', 'public').strip(),
+                                'is_active': True
+                            }
+                        )
+                        
+                        if created:
+                            imported_count += 1
+                        
+                    except Exception as e:
+                        errors.append(f"Row {row_num}: {str(e)}")
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'message': f'Successfully imported {imported_count} schools',
+                    'imported_count': imported_count,
+                    'total_schools_now': School.objects.count(),
+                    'errors': errors[:10] if errors else [],  # Show first 10 errors
+                    'admin_link': '/admin/core/school/'
+                })
+            
+            else:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'No CSV file provided. Please upload a file with name "csv_file"'
+                }, status=400)
+                
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Upload failed: {str(e)}',
+                'error_type': type(e).__name__
+            }, status=500)
+    
+    else:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Only GET and POST methods allowed'
+        }, status=405)

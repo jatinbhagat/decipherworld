@@ -16,6 +16,7 @@ urlpatterns = [
     path('contact/', views.ContactView.as_view(), name='contact'),
     path('school-referral/', views.SchoolReferralView.as_view(), name='school_referral'),
     path('school-referral/success/', views.school_referral_success, name='school_referral_success'),
+    path('upload-schools-csv/', views.upload_schools_csv, name='upload_schools_csv'),
     path('migrate/', views.run_migrations, name='migrate'),
     path('migrate-robotic-buddy/', views.migrate_robotic_buddy, name='migrate_robotic_buddy'),
     path('check-robotic-buddy/', views.check_robotic_buddy, name='check_robotic_buddy'),
