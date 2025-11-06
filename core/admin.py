@@ -4,7 +4,7 @@ from django.db.models import Avg, Count
 from django.utils.safestring import mark_safe
 from .models import (
     DemoRequest, Course, SchoolDemoRequest, GameReview,
-    PhotoCategory, PhotoGallery, VideoTestimonial, SchoolReferral
+    PhotoCategory, PhotoGallery, VideoTestimonial, SchoolReferral, School
 )
 
 @admin.register(DemoRequest)
@@ -611,6 +611,37 @@ class VideoTestimonialAdmin(admin.ModelAdmin):
             'all': ('admin/css/gallery_admin.css',)
         }
         js = ('admin/js/video_admin.js',)
+
+
+@admin.register(School)
+class SchoolAdmin(admin.ModelAdmin):
+    list_display = ['name', 'city', 'state', 'school_type', 'student_count', 'is_active', 'created_at']
+    list_filter = ['school_type', 'state', 'is_active', 'created_at']
+    search_fields = ['name', 'city', 'state', 'principal_name', 'email']
+    readonly_fields = ['created_at', 'updated_at']
+    list_editable = ['is_active']
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name', 'school_type', 'is_active')
+        }),
+        ('Location', {
+            'fields': ('address', 'city', 'state', 'postal_code')
+        }),
+        ('Contact Information', {
+            'fields': ('phone', 'email', 'website', 'principal_name')
+        }),
+        ('Academic Details', {
+            'fields': ('student_count', 'grade_levels')
+        }),
+        ('System Information', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related()
 
 
 # Add custom admin site configuration for better branding
