@@ -11,9 +11,9 @@ import sys
 import io
 from .models import (
     DemoRequest, Course, SchoolDemoRequest, GameReview,
-    PhotoCategory, PhotoGallery, VideoTestimonial
+    PhotoCategory, PhotoGallery, VideoTestimonial, SchoolReferral
 )
-from .forms import DemoRequestForm, SchoolDemoRequestForm
+from .forms import DemoRequestForm, SchoolDemoRequestForm, SchoolReferralForm
 from .analytics import track_page_view, track_form_submission, track_error
 
 def simple_home_test(request):
@@ -1132,3 +1132,147 @@ def analytics_track_api(request):
             'status': 'error',
             'message': f'Tracking error: {str(e)}'
         }, status=500)
+
+
+class SchoolReferralView(FormView):
+    """School referral program page with ₹50,000 reward"""
+    template_name = 'core/school_referral.html'
+    form_class = SchoolReferralForm
+    success_url = '/school-referral/success/'
+    
+    def get(self, request, *args, **kwargs):
+        # Track referral page view
+        track_page_view(request, 'School Referral Page', {
+            'page_category': 'Referral',
+            'reward_amount': 50000
+        })
+        return super().get(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Refer a School & Earn ₹50,000',
+            'reward_amount': '₹50,000',
+            'program_description': 'Help schools discover AI-powered education and earn rewards for successful referrals',
+        })
+        return context
+    
+    def form_valid(self, form):
+        try:
+            # Save the referral
+            referral = form.save()
+            
+            # Send email notification to admin
+            self.send_referral_notification(referral)
+            
+            # Track successful submission
+            track_form_submission(self.request, 'school_referral', {
+                'school_name': referral.school_name,
+                'referrer_email': referral.referrer_email,
+                'school_board': referral.school_board,
+                'interest_level': referral.interest_level
+            })
+            
+            messages.success(
+                self.request,
+                f"Thank you! Your referral for {referral.school_name} has been submitted successfully. "
+                f"We'll review it and contact the school within 2-3 business days. "
+                f"You'll be eligible for ₹50,000 reward if the referral converts!"
+            )
+            
+            return redirect('core:school_referral_success')
+            
+        except Exception as e:
+            # Track error
+            track_error(self.request, 'school_referral_submission_error', {
+                'error': str(e),
+                'form_data': form.cleaned_data if form.is_valid() else 'invalid'
+            })
+            
+            messages.error(
+                self.request,
+                "Sorry, there was an error submitting your referral. Please try again or contact support."
+            )
+            return self.form_invalid(form)
+    
+    def form_invalid(self, form):
+        track_form_submission(self.request, 'school_referral_failed', {
+            'errors': form.errors.as_json()
+        })
+        return super().form_invalid(form)
+    
+    def send_referral_notification(self, referral):
+        """Send email notification to admin about new referral"""
+        try:
+            subject = f'🎯 New School Referral: {referral.school_name}'
+            
+            message = f"""
+New School Referral Submitted!
+
+REFERRAL DETAILS:
+═══════════════════════════════════════
+Referrer: {referral.referrer_name}
+Email: {referral.referrer_email}
+Phone: {referral.referrer_phone}
+Relationship: {referral.referrer_relationship}
+
+SCHOOL INFORMATION:
+═══════════════════════════════════════
+School Name: {referral.school_name}
+Contact Person: {referral.contact_person_name} ({referral.contact_person_designation})
+School Email: {referral.contact_person_email}
+School Phone: {referral.contact_person_phone}
+
+Address: {referral.school_address}
+City: {referral.school_city}, {referral.school_state} - {referral.school_pincode}
+
+SCHOOL DETAILS:
+═══════════════════════════════════════
+School Board: {referral.get_school_board_display()}
+Interest Level: {referral.get_interest_level_display()}
+
+Current Programs: {referral.current_education_programs or 'Not specified'}
+
+REFERRAL INFORMATION:
+═══════════════════════════════════════
+Reward Amount: {referral.get_reward_display()}
+
+ADDITIONAL NOTES:
+═══════════════════════════════════════
+{referral.additional_notes or 'None'}
+
+═══════════════════════════════════════
+Submitted on: {referral.created_at.strftime('%B %d, %Y at %I:%M %p')}
+Referral ID: {referral.id}
+
+Next Steps:
+1. Review the referral within 24 hours
+2. Contact the school to validate interest
+3. Update status in admin panel
+4. Process reward if referral converts
+            """
+            
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=['jatin.bhagat@decipherworld.com'],
+                fail_silently=False,
+            )
+            
+        except Exception as e:
+            # Log error but don't fail the form submission
+            print(f"Error sending referral notification email: {e}")
+
+
+def school_referral_success(request):
+    """Success page after school referral submission"""
+    track_page_view(request, 'School Referral Success', {
+        'page_category': 'Referral',
+        'conversion': True
+    })
+    
+    return render(request, 'core/school_referral_success.html', {
+        'page_title': 'Referral Submitted Successfully!',
+        'reward_amount': '₹50,000'
+    })

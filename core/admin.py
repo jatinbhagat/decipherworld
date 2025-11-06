@@ -4,7 +4,7 @@ from django.db.models import Avg, Count
 from django.utils.safestring import mark_safe
 from .models import (
     DemoRequest, Course, SchoolDemoRequest, GameReview,
-    PhotoCategory, PhotoGallery, VideoTestimonial
+    PhotoCategory, PhotoGallery, VideoTestimonial, SchoolReferral
 )
 
 @admin.register(DemoRequest)
@@ -85,6 +85,168 @@ class SchoolDemoRequestAdmin(admin.ModelAdmin):
         """Display interested products in a readable format"""
         return ', '.join(obj.get_products_display())
     get_products_display.short_description = 'Interested Products'
+
+
+@admin.register(SchoolReferral)
+class SchoolReferralAdmin(admin.ModelAdmin):
+    list_display = [
+        'school_name', 'referrer_name', 'contact_person_name', 'school_board', 
+        'status', 'reward_amount', 'reward_paid', 'created_at'
+    ]
+    list_filter = [
+        'status', 'reward_paid', 'interest_level', 
+        'school_board', 'created_at', 'contacted_at'
+    ]
+    search_fields = [
+        'school_name', 'referrer_name', 'referrer_email', 'contact_person_name',
+        'contact_person_email', 'school_city', 'school_state'
+    ]
+    list_editable = ['status', 'reward_paid']
+    readonly_fields = [
+        'created_at', 'updated_at', 'get_reward_display'
+    ]
+    ordering = ['-created_at']
+    
+    fieldsets = (
+        ('Referral Status', {
+            'fields': ('status', 'admin_notes', 'contacted_at')
+        }),
+        ('Referrer Information', {
+            'fields': ('referrer_name', 'referrer_email', 'referrer_phone', 'referrer_relationship')
+        }),
+        ('School Information', {
+            'fields': (
+                'school_name', 'school_address', 'school_city', 'school_state', 'school_pincode'
+            )
+        }),
+        ('School Contact', {
+            'fields': (
+                'contact_person_name', 'contact_person_designation', 
+                'contact_person_email', 'contact_person_phone'
+            )
+        }),
+        ('School Details', {
+            'fields': (
+                'school_board', 'current_education_programs'
+            )
+        }),
+        ('Interest & Additional Info', {
+            'fields': ('interest_level', 'additional_notes')
+        }),
+        ('Reward Information', {
+            'fields': ('reward_amount', 'get_reward_display', 'reward_paid', 'reward_paid_date')
+        }),
+        ('System Information', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    actions = [
+        'mark_as_contacted', 'mark_as_qualified', 'mark_as_converted', 
+        'mark_reward_as_paid', 'send_follow_up_email'
+    ]
+    
+    def get_status_badge(self, obj):
+        """Display status with colored badge"""
+        status_colors = {
+            'pending': '#f59e0b',      # Orange
+            'contacted': '#3b82f6',    # Blue  
+            'qualified': '#10b981',    # Green
+            'converted': '#8b5cf6',    # Purple
+            'rejected': '#ef4444',     # Red
+        }
+        
+        color = status_colors.get(obj.status, '#6b7280')
+        return format_html(
+            '<span style="background-color: {}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">{}</span>',
+            color, obj.get_status_display()
+        )
+    get_status_badge.short_description = 'Status'
+    get_status_badge.admin_order_field = 'status'
+    
+    
+    def get_reward_display(self, obj):
+        """Display formatted reward amount"""
+        return obj.get_reward_display()
+    get_reward_display.short_description = 'Reward Amount'
+    
+    # Admin Actions
+    def mark_as_contacted(self, request, queryset):
+        """Mark referrals as contacted"""
+        from django.utils import timezone
+        count = queryset.update(status='contacted', contacted_at=timezone.now())
+        self.message_user(request, f'Marked {count} referrals as contacted.')
+    mark_as_contacted.short_description = "Mark as contacted"
+    
+    def mark_as_qualified(self, request, queryset):
+        """Mark referrals as qualified"""
+        count = queryset.update(status='qualified')
+        self.message_user(request, f'Marked {count} referrals as qualified.')
+    mark_as_qualified.short_description = "Mark as qualified"
+    
+    def mark_as_converted(self, request, queryset):
+        """Mark referrals as converted"""
+        count = queryset.update(status='converted')
+        self.message_user(request, f'Marked {count} referrals as converted.')
+    mark_as_converted.short_description = "Mark as converted"
+    
+    def mark_reward_as_paid(self, request, queryset):
+        """Mark rewards as paid"""
+        from django.utils import timezone
+        count = queryset.filter(status='converted').update(
+            reward_paid=True, 
+            reward_paid_date=timezone.now()
+        )
+        self.message_user(request, f'Marked rewards as paid for {count} converted referrals.')
+    mark_reward_as_paid.short_description = "Mark reward as paid (converted only)"
+    
+    def send_follow_up_email(self, request, queryset):
+        """Send follow-up email to referrers"""
+        count = 0
+        for referral in queryset:
+            try:
+                # Here you could send follow-up emails
+                # For now, just count the action
+                count += 1
+            except Exception as e:
+                self.message_user(request, f'Error sending email for {referral.school_name}: {e}', level='ERROR')
+        
+        if count > 0:
+            self.message_user(request, f'Follow-up emails sent for {count} referrals.')
+    send_follow_up_email.short_description = "Send follow-up email to referrers"
+    
+    def changelist_view(self, request, extra_context=None):
+        """Add referral statistics to changelist"""
+        extra_context = extra_context or {}
+        
+        # Get referral statistics
+        referrals = SchoolReferral.objects.all()
+        
+        total_referrals = referrals.count()
+        qualified_referrals = sum(1 for r in referrals if r.is_qualified())
+        converted_referrals = referrals.filter(status='converted').count()
+        total_rewards_pending = referrals.filter(
+            status='converted', reward_paid=False
+        ).count() * 50000
+        total_rewards_paid = referrals.filter(reward_paid=True).count() * 50000
+        
+        # Status distribution
+        status_stats = referrals.values('status').annotate(
+            count=Count('id')
+        ).order_by('status')
+        
+        extra_context.update({
+            'total_referrals': total_referrals,
+            'qualified_referrals': qualified_referrals,
+            'converted_referrals': converted_referrals,
+            'total_rewards_pending': f"₹{total_rewards_pending:,}",
+            'total_rewards_paid': f"₹{total_rewards_paid:,}",
+            'status_stats': status_stats,
+        })
+        
+        return super().changelist_view(request, extra_context)
+
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):

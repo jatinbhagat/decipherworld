@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Referral Submitted Successfully! | DecipherWorld{% endblock %}
+
+{% block meta_description %}Your school referral has been submitted successfully. Thank you for helping schools discover AI-powered education.{% endblock %}
+
+{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+    
+    <!-- Success Hero Section -->
+    <section class="py-20">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            
+            <!-- Success Animation/Icon -->
+            <div class="mb-8">
+                <div class="w-32 h-32 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-check text-white text-5xl"></i>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold text-green-800 mb-4">
+                    Referral Submitted Successfully!
+                </h1>
+                <p class="text-xl md:text-2xl text-green-700 mb-8">
+                    Thank you for referring a school to DecipherWorld. Your referral is now under review.
+                </p>
+            </div>
+
+            <!-- Reward Highlight -->
+            <div class="bg-white rounded-xl shadow-lg border-4 border-green-200 p-8 mb-12">
+                <div class="flex items-center justify-center mb-6">
+                    <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-money-bill-wave text-white text-2xl"></i>
+                    </div>
+                    <div class="text-left">
+                        <h2 class="text-3xl font-bold text-green-800">{{ reward_amount }}</h2>
+                        <p class="text-green-600">Potential Reward</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 text-lg">
+                    You'll earn this reward when the referred school makes their first payment and starts using our platform.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- What Happens Next Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    What Happens Next?
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Here's the timeline for your referral process
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Step 1 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-envelope text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Within 24 Hours</h3>
+                    <p class="text-gray-600">
+                        We'll send you a confirmation email with your referral details and tracking information
+                    </p>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-phone text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">2-3 Business Days</h3>
+                    <p class="text-gray-600">
+                        Our team will contact the school to discuss DecipherWorld's AI education programs
+                    </p>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-clipboard-check text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">1-2 Weeks</h3>
+                    <p class="text-gray-600">
+                        We'll evaluate the school's interest and fit for our programs, then provide an update
+                    </p>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-trophy text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Upon Conversion</h3>
+                    <p class="text-gray-600">
+                        Receive your {{ reward_amount }} reward when the school makes their first payment
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Information -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">
+                Questions About Your Referral?
+            </h2>
+            <p class="text-xl text-gray-600 mb-8">
+                Our team is here to help you track your referral progress
+            </p>
+            
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-envelope text-white"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Email Support</h3>
+                    <p class="text-gray-600">jatin.bhagat@decipherworld.com</p>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-clock text-white"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Response Time</h3>
+                    <p class="text-gray-600">Within 24 hours</p>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-chart-line text-white"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Track Progress</h3>
+                    <p class="text-gray-600">Regular updates via email</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <section class="py-16 bg-white">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">
+                Want to Earn More?
+            </h2>
+            
+            <div class="flex flex-wrap justify-center gap-6">
+                <a href="{% url 'core:school_referral' %}" class="btn btn-primary btn-lg px-8 py-4">
+                    <i class="fas fa-plus mr-2"></i>
+                    Refer Another School
+                </a>
+                
+                <a href="{% url 'core:home' %}" class="btn btn-outline btn-lg px-8 py-4">
+                    <i class="fas fa-home mr-2"></i>
+                    Back to Homepage
+                </a>
+                
+                <a href="{% url 'core:contact' %}" class="btn btn-secondary btn-lg px-8 py-4">
+                    <i class="fas fa-envelope mr-2"></i>
+                    Contact Support
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Referral Program Benefits -->
+    <section class="py-16 bg-gradient-to-br from-blue-900 to-purple-900 text-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">
+                    Why Schools Love DecipherWorld
+                </h2>
+                <p class="text-xl text-blue-100">
+                    You're helping schools discover these amazing benefits
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-robot text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">AI-Powered Learning</h3>
+                    <p class="text-blue-100">
+                        Personalized learning experiences that adapt to each student's pace and style
+                    </p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-gamepad text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Gamified Education</h3>
+                    <p class="text-blue-100">
+                        Interactive games that make learning fun and engaging for students
+                    </p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-chart-line text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Teacher Productivity</h3>
+                    <p class="text-blue-100">
+                        5X productivity boost for teachers with AI-powered tools and automation
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- Auto-redirect to home after 2 minutes (optional) -->
+<script>
+// Optional: Show a subtle notification after 30 seconds
+setTimeout(function() {
+    // Could show a subtle reminder to refer more schools
+}, 30000);
+
+// Track successful referral submission
+if (typeof gtag !== 'undefined') {
+    gtag('event', 'referral_submitted', {
+        'event_category': 'school_referral',
+        'event_label': 'success_page_view'
+    });
+}
+</script>
+
+{% endblock %}

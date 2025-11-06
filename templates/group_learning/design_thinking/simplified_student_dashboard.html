@@ -5,6 +5,12 @@
 {% block description %}Simplified student interface for Design Thinking Challenge. Quick inputs and auto-progression.{% endblock %}
 
 {% block extra_head %}
+<script>
+// Override DaisyUI theme configuration for classroom background
+document.documentElement.style.setProperty('--fallback-b1', '240 248 255');
+document.documentElement.style.setProperty('--fallback-b2', '230 243 255'); 
+document.documentElement.style.setProperty('--fallback-b3', '255 248 220');
+</script>
 <style>
 /* Simplified Student Dashboard Design System */
 :root {
@@ -26,10 +32,15 @@
     --paper-white: #fefefe;
 }
 
-/* BULLETPROOF Immersive classroom background with maximum specificity */
-body[data-theme="games"], body[data-theme="modern"], body {
-    background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #f0fdf4 100%) !important;
-    background-attachment: fixed !important;
+/* Override DaisyUI theme colors and set vibrant green classroom background */
+[data-theme="games"] {
+    --b1: 240 253 244; /* Light green background */
+    --b2: 220 252 231; /* Medium green */  
+    --b3: 187 247 208; /* Brighter green accent */
+}
+
+body {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 25%, #60a5fa 50%, #93c5fd 75%, #dbeafe 100%);
     min-height: 100vh;
     position: relative;
 }
@@ -42,25 +53,99 @@ body::before {
     right: 0;
     bottom: 0;
     background-image: 
-        /* Subtle desk pattern */
-        radial-gradient(circle at 25% 25%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
-        /* Chalkboard grid pattern */
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) !important;
+        /* Interactive Chalkboard with Design Thinking Process */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect x="20" y="20" width="260" height="160" fill="%23065f46" stroke="%23fbbf24" stroke-width="4" rx="8"/><text x="40" y="50" font-family="Arial" font-size="16" fill="%23ffffff" font-weight="bold">DESIGN THINKING</text><circle cx="60" cy="80" r="15" fill="%23ef4444"/><text x="52" y="88" font-family="Arial" font-size="14" fill="%23ffffff">👁️</text><text x="85" y="88" font-family="Arial" font-size="12" fill="%23fbbf24">EMPATHY</text><circle cx="150" cy="80" r="15" fill="%23f59e0b"/><text x="142" y="88" font-family="Arial" font-size="14" fill="%23ffffff">🎯</text><text x="175" y="88" font-family="Arial" font-size="12" fill="%23fbbf24">DEFINE</text><circle cx="240" cy="80" r="15" fill="%238b5cf6"/><text x="232" y="88" font-family="Arial" font-size="14" fill="%23ffffff">💡</text><text x="40" y="130" font-family="Arial" font-size="12" fill="%23fbbf24">IDEATE</text><circle cx="120" cy="120" r="15" fill="%2316a34a"/><text x="112" y="128" font-family="Arial" font-size="14" fill="%23ffffff">🛠️</text><text x="145" y="128" font-family="Arial" font-size="12" fill="%23fbbf24">PROTOTYPE</text><path d="M 75 80 L 135 80 M 165 80 L 225 80 M 150 95 L 120 105" stroke="%23fbbf24" stroke-width="3" fill="none"/></svg>'),
+        /* Modern Student Workstation */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="180" height="120" viewBox="0 0 180 120"><rect x="20" y="70" width="140" height="40" fill="%23d4b896" stroke="%23a0895c" stroke-width="3" rx="5"/><rect x="25" y="60" width="130" height="12" fill="%23f3e8d3" stroke="%23a0895c" stroke-width="2" rx="3"/><rect x="40" y="30" width="25" height="30" fill="%232563eb" rx="3"/><text x="47" y="50" font-family="Arial" font-size="8" fill="%23ffffff">📚</text><rect x="75" y="35" width="20" height="25" fill="%23dc2626" rx="2"/><text x="80" y="52" font-family="Arial" font-size="8" fill="%23ffffff">📖</text><circle cx="110" cy="45" r="8" fill="%23fbbf24"/><text x="105" y="50" font-family="Arial" font-size="10" fill="%23ffffff">✏️</text><rect x="130" y="40" width="15" height="20" fill="%2316a34a" rx="2"/><text x="133" y="55" font-family="Arial" font-size="8" fill="%23ffffff">📝</text></svg>'),
+        /* Creative Brain with Ideas */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="100" viewBox="0 0 120 100"><ellipse cx="60" cy="50" rx="35" ry="30" fill="%23f472b6" stroke="%23be185d" stroke-width="3"/><circle cx="45" cy="40" r="4" fill="%23fbbf24"/><circle cx="60" cy="35" r="3" fill="%2316a34a"/><circle cx="75" cy="42" r="4" fill="%232563eb"/><path d="M 40 55 Q 50 45 60 55 Q 70 45 80 55" stroke="%23ffffff" stroke-width="2" fill="none"/><circle cx="30" cy="25" r="6" fill="%23fbbf24" opacity="0.8"/><text x="26" y="30" font-family="Arial" font-size="8" fill="%23ffffff">💡</text><circle cx="90" cy="20" r="5" fill="%23ef4444" opacity="0.8"/><text x="87" y="25" font-family="Arial" font-size="6" fill="%23ffffff">❤️</text><circle cx="100" cy="65" r="4" fill="%2316a34a" opacity="0.8"/><text x="97" y="69" font-family="Arial" font-size="6" fill="%23ffffff">⚙️</text></svg>'),
+        /* Collaboration Zone */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="140" viewBox="0 0 160 140"><circle cx="50" cy="60" r="20" fill="%234f46e5" stroke="%23ffffff" stroke-width="3"/><text x="43" y="68" font-family="Arial" font-size="16" fill="%23ffffff">👨</text><circle cx="110" cy="60" r="20" fill="%23ec4899" stroke="%23ffffff" stroke-width="3"/><text x="103" y="68" font-family="Arial" font-size="16" fill="%23ffffff">👩</text><circle cx="80" cy="100" r="18" fill="%2316a34a" stroke="%23ffffff" stroke-width="3"/><text x="74" y="108" font-family="Arial" font-size="14" fill="%23ffffff">👦</text><path d="M 65 70 L 95 70 M 60 80 L 80 85 M 100 80 L 80 85" stroke="%23fbbf24" stroke-width="4" fill="none"/><circle cx="80" cy="30" r="12" fill="%23fbbf24"/><text x="74" y="37" font-family="Arial" font-size="12" fill="%23065f46">💭</text></svg>'),
+        /* Innovation Laboratory */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120" viewBox="0 0 200 120"><rect x="30" y="80" width="140" height="30" fill="%236b7280" stroke="%23374151" stroke-width="2" rx="4"/><circle cx="60" cy="60" r="15" fill="%23ef4444" opacity="0.8"/><circle cx="60" cy="45" r="8" fill="%23fbbf24"/><rect x="50" y="70" width="20" height="10" fill="%234b5563" rx="2"/><circle cx="100" cy="55" r="12" fill="%2316a34a" opacity="0.7"/><circle cx="100" cy="42" r="6" fill="%23065f46"/><rect x="92" y="67" width="16" height="8" fill="%234b5563" rx="1"/><circle cx="140" cy="58" r="14" fill="%238b5cf6" opacity="0.8"/><circle cx="140" cy="44" r="7" fill="%235b21b6"/><rect x="132" y="72" width="16" height="8" fill="%234b5563" rx="1"/><path d="M 75 50 Q 85 40 95 50 M 115 50 Q 125 40 135 50" stroke="%23fbbf24" stroke-width="2" fill="none"/></svg>'),
+        /* Growth and Nature Elements */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="160" viewBox="0 0 140 160"><ellipse cx="70" cy="140" rx="40" ry="15" fill="%2322c55e" opacity="0.6"/><rect x="65" y="80" width="10" height="60" fill="%23065f46"/><ellipse cx="45" cy="70" rx="15" ry="20" fill="%2316a34a"/><ellipse cx="70" cy="65" rx="18" ry="25" fill="%2322c55e"/><ellipse cx="95" cy="70" rx="15" ry="20" fill="%2334d399"/><circle cx="35" cy="60" r="8" fill="%23fbbf24"/><circle cx="70" cy="50" r="6" fill="%23f59e0b"/><circle cx="105" cy="58" r="7" fill="%23ef4444"/><path d="M 35 52 Q 40 45 45 52 M 70 42 Q 75 35 80 42 M 105 50 Q 110 43 115 50" stroke="%23fbbf24" stroke-width="2" fill="none"/><text x="30" y="30" font-family="Arial" font-size="12" fill="%23065f46">🌱</text><text x="60" y="25" font-family="Arial" font-size="14" fill="%23065f46">🌿</text><text x="100" y="35" font-family="Arial" font-size="12" fill="%23065f46">🌳</text></svg>') !important;
     background-size: 
-        300px 300px,
-        400px 400px,
-        20px 20px,
-        20px 20px !important;
+        200px 150px,
+        300px 180px,
+        120px 90px,
+        100px 120px,
+        150px 100px,
+        250px 150px !important;
     background-position: 
-        0 0,
-        100px 100px,
-        0 0,
-        0 0 !important;
+        5% 85%,
+        85% 10%,
+        25% 45%,
+        75% 70%,
+        50% 25%,
+        10% 15% !important;
+    background-repeat: no-repeat !important;
+    opacity: 0.4;
     pointer-events: none;
     z-index: -1 !important;
     display: block !important;
+}
+
+/* Additional floating classroom elements */
+body::after {
+    content: '' !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        /* Design Process Icons */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="25" fill="%23fbbf24" opacity="0.9"/><text x="25" y="38" font-family="Arial" font-size="20" fill="%23065f46">👁️</text><text x="20" y="52" font-family="Arial" font-size="8" fill="%23065f46" font-weight="bold">EMPATHY</text></svg>'),
+        /* Innovation Sparks */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="%23ef4444" opacity="0.8"/><text x="20" y="32" font-family="Arial" font-size="16" fill="%23ffffff">💡</text><circle cx="10" cy="10" r="3" fill="%23fbbf24"/><circle cx="40" cy="15" r="2" fill="%23f59e0b"/><circle cx="35" cy="40" r="3" fill="%23fbbf24"/><circle cx="15" cy="35" r="2" fill="%23f59e0b"/></svg>'),
+        /* Collaboration Connections */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="70" height="50" viewBox="0 0 70 50"><circle cx="15" cy="25" r="12" fill="%2316a34a" opacity="0.8"/><text x="10" y="30" font-family="Arial" font-size="12" fill="%23ffffff">👦</text><circle cx="55" cy="25" r="12" fill="%238b5cf6" opacity="0.8"/><text x="50" y="30" font-family="Arial" font-size="12" fill="%23ffffff">👧</text><path d="M 27 25 L 43 25" stroke="%23fbbf24" stroke-width="4"/><circle cx="35" cy="25" r="3" fill="%23fbbf24"/></svg>'),
+        /* Growth Mindset Trees */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="80" viewBox="0 0 60 80"><ellipse cx="30" cy="70" rx="20" ry="8" fill="%2322c55e" opacity="0.6"/><rect x="28" y="45" width="4" height="25" fill="%23065f46"/><circle cx="30" cy="30" r="15" fill="%2316a34a" opacity="0.8"/><text x="25" y="36" font-family="Arial" font-size="12" fill="%23ffffff">🌳</text><circle cx="20" cy="20" r="4" fill="%23fbbf24"/><circle cx="40" cy="25" r="3" fill="%23f59e0b"/><circle cx="35" cy="15" r="3" fill="%23ef4444"/></svg>'),
+        /* Creative Tools */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="60" viewBox="0 0 80 60"><rect x="10" y="25" width="30" height="4" fill="%23fbbf24" rx="2"/><circle cx="50" cy="27" r="8" fill="%23ef4444" opacity="0.8"/><text x="46" y="32" font-family="Arial" font-size="8" fill="%23ffffff">✏️</text><rect x="15" y="40" width="20" height="15" fill="%232563eb" opacity="0.7" rx="2"/><text x="20" y="50" font-family="Arial" font-size="8" fill="%23ffffff">📐</text><circle cx="65" cy="45" r="6" fill="%2316a34a"/><text x="61" y="49" font-family="Arial" font-size="6" fill="%23ffffff">📏</text></svg>'),
+        /* Classroom Pencils and Pens */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="80" viewBox="0 0 100 80"><rect x="10" y="20" width="35" height="6" fill="%23fbbf24" rx="3"/><rect x="8" y="18" width="6" height="10" fill="%23f59e0b" rx="1"/><rect x="47" y="22" width="2" height="2" fill="%23374151"/><rect x="15" y="35" width="40" height="5" fill="%232563eb" rx="2"/><rect x="13" y="33" width="5" height="9" fill="%231d4ed8" rx="1"/><circle cx="57" cy="37" r="2" fill="%23374151"/><rect x="25" y="50" width="30" height="4" fill="%23dc2626" rx="2"/><rect x="23" y="48" width="4" height="8" fill="%23b91c1c" rx="1"/><rect x="57" y="51" width="2" height="2" fill="%23374151"/><rect x="70" y="15" width="25" height="3" fill="%2316a34a" rx="1"/><circle cx="96" cy="16" r="1" fill="%23374151"/></svg>'),
+        /* Whiteboard with Markers */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="150" height="100" viewBox="0 0 150 100"><rect x="10" y="15" width="120" height="70" fill="%23ffffff" stroke="%23374151" stroke-width="3" rx="4"/><rect x="20" y="25" width="100" height="50" fill="%23f9fafb" stroke="%23d1d5db" stroke-width="1" rx="2"/><text x="25" y="40" font-family="Arial" font-size="8" fill="%232563eb">DESIGN THINKING</text><text x="25" y="52" font-family="Arial" font-size="6" fill="%23ef4444">1. EMPATHY</text><text x="25" y="62" font-family="Arial" font-size="6" fill="%23f59e0b">2. DEFINE</text><text x="25" y="72" font-family="Arial" font-size="6" fill="%238b5cf6">3. IDEATE</text><rect x="135" y="20" width="3" height="15" fill="%23ef4444" rx="1"/><rect x="135" y="40" width="3" height="15" fill="%232563eb" rx="1"/><rect x="135" y="60" width="3" height="15" fill="%2316a34a" rx="1"/></svg>'),
+        /* School Supplies Collection */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="90" viewBox="0 0 120 90"><circle cx="25" cy="25" r="12" fill="%23fbbf24" opacity="0.8"/><rect x="20" y="20" width="10" height="10" fill="%23ffffff" rx="1"/><text x="22" y="28" font-family="Arial" font-size="6" fill="%23374151">⚪</text><rect x="50" y="15" width="20" height="4" fill="%23ef4444" rx="2"/><rect x="52" y="12" width="16" height="2" fill="%23f59e0b" rx="1"/><rect x="48" y="20" width="24" height="8" fill="%23ffffff" stroke="%23d1d5db" stroke-width="1" rx="2"/><circle cx="90" cy="25" r="8" fill="%232563eb" opacity="0.7"/><rect x="85" y="30" width="10" height="3" fill="%231d4ed8"/><rect x="20" y="50" width="25" height="3" fill="%236b7280" rx="1"/><circle cx="22" cy="56" r="2" fill="%234b5563"/><circle cx="43" cy="56" r="2" fill="%234b5563"/><rect x="55" y="45" width="15" height="20" fill="%2316a34a" rx="2"/><text x="58" y="58" font-family="Arial" font-size="8" fill="%23ffffff">📒</text><circle cx="90" cy="55" r="6" fill="%23f59e0b"/><rect x="88" y="50" width="4" height="2" fill="%23d97706"/></svg>'),
+        /* Calculator and Tech Tools */
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="100" viewBox="0 0 80 100"><rect x="15" y="20" width="30" height="40" fill="%23374151" stroke="%23111827" stroke-width="2" rx="3"/><rect x="18" y="23" width="24" height="8" fill="%23065f46" rx="1"/><text x="25" y="29" font-family="Arial" font-size="6" fill="%23ffffff">123</text><circle cx="22" cy="35" r="2" fill="%23d1d5db"/><circle cx="30" cy="35" r="2" fill="%23d1d5db"/><circle cx="38" cy="35" r="2" fill="%23d1d5db"/><circle cx="22" cy="42" r="2" fill="%23d1d5db"/><circle cx="30" cy="42" r="2" fill="%23d1d5db"/><circle cx="38" cy="42" r="2" fill="%23d1d5db"/><circle cx="22" cy="49" r="2" fill="%23d1d5db"/><circle cx="30" cy="49" r="2" fill="%23d1d5db"/><circle cx="38" cy="49" r="2" fill="%23f59e0b"/><rect x="50" y="30" width="20" height="25" fill="%232563eb" rx="2"/><text x="55" y="45" font-family="Arial" font-size="8" fill="%23ffffff">📱</text></svg>') !important;
+    background-size: 
+        60px 70px,
+        45px 55px,
+        70px 50px,
+        60px 80px,
+        80px 60px,
+        100px 80px,
+        150px 100px,
+        120px 90px,
+        80px 100px !important;
+    background-position: 
+        85% 20%,
+        10% 65%,
+        75% 75%,
+        25% 15%,
+        95% 60%,
+        5% 25%,
+        50% 5%,
+        70% 40%,
+        40% 85% !important;
+    background-repeat: no-repeat !important;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: -1 !important;
+    display: block !important;
+    animation: floatClassroom 20s ease-in-out infinite;
+}
+
+@keyframes floatClassroom {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-10px) rotate(1deg); }
+    50% { transform: translateY(-5px) rotate(-1deg); }
+    75% { transform: translateY(-15px) rotate(0.5deg); }
 }
 
 /* CRITICAL FIX: Ensure main content doesn't block classroom background */
@@ -77,6 +162,41 @@ main {
     position: relative;
     z-index: 1;
     background: transparent; /* Allow classroom background to show through */
+}
+
+/* PROMINENT Step Progress Display */
+#progress-text {
+    background: linear-gradient(135deg, #ef4444 0%, #f97316 50%, #fbbf24 100%) !important;
+    color: white !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    padding: 12px 24px !important;
+    border-radius: 25px !important;
+    border: 3px solid #ffffff !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(239, 68, 68, 0.5) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    animation: pulseStep 2s ease-in-out infinite !important;
+    backdrop-filter: blur(10px) !important;
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+#progress-text::before {
+    content: '🎯 ' !important;
+    font-size: 20px !important;
+    margin-right: 8px !important;
+}
+
+@keyframes pulseStep {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(239, 68, 68, 0.5);
+    }
+    50% { 
+        transform: scale(1.05); 
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4), 0 0 0 5px rgba(239, 68, 68, 0.7);
+    }
 }
 
 /* Phase progress bar - classroom themed */
@@ -115,9 +235,10 @@ main {
     100% { transform: translateX(100%); }
 }
 
-/* Current phase card */
+/* Current phase card - transparent to show classroom theme */
 .phase-card {
-    background: white;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 24px;
     box-shadow: var(--card-shadow);
@@ -225,7 +346,8 @@ main {
     border: 2px solid var(--gray-200);
     border-radius: 8px;
     font-size: 16px;
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     cursor: pointer;
     transition: border-color 0.2s ease;
 }
@@ -362,7 +484,8 @@ main {
 }
 
 .simplified-inputs-container .simple-input-group {
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 16px;
@@ -503,7 +626,8 @@ main {
 }
 
 .team-info {
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 24px;
@@ -542,7 +666,8 @@ main {
 }
 
 .feedback-section {
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 24px;
@@ -604,6 +729,143 @@ main {
     color: #64748b;
     margin-top: 8px;
     text-align: right;
+}
+
+/* Enhanced Feedback Styles */
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #bbf7d0;
+}
+
+.teacher-name {
+    font-weight: 600;
+    color: #059669;
+    font-size: 14px;
+}
+
+.feedback-time {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.feedback-score {
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+    display: inline-block;
+}
+
+/* Score Level Styles */
+.score-excellent {
+    color: #059669 !important;
+    font-weight: bold;
+}
+
+.score-good {
+    color: #0891b2 !important;
+    font-weight: bold;
+}
+
+.score-fair {
+    color: #f59e0b !important;
+    font-weight: bold;
+}
+
+.score-poor {
+    color: #dc2626 !important;
+    font-weight: bold;
+}
+
+/* Feedback Notification */
+.feedback-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border: 2px solid #10b981;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    max-width: 350px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.feedback-notification .notification-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.feedback-notification .notification-content {
+    flex: 1;
+}
+
+.feedback-notification .notification-title {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.feedback-notification .notification-preview {
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.feedback-notification .notification-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.feedback-notification .notification-close:hover {
+    color: #dc2626;
+}
+
+/* Pulse highlight animation */
+.pulse-highlight {
+    animation: pulseHighlight 2s ease-in-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulseHighlight {
+    0%, 100% { 
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); 
+    }
+    50% { 
+        box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.1); 
+    }
 }
 
 .completion-actions {
@@ -719,7 +981,8 @@ main {
 .step-item {
     display: flex;
     align-items: center;
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     padding: 16px;
     border-radius: 12px;
     border: 2px solid #e2e8f0;
@@ -773,7 +1036,8 @@ main {
 
 /* Empathy Phase Styles */
 .empathy-card, .define-card {
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     border-radius: 16px;
     padding: 24px;
     border: 3px solid #10b981;
@@ -897,7 +1161,8 @@ main {
     justify-content: center;
     font-size: 12px;
     color: white;
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     transition: all 0.2s ease;
 }
 
@@ -1185,7 +1450,8 @@ main {
     border: 2px solid #d1d5db;
     border-radius: 8px;
     font-size: 14px;
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     transition: border-color 0.2s ease;
 }
 
@@ -1214,7 +1480,8 @@ main {
     font-size: 16px;
     color: #0f172a;
     font-weight: 600;
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     padding: 16px;
     border-radius: 8px;
     border: 1px solid #fbbf24;
@@ -1252,7 +1519,8 @@ main {
 
 /* Step 3: Ideate Phase Styles */
 .ideate-card {
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     border-radius: 16px;
     padding: 24px;
     border: 3px solid #8b5cf6; /* Purple theme for ideate */
@@ -1289,7 +1557,8 @@ main {
 }
 
 .hmw-display {
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     padding: 12px 16px;
     border-radius: 8px;
     font-size: 16px;
@@ -1361,7 +1630,8 @@ main {
     display: flex;
     align-items: center;
     padding: 12px 16px;
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1380,7 +1650,8 @@ main {
 
 /* Step 4: Prototype Phase Styles */
 .prototype-card {
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     border-radius: 16px;
     padding: 24px;
     border: 3px solid #f97316; /* Orange theme for prototype */
@@ -1393,7 +1664,8 @@ main {
 }
 
 .prototype-card .why-it-matters {
-    background: #fff7ed;
+    background: rgba(255, 247, 237, 0.9);
+    backdrop-filter: blur(5px);
     border-color: #fed7aa;
 }
 
@@ -1417,7 +1689,8 @@ main {
 }
 
 .idea-showcase {
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     padding: 16px;
     border-radius: 8px;
     font-size: 16px;
@@ -1486,7 +1759,8 @@ main {
 }
 
 .tip-item {
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
     padding: 12px;
     border-radius: 8px;
     font-size: 14px;
@@ -2112,6 +2386,9 @@ function handleWebSocketMessage(data) {
             break;
         case 'completion_status':
             updateCompletionStatus(data);
+            break;
+        case 'teacher_feedback':
+            handleTeacherFeedback(data);
             break;
         case 'error':
             showError(data.message);
@@ -2841,6 +3118,87 @@ function formatDate(dateString) {
     });
 }
 
+// Handle real-time teacher feedback
+function handleTeacherFeedback(data) {
+    console.log('📧 Received teacher feedback:', data);
+    
+    const feedbackData = data.feedback;
+    const feedbackContent = document.getElementById('feedback-content');
+    const finalScore = document.getElementById('final-score');
+    
+    // Show notification for new feedback
+    showFeedbackNotification(feedbackData);
+    
+    // Update score if provided
+    if (feedbackData.score) {
+        finalScore.textContent = `${feedbackData.score}/10`;
+        finalScore.className = `stat-value score-${getScoreLevel(feedbackData.score)}`;
+    }
+    
+    // Update feedback display
+    if (feedbackData.message && feedbackData.message.trim()) {
+        feedbackContent.innerHTML = `
+            <div class="feedback-given">
+                <div class="feedback-header">
+                    <span class="teacher-name">👨‍🏫 ${feedbackData.sender_name || 'Teacher'}</span>
+                    <span class="feedback-time">${formatDate(feedbackData.created_at)}</span>
+                </div>
+                <p class="feedback-text">${feedbackData.message}</p>
+                ${feedbackData.score ? `<div class="feedback-score">Score: ${feedbackData.score}/10</div>` : ''}
+            </div>
+        `;
+        
+        // Scroll to feedback section
+        feedbackContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Add pulse animation
+        feedbackContent.classList.add('pulse-highlight');
+        setTimeout(() => {
+            feedbackContent.classList.remove('pulse-highlight');
+        }, 2000);
+    }
+}
+
+// Show notification for new feedback
+function showFeedbackNotification(feedbackData) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'feedback-notification';
+    notification.innerHTML = `
+        <div class="notification-icon">📬</div>
+        <div class="notification-content">
+            <div class="notification-title">New Feedback from Teacher</div>
+            <div class="notification-preview">${feedbackData.message ? feedbackData.message.substring(0, 50) + '...' : 'Score: ' + feedbackData.score + '/10'}</div>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 8 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 8000);
+    
+    // Add sound notification (optional)
+    try {
+        const audio = new Audio('data:audio/wav;base64,UklGRhwBAABXQVZFZm10IBAAAAABAAEAIlYAAIhYAQACABAAZGF0YfoAAAGBhYqFbF1fdJivrJBhNjVgodPgNxZGh4H9dYlHkGKBaECHXo5l');
+        audio.volume = 0.3;
+        audio.play().catch(() => {}); // Ignore errors if sound can't play
+    } catch(e) {}
+}
+
+// Get score level for styling
+function getScoreLevel(score) {
+    if (score >= 8) return 'excellent';
+    if (score >= 6) return 'good';
+    if (score >= 4) return 'fair';
+    return 'poor';
+}
+
 // Check if game is completed on load
 function checkGameCompletion() {
     // This will be called when we receive team progress updates
@@ -2858,6 +3216,29 @@ let ideateData = {
     ideas: ['', '', ''],
     favoriteIdea: null
 };
+
+// Function to sync JavaScript state with visual state on page load
+function syncPainPointsWithVisualState() {
+    console.log('🔄 Syncing pain points with visual state...');
+    selectedPainPoints.clear(); // Clear the set first
+    
+    // Find all visually selected pain points
+    const selectedElements = document.querySelectorAll('.pain-point-item.selected');
+    selectedElements.forEach(element => {
+        const painPointText = element.querySelector('.pain-point-text');
+        if (painPointText) {
+            const painPoint = painPointText.textContent.trim();
+            selectedPainPoints.add(painPoint);
+            console.log(`✅ Added pain point to set: "${painPoint}"`);
+        }
+    });
+    
+    console.log(`📊 Total synced pain points: ${selectedPainPoints.size}`);
+    console.log(`📋 Pain points in set:`, Array.from(selectedPainPoints));
+    
+    // Update the counter after syncing
+    updateSelectionCounter();
+}
 let prototypeData = {
     description: '',
     isReady: false
@@ -2958,6 +3339,11 @@ function showEmpathyPhase() {
     // Initialize selection counter and submit button
     updateSelectionCounter();
     updateEmpathySubmitButton();
+    
+    // Sync JavaScript state with any visually selected pain points
+    setTimeout(() => {
+        syncPainPointsWithVisualState();
+    }, 100); // Small delay to ensure DOM is fully rendered
 }
 
 // Populate pain points grid
@@ -2995,20 +3381,32 @@ function togglePainPoint(element, painPoint) {
 
 // Update selection counter - Fixed to include both selected and custom pain points
 function updateSelectionCounter() {
-    const totalPainPoints = selectedPainPoints.size + customPainPoints.filter(p => p.trim()).length;
-    document.getElementById('selection-count').textContent = totalPainPoints;
+    const selectedCount = selectedPainPoints.size;
+    const customCount = customPainPoints.filter(p => p.trim()).length;
+    const totalPainPoints = selectedCount + customCount;
+    
+    // Debug logging to track the issue
+    console.log(`🔍 Counter update - Selected: ${selectedCount}, Custom: ${customCount}, Total: ${totalPainPoints}`);
+    console.log(`🔍 selectedPainPoints Set:`, Array.from(selectedPainPoints));
+    
+    const selectionCountElement = document.getElementById('selection-count');
+    if (selectionCountElement) {
+        selectionCountElement.textContent = totalPainPoints;
+    }
     
     const counter = document.querySelector('.selection-counter');
-    if (totalPainPoints >= 3) {
-        counter.style.background = '#d1fae5';
-        counter.style.borderColor = '#10b981';
-        counter.style.color = '#065f46';
-        counter.innerHTML = `✓ ${totalPainPoints} pain points selected (minimum met)`;
-    } else {
-        counter.style.background = '#fef3c7';
-        counter.style.borderColor = '#fbbf24';
-        counter.style.color = '#92400e';
-        counter.innerHTML = `${totalPainPoints} / 3 minimum selected`;
+    if (counter) {
+        if (totalPainPoints >= 3) {
+            counter.style.background = '#d1fae5';
+            counter.style.borderColor = '#10b981';
+            counter.style.color = '#065f46';
+            counter.innerHTML = `✓ ${totalPainPoints} pain points selected (minimum met)`;
+        } else {
+            counter.style.background = '#fef3c7';
+            counter.style.borderColor = '#fbbf24';
+            counter.style.color = '#92400e';
+            counter.innerHTML = `${totalPainPoints} / 3 minimum selected`;
+        }
     }
     
     // Update submit button state
@@ -3022,15 +3420,20 @@ function setupCustomPainPointInput() {
     setupCharacterCounters();
 }
 
-// Update empathy submit button - Simplified to avoid duplication
+// Update empathy submit button - Fixed: Only require 3 selected pain points, custom are optional
 function updateEmpathySubmitButton() {
     const submitBtn = document.getElementById('empathy-submit');
     if (submitBtn) {
-        const totalPainPoints = selectedPainPoints.size + customPainPoints.filter(p => p.trim()).length;
-        submitBtn.disabled = totalPainPoints < 3;
+        // Only count selected pain points for minimum requirement, custom are completely optional
+        const selectedCount = selectedPainPoints.size;
+        const customCount = customPainPoints.filter(p => p.trim()).length;
+        const totalPainPoints = selectedCount + customCount;
+        
+        // Button enabled when 3+ selected pain points (custom pain points are optional)
+        submitBtn.disabled = selectedCount < 3;
         
         // Debug logging
-        console.log(`📊 Pain points: ${totalPainPoints}, Button disabled: ${submitBtn.disabled}`);
+        console.log(`📊 Selected: ${selectedCount}, Custom: ${customCount}, Total: ${totalPainPoints}, Button disabled: ${submitBtn.disabled}`);
     }
 }
 

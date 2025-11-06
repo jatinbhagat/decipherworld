@@ -1,0 +1,1151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Teacher Dashboard - {{ session.session_code }}{% endblock %}
+{% block description %}WhatsApp Web-style teacher dashboard for Design Thinking sessions with real-time chat view.{% endblock %}
+
+{% block extra_head %}
+<style>
+/* WhatsApp Web-style Teacher Dashboard */
+:root {
+    --primary-color: #00a884;
+    --secondary-color: #25d366;
+    --background-color: #f0f2f5;
+    --sidebar-bg: #f8f9fa;
+    --chat-bg: #e5ddd5;
+    --message-bg: #dcf8c6;
+    --message-incoming: #ffffff;
+    --border-color: #e0e0e0;
+    --text-primary: #111b21;
+    --text-secondary: #54656f;
+    --text-muted: #8696a0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.13);
+    --hover-bg: #f5f5f5;
+    --accent-color: #0084ff;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+}
+
+/* Main layout - WhatsApp Web style */
+.whatsapp-container {
+    height: 100vh;
+    background: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+/* Header */
+.dashboard-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    z-index: 1001;
+}
+
+.session-info h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+    color: white;
+}
+
+.session-meta {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-top: 4px;
+}
+
+.session-controls {
+    display: flex;
+    gap: 12px;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.5);
+}
+
+/* Main chat container */
+.chat-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Team sidebar - like WhatsApp contact list */
+.teams-sidebar {
+    width: 350px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    padding: 16px 20px;
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.teams-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Team item - like WhatsApp chat item */
+.team-item {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+.team-item:hover {
+    background: var(--hover-bg);
+}
+
+.team-item.active {
+    background: #e8f5e8;
+    border-right: 3px solid var(--primary-color);
+}
+
+.team-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    flex-shrink: 0;
+}
+
+.team-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.team-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.team-time {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.team-preview {
+    font-size: 14px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.team-badges {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.badge {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.badge.submissions {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.badge.scored {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.badge.pending {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+/* Chat area - like WhatsApp message view */
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--chat-bg);
+    position: relative;
+}
+
+.chat-header {
+    background: white;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--shadow);
+}
+
+.chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.chat-team-info h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.chat-team-status {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Message bubbles - like WhatsApp */
+.message-bubble {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    animation: slideInMessage 0.3s ease-out;
+}
+
+@keyframes slideInMessage {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-bubble.submission {
+    background: var(--message-bg);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+.message-bubble.feedback {
+    background: var(--message-incoming);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.message-author {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--primary-color);
+}
+
+.message-time {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.message-phase {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: rgba(0,0,0,0.05);
+    padding: 2px 6px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+}
+
+.message-content {
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--text-primary);
+}
+
+.message-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.score-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.score-btn.score {
+    background: var(--accent-color);
+    color: white;
+}
+
+.score-btn.score:hover {
+    background: #0066cc;
+}
+
+.score-display {
+    background: var(--success-color);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+    display: inline-block;
+}
+
+/* Placeholder when no team selected */
+.no-team-selected {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-muted);
+    background: #f8f9fa;
+}
+
+.no-team-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+/* Scoring modal */
+.scoring-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.scoring-content {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.scoring-header {
+    margin-bottom: 20px;
+}
+
+.scoring-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.submission-details {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.score-slider-container {
+    margin: 20px 0;
+}
+
+.score-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #e0e0e0;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.score-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.score-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+.score-display-large {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.score-value-large {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.feedback-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: vertical;
+    margin-bottom: 20px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-btn.cancel {
+    background: #f0f0f0;
+    color: var(--text-primary);
+}
+
+.modal-btn.submit {
+    background: var(--primary-color);
+    color: white;
+}
+
+.modal-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .teams-sidebar {
+        width: 280px;
+    }
+    
+    .message-bubble {
+        max-width: 85%;
+    }
+    
+    .scoring-content {
+        margin: 20px;
+        width: calc(100% - 40px);
+    }
+}
+
+/* Loading states */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--text-muted);
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 12px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Status indicators */
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.status-indicator.active {
+    background: var(--success-color);
+}
+
+.status-indicator.pending {
+    background: var(--warning-color);
+}
+
+.status-indicator.completed {
+    background: var(--primary-color);
+}
+
+/* Hide base template padding */
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.container {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="whatsapp-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="session-info">
+            <h1>💬 Teacher Dashboard - {{ session.session_code }}</h1>
+            <div class="session-meta">
+                {{ session.design_game.title }} | {{ teams|length }} Teams Active
+            </div>
+        </div>
+        
+        <div class="session-controls">
+            <button class="control-btn" onclick="refreshData()">🔄 Refresh</button>
+            <button class="control-btn" onclick="exportResults()">📊 Export</button>
+        </div>
+    </div>
+    
+    <!-- Main Chat Container -->
+    <div class="chat-container">
+        <!-- Teams Sidebar -->
+        <div class="teams-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">Teams ({{ teams|length }})</div>
+            </div>
+            
+            <div class="teams-list">
+                {% for team in teams %}
+                <div class="team-item" data-team-id="{{ team.id }}" onclick="selectTeam({{ team.id }}, '{{ team.team_name|escapejs }}', '{{ team.team_emoji|escapejs }}')">
+                    <div class="team-avatar">{{ team.team_emoji }}</div>
+                    <div class="team-info">
+                        <div class="team-header">
+                            <div class="team-name">{{ team.team_name }}</div>
+                            <div class="team-time" id="team-time-{{ team.id }}">--:--</div>
+                        </div>
+                        <div class="team-preview" id="team-preview-{{ team.id }}">No submissions yet</div>
+                        <div class="team-badges">
+                            <span class="badge submissions" id="team-submissions-{{ team.id }}">0 submissions</span>
+                            <span class="badge pending" id="team-pending-{{ team.id }}">0 pending</span>
+                        </div>
+                    </div>
+                    <div class="status-indicator pending" id="team-status-{{ team.id }}"></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <div id="no-team-view" class="no-team-selected">
+                <div class="no-team-icon">💬</div>
+                <h3>Select a team to view submissions</h3>
+                <p>Choose a team from the sidebar to see their submission history and provide feedback.</p>
+            </div>
+            
+            <div id="chat-view" style="display: none; height: 100%; flex-direction: column;">
+                <div class="chat-header">
+                    <div class="chat-avatar" id="chat-avatar"></div>
+                    <div class="chat-team-info">
+                        <h3 id="chat-team-name"></h3>
+                        <div class="chat-team-status" id="chat-team-status">Select submissions to review</div>
+                    </div>
+                </div>
+                
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Messages will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scoring Modal -->
+<div id="scoring-modal" class="scoring-modal" style="display: none;">
+    <div class="scoring-content">
+        <div class="scoring-header">
+            <div class="scoring-title">Review Submission</div>
+        </div>
+        
+        <div class="submission-details" id="submission-details">
+            <!-- Submission details will be loaded here -->
+        </div>
+        
+        <div class="score-slider-container">
+            <label for="score-slider">Score (1-10):</label>
+            <input type="range" id="score-slider" class="score-slider" min="1" max="10" value="5">
+            <div class="score-labels">
+                <span>1 - Poor</span>
+                <span>5 - Average</span>
+                <span>10 - Excellent</span>
+            </div>
+            <div class="score-display-large">
+                <span class="score-value-large" id="score-value">5</span>
+                <span>/10</span>
+            </div>
+        </div>
+        
+        <textarea id="feedback-text" class="feedback-textarea" placeholder="Enter your feedback for the student..."></textarea>
+        
+        <div class="modal-actions">
+            <button class="modal-btn cancel" onclick="closeScoringModal()">Cancel</button>
+            <button class="modal-btn submit" onclick="submitScore()">Submit Score</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global variables
+let currentTeamId = null;
+let currentSubmissionId = null;
+let socket = null;
+let submissionsData = {};
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    initializeWebSocket();
+    loadInitialData();
+    
+    // Score slider interaction
+    const scoreSlider = document.getElementById('score-slider');
+    const scoreValue = document.getElementById('score-value');
+    
+    scoreSlider.addEventListener('input', function() {
+        scoreValue.textContent = this.value;
+    });
+    
+    // Close modal on outside click
+    document.getElementById('scoring-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeScoringModal();
+        }
+    });
+});
+
+// WebSocket connection
+function initializeWebSocket() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws/design-thinking/{{ session.session_code }}/`;
+    
+    socket = new WebSocket(wsUrl);
+    
+    socket.onopen = function(e) {
+        console.log('WebSocket connected');
+        updateConnectionStatus('connected');
+    };
+    
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        handleWebSocketMessage(data);
+    };
+    
+    socket.onclose = function(e) {
+        console.log('WebSocket disconnected');
+        updateConnectionStatus('disconnected');
+        
+        // Attempt to reconnect after 3 seconds
+        setTimeout(() => {
+            console.log('Attempting to reconnect...');
+            initializeWebSocket();
+        }, 3000);
+    };
+    
+    socket.onerror = function(error) {
+        console.error('WebSocket error:', error);
+        updateConnectionStatus('error');
+    };
+}
+
+// Handle WebSocket messages
+function handleWebSocketMessage(data) {
+    switch(data.type) {
+        case 'submission_received':
+            handleNewSubmission(data.submission);
+            break;
+        case 'submission_scored':
+            handleScoredSubmission(data.submission);
+            break;
+        case 'team_progress':
+            updateTeamProgress(data.team_id, data.progress);
+            break;
+        default:
+            console.log('Unknown message type:', data.type);
+    }
+}
+
+// Load initial data
+function loadInitialData() {
+    fetch(`/learn/api/sessions/{{ session.session_code }}/submissions/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                processSubmissions(data.submissions);
+                updateTeamBadges();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading initial data:', error);
+        });
+}
+
+// Process submissions data
+function processSubmissions(submissions) {
+    submissionsData = {};
+    
+    submissions.forEach(submission => {
+        const teamId = submission.team.id;
+        if (!submissionsData[teamId]) {
+            submissionsData[teamId] = [];
+        }
+        submissionsData[teamId].push(submission);
+    });
+    
+    // Sort submissions by time for each team
+    Object.keys(submissionsData).forEach(teamId => {
+        submissionsData[teamId].sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at));
+    });
+}
+
+// Update team badges with submission counts
+function updateTeamBadges() {
+    Object.keys(submissionsData).forEach(teamId => {
+        const submissions = submissionsData[teamId];
+        const pendingCount = submissions.filter(s => !s.teacher_score).length;
+        const totalCount = submissions.length;
+        
+        document.getElementById(`team-submissions-${teamId}`).textContent = `${totalCount} submissions`;
+        document.getElementById(`team-pending-${teamId}`).textContent = `${pendingCount} pending`;
+        
+        // Update latest submission preview
+        if (submissions.length > 0) {
+            const latest = submissions[submissions.length - 1];
+            const preview = latest.selected_value.substring(0, 30) + (latest.selected_value.length > 30 ? '...' : '');
+            document.getElementById(`team-preview-${teamId}`).textContent = preview;
+            
+            // Update time
+            const time = formatTime(latest.submitted_at);
+            document.getElementById(`team-time-${teamId}`).textContent = time;
+        }
+        
+        // Update status indicator
+        const statusEl = document.getElementById(`team-status-${teamId}`);
+        if (pendingCount > 0) {
+            statusEl.className = 'status-indicator pending';
+        } else if (totalCount > 0) {
+            statusEl.className = 'status-indicator completed';
+        } else {
+            statusEl.className = 'status-indicator';
+        }
+    });
+}
+
+// Select team and show chat view
+function selectTeam(teamId, teamName, teamEmoji) {
+    currentTeamId = teamId;
+    
+    // Update active state in sidebar
+    document.querySelectorAll('.team-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.querySelector(`[data-team-id="${teamId}"]`).classList.add('active');
+    
+    // Show chat view
+    document.getElementById('no-team-view').style.display = 'none';
+    document.getElementById('chat-view').style.display = 'flex';
+    
+    // Update chat header
+    document.getElementById('chat-avatar').textContent = teamEmoji;
+    document.getElementById('chat-team-name').textContent = teamName;
+    
+    // Load team submissions
+    loadTeamSubmissions(teamId);
+}
+
+// Load team submissions into chat view
+function loadTeamSubmissions(teamId) {
+    const chatMessages = document.getElementById('chat-messages');
+    chatMessages.innerHTML = '';
+    
+    const submissions = submissionsData[teamId] || [];
+    
+    if (submissions.length === 0) {
+        chatMessages.innerHTML = `
+            <div class="no-team-selected">
+                <div style="font-size: 32px; margin-bottom: 16px;">📝</div>
+                <p>This team hasn't made any submissions yet.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    submissions.forEach((submission, index) => {
+        const messageEl = createSubmissionMessage(submission, index);
+        chatMessages.appendChild(messageEl);
+    });
+    
+    // Scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Update team status
+    const pendingCount = submissions.filter(s => !s.teacher_score).length;
+    const statusText = pendingCount > 0 ? `${pendingCount} submissions pending review` : 'All submissions reviewed';
+    document.getElementById('chat-team-status').textContent = statusText;
+}
+
+// Create submission message element
+function createSubmissionMessage(submission, index) {
+    const div = document.createElement('div');
+    div.className = 'message-bubble submission';
+    div.innerHTML = `
+        <div class="message-header">
+            <span class="message-author">${submission.student_name}</span>
+            <span class="message-time">${formatTime(submission.submitted_at)}</span>
+        </div>
+        <div class="message-phase">${submission.mission.mission_type} - ${submission.input_label}</div>
+        <div class="message-content">${submission.selected_value}</div>
+        <div class="message-actions">
+            ${submission.teacher_score ? 
+                `<div class="score-display">Scored: ${submission.teacher_score}/10</div>` :
+                `<button class="score-btn score" onclick="openScoringModal(${submission.id})">📝 Review & Score</button>`
+            }
+        </div>
+    `;
+    return div;
+}
+
+// Open scoring modal
+function openScoringModal(submissionId) {
+    currentSubmissionId = submissionId;
+    
+    // Find submission data
+    let submission = null;
+    Object.values(submissionsData).forEach(teamSubmissions => {
+        const found = teamSubmissions.find(s => s.id === submissionId);
+        if (found) submission = found;
+    });
+    
+    if (!submission) {
+        alert('Submission not found');
+        return;
+    }
+    
+    // Populate submission details
+    document.getElementById('submission-details').innerHTML = `
+        <div><strong>Student:</strong> ${submission.student_name}</div>
+        <div><strong>Phase:</strong> ${submission.mission.mission_type}</div>
+        <div><strong>Question:</strong> ${submission.input_label}</div>
+        <div><strong>Response:</strong> ${submission.selected_value}</div>
+        <div><strong>Submitted:</strong> ${formatTime(submission.submitted_at)}</div>
+    `;
+    
+    // Reset form
+    document.getElementById('score-slider').value = 5;
+    document.getElementById('score-value').textContent = '5';
+    document.getElementById('feedback-text').value = '';
+    
+    // Show modal
+    document.getElementById('scoring-modal').style.display = 'flex';
+}
+
+// Close scoring modal
+function closeScoringModal() {
+    document.getElementById('scoring-modal').style.display = 'none';
+    currentSubmissionId = null;
+}
+
+// Submit score
+function submitScore() {
+    if (!currentSubmissionId) return;
+    
+    const score = parseInt(document.getElementById('score-slider').value);
+    const feedback = document.getElementById('feedback-text').value.trim();
+    
+    // Show loading state
+    const submitBtn = document.querySelector('.modal-btn.submit');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Submitting...';
+    submitBtn.disabled = true;
+    
+    fetch(`/learn/api/simplified/{{ session.session_code }}/score-submission/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            submission_id: currentSubmissionId,
+            score: score,
+            feedback: feedback
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update local data
+            Object.values(submissionsData).forEach(teamSubmissions => {
+                const submission = teamSubmissions.find(s => s.id === currentSubmissionId);
+                if (submission) {
+                    submission.teacher_score = score.toString();
+                    submission.teacher_feedback = feedback;
+                }
+            });
+            
+            // Refresh current team view
+            if (currentTeamId) {
+                loadTeamSubmissions(currentTeamId);
+            }
+            
+            // Update team badges
+            updateTeamBadges();
+            
+            // Close modal
+            closeScoringModal();
+            
+            // Show success message briefly
+            showNotification('Score submitted successfully!', 'success');
+        } else {
+            alert('Error submitting score: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting score:', error);
+        alert('Error submitting score. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+// Handle new submission from WebSocket
+function handleNewSubmission(submission) {
+    const teamId = submission.team.id;
+    if (!submissionsData[teamId]) {
+        submissionsData[teamId] = [];
+    }
+    
+    submissionsData[teamId].push(submission);
+    
+    // Update UI
+    updateTeamBadges();
+    
+    // If this team is currently selected, update chat view
+    if (currentTeamId == teamId) {
+        loadTeamSubmissions(teamId);
+    }
+    
+    // Show notification
+    showNotification(`New submission from ${submission.team.team_name}`, 'info');
+}
+
+// Handle scored submission from WebSocket
+function handleScoredSubmission(submission) {
+    // Update local data
+    Object.values(submissionsData).forEach(teamSubmissions => {
+        const existingSubmission = teamSubmissions.find(s => s.id === submission.id);
+        if (existingSubmission) {
+            existingSubmission.teacher_score = submission.teacher_score;
+            existingSubmission.teacher_feedback = submission.teacher_feedback;
+        }
+    });
+    
+    // Update UI
+    updateTeamBadges();
+    
+    // If this team is currently selected, update chat view
+    if (currentTeamId == submission.team.id) {
+        loadTeamSubmissions(currentTeamId);
+    }
+}
+
+// Utility functions
+function formatTime(timeString) {
+    const date = new Date(timeString);
+    return date.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 3000;
+        animation: slideInRight 0.3s ease-out;
+    `;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-in forwards';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+function updateConnectionStatus(status) {
+    // Could add connection status indicator if needed
+}
+
+function refreshData() {
+    loadInitialData();
+    showNotification('Data refreshed', 'success');
+}
+
+function exportResults() {
+    // Could implement export functionality
+    showNotification('Export feature coming soon', 'info');
+}
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+    }
+    
+    @keyframes slideOutRight {
+        from { transform: translateX(0); }
+        to { transform: translateX(100%); }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

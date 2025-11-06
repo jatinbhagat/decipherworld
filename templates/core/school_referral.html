@@ -1,0 +1,508 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}School Referral Program - Earn ₹50,000 | DecipherWorld{% endblock %}
+
+{% block meta_description %}Refer a school to DecipherWorld and earn ₹50,000 for successful conversions. Help schools discover AI-powered education while earning rewards.{% endblock %}
+
+{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-white">
+    
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-green-900 to-emerald-900 text-white py-20">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <div class="mb-8">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                    Refer a School & Earn <span class="text-green-300">₹50,000</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-green-100 mb-8 max-w-4xl mx-auto">
+                    Help schools discover AI-powered education and earn generous rewards for successful referrals
+                </p>
+                <div class="flex flex-wrap justify-center gap-6 text-sm">
+                    <div class="bg-white/20 rounded-full px-4 py-2">
+                        <i class="fas fa-money-bill-wave mr-2"></i>₹50,000 Reward
+                    </div>
+                    <div class="bg-white/20 rounded-full px-4 py-2">
+                        <i class="fas fa-school mr-2"></i>All Schools Welcome
+                    </div>
+                    <div class="bg-white/20 rounded-full px-4 py-2">
+                        <i class="fas fa-users mr-2"></i>Open to Everyone
+                    </div>
+                </div>
+            </div>
+            <a href="#referral-form" class="btn btn-primary btn-lg text-lg px-8 py-4">
+                <i class="fas fa-paper-plane mr-2"></i>Refer a School Now
+            </a>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    How the Referral Program Works
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Simple steps to earn ₹50,000 by helping schools discover DecipherWorld's AI-powered education platform
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Step 1 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">1</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Fill the Form</h3>
+                    <p class="text-gray-600">
+                        Submit school details and contact information through our simple referral form below
+                    </p>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">2</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">We Contact School</h3>
+                    <p class="text-gray-600">
+                        Our team reaches out to the school within 2-3 business days to discuss our programs
+                    </p>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">3</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">School Evaluation</h3>
+                    <p class="text-gray-600">
+                        We validate the school's interest and eligibility for our AI education programs
+                    </p>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-success rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white text-2xl font-bold">4</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Earn Reward</h3>
+                    <p class="text-gray-600">
+                        Receive ₹50,000 when the school makes their first payment and starts using our platform
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Eligibility Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Eligibility Criteria
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Ensure the school you're referring meets these requirements
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Eligible -->
+                <div class="bg-green-50 border-2 border-green-200 rounded-xl p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-check text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-green-800">Eligible Schools</h3>
+                    </div>
+                    <ul class="space-y-3 text-green-700">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle mr-3 text-green-600"></i>
+                            Schools of all grade levels welcome
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle mr-3 text-green-600"></i>
+                            Currently not using DecipherWorld
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle mr-3 text-green-600"></i>
+                            CBSE, ICSE, State Board, or IB schools
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle mr-3 text-green-600"></i>
+                            Interested in AI-powered education
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Not Eligible -->
+                <div class="bg-red-50 border-2 border-red-200 rounded-xl p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-times text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-red-800">Not Eligible</h3>
+                    </div>
+                    <ul class="space-y-3 text-red-700">
+                        <li class="flex items-center">
+                            <i class="fas fa-times-circle mr-3 text-red-600"></i>
+                            Schools with grades 9th, 10th, 11th, or 12th
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-times-circle mr-3 text-red-600"></i>
+                            Schools with less than 50 students
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-times-circle mr-3 text-red-600"></i>
+                            Schools already using DecipherWorld
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-times-circle mr-3 text-red-600"></i>
+                            Coaching centers or tuition centers
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Referral Form Section -->
+    <section id="referral-form" class="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Submit Your School Referral
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Fill out this form to refer a school and start earning your ₹50,000 reward
+                </p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}error{% else %}{{ message.tags }}{% endif %} mb-6">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-triangle{% else %}info-circle{% endif %} mr-2"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="bg-white rounded-xl shadow-xl p-8">
+                <form method="post" class="space-y-8">
+                    {% csrf_token %}
+                    
+                    <!-- Your Information Section -->
+                    <div class="border-b border-gray-200 pb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">
+                            <i class="fas fa-user-circle mr-3 text-primary"></i>Your Information
+                        </h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="form-control">
+                                <label class="label" for="{{ form.referrer_name.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.referrer_name.label }}</span>
+                                </label>
+                                {{ form.referrer_name }}
+                                {% if form.referrer_name.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.referrer_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="{{ form.referrer_email.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.referrer_email.label }}</span>
+                                </label>
+                                {{ form.referrer_email }}
+                                {% if form.referrer_email.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.referrer_email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="{{ form.referrer_phone.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.referrer_phone.label }}</span>
+                                </label>
+                                {{ form.referrer_phone }}
+                                {% if form.referrer_phone.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.referrer_phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="{{ form.referrer_relationship.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.referrer_relationship.label }}</span>
+                                </label>
+                                {{ form.referrer_relationship }}
+                                {% if form.referrer_relationship.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.referrer_relationship.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- School Information Section -->
+                    <div class="border-b border-gray-200 pb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">
+                            <i class="fas fa-school mr-3 text-secondary"></i>School Information
+                        </h3>
+                        <div class="space-y-6">
+                            <div class="form-control">
+                                <label class="label" for="{{ form.school_name.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.school_name.label }}</span>
+                                </label>
+                                {{ form.school_name }}
+                                {% if form.school_name.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.school_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="{{ form.school_address.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.school_address.label }}</span>
+                                </label>
+                                {{ form.school_address }}
+                                {% if form.school_address.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.school_address.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="grid md:grid-cols-3 gap-6">
+                                <div class="form-control">
+                                    <label class="label" for="{{ form.school_city.id_for_label }}">
+                                        <span class="label-text font-semibold">{{ form.school_city.label }}</span>
+                                    </label>
+                                    {{ form.school_city }}
+                                    {% if form.school_city.errors %}
+                                        <div class="text-error text-sm mt-1">{{ form.school_city.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-control">
+                                    <label class="label" for="{{ form.school_state.id_for_label }}">
+                                        <span class="label-text font-semibold">{{ form.school_state.label }}</span>
+                                    </label>
+                                    {{ form.school_state }}
+                                    {% if form.school_state.errors %}
+                                        <div class="text-error text-sm mt-1">{{ form.school_state.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-control">
+                                    <label class="label" for="{{ form.school_pincode.id_for_label }}">
+                                        <span class="label-text font-semibold">{{ form.school_pincode.label }}</span>
+                                    </label>
+                                    {{ form.school_pincode }}
+                                    {% if form.school_pincode.errors %}
+                                        <div class="text-error text-sm mt-1">{{ form.school_pincode.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- School Contact Section -->
+                    <div class="border-b border-gray-200 pb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">
+                            <i class="fas fa-address-book mr-3 text-accent"></i>School Contact Person
+                        </h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="form-control">
+                                <label class="label" for="{{ form.contact_person_name.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.contact_person_name.label }}</span>
+                                </label>
+                                {{ form.contact_person_name }}
+                                {% if form.contact_person_name.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.contact_person_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="{{ form.contact_person_designation.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.contact_person_designation.label }}</span>
+                                </label>
+                                {{ form.contact_person_designation }}
+                                {% if form.contact_person_designation.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.contact_person_designation.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="{{ form.contact_person_email.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.contact_person_email.label }}</span>
+                                </label>
+                                {{ form.contact_person_email }}
+                                {% if form.contact_person_email.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.contact_person_email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="{{ form.contact_person_phone.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.contact_person_phone.label }}</span>
+                                </label>
+                                {{ form.contact_person_phone }}
+                                {% if form.contact_person_phone.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.contact_person_phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- School Details Section -->
+                    <div class="border-b border-gray-200 pb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">
+                            <i class="fas fa-graduation-cap mr-3 text-primary"></i>School Details
+                        </h3>
+                        <div class="grid md:grid-cols-1 gap-6 mb-6">
+                            <div class="form-control">
+                                <label class="label" for="{{ form.school_board.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.school_board.label }}</span>
+                                </label>
+                                {{ form.school_board }}
+                                {% if form.school_board.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.school_board.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="{{ form.interest_level.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.interest_level.label }}</span>
+                                </label>
+                                {{ form.interest_level }}
+                                {% if form.interest_level.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.interest_level.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="grid md:grid-cols-1 gap-6">
+                            <div class="form-control">
+                                <label class="label" for="{{ form.current_education_programs.id_for_label }}">
+                                    <span class="label-text font-semibold">{{ form.current_education_programs.label }}</span>
+                                </label>
+                                {{ form.current_education_programs }}
+                                {% if form.current_education_programs.errors %}
+                                    <div class="text-error text-sm mt-1">{{ form.current_education_programs.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Notes Section -->
+                    <div class="pb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">
+                            <i class="fas fa-comment-alt mr-3 text-secondary"></i>Additional Information
+                        </h3>
+                        <div class="form-control">
+                            <label class="label" for="{{ form.additional_notes.id_for_label }}">
+                                <span class="label-text font-semibold">{{ form.additional_notes.label }}</span>
+                            </label>
+                            {{ form.additional_notes }}
+                            {% if form.additional_notes.errors %}
+                                <div class="text-error text-sm mt-1">{{ form.additional_notes.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-center pt-8">
+                        <button type="submit" class="btn btn-primary btn-lg px-12 py-4 text-lg">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Submit Referral & Earn ₹50,000
+                        </button>
+                        <p class="text-sm text-gray-500 mt-4">
+                            By submitting this form, you agree to our terms and conditions for the referral program
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Frequently Asked Questions
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Everything you need to know about our school referral program
+                </p>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="collapse collapse-plus bg-gray-50 border border-gray-200">
+                    <input type="radio" name="faq-accordion" checked="checked" />
+                    <div class="collapse-title text-xl font-medium">
+                        Who can participate in the referral program?
+                    </div>
+                    <div class="collapse-content">
+                        <p>Anyone can participate! Whether you're a parent, teacher, educator, or someone who knows schools that could benefit from AI-powered education, you're welcome to refer schools.</p>
+                    </div>
+                </div>
+
+                <div class="collapse collapse-plus bg-gray-50 border border-gray-200">
+                    <input type="radio" name="faq-accordion" />
+                    <div class="collapse-title text-xl font-medium">
+                        What schools are eligible for the program?
+                    </div>
+                    <div class="collapse-content">
+                        <p>All schools are welcome regardless of grade levels or student count. The school must not currently be using DecipherWorld and must be genuinely interested in implementing AI-powered education solutions.</p>
+                    </div>
+                </div>
+
+                <div class="collapse collapse-plus bg-gray-50 border border-gray-200">
+                    <input type="radio" name="faq-accordion" />
+                    <div class="collapse-title text-xl font-medium">
+                        When do I receive the ₹50,000 reward?
+                    </div>
+                    <div class="collapse-content">
+                        <p>You'll receive the reward after the referred school makes their first payment and officially starts using DecipherWorld's platform. Payment is processed within 30 days of conversion.</p>
+                    </div>
+                </div>
+
+                <div class="collapse collapse-plus bg-gray-50 border border-gray-200">
+                    <input type="radio" name="faq-accordion" />
+                    <div class="collapse-title text-xl font-medium">
+                        How long does the referral process take?
+                    </div>
+                    <div class="collapse-content">
+                        <p>We contact the school within 2-3 business days. The complete process from contact to conversion typically takes 2-8 weeks, depending on the school's decision timeline.</p>
+                    </div>
+                </div>
+
+                <div class="collapse collapse-plus bg-gray-50 border border-gray-200">
+                    <input type="radio" name="faq-accordion" />
+                    <div class="collapse-title text-xl font-medium">
+                        Can I refer multiple schools?
+                    </div>
+                    <div class="collapse-content">
+                        <p>Absolutely! You can refer as many eligible schools as you want. Each successful referral earns you ₹50,000, so your earning potential is unlimited.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-br from-primary to-secondary text-white">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">
+                Ready to Start Earning?
+            </h2>
+            <p class="text-xl mb-8 text-blue-100">
+                Help schools discover the future of education and earn generous rewards
+            </p>
+            <a href="#referral-form" class="btn btn-accent btn-lg px-8 py-4 text-lg">
+                <i class="fas fa-arrow-up mr-2"></i>Fill Referral Form Above
+            </a>
+        </div>
+    </section>
+
+</div>
+
+<!-- Smooth scrolling script -->
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+</script>
+
+{% endblock %}

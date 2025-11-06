@@ -358,12 +358,23 @@
                             </a>
                         </li>
                         
-                        <!-- Schools -->
-                        <li class="h-full flex items-center">
-                            <a href="{% url 'core:schools' %}" class="h-full flex items-center px-4 text-slate-700 hover:text-purple-500 active:transform active:scale-95 font-medium transition-all duration-150 ease-in-out">
-                                <i class="fas fa-school text-purple-500 text-sm mr-2"></i>
-                                <span>Schools</span>
-                            </a>
+                        <!-- Schools Dropdown -->
+                        <li class="h-full flex items-center relative">
+                            <details class="h-full flex items-center">
+                                <summary class="h-full flex items-center px-4 text-slate-700 hover:text-purple-500 active:transform active:scale-95 font-medium cursor-pointer transition-all duration-150 ease-in-out">
+                                    <i class="fas fa-school text-purple-500 text-sm mr-2"></i>
+                                    <span>Schools</span>
+                                    <i class="fas fa-chevron-down text-xs ml-1"></i>
+                                </summary>
+                                <ul class="absolute top-full left-0 mt-2 p-3 bg-white shadow-xl rounded-xl border border-slate-200 w-64 z-50">
+                                    <li><a href="{% url 'core:schools' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-school text-sm"></i>For Schools</a></li>
+                                    <li><a href="{% url 'core:school-presentation' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-50 active:transform active:scale-95 transition-all duration-150 ease-in-out"><i class="fas fa-presentation text-sm"></i>School Demo</a></li>
+                                    <li class="border-t border-slate-200 pt-2 mt-2">
+                                        <div class="px-3 py-1 text-xs font-bold text-slate-600 uppercase tracking-wider">Referral Program</div>
+                                    </li>
+                                    <li><a href="{% url 'core:school_referral' %}" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-green-50 bg-green-50 border-2 border-green-200 active:transform active:scale-95 font-semibold text-green-700 transition-all duration-150 ease-in-out"><i class="fas fa-money-bill-wave text-green-600 text-sm"></i>Earn ₹50,000 <span class="text-xs bg-green-100 px-2 py-1 rounded-full ml-auto">NEW</span></a></li>
+                                </ul>
+                            </details>
                         </li>
                         
                         <!-- Articles -->

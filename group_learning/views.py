@@ -2576,7 +2576,7 @@ class SimplifiedTeacherDashboardView(TemplateView):
     Simplified teacher dashboard for real-time scoring and oversight
     Shows live team progress and enables quick scoring
     """
-    template_name = 'group_learning/design_thinking/simplified_teacher_dashboard.html'
+    template_name = 'group_learning/design_thinking/whatsapp_teacher_dashboard.html'
     
     def get_context_data(self, **kwargs):
         logger = logging.getLogger(__name__)  # Define logger in method scope
@@ -2771,6 +2771,66 @@ class SimplifiedTeacherDashboardView(TemplateView):
         return completion_stats
 
 
+class SessionSubmissionsAPIView(View):
+    """
+    API endpoint to get all submissions for a session in WhatsApp-style format
+    """
+    def get(self, request, session_code):
+        logger = logging.getLogger(__name__)
+        
+        try:
+            # Import models
+            from .models import SimplifiedPhaseInput, DesignThinkingSession
+            
+            # Get session
+            session = DesignThinkingSession.objects.select_related('design_game').get(
+                session_code=session_code
+            )
+            
+            # Get all submissions for this session
+            submissions = SimplifiedPhaseInput.objects.filter(
+                session=session
+            ).select_related('team', 'mission').order_by('submitted_at')
+            
+            # Format submissions for API response
+            submissions_data = []
+            for submission in submissions:
+                submissions_data.append({
+                    'id': submission.id,
+                    'team': {
+                        'id': submission.team.id,
+                        'team_name': submission.team.team_name,
+                        'team_emoji': submission.team.team_emoji
+                    },
+                    'mission': {
+                        'id': submission.mission.id,
+                        'mission_type': submission.mission.mission_type,
+                        'title': getattr(submission.mission, 'title', submission.mission.mission_type)
+                    },
+                    'student_name': submission.student_name,
+                    'input_label': submission.input_label,
+                    'selected_value': submission.selected_value,
+                    'submitted_at': submission.submitted_at.isoformat(),
+                    'teacher_score': submission.teacher_score,
+                    'teacher_feedback': getattr(submission, 'teacher_feedback', '')
+                })
+            
+            return JsonResponse({
+                'success': True,
+                'submissions': submissions_data,
+                'session': {
+                    'session_code': session.session_code,
+                    'game_title': session.design_game.title if session.design_game else 'Design Thinking'
+                }
+            })
+            
+        except DesignThinkingSession.DoesNotExist:
+            return JsonResponse({'error': 'Session not found'}, status=404)
+        except Exception as e:
+            logger.error(f"Error getting session submissions: {str(e)}", exc_info=True)
+            return JsonResponse({'error': 'Server error'}, status=500)
+
+
 class ScoreSubmissionView(View):
     """
     API endpoint to score student submissions (1-10 scale)
@@ -2779,10 +2839,17 @@ class ScoreSubmissionView(View):
         logger = logging.getLogger(__name__)
         
         try:
-            # Get submission data from request
-            submission_id = request.POST.get('submission_id')
-            score = request.POST.get('score')
-            feedback = request.POST.get('feedback', '').strip()
+            # Get submission data from request (handle both form data and JSON)
+            if request.content_type == 'application/json':
+                import json
+                data = json.loads(request.body)
+                submission_id = data.get('submission_id')
+                score = data.get('score')
+                feedback = data.get('feedback', '').strip()
+            else:
+                submission_id = request.POST.get('submission_id')
+                score = request.POST.get('score')
+                feedback = request.POST.get('feedback', '').strip()
             
             # Validate inputs
             if not submission_id:

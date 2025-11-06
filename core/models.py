@@ -741,3 +741,364 @@ class VideoTestimonial(models.Model):
             self.calculate_aspect_ratio()
         
         super().save(*args, **kwargs)
+
+
+class SchoolReferral(models.Model):
+    """School referral program model for ₹50,000 referral rewards"""
+    
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('contacted', 'School Contacted'),
+        ('qualified', 'Qualified Referral'),
+        ('converted', 'Converted - Payment Received'),
+        ('rejected', 'Not Qualified'),
+    ]
+    
+    # Referrer Information
+    referrer_name = models.CharField(max_length=100, verbose_name="Your Name")
+    referrer_email = models.EmailField(verbose_name="Your Email Address")
+    referrer_phone = models.CharField(
+        max_length=15, 
+        verbose_name="Your Mobile Number",
+        help_text="Include country code (e.g., +91 9999999999)"
+    )
+    referrer_relationship = models.CharField(
+        max_length=100,
+        verbose_name="Your Relationship to School",
+        help_text="e.g., Parent, Teacher, Principal, Friend, etc."
+    )
+    
+    # School Information
+    school_name = models.CharField(max_length=200, verbose_name="School Name")
+    school_address = models.TextField(verbose_name="School Address")
+    school_city = models.CharField(max_length=100, verbose_name="City")
+    school_state = models.CharField(max_length=100, verbose_name="State")
+    school_pincode = models.CharField(max_length=10, verbose_name="Pincode")
+    
+    # School Contact Details
+    contact_person_name = models.CharField(
+        max_length=100, 
+        verbose_name="School Contact Person Name"
+    )
+    contact_person_designation = models.CharField(
+        max_length=100, 
+        verbose_name="Designation",
+        help_text="e.g., Principal, Vice Principal, Academic Coordinator"
+    )
+    contact_person_email = models.EmailField(
+        verbose_name="School Email Address"
+    )
+    contact_person_phone = models.CharField(
+        max_length=15, 
+        verbose_name="School Phone Number",
+        help_text="Include country code"
+    )
+    
+    # School Details
+    school_board = models.CharField(
+        max_length=50,
+        choices=[
+            ('cbse', 'CBSE'),
+            ('icse', 'ICSE'),
+            ('state_board', 'State Board'),
+            ('ib', 'International Baccalaureate (IB)'),
+            ('cambridge', 'Cambridge International'),
+            ('montessori', 'Montessori'),
+            ('waldorf', 'Waldorf/Steiner'),
+            ('others', 'Others'),
+        ],
+        default='cbse',
+        verbose_name="School Board/Curriculum"
+    )
+    current_education_programs = models.TextField(
+        blank=True,
+        verbose_name="Current Educational Programs/Systems",
+        help_text="Any existing technology or educational programs in use"
+    )
+    
+    # Interest and Decision Timeline
+    interest_level = models.CharField(
+        max_length=20,
+        choices=[
+            ('high', 'High - Actively looking for solutions'),
+            ('medium', 'Medium - Exploring options'),
+            ('low', 'Low - Just curious'),
+        ],
+        default='medium',
+        verbose_name="School's Interest Level"
+    )
+    
+    # Additional Information
+    additional_notes = models.TextField(
+        blank=True,
+        verbose_name="Additional Information",
+        help_text="Any other relevant details about the school or their requirements"
+    )
+    
+    # Internal Tracking
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        verbose_name="Referral Status"
+    )
+    admin_notes = models.TextField(
+        blank=True,
+        verbose_name="Admin Notes",
+        help_text="Internal notes for tracking progress"
+    )
+    reward_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=50000.00,
+        verbose_name="Reward Amount (₹)"
+    )
+    reward_paid = models.BooleanField(
+        default=False,
+        verbose_name="Reward Paid"
+    )
+    reward_paid_date = models.DateTimeField(
+        blank=True,
+        null=True,
+        verbose_name="Reward Payment Date"
+    )
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    contacted_at = models.DateTimeField(blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "School Referral"
+        verbose_name_plural = "School Referrals"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.school_name} (referred by {self.referrer_name})"
+
+
+class School(models.Model):
+    """
+    Master database of all schools in India (1M+ records)
+    Optimized for fast search and dropdown functionality
+    """
+    
+    # Core Identifiers (Indexed for fast lookup)
+    school_code = models.CharField(
+        max_length=20, 
+        unique=True, 
+        db_index=True,
+        verbose_name="UDISE School Code"
+    )
+    school_name = models.CharField(
+        max_length=200, 
+        db_index=True,
+        verbose_name="School Name"
+    )
+    
+    # Location Hierarchy (Optimized for filtering)
+    state = models.CharField(max_length=100, db_index=True)
+    state_code = models.CharField(max_length=10, db_index=True)
+    district = models.CharField(max_length=100, db_index=True)
+    district_code = models.CharField(max_length=10)
+    sub_district = models.CharField(max_length=100, blank=True)
+    sub_district_code = models.CharField(max_length=10, blank=True)
+    cluster = models.CharField(max_length=100, blank=True)
+    village = models.CharField(max_length=100, blank=True)
+    udise_village_code = models.CharField(max_length=20, blank=True)
+    pincode = models.CharField(max_length=10, db_index=True)
+    ward = models.CharField(max_length=50, blank=True)
+    
+    # School Classification (Indexed for dropdown filtering)
+    SCHOOL_CATEGORY_CHOICES = [
+        ('primary', 'Primary School'),
+        ('upper_primary', 'Upper Primary School'),
+        ('secondary', 'Secondary School'),
+        ('higher_secondary', 'Higher Secondary School'),
+        ('pre_primary', 'Pre Primary School'),
+    ]
+    school_category = models.CharField(
+        max_length=20, 
+        choices=SCHOOL_CATEGORY_CHOICES,
+        db_index=True,
+        blank=True
+    )
+    
+    SCHOOL_TYPE_CHOICES = [
+        ('boys', 'Boys'),
+        ('girls', 'Girls'),
+        ('co_ed', 'Co-Educational'),
+    ]
+    school_type = models.CharField(
+        max_length=10, 
+        choices=SCHOOL_TYPE_CHOICES,
+        db_index=True,
+        blank=True
+    )
+    
+    MANAGEMENT_CHOICES = [
+        ('government', 'Government'),
+        ('private', 'Private Unaided'),
+        ('aided', 'Government Aided'),
+        ('central_govt', 'Central Government'),
+        ('others', 'Others'),
+    ]
+    management = models.CharField(
+        max_length=20, 
+        choices=MANAGEMENT_CHOICES,
+        db_index=True,
+        blank=True
+    )
+    
+    # Basic Details
+    year_of_establishment = models.PositiveIntegerField(null=True, blank=True)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    
+    STATUS_CHOICES = [
+        ('functional', 'Functional'),
+        ('closed', 'Closed'),
+        ('merged', 'Merged'),
+        ('upgraded', 'Upgraded'),
+    ]
+    status = models.CharField(
+        max_length=20, 
+        choices=STATUS_CHOICES,
+        default='functional',
+        db_index=True
+    )
+    
+    LOCATION_TYPE_CHOICES = [
+        ('rural', 'Rural'),
+        ('urban', 'Urban'),
+    ]
+    location_type = models.CharField(
+        max_length=10, 
+        choices=LOCATION_TYPE_CHOICES,
+        db_index=True,
+        blank=True
+    )
+    
+    # Grade Range (Optimized storage)
+    class_from = models.PositiveSmallIntegerField(null=True, blank=True)
+    class_to = models.PositiveSmallIntegerField(null=True, blank=True)
+    
+    # Affiliation Boards
+    affiliation_board_secondary = models.CharField(max_length=100, blank=True)
+    affiliation_board_higher_secondary = models.CharField(max_length=100, blank=True)
+    
+    # Infrastructure (Stored as integers for performance)
+    pre_primary_rooms = models.PositiveSmallIntegerField(default=0)
+    class_rooms = models.PositiveSmallIntegerField(default=0)
+    other_rooms = models.PositiveSmallIntegerField(default=0)
+    teachers = models.PositiveSmallIntegerField(default=0)
+    
+    # Student Enrollment (Efficient storage)
+    pre_primary_students = models.PositiveIntegerField(default=0)
+    students_class_1 = models.PositiveIntegerField(default=0)
+    students_class_2 = models.PositiveIntegerField(default=0)
+    students_class_3 = models.PositiveIntegerField(default=0)
+    students_class_4 = models.PositiveIntegerField(default=0)
+    students_class_5 = models.PositiveIntegerField(default=0)
+    students_class_6 = models.PositiveIntegerField(default=0)
+    students_class_7 = models.PositiveIntegerField(default=0)
+    students_class_8 = models.PositiveIntegerField(default=0)
+    students_class_9 = models.PositiveIntegerField(default=0)
+    students_class_10 = models.PositiveIntegerField(default=0)
+    students_class_11 = models.PositiveIntegerField(default=0)
+    students_class_12 = models.PositiveIntegerField(default=0)
+    non_primary_students = models.PositiveIntegerField(default=0)
+    total_students = models.PositiveIntegerField(default=0, db_index=True)
+    
+    # Search Optimization (Computed field for fast text search)
+    search_vector = models.TextField(
+        blank=True, 
+        help_text="Computed field for full-text search optimization"
+    )
+    
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "School"
+        verbose_name_plural = "Schools"
+        
+        # Composite indexes for common queries
+        indexes = [
+            # Fast dropdown searches
+            models.Index(fields=['state', 'district', 'school_name']),
+            models.Index(fields=['pincode', 'school_name']),
+            models.Index(fields=['management', 'school_category', 'status']),
+            
+            # Location-based queries
+            models.Index(fields=['state_code', 'district_code']),
+            
+            # Size-based filtering
+            models.Index(fields=['total_students', 'status']),
+            
+            # Full-text search optimization
+            models.Index(fields=['search_vector']),
+        ]
+        
+        # Ordering for dropdowns
+        ordering = ['state', 'district', 'school_name']
+    
+    def save(self, *args, **kwargs):
+        """Auto-populate search vector for fast text search"""
+        self.search_vector = f"{self.school_name} {self.district} {self.state} {self.school_code}".lower()
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.school_name}, {self.district}, {self.state}"
+    
+    @property
+    def display_name(self):
+        """Optimized display name for dropdowns"""
+        return f"{self.school_name} ({self.district}, {self.state})"
+    
+    @property
+    def grade_range(self):
+        """Return grade range as string"""
+        if self.class_from and self.class_to:
+            return f"Class {self.class_from}-{self.class_to}"
+        return "Not specified"
+    
+    @classmethod
+    def search_schools(cls, query, state=None, district=None, limit=50):
+        """
+        Optimized search for dropdown autocomplete
+        Returns up to 50 matching schools for performance
+        """
+        queryset = cls.objects.filter(status='functional')
+        
+        if query:
+            queryset = queryset.filter(
+                models.Q(search_vector__icontains=query.lower()) |
+                models.Q(school_name__icontains=query) |
+                models.Q(school_code__icontains=query)
+            )
+        
+        if state:
+            queryset = queryset.filter(state__iexact=state)
+            
+        if district:
+            queryset = queryset.filter(district__iexact=district)
+        
+        return queryset.select_related().order_by('school_name')[:limit]
+    
+    
+    def get_reward_display(self):
+        """Return formatted reward amount"""
+        return f"₹{self.reward_amount:,.0f}"
+    
+    def get_status_badge_class(self):
+        """Return CSS class for status badge"""
+        status_classes = {
+            'pending': 'badge-warning',
+            'contacted': 'badge-info',
+            'qualified': 'badge-success',
+            'converted': 'badge-primary',
+            'rejected': 'badge-error',
+        }
+        return status_classes.get(self.status, 'badge-neutral')

@@ -1,5 +1,5 @@
 from django import forms
-from .models import DemoRequest, SchoolDemoRequest
+from .models import DemoRequest, SchoolDemoRequest, SchoolReferral
 
 class DemoRequestForm(forms.ModelForm):
     class Meta:
@@ -105,3 +105,104 @@ class SchoolDemoRequestForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+class SchoolReferralForm(forms.ModelForm):
+    """Form for school referral program submissions"""
+    
+    class Meta:
+        model = SchoolReferral
+        fields = [
+            # Referrer Information
+            'referrer_name', 'referrer_email', 'referrer_phone', 'referrer_relationship',
+            # School Information
+            'school_name', 'school_address', 'school_city', 'school_state', 'school_pincode',
+            # School Contact Details
+            'contact_person_name', 'contact_person_designation', 'contact_person_email', 'contact_person_phone',
+            # School Details
+            'school_board', 'current_education_programs',
+            # Interest and Additional Info
+            'interest_level', 'additional_notes'
+        ]
+        
+        widgets = {
+            # Referrer Information
+            'referrer_name': forms.TextInput(attrs={
+                'class': 'input input-bordered w-full',
+                'placeholder': 'Your full name'
+            }),
+            'referrer_email': forms.EmailInput(attrs={
+                'class': 'input input-bordered w-full',
+                'placeholder': 'your.email@example.com'
+            }),
+            'referrer_phone': forms.TextInput(attrs={
+                'class': 'input input-bordered w-full',
+                'placeholder': '+91 9999999999'
+            }),
+            'referrer_relationship': forms.TextInput(attrs={
+                'class': 'input input-bordered w-full',
+                'placeholder': 'e.g., Parent, Teacher, Principal, Friend'
+            }),
+            
+            # School Information
+            'school_name': forms.TextInput(attrs={
+                'class': 'input input-bordered w-full',
+                'placeholder': 'ABC Public School'
+            }),
+            'school_address': forms.Textarea(attrs={
+                'class': 'textarea textarea-bordered w-full',
+                'rows': 3,
+                'placeholder': 'Complete school address'
+            }),
+            'school_city': forms.TextInput(attrs={
+                'class': 'input input-bordered w-full',
+                'placeholder': 'City name'
+            }),
+            'school_state': forms.TextInput(attrs={
+                'class': 'input input-bordered w-full',
+                'placeholder': 'State name'
+            }),
+            'school_pincode': forms.TextInput(attrs={
+                'class': 'input input-bordered w-full',
+                'placeholder': '123456'
+            }),
+            
+            # School Contact Details
+            'contact_person_name': forms.TextInput(attrs={
+                'class': 'input input-bordered w-full',
+                'placeholder': 'Principal or Administrator name'
+            }),
+            'contact_person_designation': forms.TextInput(attrs={
+                'class': 'input input-bordered w-full',
+                'placeholder': 'Principal, Vice Principal, Coordinator'
+            }),
+            'contact_person_email': forms.EmailInput(attrs={
+                'class': 'input input-bordered w-full',
+                'placeholder': 'principal@school.edu'
+            }),
+            'contact_person_phone': forms.TextInput(attrs={
+                'class': 'input input-bordered w-full',
+                'placeholder': '+91 9999999999'
+            }),
+            
+            # School Details
+            'school_board': forms.Select(attrs={
+                'class': 'select select-bordered w-full'
+            }),
+            'current_education_programs': forms.Textarea(attrs={
+                'class': 'textarea textarea-bordered w-full',
+                'rows': 3,
+                'placeholder': 'Any existing technology or educational programs in use'
+            }),
+            
+            # Interest and Timeline
+            'interest_level': forms.Select(attrs={
+                'class': 'select select-bordered w-full'
+            }),
+            'additional_notes': forms.Textarea(attrs={
+                'class': 'textarea textarea-bordered w-full',
+                'rows': 4,
+                'placeholder': 'Any additional information about the school or their requirements'
+            }),
+        }
+    

@@ -130,6 +130,16 @@ class ClimateGameConsumer(AsyncWebsocketConsumer):
                     'role': 'facilitator'
                 }))
                 
+            elif message_type == 'join_as_student':
+                self.user_type = 'student'
+                team_id = data.get('team_id')
+                student_data = data.get('student_data', {})
+                await self.send(text_data=json.dumps({
+                    'type': 'joined',
+                    'role': 'student',
+                    'team_id': team_id
+                }))
+                
             elif message_type == 'join_as_player':
                 self.user_type = 'player'
                 player_name = data.get('player_name', 'Anonymous')
@@ -429,6 +439,8 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
                 await self.handle_simplified_input(data)
             elif message_type == 'teacher_score_submit':
                 await self.handle_teacher_scoring(data)
+            elif message_type == 'teacher_feedback_submit':
+                await self.handle_teacher_feedback(data)
             elif message_type == 'vani_nudge':
                 await self.handle_vani_nudge(data)
             elif message_type == 'ping':
@@ -438,6 +450,21 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
                     'timestamp': data.get('timestamp'),
                     'server_time': timezone.now().isoformat(),
                     'connection_id': self.connection_id
+                }))
+            elif message_type == 'join_as_facilitator':
+                self.user_type = 'facilitator'
+                await self.send(text_data=json.dumps({
+                    'type': 'joined',
+                    'role': 'facilitator'
+                }))
+            elif message_type == 'join_as_student':
+                self.user_type = 'student'
+                team_id = data.get('team_id')
+                student_data = data.get('student_data', {})
+                await self.send(text_data=json.dumps({
+                    'type': 'joined',
+                    'role': 'student',
+                    'team_id': team_id
                 }))
             elif message_type == 'heartbeat_response':
                 # Client responded to heartbeat
@@ -516,6 +543,9 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
                     'timestamp': timezone.now().isoformat()
                 }))
                 
+                # Broadcast submission to teacher dashboard for real-time review
+                await self.broadcast_submission_to_teachers(result, team_id, mission_id, student_data, input_data)
+                
                 # Handle auto-advancement if triggered
                 progression_result = result.get('progression_result', {})
                 if progression_result.get('should_advance'):
@@ -548,6 +578,46 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.error(f"Error handling teacher scoring: {str(e)}")
             await self.send_error('Failed to save teacher score')
+
+    async def handle_teacher_feedback(self, data):
+        """Handle real-time teacher feedback submission"""
+        try:
+            team_id = data.get('team_id')
+            submission_id = data.get('submission_id')
+            message = data.get('message', '').strip()
+            score = data.get('score')
+            feedback_type = data.get('feedback_type', 'teacher_message')
+            sender_name = data.get('sender_name', 'Teacher')
+            
+            # Validation
+            if not team_id:
+                await self.send_error('Team ID is required for feedback')
+                return
+                
+            if not message and not score:
+                await self.send_error('Either message or score is required')
+                return
+            
+            # Create feedback record
+            feedback_created = await self.create_feedback_record(
+                team_id, submission_id, message, score, feedback_type, sender_name
+            )
+            
+            if feedback_created:
+                # Broadcast feedback to students in real-time
+                await self.broadcast_teacher_feedback(feedback_created)
+                
+                # Send success confirmation to teacher
+                await self.send(text_data=json.dumps({
+                    'type': 'feedback_submission_success',
+                    'feedback_id': feedback_created['id'],
+                    'team_id': team_id,
+                    'timestamp': timezone.now().isoformat()
+                }))
+                
+        except Exception as e:
+            logger.error(f"Error handling teacher feedback: {str(e)}")
+            await self.send_error('Failed to save teacher feedback')
 
     async def handle_vani_nudge(self, data):
         """Handle Vani mentor nudge requests"""
@@ -621,6 +691,24 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
             'team_data': event['team_data'],
             'input_data': event['input_data'],
             'auto_advance_result': event.get('auto_advance_result'),
+            'timestamp': event.get('timestamp')
+        }))
+
+    async def teacher_feedback_update(self, event):
+        """Send teacher feedback update to client"""
+        await self.send(text_data=json.dumps({
+            'type': 'teacher_feedback',
+            'feedback_data': event['feedback_data'],
+            'team_data': event.get('team_data'),
+            'timestamp': event.get('timestamp')
+        }))
+
+    async def student_submission_for_review(self, event):
+        """Send student submission to teacher dashboard for review"""
+        await self.send(text_data=json.dumps({
+            'type': 'submission_for_review',
+            'submission_data': event['submission_data'],
+            'team_data': event.get('team_data'),
             'timestamp': event.get('timestamp')
         }))
 
@@ -1483,6 +1571,132 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
             ).first()
             return next_mission
         except Exception:
+            return None
+
+    @database_sync_to_async
+    def create_feedback_record(self, team_id, submission_id, message, score, feedback_type, sender_name):
+        """Create a new realtime feedback record"""
+        try:
+            from .models import DesignTeam, SimplifiedPhaseInput, RealtimeFeedback
+            
+            team = DesignTeam.objects.get(id=team_id)
+            session = team.session
+            
+            submission = None
+            if submission_id:
+                try:
+                    submission = SimplifiedPhaseInput.objects.get(id=submission_id)
+                except SimplifiedPhaseInput.DoesNotExist:
+                    pass
+            
+            feedback = RealtimeFeedback.objects.create(
+                session=session,
+                team=team,
+                submission=submission,
+                feedback_type=feedback_type,
+                sender_type='teacher',
+                sender_name=sender_name,
+                message=message,
+                score=score
+            )
+            
+            return {
+                'id': feedback.id,
+                'team_id': team_id,
+                'message': message,
+                'score': score,
+                'feedback_type': feedback_type,
+                'sender_name': sender_name,
+                'created_at': feedback.created_at.isoformat(),
+                'submission_id': submission_id
+            }
+            
+        except Exception as e:
+            logger.error(f"Error creating feedback record: {str(e)}")
+            return None
+
+    async def broadcast_teacher_feedback(self, feedback_data):
+        """Broadcast teacher feedback to all session participants"""
+        try:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'teacher_feedback_update',
+                    'feedback_data': feedback_data,
+                    'team_data': {
+                        'id': feedback_data['team_id']
+                    },
+                    'timestamp': timezone.now().isoformat()
+                }
+            )
+            
+            # Mark as sent via WebSocket
+            if feedback_data.get('id'):
+                await self.mark_feedback_websocket_sent(feedback_data['id'])
+                
+        except Exception as e:
+            logger.error(f"Error broadcasting teacher feedback: {str(e)}")
+
+    @database_sync_to_async
+    def mark_feedback_websocket_sent(self, feedback_id):
+        """Mark feedback as sent via WebSocket"""
+        try:
+            from .models import RealtimeFeedback
+            feedback = RealtimeFeedback.objects.get(id=feedback_id)
+            feedback.mark_websocket_sent()
+        except Exception as e:
+            logger.error(f"Error marking feedback as sent: {str(e)}")
+
+    async def broadcast_submission_to_teachers(self, result, team_id, mission_id, student_data, input_data):
+        """Broadcast student submission to teacher dashboard for real-time review"""
+        try:
+            # Get team and submission details
+            submission_details = await self.get_submission_details(result.get('phase_input_id'))
+            
+            if submission_details:
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'student_submission_for_review',
+                        'submission_data': submission_details,
+                        'team_data': {
+                            'id': team_id,
+                            'name': submission_details.get('team_name')
+                        },
+                        'timestamp': timezone.now().isoformat()
+                    }
+                )
+                
+        except Exception as e:
+            logger.error(f"Error broadcasting submission to teachers: {str(e)}")
+
+    @database_sync_to_async 
+    def get_submission_details(self, phase_input_id):
+        """Get detailed submission information for teacher review"""
+        try:
+            from .models import SimplifiedPhaseInput
+            
+            submission = SimplifiedPhaseInput.objects.select_related(
+                'team', 'mission', 'session'
+            ).get(id=phase_input_id)
+            
+            return {
+                'id': submission.id,
+                'team_id': submission.team.id,
+                'team_name': submission.team.team_name,
+                'student_name': submission.student_name,
+                'mission_title': submission.mission.title,
+                'mission_type': submission.mission.get_mission_type_display(),
+                'input_type': submission.get_input_type_display(),
+                'input_label': submission.input_label,
+                'selected_value': submission.selected_value,
+                'submitted_at': submission.submitted_at.isoformat(),
+                'teacher_score': submission.teacher_score,
+                'needs_review': submission.teacher_score is None
+            }
+            
+        except Exception as e:
+            logger.error(f"Error getting submission details: {str(e)}")
             return None
 
     async def design_ping_monitor(self):

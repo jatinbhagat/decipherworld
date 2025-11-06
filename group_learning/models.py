@@ -2759,3 +2759,108 @@ class MentorNudge(models.Model):
     
     def __str__(self):
         return f"{self.mission.get_mission_type_display()} - {self.title}"
+
+
+class RealtimeFeedback(models.Model):
+    """
+    Real-time feedback system for teacher-student communication
+    Supports chat-like interface with scoring and comments
+    """
+    FEEDBACK_TYPES = [
+        ('submission_review', 'Submission Review'),
+        ('teacher_message', 'Teacher Message'),
+        ('ai_suggestion', 'AI Suggestion'),
+        ('score_update', 'Score Update'),
+        ('general_comment', 'General Comment'),
+    ]
+    
+    SENDER_TYPES = [
+        ('teacher', 'Teacher'),
+        ('ai', 'AI Assistant'),
+        ('system', 'System'),
+    ]
+    
+    # Core relationships
+    session = models.ForeignKey(
+        DesignThinkingSession,
+        on_delete=models.CASCADE,
+        related_name='realtime_feedback',
+        db_index=True
+    )
+    team = models.ForeignKey(
+        DesignTeam,
+        on_delete=models.CASCADE,
+        related_name='received_feedback',
+        db_index=True
+    )
+    submission = models.ForeignKey(
+        SimplifiedPhaseInput,
+        on_delete=models.CASCADE,
+        related_name='feedback_messages',
+        null=True,
+        blank=True,
+        help_text="Related submission (if feedback is about specific submission)"
+    )
+    
+    # Feedback content
+    feedback_type = models.CharField(
+        max_length=20,
+        choices=FEEDBACK_TYPES,
+        default='teacher_message'
+    )
+    sender_type = models.CharField(
+        max_length=10,
+        choices=SENDER_TYPES,
+        default='teacher'
+    )
+    sender_name = models.CharField(
+        max_length=100,
+        default='Teacher',
+        help_text="Display name for sender"
+    )
+    
+    # Message content
+    message = models.TextField(
+        help_text="Feedback message content"
+    )
+    score = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        help_text="Numerical score (1-10 scale)"
+    )
+    
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    is_read = models.BooleanField(default=False)
+    is_urgent = models.BooleanField(default=False)
+    
+    # WebSocket tracking
+    websocket_sent = models.BooleanField(default=False)
+    websocket_sent_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        verbose_name = "Realtime Feedback"
+        verbose_name_plural = "Realtime Feedback"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['session', 'team', '-created_at']),
+            models.Index(fields=['team', 'is_read', '-created_at']),
+            models.Index(fields=['submission', '-created_at']),
+            models.Index(fields=['websocket_sent', '-created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.sender_name} → {self.team.team_name}: {self.message[:50]}..."
+    
+    def mark_as_read(self):
+        """Mark feedback as read by student"""
+        self.is_read = True
+        self.save(update_fields=['is_read'])
+    
+    def mark_websocket_sent(self):
+        """Mark as sent via WebSocket"""
+        from django.utils import timezone
+        self.websocket_sent = True
+        self.websocket_sent_at = timezone.now()
+        self.save(update_fields=['websocket_sent', 'websocket_sent_at'])
