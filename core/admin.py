@@ -615,27 +615,36 @@ class VideoTestimonialAdmin(admin.ModelAdmin):
 
 @admin.register(School)
 class SchoolAdmin(admin.ModelAdmin):
-    list_display = ['name', 'city', 'state', 'school_type', 'student_count', 'is_active', 'created_at']
-    list_filter = ['school_type', 'state', 'is_active', 'created_at']
-    search_fields = ['name', 'city', 'state', 'principal_name', 'email']
-    readonly_fields = ['created_at', 'updated_at']
-    list_editable = ['is_active']
+    list_display = ['school_name', 'district', 'state', 'school_category', 'total_students', 'status', 'created_at']
+    list_filter = ['status', 'school_category', 'school_type', 'management', 'state', 'location_type', 'created_at']
+    search_fields = ['school_name', 'school_code', 'district', 'state', 'village', 'pincode']
+    readonly_fields = ['created_at', 'updated_at', 'search_vector']
+    list_editable = ['status']
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'school_type', 'is_active')
+            'fields': ('school_code', 'school_name', 'school_category', 'school_type', 'management', 'status')
         }),
         ('Location', {
-            'fields': ('address', 'city', 'state', 'postal_code')
+            'fields': ('state', 'state_code', 'district', 'district_code', 'sub_district', 'village', 'pincode', 'ward', 'location_type')
         }),
-        ('Contact Information', {
-            'fields': ('phone', 'email', 'website', 'principal_name')
+        ('Geographic Coordinates', {
+            'fields': ('latitude', 'longitude'),
+            'classes': ('collapse',)
         }),
         ('Academic Details', {
-            'fields': ('student_count', 'grade_levels')
+            'fields': ('class_from', 'class_to', 'year_of_establishment', 'affiliation_board_secondary', 'affiliation_board_higher_secondary')
+        }),
+        ('Infrastructure', {
+            'fields': ('pre_primary_rooms', 'class_rooms', 'other_rooms', 'teachers'),
+            'classes': ('collapse',)
+        }),
+        ('Student Enrollment', {
+            'fields': ('total_students', 'pre_primary_students', 'students_class_1', 'students_class_2', 'students_class_3', 'students_class_4', 'students_class_5'),
+            'classes': ('collapse',)
         }),
         ('System Information', {
-            'fields': ('created_at', 'updated_at'),
+            'fields': ('search_vector', 'created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
