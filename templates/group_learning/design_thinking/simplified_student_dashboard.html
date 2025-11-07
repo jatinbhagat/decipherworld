@@ -927,115 +927,118 @@ main {
     }
 }
 
-/* Game Introduction Styles */
-.game-intro-card {
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-    border-radius: 16px;
-    padding: 32px;
+/* REMOVED: Game Introduction Styles - no longer needed since students skip intro */
+
+/* Minimal Modern Empathy Phase Styles */
+.minimal-header {
     text-align: center;
-    border: 3px solid #3b82f6;
-    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
-    margin-bottom: 24px;
-}
-
-.intro-header {
     margin-bottom: 32px;
+    padding: 0 16px;
 }
 
-.intro-title {
+.minimal-title {
     font-size: 28px;
-    font-weight: bold;
-    color: #0f172a;
-    margin-bottom: 20px;
-}
-
-.challenge-title {
-    font-size: 20px;
-    font-weight: bold;
-    color: #3b82f6;
-    margin-bottom: 8px;
-}
-
-.challenge-text {
-    font-size: 18px;
-    color: #0f172a;
     font-weight: 600;
+    color: #1f2937;
     margin-bottom: 8px;
+    line-height: 1.3;
 }
 
-.challenge-subtitle {
+.minimal-subtitle {
     font-size: 16px;
-    color: #64748b;
+    color: #6b7280;
+    margin: 0;
+    font-weight: 400;
 }
 
-.steps-overview {
+.selection-counter {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 16px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.pain-points-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 12px;
     margin-bottom: 32px;
-    max-width: 500px;
+    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
 }
 
-.step-item {
+.pain-point-item {
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(5px);
-    padding: 16px;
-    border-radius: 12px;
-    border: 2px solid #e2e8f0;
-    transition: all 0.2s ease;
+    font-size: 16px;
+    color: #374151;
 }
 
-.step-item:hover {
+.pain-point-item:hover {
     border-color: #3b82f6;
+    background: #f8faff;
     transform: translateY(-1px);
 }
 
-.step-icon {
-    font-size: 24px;
-    margin-right: 16px;
-    min-width: 32px;
-}
-
-.step-content {
-    text-align: left;
-}
-
-.step-title {
-    font-size: 16px;
-    font-weight: bold;
-    color: #0f172a;
-    margin-bottom: 4px;
-}
-
-.step-desc {
-    font-size: 14px;
-    color: #64748b;
-}
-
-.start-game-btn {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+.pain-point-item.selected {
+    border-color: #3b82f6;
+    background: #3b82f6;
     color: white;
-    padding: 16px 32px;
-    border-radius: 12px;
-    border: none;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.custom-pain-points-section {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.custom-title {
     font-size: 18px;
-    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.add-pain-point-btn {
+    background: #f3f4f6;
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    padding: 16px 24px;
+    color: #6b7280;
+    font-size: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    font-weight: 500;
 }
 
-.start-game-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+.add-pain-point-btn:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    background: #f8faff;
 }
 
-/* Empathy Phase Styles */
-.empathy-card, .define-card {
+/* Clean empathy card */
+.empathy-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 40px 32px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: none;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Define Card Styles (keeping separate from minimal empathy) */
+.define-card {
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(5px);
     border-radius: 16px;
@@ -1797,12 +1800,27 @@ main {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-    .game-intro-card, .empathy-card, .define-card, .ideate-card, .prototype-card {
-        padding: 20px;
+    .empathy-card {
+        padding: 24px 16px;
+        margin: 0 8px;
     }
     
-    .intro-title {
+    .minimal-title {
         font-size: 24px;
+    }
+    
+    .pain-points-grid {
+        max-width: 100%;
+        gap: 8px;
+    }
+    
+    .pain-point-item {
+        padding: 14px 16px;
+        font-size: 15px;
+    }
+    
+    .define-card, .ideate-card, .prototype-card {
+        padding: 20px;
     }
     
     .phase-title {
@@ -1830,6 +1848,404 @@ main {
         gap: 8px;
     }
 }
+
+/* Teacher Review Report Styles */
+.teacher-review-report {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin-top: 16px;
+    animation: slideIn 0.5s ease-out;
+}
+
+.report-header {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.report-title h3 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.report-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.overall-score {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.score-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.2);
+    border: 3px solid rgba(255,255,255,0.3);
+}
+
+.score-circle.excellent {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+}
+
+.score-circle.good {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
+}
+
+.score-circle.average {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: #f59e0b;
+}
+
+.score-circle.needs-work {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+}
+
+.score-number {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.score-label {
+    font-size: 10px;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.score-details {
+    text-align: left;
+}
+
+.percentage {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.performance-level {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.2);
+}
+
+.review-summary {
+    background: white;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.summary-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    text-align: center;
+}
+
+.stat-item {
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.stat-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.phases-breakdown {
+    background: white;
+    padding: 24px;
+}
+
+.breakdown-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 20px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.phase-review-section {
+    margin-bottom: 24px;
+    background: #f9fafb;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+.phase-review-section:last-child {
+    margin-bottom: 0;
+}
+
+.phase-header {
+    background: #3b82f6;
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.phase-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.phase-score-summary {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+}
+
+.phase-score-summary span {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.phase-questions {
+    padding: 0;
+}
+
+.review-question-item {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: start;
+}
+
+.review-question-item:last-child {
+    border-bottom: none;
+}
+
+.question-content {
+    min-width: 0;
+}
+
+.review-question-item .question-text {
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.your-answer {
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: #1f2937;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.question-score {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.score-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 12px;
+    text-align: center;
+    min-width: 50px;
+}
+
+.score-badge.excellent {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.score-badge.good {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.score-badge.average {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde047;
+}
+
+.score-badge.needs-work {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.teacher-comment {
+    font-size: 12px;
+    color: #6b7280;
+    font-style: italic;
+    text-align: right;
+    max-width: 200px;
+    line-height: 1.3;
+}
+
+.report-footer {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    padding: 24px;
+    text-align: center;
+}
+
+.completion-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+}
+
+.completion-icon {
+    font-size: 24px;
+}
+
+.completion-text {
+    font-weight: 500;
+    color: #065f46;
+}
+
+.next-steps {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+/* Enhanced feedback pending with progress */
+.feedback-pending.enhanced {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde047 100%);
+    border: 1px solid #f59e0b;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.pending-header {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.pending-header .pending-icon {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.pending-header .pending-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #92400e;
+}
+
+.review-progress {
+    margin: 16px 0;
+}
+
+.progress-bar {
+    background: rgba(146, 64, 14, 0.2);
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-fill {
+    background: #f59e0b;
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 14px;
+    color: #92400e;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+    .overall-score {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .score-circle {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .score-number {
+        font-size: 16px;
+    }
+    
+    .summary-stats {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .review-question-item {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .question-score {
+        align-items: flex-start;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .next-steps {
+        flex-direction: column;
+    }
+}
 </style>
 {% endblock %}
 
@@ -1849,81 +2265,23 @@ main {
 
     <!-- Team Status -->
     <div class="team-status" id="team-status">
-        <p id="status-text">Waiting for all team members to join...</p>
+        <p id="status-text">Active session - Let's solve classroom problems!</p>
     </div>
 
-    <!-- Game Introduction Screen -->
-    <div class="game-intro-card" id="game-intro" style="display: none;">
-        <div class="intro-header">
-            <h2 class="intro-title">🧠 Design Thinking Game: Fix Our Classroom!</h2>
-            <div class="main-challenge">
-                <h3 class="challenge-title">🎯 Main Challenge</h3>
-                <p class="challenge-text">"How can we make our classroom a better place to learn?"</p>
-                <p class="challenge-subtitle">You'll go through 5 fun steps — just like real designers do!</p>
-            </div>
-        </div>
-        
-        <div class="steps-overview">
-            <div class="step-item">
-                <span class="step-icon">👀</span>
-                <div class="step-content">
-                    <h4 class="step-title">EMPATHY</h4>
-                    <p class="step-desc">Find the Real Problem</p>
-                </div>
-            </div>
-            <div class="step-item">
-                <span class="step-icon">🧩</span>
-                <div class="step-content">
-                    <h4 class="step-title">DEFINE</h4>
-                    <p class="step-desc">Turn It into a Clear Question</p>
-                </div>
-            </div>
-            <div class="step-item">
-                <span class="step-icon">💡</span>
-                <div class="step-content">
-                    <h4 class="step-title">IDEATE</h4>
-                    <p class="step-desc">Brainstorm Solutions</p>
-                </div>
-            </div>
-            <div class="step-item">
-                <span class="step-icon">🛠️</span>
-                <div class="step-content">
-                    <h4 class="step-title">PROTOTYPE</h4>
-                    <p class="step-desc">Build Your Idea</p>
-                </div>
-            </div>
-            <div class="step-item">
-                <span class="step-icon">🧪</span>
-                <div class="step-content">
-                    <h4 class="step-title">TEST</h4>
-                    <p class="step-desc">See If It Works</p>
-                </div>
-            </div>
-        </div>
-        
-        <button class="start-game-btn" onclick="startGame()">
-            🚀 Start the Design Challenge!
-        </button>
-    </div>
+    <!-- REMOVED: Game Introduction Screen -->
+    <!-- Students now go directly to mission phases - no intro screen needed -->
 
     <!-- Step 1: Empathy Phase -->
     <div class="phase-card empathy-card" id="empathy-phase" style="display: none;">
-        <div class="phase-header">
-            <h3 class="phase-title">👀 Step 1: EMPATHY – Find the Real Problem</h3>
-            <p class="phase-subtitle">Look at your classroom like a detective!</p>
-            <p class="phase-description">Your job: discover what really bothers students.</p>
-            <div class="why-it-matters">
-                <span class="insight-icon">💡</span>
-                <span class="insight-text">Why it matters: Designers look carefully at both people's feelings and their surroundings before jumping to solutions.</span>
-            </div>
+        <div class="minimal-header">
+            <h2 class="minimal-title">What problems do you see in your classroom?</h2>
+            <p class="minimal-subtitle">Choose the issues that bother you most</p>
         </div>
 
         <div class="empathy-content">
             <div class="pain-points-section">
-                <h4 class="section-title">👀 Select all the pain points you see in the classroom that bother you or your classmates!</h4>
-                <p class="selection-requirement">Select at least 3 options</p>
                 <div class="selection-counter">
-                    <span id="selection-count">0</span> / 3 minimum selected
+                    <span id="selection-count">0</span> of 3 selected
                 </div>
                 
                 <div class="pain-points-grid" id="pain-points-grid">
@@ -1932,17 +2290,13 @@ main {
             </div>
             
             <div class="custom-pain-points-section">
-                <h4 class="section-title">✍️ Add your own pain points (optional)</h4>
-                <p class="section-description">Think of pain points not listed above? Add up to 3 custom ones!</p>
+                <h4 class="custom-title">Add your own (optional)</h4>
                 <div id="custom-pain-points-container">
                     <!-- Custom pain point inputs will be added here -->
                 </div>
                 <button type="button" id="add-pain-point-btn" class="add-pain-point-btn" onclick="addCustomPainPoint()">
-                    + Add Pain Point
+                    + Add custom issue
                 </button>
-                <div class="custom-counter">
-                    <span id="custom-pain-count">0</span> / 3 custom pain points added
-                </div>
             </div>
         </div>
 
@@ -1958,109 +2312,14 @@ main {
 
     <!-- Step 2: Define Phase -->
     <div class="phase-card define-card" id="define-phase" style="display: none;">
-        <div class="phase-header">
-            <h3 class="phase-title">🧩 Step 2: DEFINE – Turn It into a Clear Question</h3>
-            <p class="phase-subtitle">Now turn your problem into a challenge you can solve!</p>
-            <div class="why-it-matters">
-                <span class="insight-icon">💡</span>
-                <span class="insight-text">Tip: This is the magic step where complaints turn into design challenges!</span>
+        <div class="minimal-header">
+            <h2 class="minimal-title">Step 2: Define the Problem</h2>
+            <p class="minimal-subtitle">Turn your observations into a clear challenge to solve</p>
+            <div class="learning-tip">
+                💡 Tip: Good problems start with "How might we help..."
             </div>
         </div>
 
-        <div class="hmw-builder">
-            <div class="builder-step">
-                <label class="builder-label">🧩 What's the one pain point you want to solve?</label>
-                <select id="pain-point-select" class="builder-select" onchange="updateHMW()">
-                    <option value="">Choose a pain point...</option>
-                </select>
-            </div>
-            
-            <div class="builder-step">
-                <label class="builder-label">🕵️‍♀️ Who faces this pain point the most?</label>
-                <select id="audience-select" class="builder-select" onchange="updateHMW()">
-                    <option value="">Select audience...</option>
-                    <option value="I">I</option>
-                    <option value="My classmates">My classmates</option>
-                    <option value="Everyone in class">Everyone in class</option>
-                    <option value="The teacher">The teacher</option>
-                    <option value="Some students only">Some students only</option>
-                </select>
-            </div>
-            
-            <div class="builder-step">
-                <label class="builder-label">💬 What causes this problem?</label>
-                <select id="cause-select" class="builder-select" onchange="handleCauseSelection()">
-                    <option value="">Select cause...</option>
-                    <option value="Rules or systems in school">Rules or systems in school</option>
-                    <option value="Classroom setup or furniture">Classroom setup or furniture</option>
-                    <option value="People's behavior or teamwork">People's behavior or teamwork</option>
-                    <option value="Lack of confidence">Lack of confidence</option>
-                    <option value="Other">Other (I'll type mine)</option>
-                </select>
-                <div id="custom-cause-container" style="display: none;">
-                    <input type="text" id="custom-cause-input" class="builder-input" placeholder="Describe the cause..." maxlength="100">
-                    <div class="char-counter"><span id="cause-char-count">0</span>/100</div>
-                </div>
-            </div>
-            
-            <div class="builder-step">
-                <label class="builder-label">💡 What do you want to change or improve?</label>
-                <select id="action-select" class="builder-select" onchange="updateHMW()">
-                    <option value="">Select action...</option>
-                    <option value="make it easier">Make it easier</option>
-                    <option value="make it more fun">Make it more fun</option>
-                    <option value="reduce or eliminate it">Reduce or eliminate it</option>
-                    <option value="fix it completely">Fix it completely</option>
-                    <option value="help people handle it better">Help people handle it better</option>
-                    <option value="make it faster">Make it faster</option>
-                    <option value="make it more organized">Make it more organized</option>
-                    <option value="make it more inclusive">Make it more inclusive</option>
-                    <option value="make it more engaging">Make it more engaging</option>
-                    <option value="make it more accessible">Make it more accessible</option>
-                    <option value="create a better system for it">Create a better system for it</option>
-                    <option value="find an alternative to it">Find an alternative to it</option>
-                </select>
-            </div>
-            
-            <div class="builder-step">
-                <label class="builder-label">🌈 What good thing will happen if you fix it?</label>
-                <select id="result-select" class="builder-select" onchange="handleResultSelection()">
-                    <option value="">Select result...</option>
-                    <option value="everyone can learn better">Everyone can learn better</option>
-                    <option value="people will feel happier">People will feel happier</option>
-                    <option value="teamwork will improve">Teamwork will improve</option>
-                    <option value="class will be calmer">Class will be calmer</option>
-                    <option value="other">Other (I'll write mine)</option>
-                </select>
-                <div id="custom-result-container" style="display: none;">
-                    <input type="text" id="custom-result-input" class="builder-input" placeholder="Describe the positive outcome..." maxlength="100">
-                    <div class="char-counter"><span id="result-char-count">0</span>/100</div>
-                </div>
-            </div>
-            
-            <div class="hmw-choice-section">
-                <div class="hmw-toggle">
-                    <label class="toggle-container">
-                        <input type="checkbox" id="custom-hmw-toggle" onchange="toggleCustomHMW()">
-                        <span class="toggle-label">✍️ I want to write my own "How Might We" question</span>
-                    </label>
-                </div>
-                
-                <div class="hmw-preview" id="auto-hmw-section">
-                    <h4 class="hmw-title">🧠 Your Design Question:</h4>
-                    <div class="hmw-question" id="hmw-question">
-                        Complete the steps above to generate your "How Might We" question!
-                    </div>
-                </div>
-                
-                <div class="custom-hmw-section" id="custom-hmw-section" style="display: none;">
-                    <h4 class="hmw-title">🧠 Write Your Own Design Question:</h4>
-                    <p class="hmw-helper">Start with "How might we..." and be specific about your challenge</p>
-                    <textarea id="custom-hmw-input" class="custom-hmw-textarea" placeholder="How might we..." maxlength="200"></textarea>
-                    <div class="char-counter"><span id="hmw-char-count">0</span>/200</div>
-                </div>
-            </div>
-        </div>
 
         <!-- Simplified input container for define phase -->
         <div class="simplified-inputs-container" id="define-simplified-inputs" style="display: none;">
@@ -2074,65 +2333,11 @@ main {
 
     <!-- Step 3: Ideate Phase -->
     <div class="phase-card ideate-card" id="ideate-phase" style="display: none;">
-        <div class="phase-header">
-            <h3 class="phase-title">💡 Step 3: IDEATE — Think of Awesome Ideas!</h3>
-            <p class="phase-subtitle">Now turn your "How Might We" question into creative solutions!</p>
-            <div class="why-it-matters">
-                <span class="insight-icon">🌟</span>
-                <span class="insight-text">Remember: The more ideas, the better! Wild and creative ideas often lead to breakthrough solutions.</span>
-            </div>
-        </div>
-
-        <!-- Display HMW Question from Step 2 -->
-        <div class="hmw-reminder">
-            <h4 class="reminder-title">🎯 Your Challenge:</h4>
-            <div class="hmw-display" id="hmw-reminder-text">
-                <!-- Populated from defineData.hmwQuestion -->
-            </div>
-        </div>
-
-        <!-- Dynamic Idea Generation Section -->
-        <div class="ideas-section">
-            <div class="idea-progress">
-                <div class="idea-counter">
-                    <span id="idea-count">0</span>/10 ideas - The more, the better! 🌟
-                </div>
-                <div class="idea-encouragement" id="idea-encouragement">
-                    Start with your first idea and keep the creativity flowing!
-                </div>
-            </div>
-            
-            <div id="ideas-container">
-                <div class="idea-input-group">
-                    <label class="idea-label">🧠 Idea 1 — What's your first solution?</label>
-                    <input type="text" id="idea-1" class="idea-input" placeholder="Type your first idea..." maxlength="100" onchange="updateIdeaCount()">
-                    <div class="char-counter"><span id="idea1-count">0</span>/100</div>
-                </div>
-                
-                <div class="idea-input-group">
-                    <label class="idea-label">🚀 Idea 2 — What's a wilder or cooler version?</label>
-                    <input type="text" id="idea-2" class="idea-input" placeholder="Think outside the box..." maxlength="100" onchange="updateIdeaCount()">
-                    <div class="char-counter"><span id="idea2-count">0</span>/100</div>
-                </div>
-                
-                <div class="idea-input-group">
-                    <label class="idea-label">🎨 Idea 3 — What's something totally different?</label>
-                    <input type="text" id="idea-3" class="idea-input" placeholder="Try a completely new approach..." maxlength="100" onchange="updateIdeaCount()">
-                    <div class="char-counter"><span id="idea3-count">0</span>/100</div>
-                </div>
-            </div>
-            
-            <button type="button" id="add-idea-btn" class="add-idea-btn" onclick="addIdeaInput()">
-                + Add Another Idea
-            </button>
-        </div>
-
-        <!-- Favorite Idea Selection -->
-        <div class="favorite-selection">
-            <h4 class="selection-title">🎯 Mini Challenge: Pick Your Favorite!</h4>
-            <p class="selection-description">Which idea are you most excited about trying?</p>
-            <div class="favorite-options" id="favorite-options">
-                <!-- Radio buttons populated dynamically -->
+        <div class="minimal-header">
+            <h2 class="minimal-title">Step 3: Brainstorm Solutions</h2>
+            <p class="minimal-subtitle">Think of creative ways to solve your problem</p>
+            <div class="learning-tip">
+                💡 Tip: Quantity over quality - the more ideas, the better!
             </div>
         </div>
 
@@ -2148,55 +2353,11 @@ main {
 
     <!-- Step 4: Prototype Phase -->
     <div class="phase-card prototype-card" id="prototype-phase" style="display: none;">
-        <div class="phase-header">
-            <h3 class="phase-title">🛠️ Step 4: PROTOTYPE — Make It Real!</h3>
-            <p class="phase-subtitle">Turn your favorite idea into something you can explain!</p>
-            <div class="why-it-matters">
-                <span class="insight-icon">💡</span>
-                <span class="insight-text">A prototype helps you test your idea before building the real thing. Keep it simple and focus on how someone would use your idea!</span>
-            </div>
-        </div>
-
-        <!-- Show Selected Idea -->
-        <div class="selected-idea-display">
-            <h4 class="display-title">🎯 Your Chosen Idea:</h4>
-            <div class="idea-showcase" id="chosen-idea-display">
-                <!-- Populated from ideateData.favoriteIdea -->
-            </div>
-        </div>
-
-        <!-- Prototype Description -->
-        <div class="prototype-section">
-            <h4 class="section-title">🏗️ Describe Your Prototype</h4>
-            <p class="section-description">Explain how your idea will work. What will people see? What will they do? How will it solve the problem?</p>
-            
-            <textarea 
-                id="prototype-description" 
-                class="prototype-textarea" 
-                placeholder="Our solution works by... Students will be able to... The teacher can... When someone uses this, they will..."
-                maxlength="300"
-            ></textarea>
-            <div class="char-counter">
-                <span id="prototype-char-count">0</span>/300 characters
-            </div>
-        </div>
-
-        <!-- Prototype Tips -->
-        <div class="prototype-tips">
-            <h4 class="tips-title">💡 Tips for Great Prototypes</h4>
-            <div class="tips-grid">
-                <div class="tip-item">📝 Keep it simple and quick</div>
-                <div class="tip-item">🎯 Focus on how someone would use it</div>
-                <div class="tip-item">🔧 Think about what people will see and do</div>
-                <div class="tip-item">🚀 Ready for feedback and testing</div>
-            </div>
-        </div>
-
-        <!-- Prototype Completion -->
-        <div class="prototype-completion">
-            <div class="completion-check">
-                <input type="checkbox" id="prototype-ready" onchange="updatePrototypeSubmitButton()">
-                <label for="prototype-ready">✅ My prototype is ready for presentation</label>
+        <div class="minimal-header">
+            <h2 class="minimal-title">Step 4: Build Your Solution</h2>
+            <p class="minimal-subtitle">Describe how your idea will work in the real world</p>
+            <div class="learning-tip">
+                💡 Tip: Focus on how people will use your solution
             </div>
         </div>
 
@@ -2309,37 +2470,91 @@ function generateSessionId() {
 function initializeStudentDashboard() {
     // Get session data from Django template context
     currentSession = {
-        code: '{{ session.session_code }}',
-        id: {{ session.id }},
-        status: '{{ session.status }}',
+        code: '{{ session.session_code|default:"" }}',
+        id: {{ session.id|default:"null" }},
+        status: '{{ session.status|default:"" }}',
         is_facilitator_controlled: {{ session.is_facilitator_controlled|yesno:"true,false" }}
     };
     
     currentTeam = {
-        id: {{ team.id }},
-        name: '{{ team.team_name }}',
-        emoji: '{{ team.team_emoji }}',
-        members: {{ team.team_members|safe }}
+        id: {{ team.id|default:"null" }},
+        name: '{{ team.team_name|default:"" }}',
+        emoji: '{{ team.team_emoji|default:"🎯" }}',
+        members: [],
+        current_mission: {{ team.current_mission.id|default:"null" }}
     };
+    
+    {% if current_mission %}
+    currentMission = {
+        id: {{ current_mission.id }},
+        title: '{{ current_mission.title }}',
+        type: '{{ current_mission.mission_type }}'
+    };
+    {% endif %}
 
     // Use team name as student identifier
     studentData.name = currentTeam.name || 'Student';
 
     console.log('🎯 Student Dashboard initialized', { currentSession, currentTeam, studentData });
     
-    // For simplified sessions, auto-start the game immediately
-    if (!currentSession.is_facilitator_controlled) {
-        console.log('🚀 Auto-starting simplified session game');
-        setTimeout(() => {
-            showGameIntroduction();
-        }, 1000); // Small delay to let the page fully load
+    // Always auto-start the game immediately - no delays
+    console.log('🚀 Auto-starting simplified session game');
+    
+    // Inline game initialization to be 100% reliable
+    try {
+        // Hide team status
+        const teamStatus = document.getElementById('team-status');
+        if (teamStatus) {
+            teamStatus.style.display = 'none';
+            console.log('✅ Team status hidden');
+        }
+        
+        // Hide phase cards
+        const phaseCard = document.getElementById('phase-card');
+        const empathyPhase = document.getElementById('empathy-phase');
+        const definePhase = document.getElementById('define-phase');
+        if (phaseCard) phaseCard.style.display = 'none';
+        if (empathyPhase) empathyPhase.style.display = 'none';
+        if (definePhase) definePhase.style.display = 'none';
+        
+        // Show game introduction
+        const gameIntro = document.getElementById('game-intro');
+        if (gameIntro) {
+            gameIntro.style.display = 'block';
+            console.log('✅ Game introduction shown');
+        } else {
+            console.error('❌ Game intro element not found!');
+        }
+        
+        // Update progress
+        const progressText = document.getElementById('progress-text');
+        const progressFill = document.getElementById('progress-fill');
+        if (progressText) progressText.textContent = 'Ready to Start';
+        if (progressFill) progressFill.style.width = '0%';
+        
+        console.log('✅ Game initialization complete');
+    } catch (error) {
+        console.error('❌ Game initialization error:', error);
     }
+    
+    // Check for existing teacher feedback after initialization
+    setTimeout(() => {
+        checkForComprehensiveFeedback();
+    }, 2000);
 }
 
 function connectWebSocket() {
+    // Validate session code before attempting WebSocket connection
+    if (!currentSession || !currentSession.code || currentSession.code.trim() === '') {
+        console.error('❌ Cannot connect WebSocket: Missing or empty session code');
+        console.error('currentSession:', currentSession);
+        return;
+    }
+    
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${wsProtocol}//${window.location.host}/ws/design-thinking/${currentSession.code}/`;
     
+    console.log('🔌 Attempting WebSocket connection to:', wsUrl);
     websocket = new WebSocket(wsUrl);
     
     websocket.onopen = function(event) {
@@ -2402,27 +2617,19 @@ function updateSessionStatus(sessionData) {
         loadCurrentPhase();
     }
     
-    // Update team status
-    const statusEl = document.getElementById('team-status');
-    const statusTextEl = document.getElementById('status-text');
-    
-    // For simplified sessions, always show as active (no teacher dependency)
-    if (sessionData.status === 'in_progress' || !sessionData.is_facilitator_controlled) {
-        statusEl.className = 'team-status';
-        statusTextEl.textContent = `Active session - Let's solve classroom problems!`;
-        
-        // Auto-show game introduction for simplified sessions
-        if (!sessionData.is_facilitator_controlled && !currentMission) {
-            showGameIntroduction();
-        }
-    } else {
-        statusEl.className = 'team-status waiting';
-        statusTextEl.textContent = 'Waiting for teacher to start session...';
-    }
+    // Simplified sessions are always active - no status updates needed
+    console.log('📊 Session status updated (simplified mode - always active)');
 }
 
 function loadCurrentPhase() {
     if (!currentMission) return;
+    
+    // FIXED: Skip kickoff/intro phases - students should never get stuck here
+    if (currentMission.mission_type === 'kickoff') {
+        console.log('🚀 Skipping kickoff phase, advancing to empathy');
+        showEmpathyPhase();
+        return;
+    }
     
     // Hide all phase cards first
     hideAllPhaseCards();
@@ -2446,37 +2653,41 @@ function hideAllPhaseCards() {
     document.getElementById('define-phase').style.display = 'none';
     document.getElementById('ideate-phase').style.display = 'none';
     document.getElementById('prototype-phase').style.display = 'none';
-    document.getElementById('game-intro').style.display = 'none';
     document.getElementById('completion-screen').style.display = 'none';
 }
 
 function showThemedPhaseCard(missionType) {
-    console.log('🎨 Showing themed card for:', missionType);
+    console.log('🎨 Showing phase card for:', missionType);
     
     switch(missionType) {
         case 'empathy':
             document.getElementById('empathy-phase').style.display = 'block';
-            // Load simplified inputs into the themed card
-            loadSimplifiedInputsToThemedCard('empathy');
+            // Populate the pain points grid
+            populatePainPoints();
+            // Set up custom input functionality  
+            setupCustomPainPointInput();
+            // Initialize counters and submit button
+            updateSelectionCounter();
+            updateEmpathySubmitButton();
             break;
         case 'define':
             document.getElementById('define-phase').style.display = 'block';
-            loadSimplifiedInputsToThemedCard('define');
+            loadSimplifiedInputs('define', 'define-simplified-inputs');
             break;
         case 'ideate':
             document.getElementById('ideate-phase').style.display = 'block';
-            loadSimplifiedInputsToThemedCard('ideate');
+            loadSimplifiedInputs('ideate', 'ideate-simplified-inputs');
             break;
         case 'prototype':
             document.getElementById('prototype-phase').style.display = 'block';
-            loadSimplifiedInputsToThemedCard('prototype');
+            loadSimplifiedInputs('prototype', 'prototype-simplified-inputs');
             break;
         default:
             // Fallback to generic card for other phases
             document.getElementById('phase-card').style.display = 'block';
             document.getElementById('phase-title').textContent = currentMission.title;
             document.getElementById('phase-description').textContent = currentMission.description;
-            loadSimplifiedInputs(missionType);
+            loadSimplifiedInputs(missionType, 'input-forms-container');
     }
 }
 
@@ -2485,149 +2696,66 @@ function getPhaseNumber(missionType) {
     return phases.indexOf(missionType) + 1;
 }
 
-function loadSimplifiedInputsToThemedCard(missionType) {
-    console.log('🎨 Loading simplified inputs for themed card:', missionType);
+// REMOVED: Complex fallback functions - using unified simple approach
+
+function updatePhaseSubmitButton() {
+    // Determine current phase and get inputs
+    let phase = '';
+    let hasValidInput = false;
     
-    // Get the appropriate container for this phase
-    const containerId = `${missionType}-simplified-inputs`;
+    // Check which phase is currently visible
+    if (document.getElementById('define-phase').style.display === 'block') {
+        phase = 'define';
+        const input = document.getElementById('input_0');
+        hasValidInput = input && input.value.trim().length > 0;
+    } else if (document.getElementById('ideate-phase').style.display === 'block') {
+        phase = 'ideate';
+        // Check if at least one checkbox is checked
+        const checkboxes = document.querySelectorAll('#ideate-simplified-inputs input[type="checkbox"]:checked');
+        hasValidInput = checkboxes.length > 0;
+    } else if (document.getElementById('prototype-phase').style.display === 'block') {
+        phase = 'prototype';
+        const input = document.getElementById('input_0');
+        hasValidInput = input && input.value.trim().length > 0;
+    }
+    
+    // Enable/disable the phase submit button
+    const submitBtn = document.getElementById(phase + '-submit');
+    if (submitBtn) {
+        submitBtn.disabled = !hasValidInput;
+    }
+}
+
+function loadSimplifiedInputs(missionType, containerId = 'input-forms-container') {
     const container = document.getElementById(containerId);
-    
     if (!container) {
-        console.warn('⚠️ No simplified inputs container found for', missionType);
+        console.error(`Container ${containerId} not found`);
         return;
     }
     
-    // Show the simplified inputs container and hide the complex interface
+    // Show the container and clear it
     container.style.display = 'block';
     container.innerHTML = '';
     
-    // Hide the complex phase-specific interfaces
-    hideComplexPhaseInterfaces(missionType);
-    
-    // Load the simplified inputs using the existing function logic
-    loadSimplifiedInputsIntoContainer(container, missionType);
-}
-
-function hideComplexPhaseInterfaces(missionType) {
-    // Hide the complex interfaces but keep the beautiful headers
-    // Add a smooth transition to the simplified mode
-    const phaseCard = document.getElementById(`${missionType}-phase`);
-    if (phaseCard) {
-        phaseCard.classList.add('simplified-mode');
-    }
-    
-    switch(missionType) {
-        case 'empathy':
-            const empathyContent = document.querySelector('#empathy-phase .empathy-content');
-            if (empathyContent) {
-                empathyContent.style.transition = 'opacity 0.3s ease';
-                empathyContent.style.opacity = '0.3';
-                setTimeout(() => empathyContent.style.display = 'none', 300);
-            }
-            break;
-        case 'define':
-            const defineContent = document.querySelector('#define-phase .define-content');
-            if (defineContent) {
-                defineContent.style.transition = 'opacity 0.3s ease';
-                defineContent.style.opacity = '0.3';
-                setTimeout(() => defineContent.style.display = 'none', 300);
-            }
-            break;
-        case 'ideate':
-            const ideateContent = document.querySelector('#ideate-phase .ideate-content');
-            if (ideateContent) {
-                ideateContent.style.transition = 'opacity 0.3s ease';
-                ideateContent.style.opacity = '0.3';
-                setTimeout(() => ideateContent.style.display = 'none', 300);
-            }
-            break;
-        case 'prototype':
-            const prototypeContent = document.querySelector('#prototype-phase .prototype-content');
-            if (prototypeContent) {
-                prototypeContent.style.transition = 'opacity 0.3s ease';
-                prototypeContent.style.opacity = '0.3';
-                setTimeout(() => prototypeContent.style.display = 'none', 300);
-            }
-            break;
-    }
-}
-
-function loadSimplifiedInputsIntoContainer(container, missionType) {
-    // Use the existing simplified inputs logic but target the themed container
-    const originalContainer = document.getElementById('input-forms-container');
-    
-    // Temporarily redirect the function to use our container
-    const originalGetElementById = document.getElementById;
-    document.getElementById = function(id) {
-        if (id === 'input-forms-container') {
-            return container;
-        }
-        return originalGetElementById.call(document, id);
-    };
-    
-    // Call the original function
-    loadSimplifiedInputs(missionType);
-    
-    // Restore the original function
-    document.getElementById = originalGetElementById;
-}
-
-function loadSimplifiedInputs(missionType) {
-    const container = document.getElementById('input-forms-container');
-    container.innerHTML = '';
-    
-    // Define simplified inputs for each phase
+    // Clean, simplified inputs for each phase
     const phaseInputs = {
-        empathy: [
-            {
-                type: 'radio',
-                label: 'What frustrates students most in classrooms?',
-                options: [
-                    'Boring lessons and lectures',
-                    'Too much homework and pressure',
-                    'Difficulty understanding concepts',
-                    'Not enough hands-on activities'
-                ]
-            },
-            {
-                type: 'radio',
-                label: 'Who struggles most with learning?',
-                options: [
-                    'Students who learn differently',
-                    'Students who are shy or quiet',
-                    'Students who fall behind',
-                    'Students who get distracted easily'
-                ]
-            }
-        ],
         define: [
             {
-                type: 'dropdown',
-                label: 'Problem category:',
-                options: [
-                    'Student engagement',
-                    'Learning differences',
-                    'Teacher-student communication',
-                    'Classroom environment',
-                    'Study habits and motivation'
-                ]
-            },
-            {
                 type: 'text_short',
-                label: 'Problem statement (50 characters max):',
-                placeholder: 'Students need...'
+                label: 'Write a clear problem statement:',
+                placeholder: 'How might we help students...'
             }
         ],
         ideate: [
             {
                 type: 'checkbox',
-                label: 'Select 3 ideas to solve the problem:',
+                label: 'Select your top 3 solution ideas:',
                 options: [
-                    'Interactive digital tools',
-                    'Peer tutoring system',
-                    'Flexible seating arrangements',
-                    'Gamified learning activities',
-                    'Regular feedback sessions',
+                    'Interactive learning tools',
+                    'Peer collaboration system',
+                    'Flexible classroom setup',
+                    'Gamified activities',
+                    'Better feedback methods',
                     'Creative project options'
                 ],
                 max_selections: 3
@@ -2636,20 +2764,8 @@ function loadSimplifiedInputs(missionType) {
         prototype: [
             {
                 type: 'text_medium',
-                label: 'Describe your solution (200 characters max):',
-                placeholder: 'Our solution works by...'
-            }
-        ],
-        showcase: [
-            {
-                type: 'rating',
-                label: 'How satisfied are you with your team\'s solution?',
-                max_rating: 5
-            },
-            {
-                type: 'rating',
-                label: 'How well did your team collaborate?',
-                max_rating: 5
+                label: 'Describe how your solution works:',
+                placeholder: 'Our solution helps students by...'
             }
         ]
     };
@@ -2661,8 +2777,12 @@ function loadSimplifiedInputs(missionType) {
         container.appendChild(inputElement);
     });
     
-    // Enable submit button if there are inputs
-    document.getElementById('submit-btn').disabled = inputs.length === 0;
+    // Enable phase-specific submit button if there are inputs
+    const submitBtnId = missionType + '-submit';
+    const submitBtn = document.getElementById(submitBtnId);
+    if (submitBtn) {
+        submitBtn.disabled = inputs.length === 0;
+    }
 }
 
 function createInputElement(input, index) {
@@ -2734,6 +2854,11 @@ function createInputElement(input, index) {
                 textInput.maxLength = 200;
             }
             
+            // Add input validation to enable submit button
+            textInput.addEventListener('input', function() {
+                updatePhaseSubmitButton();
+            });
+            
             div.appendChild(textInput);
             break;
             
@@ -2750,6 +2875,11 @@ function createInputElement(input, index) {
                 checkboxInput.type = 'checkbox';
                 checkboxInput.name = `input_${index}`;
                 checkboxInput.value = option;
+                
+                // Add change listener for checkbox validation
+                checkboxInput.addEventListener('change', function() {
+                    updatePhaseSubmitButton();
+                });
                 
                 const checkboxLabel = document.createElement('span');
                 checkboxLabel.textContent = option;
@@ -2928,9 +3058,17 @@ function submitPhaseInputs() {
     console.log('📤 Submitting inputs:', messageData);
     websocket.send(JSON.stringify(messageData));
     
-    // Disable submit button
+    // Disable submit button and lock all form inputs
     document.getElementById('submit-btn').disabled = true;
     document.getElementById('submit-text').textContent = 'Submitted ✓';
+    
+    // Lock all form inputs to prevent changes after submission
+    const allInputs = document.querySelectorAll('#input-forms-container input, #input-forms-container textarea, #input-forms-container select');
+    allInputs.forEach(input => {
+        input.disabled = true;
+        input.style.opacity = '0.6';
+        input.style.cursor = 'not-allowed';
+    });
 }
 
 function getInputType(inputGroup) {
@@ -2988,25 +3126,14 @@ function handleInputSubmissionUpdate(data) {
     if (data.auto_advance_result && data.auto_advance_result.should_advance) {
         showAutoAdvanceNotification(data.auto_advance_result);
     } else {
-        // Update status to show waiting
-        const statusEl = document.getElementById('team-status');
-        const statusTextEl = document.getElementById('status-text');
-        statusEl.className = 'team-status waiting';
-        statusTextEl.textContent = 'Waiting for other team members to complete...';
+        // Simplified sessions don't wait for other team members
+        console.log('📊 Submission response received (simplified mode)');
     }
 }
 
 function updateCompletionStatus(data) {
-    const statusEl = document.getElementById('team-status');
-    const statusTextEl = document.getElementById('status-text');
-    
-    if (data.is_ready_to_advance) {
-        statusEl.className = 'team-status completed';
-        statusTextEl.textContent = `Phase complete! (${data.completion_percentage}%)`;
-    } else {
-        statusEl.className = 'team-status waiting';
-        statusTextEl.textContent = `Progress: ${data.completion_percentage}% complete`;
-    }
+    // Simplified sessions don't show completion percentages - always ready to advance
+    console.log('📊 Completion status updated (simplified mode)', data);
 }
 
 function showLoading(show) {
@@ -3048,6 +3175,14 @@ function checkForFeedback() {
     const button = document.querySelector('.action-btn.primary');
     button.disabled = true;
     button.textContent = '🔄 Checking...';
+    
+    // Validate session code before making API call
+    if (!currentSession || !currentSession.code || currentSession.code.trim() === '') {
+        console.error('❌ Cannot check feedback: Missing or empty session code');
+        button.disabled = false;
+        button.textContent = 'Check Feedback';
+        return;
+    }
     
     fetch(`/learn/api/simplified/${currentSession.code}/feedback/`, {
         method: 'GET',
@@ -3131,32 +3266,210 @@ function handleTeacherFeedback(data) {
     
     // Update score if provided
     if (feedbackData.score) {
-        finalScore.textContent = `${feedbackData.score}/10`;
-        finalScore.className = `stat-value score-${getScoreLevel(feedbackData.score)}`;
+        if (finalScore) {
+            finalScore.textContent = `${feedbackData.score}/10`;
+            finalScore.className = `stat-value score-${getScoreLevel(feedbackData.score)}`;
+        }
     }
     
-    // Update feedback display
-    if (feedbackData.message && feedbackData.message.trim()) {
-        feedbackContent.innerHTML = `
-            <div class="feedback-given">
-                <div class="feedback-header">
-                    <span class="teacher-name">👨‍🏫 ${feedbackData.sender_name || 'Teacher'}</span>
-                    <span class="feedback-time">${formatDate(feedbackData.created_at)}</span>
+    // Check if we have comprehensive feedback data (all submissions scored)
+    checkForComprehensiveFeedback();
+}
+
+// Check for comprehensive feedback and generate report
+async function checkForComprehensiveFeedback() {
+    try {
+        // Validate session code before making API call
+        if (!currentSession || !currentSession.code || currentSession.code.trim() === '') {
+            console.error('❌ Cannot check feedback: Missing or empty session code');
+            return;
+        }
+        
+        const response = await fetch(`/learn/api/sessions/${currentSession.code}/submissions/`);
+        const data = await response.json();
+        
+        if (data.success && data.submissions) {
+            const mySubmissions = data.submissions.filter(sub => 
+                sub.team.id === currentTeam.id && sub.student_name === studentData.name
+            );
+            
+            const scoredSubmissions = mySubmissions.filter(sub => sub.teacher_score !== null);
+            
+            // If all submissions are scored, show comprehensive report
+            if (mySubmissions.length > 0 && scoredSubmissions.length === mySubmissions.length) {
+                generateTeacherReviewReport(mySubmissions);
+            } else {
+                showFeedbackPending(scoredSubmissions.length, mySubmissions.length);
+            }
+        }
+    } catch (error) {
+        console.error('Error checking feedback:', error);
+    }
+}
+
+function generateTeacherReviewReport(submissions) {
+    const feedbackContent = document.getElementById('feedback-content');
+    
+    // Group submissions by mission/phase
+    const submissionsByPhase = submissions.reduce((groups, sub) => {
+        const phaseKey = sub.mission.title || sub.mission.mission_type || 'Unknown Phase';
+        if (!groups[phaseKey]) groups[phaseKey] = [];
+        groups[phaseKey].push(sub);
+        return groups;
+    }, {});
+    
+    // Calculate overall statistics
+    const totalScore = submissions.reduce((sum, sub) => sum + parseInt(sub.teacher_score), 0);
+    const averageScore = (totalScore / submissions.length).toFixed(1);
+    const maxScore = submissions.length * 10;
+    const percentage = ((totalScore / maxScore) * 100).toFixed(0);
+    
+    // Determine performance level
+    const performanceLevel = getPerformanceLevel(averageScore);
+    
+    let phasesHtml = '';
+    Object.keys(submissionsByPhase).forEach(phaseTitle => {
+        const phaseSubmissions = submissionsByPhase[phaseTitle];
+        const phaseTotal = phaseSubmissions.reduce((sum, sub) => sum + parseInt(sub.teacher_score), 0);
+        const phaseAvg = (phaseTotal / phaseSubmissions.length).toFixed(1);
+        
+        let questionsHtml = '';
+        phaseSubmissions.forEach((sub, index) => {
+            const scoreClass = getScoreClass(sub.teacher_score);
+            questionsHtml += `
+                <div class="review-question-item">
+                    <div class="question-content">
+                        <div class="question-text">${sub.input_label}</div>
+                        <div class="your-answer">${sub.selected_value}</div>
+                    </div>
+                    <div class="question-score">
+                        <div class="score-badge ${scoreClass}">${sub.teacher_score}/10</div>
+                        ${sub.teacher_feedback ? `<div class="teacher-comment">${sub.teacher_feedback}</div>` : ''}
+                    </div>
                 </div>
-                <p class="feedback-text">${feedbackData.message}</p>
-                ${feedbackData.score ? `<div class="feedback-score">Score: ${feedbackData.score}/10</div>` : ''}
+            `;
+        });
+        
+        phasesHtml += `
+            <div class="phase-review-section">
+                <div class="phase-header">
+                    <h4 class="phase-title">${phaseTitle}</h4>
+                    <div class="phase-score-summary">
+                        <span class="phase-average">${phaseAvg}/10 avg</span>
+                        <span class="questions-count">${phaseSubmissions.length} questions</span>
+                    </div>
+                </div>
+                <div class="phase-questions">
+                    ${questionsHtml}
+                </div>
             </div>
         `;
-        
-        // Scroll to feedback section
-        feedbackContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Add pulse animation
-        feedbackContent.classList.add('pulse-highlight');
-        setTimeout(() => {
-            feedbackContent.classList.remove('pulse-highlight');
-        }, 2000);
-    }
+    });
+    
+    feedbackContent.innerHTML = `
+        <div class="teacher-review-report">
+            <div class="report-header">
+                <div class="report-title">
+                    <h3>📊 Teacher Review Report</h3>
+                    <div class="report-subtitle">Complete feedback on your submission</div>
+                </div>
+                <div class="overall-score">
+                    <div class="score-circle ${getScoreClass(averageScore)}">
+                        <div class="score-number">${averageScore}</div>
+                        <div class="score-label">out of 10</div>
+                    </div>
+                    <div class="score-details">
+                        <div class="percentage">${percentage}%</div>
+                        <div class="performance-level ${performanceLevel.class}">${performanceLevel.text}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="review-summary">
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">${submissions.length}</div>
+                        <div class="stat-label">Questions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${totalScore}</div>
+                        <div class="stat-label">Total Points</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${Object.keys(submissionsByPhase).length}</div>
+                        <div class="stat-label">Phases</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phases-breakdown">
+                <h4 class="breakdown-title">📝 Detailed Review by Phase</h4>
+                ${phasesHtml}
+            </div>
+            
+            <div class="report-footer">
+                <div class="completion-message">
+                    <span class="completion-icon">🎉</span>
+                    <span class="completion-text">Great job completing all phases! Your teacher has reviewed your work.</span>
+                </div>
+                <div class="next-steps">
+                    <button class="action-btn primary" onclick="downloadReport()">
+                        📥 Download Report
+                    </button>
+                    <button class="action-btn secondary" onclick="location.href='/learn/simplified/create/'">
+                        🚀 Join Another Session
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Scroll to feedback section with animation
+    feedbackContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showFeedbackPending(scoredCount, totalCount) {
+    const feedbackContent = document.getElementById('feedback-content');
+    const progress = totalCount > 0 ? (scoredCount / totalCount) * 100 : 0;
+    
+    feedbackContent.innerHTML = `
+        <div class="feedback-pending enhanced">
+            <div class="pending-header">
+                <span class="pending-icon">⏳</span>
+                <span class="pending-text">Teacher Review in Progress</span>
+            </div>
+            <div class="review-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progress}%"></div>
+                </div>
+                <div class="progress-text">${scoredCount} of ${totalCount} questions reviewed</div>
+            </div>
+            <p class="pending-description">Your teacher is reviewing your responses. You'll see your complete report once all questions are scored.</p>
+        </div>
+    `;
+}
+
+function getPerformanceLevel(averageScore) {
+    const score = parseFloat(averageScore);
+    if (score >= 9) return { text: 'Excellent', class: 'excellent' };
+    if (score >= 7.5) return { text: 'Very Good', class: 'very-good' };
+    if (score >= 6) return { text: 'Good', class: 'good' };
+    if (score >= 4) return { text: 'Satisfactory', class: 'satisfactory' };
+    return { text: 'Needs Improvement', class: 'needs-improvement' };
+}
+
+function getScoreClass(score) {
+    const scoreNum = parseInt(score);
+    if (scoreNum >= 9) return 'excellent';
+    if (scoreNum >= 7) return 'good';
+    if (scoreNum >= 5) return 'average';
+    return 'needs-work';
+}
+
+function downloadReport() {
+    // Generate and download a PDF report (placeholder)
+    showNotification('📥 Report download feature coming soon!', 'info');
+    // TODO: Implement PDF generation
 }
 
 // Show notification for new feedback
@@ -3282,46 +3595,29 @@ const painPointsData = [
 function initializeGame() {
     console.log('🎯 Initializing new Design Thinking game');
     
-    // Check if we should start with introduction
-    if (!currentTeam || !currentTeam.current_mission) {
-        showGameIntroduction();
-    } else {
-        // Resume from current phase
+    // FIXED: Always skip intro and go directly to current mission
+    // Students should never get stuck on intro/kickoff phase
+    if (currentMission && currentMission.id) {
+        console.log('🎯 Loading current mission:', currentMission.title);
         loadCurrentPhase();
+    } else {
+        console.log('🚨 No current mission found, showing empathy phase as fallback');
+        showEmpathyPhase();
     }
 }
 
-// Show game introduction
-function showGameIntroduction() {
-    console.log('🎮 Showing game introduction');
-    
-    // Hide other elements
-    document.getElementById('phase-card').style.display = 'none';
-    document.getElementById('empathy-phase').style.display = 'none';
-    document.getElementById('define-phase').style.display = 'none';
-    
-    // Show introduction
-    document.getElementById('game-intro').style.display = 'block';
-    
-    // Update progress
-    document.getElementById('progress-text').textContent = 'Ready to Start';
-    document.getElementById('progress-fill').style.width = '0%';
-}
-
-// Start the game
-function startGame() {
-    console.log('🚀 Starting Design Thinking game');
-    
-    // Hide introduction
-    document.getElementById('game-intro').style.display = 'none';
-    
-    // Show empathy phase
-    showEmpathyPhase();
-}
+// REMOVED: showGameIntroduction() and startGame() functions
+// Students now go directly to current mission phase - no intro needed
 
 // Show empathy phase
 function showEmpathyPhase() {
     console.log('👀 Starting Empathy phase');
+    
+    // Check if this phase is already completed - prevent going back
+    if (window.phaseCompleted?.empathy) {
+        console.log('⚠️ Empathy phase already completed, cannot go back');
+        return;
+    }
     
     // Show empathy card
     document.getElementById('empathy-phase').style.display = 'block';
@@ -3446,10 +3742,22 @@ function submitEmpathy() {
         customPainPoints: customPainPoints.filter(p => p.trim())
     };
     
-    // Show success animation
+    // Show success animation and lock inputs
     const submitBtn = document.getElementById('empathy-submit');
     submitBtn.textContent = 'Great Detective Work! 🕵️';
     submitBtn.disabled = true;
+    
+    // Lock empathy phase inputs to prevent changes after submission
+    const empathyInputs = document.querySelectorAll('#empathy-phase input, #empathy-phase textarea, #empathy-phase select');
+    empathyInputs.forEach(input => {
+        input.disabled = true;
+        input.style.opacity = '0.6';
+        input.style.cursor = 'not-allowed';
+    });
+    
+    // Mark this phase as completed to prevent going back
+    window.phaseCompleted = window.phaseCompleted || {};
+    window.phaseCompleted.empathy = true;
     
     // Move to define phase after delay
     setTimeout(() => {
@@ -3737,6 +4045,12 @@ function setupCharacterCounters() {
 function showDefinePhase() {
     console.log('🧩 Starting Define phase');
     
+    // Check if this phase is already completed - prevent going back
+    if (window.phaseCompleted?.define) {
+        console.log('⚠️ Define phase already completed, cannot go back');
+        return;
+    }
+    
     // Hide empathy phase
     document.getElementById('empathy-phase').style.display = 'none';
     
@@ -3878,42 +4192,39 @@ function updateDefineSubmitButton() {
 function submitDefine() {
     console.log('✅ Submitting define data');
     
-    let hmwQuestion;
-    const customToggle = document.getElementById('custom-hmw-toggle');
+    // Get the problem statement from simplified input
+    const problemStatement = document.getElementById('input_0')?.value.trim();
     
-    if (customToggle.checked) {
-        // Use custom HMW question
-        hmwQuestion = document.getElementById('custom-hmw-input').value.trim();
-    } else {
-        // Use auto-generated HMW question
-        hmwQuestion = document.getElementById('hmw-question').textContent;
+    if (!problemStatement) {
+        console.error('No problem statement found');
+        return;
     }
     
-    let cause = document.getElementById('cause-select').value;
-    let result = document.getElementById('result-select').value;
-    
-    // Get custom inputs if "Other" was selected
-    if (cause === 'Other') {
-        cause = document.getElementById('custom-cause-input').value.trim();
-    }
-    if (result === 'other') {
-        result = document.getElementById('custom-result-input').value.trim();
-    }
+    // Use the problem statement as the HMW question
+    const hmwQuestion = problemStatement;
     
     defineData = {
-        painPoint: document.getElementById('pain-point-select').value,
-        audience: document.getElementById('audience-select').value,
-        cause: cause,
-        action: document.getElementById('action-select').value,
-        result: result,
         hmwQuestion: hmwQuestion,
-        isCustomHMW: customToggle.checked
+        problemStatement: problemStatement,
+        isCustomHMW: false  // Using simplified input
     };
     
     // Show success animation
     const submitBtn = document.getElementById('define-submit');
     submitBtn.textContent = 'Perfect Challenge Created! 🎯';
     submitBtn.disabled = true;
+    
+    // Lock define phase inputs to prevent changes after submission
+    const defineInputs = document.querySelectorAll('#define-phase input, #define-phase textarea, #define-phase select');
+    defineInputs.forEach(input => {
+        input.disabled = true;
+        input.style.opacity = '0.6';
+        input.style.cursor = 'not-allowed';
+    });
+    
+    // Mark this phase as completed to prevent going back
+    window.phaseCompleted = window.phaseCompleted || {};
+    window.phaseCompleted.define = true;
     
     // Continue to next phase after delay
     setTimeout(() => {
@@ -4025,10 +4336,18 @@ function submitIdeate() {
     
     console.log('✅ Submitting ideate data', ideateData);
     
-    // Show success animation
+    // Show success animation and lock inputs
     const submitBtn = document.getElementById('ideate-submit');
     submitBtn.textContent = `Amazing ${allIdeas.length} Ideas Created! 🌟`;
     submitBtn.disabled = true;
+    
+    // Lock ideate phase inputs to prevent changes after submission
+    const ideateInputs = document.querySelectorAll('#ideate-phase input, #ideate-phase textarea, #ideate-phase select');
+    ideateInputs.forEach(input => {
+        input.disabled = true;
+        input.style.opacity = '0.6';
+        input.style.cursor = 'not-allowed';
+    });
     
     // Move to prototype phase
     setTimeout(() => {
@@ -4085,10 +4404,18 @@ function updatePrototypeSubmitButton() {
 function submitPrototype() {
     console.log('✅ Submitting prototype data', prototypeData);
     
-    // Show success animation
+    // Show success animation and lock inputs
     const submitBtn = document.getElementById('prototype-submit');
     submitBtn.textContent = 'Prototype Complete! 🏆';
     submitBtn.disabled = true;
+    
+    // Lock prototype phase inputs to prevent changes after submission
+    const prototypeInputs = document.querySelectorAll('#prototype-phase input, #prototype-phase textarea, #prototype-phase select');
+    prototypeInputs.forEach(input => {
+        input.disabled = true;
+        input.style.opacity = '0.6';
+        input.style.cursor = 'not-allowed';
+    });
     
     // Move to final phase (test/showcase)
     setTimeout(() => {
