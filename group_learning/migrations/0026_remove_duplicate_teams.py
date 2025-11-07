@@ -7,15 +7,32 @@ def remove_duplicate_teams(apps, schema_editor):
     DesignTeam = apps.get_model('group_learning', 'DesignTeam')
     DesignThinkingSession = apps.get_model('group_learning', 'DesignThinkingSession')
     
+    deleted_count = 0
+    sessions_processed = 0
+    
     # Get all sessions that have multiple teams
     for session in DesignThinkingSession.objects.all():
+        sessions_processed += 1
         teams = DesignTeam.objects.filter(session=session).order_by('id')
         if teams.count() > 1:
             # Keep the first team, delete the rest
             teams_to_delete = teams[1:]
             team_ids_deleted = [team.id for team in teams_to_delete]
+            
+            # Also handle related objects that reference these teams
+            TeamSubmission = apps.get_model('group_learning', 'TeamSubmission')
+            TeamProgress = apps.get_model('group_learning', 'TeamProgress')
+            
+            for team in teams_to_delete:
+                # Move submissions to the first team (if any)
+                TeamSubmission.objects.filter(team=team).update(team=teams.first())
+                TeamProgress.objects.filter(team=team).update(team=teams.first())
+            
             teams_to_delete.delete()
+            deleted_count += len(team_ids_deleted)
             print(f"Session {session.session_code}: Kept team {teams.first().id}, deleted teams {team_ids_deleted}")
+    
+    print(f"Processed {sessions_processed} sessions, deleted {deleted_count} duplicate teams")
 
 def reverse_remove_duplicate_teams(apps, schema_editor):
     # This is irreversible
