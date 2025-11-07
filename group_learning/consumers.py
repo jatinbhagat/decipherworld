@@ -756,6 +756,14 @@ class DesignThinkingConsumer(AsyncWebsocketConsumer):
             'timestamp': event['timestamp']
         }))
 
+    async def submission_scored_update(self, event):
+        """Send submission scored update to all clients (real-time score updates)"""
+        await self.send(text_data=json.dumps({
+            'type': 'submission_scored',
+            'submission': event['submission_data'],
+            'timestamp': event.get('timestamp')
+        }))
+
     # Helper methods for group messaging
     async def send_group_message(self, message_type, data):
         """Send message to all clients in the session group"""
