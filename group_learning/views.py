@@ -3153,6 +3153,215 @@ class SimplifiedFeedbackAPI(View):
             }, status=500)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class SimplifiedSubmissionsAPIView(View):
+    """
+    API endpoint to get all SimplifiedPhaseInput submissions for a session
+    Used by teacher dashboard for real-time submission review
+    """
+    def get(self, request, session_code):
+        logger = logging.getLogger(__name__)
+
+        try:
+            from .models import SimplifiedPhaseInput, DesignThinkingSession
+
+            # Get session
+            session = DesignThinkingSession.objects.select_related('design_game').get(
+                session_code=session_code
+            )
+
+            # Get all simplified phase inputs for this session
+            submissions = SimplifiedPhaseInput.objects.filter(
+                session=session,
+                is_active=True
+            ).select_related('team', 'mission').order_by('submitted_at')
+
+            # Format submissions for API response
+            submissions_data = []
+            for submission in submissions:
+                submissions_data.append({
+                    'id': submission.id,
+                    'team': {
+                        'id': submission.team.id,
+                        'team_name': submission.team.team_name,
+                        'team_emoji': submission.team.team_emoji
+                    },
+                    'mission': {
+                        'id': submission.mission.id if submission.mission else None,
+                        'mission_type': submission.mission.mission_type if submission.mission else 'unknown',
+                        'title': submission.mission.title if submission.mission else 'Current Phase'
+                    },
+                    'student_name': submission.student_name,
+                    'title': submission.input_label,  # Use input_label as title
+                    'content': submission.selected_value,  # Use selected_value as content
+                    'input_type': submission.input_type,
+                    'submitted_at': submission.submitted_at.isoformat(),
+                    'teacher_score': submission.teacher_score,
+                    'scored_at': submission.scored_at.isoformat() if submission.scored_at else None
+                })
+
+            return JsonResponse({
+                'success': True,
+                'submissions': submissions_data,
+                'session': {
+                    'session_code': session.session_code,
+                    'game_title': session.design_game.title if session.design_game else 'Design Thinking'
+                }
+            })
+
+        except DesignThinkingSession.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Session not found'}, status=404)
+        except Exception as e:
+            logger.error(f"Error getting simplified submissions: {str(e)}", exc_info=True)
+            return JsonResponse({'success': False, 'error': 'Server error'}, status=500)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class SimplifiedScoreSubmissionView(View):
+    """
+    API endpoint to score individual SimplifiedPhaseInput submissions
+    Broadcasts updates via WebSocket for real-time dashboard updates
+    """
+    def post(self, request, session_code):
+        logger = logging.getLogger(__name__)
+
+        try:
+            # Parse JSON data
+            if request.content_type == 'application/json' or 'application/json' in request.META.get('CONTENT_TYPE', ''):
+                try:
+                    raw_body = request.body
+                    if isinstance(raw_body, bytes):
+                        raw_body = raw_body.decode('utf-8')
+                    data = json.loads(raw_body)
+                except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                    logger.error(f"JSON parsing error: {str(e)}")
+                    return JsonResponse({'success': False, 'error': 'Invalid JSON data'}, status=400)
+
+                submission_id = data.get('submission_id')
+                score = data.get('score')
+                feedback = data.get('feedback', '').strip()
+            else:
+                submission_id = request.POST.get('submission_id')
+                score = request.POST.get('score')
+                feedback = request.POST.get('feedback', '').strip()
+
+            # Validate inputs
+            if not submission_id:
+                return JsonResponse({'success': False, 'error': 'Submission ID is required'}, status=400)
+
+            if not score:
+                return JsonResponse({'success': False, 'error': 'Score is required'}, status=400)
+
+            try:
+                score_int = int(score)
+                if not (1 <= score_int <= 10):
+                    return JsonResponse({'success': False, 'error': 'Score must be between 1 and 10'}, status=400)
+            except (ValueError, TypeError):
+                return JsonResponse({'success': False, 'error': 'Score must be a valid number'}, status=400)
+
+            # Get the submission
+            from .models import SimplifiedPhaseInput, DesignThinkingSession
+
+            try:
+                submission = SimplifiedPhaseInput.objects.select_related(
+                    'team', 'mission', 'session'
+                ).get(id=submission_id, is_active=True)
+            except SimplifiedPhaseInput.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Submission not found'}, status=404)
+
+            # Verify session code matches
+            if submission.session.session_code != session_code:
+                return JsonResponse({'success': False, 'error': 'Session mismatch'}, status=400)
+
+            # Update submission with score
+            submission.teacher_score = score
+            submission.scored_at = timezone.now()
+            submission.save()
+
+            logger.info(f"Scored SimplifiedPhaseInput {submission_id}: {score}/10")
+
+            # Broadcast score update via WebSocket
+            from channels.layers import get_channel_layer
+            from asgiref.sync import async_to_sync
+
+            channel_layer = get_channel_layer()
+            if channel_layer:
+                room_group_name = f'design_thinking_{session_code}'
+                try:
+                    async_to_sync(channel_layer.group_send)(
+                        room_group_name,
+                        {
+                            'type': 'submission_scored_update',
+                            'submission_data': {
+                                'id': submission.id,
+                                'team_id': submission.team.id,
+                                'team_name': submission.team.team_name,
+                                'team_emoji': submission.team.team_emoji,
+                                'mission_title': submission.mission.title if submission.mission else '',
+                                'input_label': submission.input_label,
+                                'selected_value': submission.selected_value,
+                                'teacher_score': score,
+                                'scored_at': submission.scored_at.isoformat()
+                            },
+                            'timestamp': timezone.now().isoformat()
+                        }
+                    )
+                    logger.info(f"Broadcasted score update for submission {submission_id}")
+                except Exception as e:
+                    logger.error(f"Error broadcasting score update: {str(e)}")
+
+            # Get next unscored submission
+            next_submission = SimplifiedPhaseInput.objects.filter(
+                session=submission.session,
+                teacher_score__isnull=True,
+                is_active=True
+            ).select_related('team', 'mission').first()
+
+            # Calculate updated progress
+            total_submissions = SimplifiedPhaseInput.objects.filter(
+                session=submission.session,
+                is_active=True
+            ).count()
+            scored_submissions = SimplifiedPhaseInput.objects.filter(
+                session=submission.session,
+                teacher_score__isnull=False,
+                is_active=True
+            ).count()
+
+            progress = {
+                'scored': scored_submissions,
+                'total': total_submissions,
+                'percentage': round((scored_submissions / total_submissions * 100), 1) if total_submissions > 0 else 0,
+                'remaining': total_submissions - scored_submissions
+            }
+
+            # Prepare next submission data
+            next_submission_data = None
+            if next_submission:
+                next_submission_data = {
+                    'id': next_submission.id,
+                    'team_name': next_submission.team.team_name,
+                    'phase_name': next_submission.mission.get_mission_type_display() if next_submission.mission else 'Unknown',
+                    'title': next_submission.input_label,
+                    'content': next_submission.selected_value
+                }
+
+            return JsonResponse({
+                'success': True,
+                'message': f'Submission scored: {score}/10',
+                'next_submission': next_submission_data,
+                'progress': progress,
+                'all_completed': next_submission is None
+            })
+
+        except Exception as e:
+            logger.error(f"Error scoring simplified submission: {str(e)}", exc_info=True)
+            return JsonResponse({
+                'success': False,
+                'error': 'An error occurred while scoring the submission'
+            }, status=500)
+
+
 class CreateSimplifiedSessionView(CreateView):
     """
     Create new simplified Design Thinking session with auto-progression

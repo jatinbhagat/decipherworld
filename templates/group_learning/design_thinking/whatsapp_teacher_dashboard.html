@@ -702,26 +702,27 @@ body {
     </div>
 </div>
 
+<script src="{% static 'group_learning/js/websocket-manager.js' %}"></script>
 <script>
 // Global variables
 let currentTeamId = null;
 let currentSubmissionId = null;
-let socket = null;
+let wsManager = null;
 let submissionsData = {};
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
     initializeWebSocket();
     loadInitialData();
-    
+
     // Score slider interaction
     const scoreSlider = document.getElementById('score-slider');
     const scoreValue = document.getElementById('score-value');
-    
+
     scoreSlider.addEventListener('input', function() {
         scoreValue.textContent = this.value;
     });
-    
+
     // Close modal on outside click
     document.getElementById('scoring-modal').addEventListener('click', function(e) {
         if (e.target === this) {
@@ -730,65 +731,70 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// WebSocket connection
+// WebSocket connection using DesignThinkingWebSocketManager
 function initializeWebSocket() {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws/design-thinking/{{ session.session_code }}/`;
-    
-    socket = new WebSocket(wsUrl);
-    
-    socket.onopen = function(e) {
-        console.log('WebSocket connected');
-        updateConnectionStatus('connected');
-    };
-    
-    socket.onmessage = function(event) {
-        const data = JSON.parse(event.data);
+    wsManager = new DesignThinkingWebSocketManager('{{ session.session_code }}', {
+        debug: true,
+        maxReconnectAttempts: 10,
+        reconnectInterval: 3000
+    });
+
+    // Set up message handler
+    wsManager.onMessage = function(data) {
         handleWebSocketMessage(data);
     };
-    
-    socket.onclose = function(e) {
-        console.log('WebSocket disconnected');
-        updateConnectionStatus('disconnected');
-        
-        // Attempt to reconnect after 3 seconds
-        setTimeout(() => {
-            console.log('Attempting to reconnect...');
-            initializeWebSocket();
-        }, 3000);
+
+    // Set up connection handlers
+    wsManager.onOpen = function() {
+        console.log('✅ Teacher Dashboard connected to WebSocket');
     };
-    
-    socket.onerror = function(error) {
-        console.error('WebSocket error:', error);
-        updateConnectionStatus('error');
+
+    wsManager.onReconnecting = function(attempt, delay) {
+        console.log(`🔄 Reconnecting... Attempt ${attempt}, waiting ${delay}ms`);
     };
+
+    wsManager.onReconnected = function(data) {
+        console.log('✅ Reconnected! Reloading data...');
+        loadInitialData();
+    };
+
+    // Connect
+    wsManager.connect();
 }
 
 // Handle WebSocket messages
 function handleWebSocketMessage(data) {
+    console.log('📨 WebSocket message received:', data.type);
+
     switch(data.type) {
-        case 'submission_received':
-            handleNewSubmission(data.submission);
+        case 'student_submission_for_review':
+        case 'input_submission_update':
+            handleNewSubmission(data.submission_data, data.team_data);
             break;
         case 'submission_scored':
             handleScoredSubmission(data.submission);
             break;
-        case 'team_progress':
-            updateTeamProgress(data.team_id, data.progress);
+        case 'teacher_score_update':
+            handleTeacherScoreUpdate(data);
+            break;
+        case 'completion_status_update':
+            updateTeamProgress(data.team_data.id, data.completion_percentage);
             break;
         default:
-            console.log('Unknown message type:', data.type);
+            console.log('ℹ️ Unhandled message type:', data.type);
     }
 }
 
-// Load initial data
+// Load initial data - using correct API for simplified phase inputs
 function loadInitialData() {
-    fetch(`/learn/api/sessions/{{ session.session_code }}/submissions/`)
+    fetch(`/learn/api/simplified/{{ session.session_code }}/submissions/`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 processSubmissions(data.submissions);
                 updateTeamBadges();
+            } else {
+                console.error('Failed to load submissions:', data.error);
             }
         })
         .catch(error => {
@@ -904,15 +910,19 @@ function loadTeamSubmissions(teamId) {
 function createSubmissionMessage(submission, index) {
     const div = document.createElement('div');
     div.className = 'message-bubble submission';
+
+    // Format student name if available
+    const studentInfo = submission.student_name ? `<br><small>By: ${submission.student_name}</small>` : '';
+
     div.innerHTML = `
         <div class="message-header">
             <span class="message-author">${submission.team.team_name} ${submission.team.team_emoji}</span>
             <span class="message-time">${formatTime(submission.submitted_at)}</span>
         </div>
-        <div class="message-phase">${submission.mission.mission_type} - ${submission.title}</div>
-        <div class="message-content">${submission.content}</div>
+        <div class="message-phase">${submission.mission.mission_type || 'Unknown Phase'} - ${submission.title}${studentInfo}</div>
+        <div class="message-content">${submission.content || 'No content'}</div>
         <div class="message-actions">
-            ${submission.teacher_score ? 
+            ${submission.teacher_score ?
                 `<div class="score-display">Scored: ${submission.teacher_score}/10</div>` :
                 `<button class="score-btn score" onclick="openScoringModal(${submission.id})">📝 Review & Score</button>`
             }
@@ -964,16 +974,16 @@ function closeScoringModal() {
 // Submit score
 function submitScore() {
     if (!currentSubmissionId) return;
-    
+
     const score = parseInt(document.getElementById('score-slider').value);
     const feedback = document.getElementById('feedback-text').value.trim();
-    
+
     // Show loading state
     const submitBtn = document.querySelector('.modal-btn.submit');
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Submitting...';
     submitBtn.disabled = true;
-    
+
     fetch(`/learn/api/simplified/{{ session.session_code }}/score-submission/`, {
         method: 'POST',
         headers: {
@@ -989,35 +999,41 @@ function submitScore() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            console.log('✅ Score submitted successfully');
+
             // Update local data
             Object.values(submissionsData).forEach(teamSubmissions => {
                 const submission = teamSubmissions.find(s => s.id === currentSubmissionId);
                 if (submission) {
-                    submission.teacher_score = score.toString();
-                    submission.teacher_feedback = feedback;
+                    submission.teacher_score = score;
+                    submission.scored_at = new Date().toISOString();
                 }
             });
-            
+
             // Refresh current team view
             if (currentTeamId) {
                 loadTeamSubmissions(currentTeamId);
             }
-            
+
             // Update team badges
             updateTeamBadges();
-            
+
             // Close modal
             closeScoringModal();
-            
-            // Show success message briefly
+
+            // Show success message
             showNotification('Score submitted successfully!', 'success');
+
+            // Note: WebSocket broadcast will be sent by the server
+            // Other connected teachers will receive the update automatically
         } else {
-            alert('Error submitting score: ' + (data.error || 'Unknown error'));
+            console.error('Failed to submit score:', data.error);
+            showNotification('Error: ' + (data.error || 'Unknown error'), 'error');
         }
     })
     .catch(error => {
         console.error('Error submitting score:', error);
-        alert('Error submitting score. Please try again.');
+        showNotification('Error submitting score. Please try again.', 'error');
     })
     .finally(() => {
         submitBtn.textContent = originalText;
@@ -1026,24 +1042,70 @@ function submitScore() {
 }
 
 // Handle new submission from WebSocket
-function handleNewSubmission(submission) {
-    const teamId = submission.team.id;
+function handleNewSubmission(submission_data, team_data) {
+    // Handle both new submission formats
+    const submission = submission_data || {};
+    const team = team_data || submission.team || {};
+    const teamId = team.id || submission.team_id;
+
+    if (!teamId) {
+        console.warn('Received submission without team ID');
+        return;
+    }
+
+    // Create submission object in expected format
+    const formattedSubmission = {
+        id: submission.id,
+        team: {
+            id: teamId,
+            team_name: team.name || team.team_name,
+            team_emoji: team.emoji || team.team_emoji
+        },
+        mission: {
+            id: submission.mission_id,
+            mission_type: submission.mission_type || 'unknown',
+            title: submission.mission_title || 'Current Phase'
+        },
+        student_name: submission.student_name,
+        title: submission.input_label || submission.title,
+        content: submission.selected_value || submission.content,
+        input_type: submission.input_type,
+        submitted_at: submission.submitted_at || new Date().toISOString(),
+        teacher_score: submission.teacher_score,
+        scored_at: submission.scored_at
+    };
+
     if (!submissionsData[teamId]) {
         submissionsData[teamId] = [];
     }
-    
-    submissionsData[teamId].push(submission);
-    
-    // Update UI
-    updateTeamBadges();
-    
-    // If this team is currently selected, update chat view
-    if (currentTeamId == teamId) {
-        loadTeamSubmissions(teamId);
+
+    // Check if submission already exists
+    const exists = submissionsData[teamId].find(s => s.id === formattedSubmission.id);
+    if (!exists) {
+        submissionsData[teamId].push(formattedSubmission);
+
+        // Update UI
+        updateTeamBadges();
+
+        // If this team is currently selected, update chat view
+        if (currentTeamId == teamId) {
+            loadTeamSubmissions(teamId);
+        }
+
+        // Show notification
+        showNotification(`New submission from ${formattedSubmission.team.team_name}`, 'info');
     }
-    
-    // Show notification
-    showNotification(`New submission from ${submission.team.team_name}`, 'info');
+}
+
+// Handle teacher score update from WebSocket
+function handleTeacherScoreUpdate(data) {
+    const teamId = data.team_data?.id;
+    if (!teamId) return;
+
+    // The score update broadcasts don't include submission IDs, so we refresh the team data
+    if (currentTeamId == teamId) {
+        setTimeout(() => loadInitialData(), 500);
+    }
 }
 
 // Handle scored submission from WebSocket
@@ -1120,7 +1182,8 @@ function showNotification(message, type = 'info') {
 }
 
 function updateConnectionStatus(status) {
-    // Could add connection status indicator if needed
+    // Connection status is now handled by DesignThinkingWebSocketManager
+    console.log('Connection status:', status);
 }
 
 function refreshData() {

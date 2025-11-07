@@ -82,7 +82,8 @@ urlpatterns = [
     # Simplified API endpoints
     path('api/simplified/<str:session_code>/input/', views.SimplifiedInputSubmissionView.as_view(), name='simplified_input_submit'),
     path('api/simplified/<str:session_code>/score/', views.TeacherScoringView.as_view(), name='simplified_teacher_score'),
-    path('api/simplified/<str:session_code>/score-submission/', views.ScoreSubmissionView.as_view(), name='score_submission'),
+    path('api/simplified/<str:session_code>/score-submission/', views.SimplifiedScoreSubmissionView.as_view(), name='simplified_score_submission'),
+    path('api/simplified/<str:session_code>/submissions/', views.SimplifiedSubmissionsAPIView.as_view(), name='simplified_submissions_api'),
     path('api/simplified/<str:session_code>/feedback/', views.SimplifiedFeedbackAPI.as_view(), name='simplified_feedback_api'),
     path('api/sessions/<str:session_code>/submissions/', views.SessionSubmissionsAPIView.as_view(), name='session_submissions_api'),
     
