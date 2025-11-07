@@ -2692,27 +2692,43 @@ function updatePhaseSubmitButton() {
     // Determine current phase and get inputs
     let phase = '';
     let hasValidInput = false;
-    
+
     // Check which phase is currently visible
     if (document.getElementById('define-phase').style.display === 'block') {
         phase = 'define';
         const input = document.getElementById('input_0');
-        hasValidInput = input && input.value.trim().length > 0;
+        // If input doesn't exist, phase has no questions - enable button
+        if (!input) {
+            hasValidInput = true;
+        } else {
+            hasValidInput = input.value.trim().length > 0;
+        }
     } else if (document.getElementById('ideate-phase').style.display === 'block') {
         phase = 'ideate';
         // Check if at least one checkbox is checked
-        const checkboxes = document.querySelectorAll('#ideate-simplified-inputs input[type="checkbox"]:checked');
-        hasValidInput = checkboxes.length > 0;
+        const checkboxes = document.querySelectorAll('#ideate-simplified-inputs input[type="checkbox"]');
+        if (checkboxes.length === 0) {
+            // No inputs, enable button
+            hasValidInput = true;
+        } else {
+            hasValidInput = Array.from(checkboxes).some(cb => cb.checked);
+        }
     } else if (document.getElementById('prototype-phase').style.display === 'block') {
         phase = 'prototype';
         const input = document.getElementById('input_0');
-        hasValidInput = input && input.value.trim().length > 0;
+        // If input doesn't exist, phase has no questions - enable button
+        if (!input) {
+            hasValidInput = true;
+        } else {
+            hasValidInput = input.value.trim().length > 0;
+        }
     }
-    
+
     // Enable/disable the phase submit button
     const submitBtn = document.getElementById(phase + '-submit');
     if (submitBtn) {
         submitBtn.disabled = !hasValidInput;
+        console.log(`🔘 Button ${phase}-submit: ${hasValidInput ? 'enabled' : 'disabled'}`);
     }
 }
 
@@ -2765,14 +2781,24 @@ function loadSimplifiedInputs(missionType, containerId = 'input-forms-container'
     inputs.forEach((input, index) => {
         const inputElement = createInputElement(input, index);
         container.appendChild(inputElement);
+
+        // Add input listeners to enable button when user types
+        if (input.type === 'text_short' || input.type === 'text_medium') {
+            const textInput = inputElement.querySelector('input, textarea');
+            if (textInput) {
+                textInput.addEventListener('input', () => updatePhaseSubmitButton());
+            }
+        } else if (input.type === 'checkbox') {
+            const checkboxes = inputElement.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', () => updatePhaseSubmitButton());
+            });
+        }
     });
-    
-    // Enable phase-specific submit button if there are inputs
-    const submitBtnId = missionType + '-submit';
-    const submitBtn = document.getElementById(submitBtnId);
-    if (submitBtn) {
-        submitBtn.disabled = inputs.length === 0;
-    }
+
+    // Button state is managed by updatePhaseSubmitButton() via input listeners
+    // Initialize button state after a short delay to allow DOM to update
+    setTimeout(() => updatePhaseSubmitButton(), 100);
 }
 
 function createInputElement(input, index) {
@@ -3602,13 +3628,7 @@ function initializeGame() {
 // Show empathy phase
 function showEmpathyPhase() {
     console.log('👀 Starting Empathy phase');
-    
-    // Check if this phase is already completed - prevent going back
-    if (window.phaseCompleted?.empathy) {
-        console.log('⚠️ Empathy phase already completed, cannot go back');
-        return;
-    }
-    
+
     // Show empathy card
     document.getElementById('empathy-phase').style.display = 'block';
     
@@ -3732,16 +3752,23 @@ function submitEmpathy() {
         customPainPoints: customPainPoints.filter(p => p.trim())
     };
     
-    // SEND TO SERVER - This was missing!
+    // SEND TO SERVER with correct format
+    const input_data = [{
+        type: 'checkbox',
+        label: 'Selected Pain Points',
+        value: JSON.stringify(submissionData),
+        order: 1,
+        time_taken: 0
+    }];
+
     const messageData = {
-        type: 'submit_phase',
-        mission_type: 'empathy',
-        submission_data: submissionData,
-        session_code: '{{ session.session_code }}',
-        team_id: '{{ team.id }}',
-        timestamp: new Date().toISOString()
+        type: 'simplified_input_submit',
+        mission_id: currentMission.id,
+        team_id: currentTeam.id,
+        student_data: studentData,
+        input_data: input_data
     };
-    
+
     console.log('📤 Sending empathy submission to server:', messageData);
     if (websocket && websocket.readyState === WebSocket.OPEN) {
         websocket.send(JSON.stringify(messageData));
@@ -3762,10 +3789,7 @@ function submitEmpathy() {
         input.style.cursor = 'not-allowed';
     });
     
-    // Mark this phase as completed to prevent going back
-    window.phaseCompleted = window.phaseCompleted || {};
-    window.phaseCompleted.empathy = true;
-    
+    // Server will handle phase progression and prevent backward navigation
     // Move to define phase after delay
     setTimeout(() => {
         showDefinePhase();
@@ -4216,16 +4240,23 @@ function submitDefine() {
         isCustomHMW: false  // Using simplified input
     };
     
-    // SEND TO SERVER
+    // SEND TO SERVER with correct format
+    const input_data = [{
+        type: 'text_short',
+        label: 'Problem Statement',
+        value: problemStatement,
+        order: 1,
+        time_taken: 0
+    }];
+
     const messageData = {
-        type: 'submit_phase',
-        mission_type: 'define',
-        submission_data: submissionData,
-        session_code: '{{ session.session_code }}',
-        team_id: '{{ team.id }}',
-        timestamp: new Date().toISOString()
+        type: 'simplified_input_submit',
+        mission_id: currentMission.id,
+        team_id: currentTeam.id,
+        student_data: studentData,
+        input_data: input_data
     };
-    
+
     console.log('📤 Sending define submission to server:', messageData);
     if (websocket && websocket.readyState === WebSocket.OPEN) {
         websocket.send(JSON.stringify(messageData));
@@ -4246,10 +4277,7 @@ function submitDefine() {
         input.style.cursor = 'not-allowed';
     });
     
-    // Mark this phase as completed to prevent going back
-    window.phaseCompleted = window.phaseCompleted || {};
-    window.phaseCompleted.define = true;
-    
+    // Server will handle phase progression and prevent backward navigation
     // Continue to next phase after delay
     setTimeout(() => {
         showIdeatePhase();
@@ -4359,7 +4387,31 @@ function submitIdeate() {
     };
     
     console.log('✅ Submitting ideate data', ideateData);
-    
+
+    // SEND TO SERVER with correct format
+    const input_data = [{
+        type: 'text_medium',
+        label: 'Creative Ideas',
+        value: JSON.stringify(ideateData),
+        order: 1,
+        time_taken: 0
+    }];
+
+    const messageData = {
+        type: 'simplified_input_submit',
+        mission_id: currentMission.id,
+        team_id: currentTeam.id,
+        student_data: studentData,
+        input_data: input_data
+    };
+
+    console.log('📤 Sending ideate submission to server:', messageData);
+    if (websocket && websocket.readyState === WebSocket.OPEN) {
+        websocket.send(JSON.stringify(messageData));
+    } else {
+        console.error('⚠️ WebSocket not connected, submission may be lost');
+    }
+
     // Show success animation and lock inputs
     const submitBtn = document.getElementById('ideate-submit');
     submitBtn.textContent = `Amazing ${allIdeas.length} Ideas Created! 🌟`;
@@ -4427,7 +4479,31 @@ function updatePrototypeSubmitButton() {
 // Submit prototype phase
 function submitPrototype() {
     console.log('✅ Submitting prototype data', prototypeData);
-    
+
+    // SEND TO SERVER with correct format
+    const input_data = [{
+        type: 'text_medium',
+        label: 'Prototype Description',
+        value: JSON.stringify(prototypeData),
+        order: 1,
+        time_taken: 0
+    }];
+
+    const messageData = {
+        type: 'simplified_input_submit',
+        mission_id: currentMission.id,
+        team_id: currentTeam.id,
+        student_data: studentData,
+        input_data: input_data
+    };
+
+    console.log('📤 Sending prototype submission to server:', messageData);
+    if (websocket && websocket.readyState === WebSocket.OPEN) {
+        websocket.send(JSON.stringify(messageData));
+    } else {
+        console.error('⚠️ WebSocket not connected, submission may be lost');
+    }
+
     // Show success animation and lock inputs
     const submitBtn = document.getElementById('prototype-submit');
     submitBtn.textContent = 'Prototype Complete! 🏆';

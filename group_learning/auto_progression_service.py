@@ -200,10 +200,19 @@ class AutoProgressionService:
                 student_session_id=student_session_id,
                 is_active=True
             ).count()
-            
+
             if existing_inputs > 0:
                 return {'valid': False, 'error': 'Student has already submitted inputs for this phase'}
-            
+
+            # PREVENT BACKWARD NAVIGATION: Check if team is trying to submit for an earlier phase
+            session = team.session
+            current_mission = session.current_mission
+            if current_mission and mission.order < current_mission.order:
+                return {
+                    'valid': False,
+                    'error': f'Cannot submit for past phase. Current phase is {current_mission.mission_type}.'
+                }
+
             return {'valid': True}
             
         except Exception as e:
