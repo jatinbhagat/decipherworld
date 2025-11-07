@@ -2256,10 +2256,10 @@ main {
         <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ team.team_name }} 🎯</h2>
         <div class="flex justify-between text-sm text-gray-600 mb-2">
             <span>Progress</span>
-            <span id="progress-text">Phase 1 of 5</span>
+            <span id="progress-text">Phase 1 of 4</span>
         </div>
         <div class="phase-progress">
-            <div class="phase-progress-fill" id="progress-fill" style="width: 20%"></div>
+            <div class="phase-progress-fill" id="progress-fill" style="width: 25%"></div>
         </div>
     </div>
 
@@ -2509,30 +2509,11 @@ function initializeStudentDashboard() {
             console.log('✅ Team status hidden');
         }
         
-        // Hide phase cards
-        const phaseCard = document.getElementById('phase-card');
-        const empathyPhase = document.getElementById('empathy-phase');
-        const definePhase = document.getElementById('define-phase');
-        if (phaseCard) phaseCard.style.display = 'none';
-        if (empathyPhase) empathyPhase.style.display = 'none';
-        if (definePhase) definePhase.style.display = 'none';
-        
-        // Show game introduction
-        const gameIntro = document.getElementById('game-intro');
-        if (gameIntro) {
-            gameIntro.style.display = 'block';
-            console.log('✅ Game introduction shown');
-        } else {
-            console.error('❌ Game intro element not found!');
-        }
-        
-        // Update progress
-        const progressText = document.getElementById('progress-text');
-        const progressFill = document.getElementById('progress-fill');
-        if (progressText) progressText.textContent = 'Ready to Start';
-        if (progressFill) progressFill.style.width = '0%';
-        
-        console.log('✅ Game initialization complete');
+        // FIXED: Students land directly on current mission (empathy phase) - NO intro screen
+        console.log('🎯 Loading current phase directly:', currentMission.mission_type);
+        loadCurrentPhase();
+
+        console.log('✅ Game initialization complete - students started on', currentMission.mission_type);
     } catch (error) {
         console.error('❌ Game initialization error:', error);
     }
@@ -2636,9 +2617,10 @@ function loadCurrentPhase() {
     
     // Update progress bar
     const phaseNumber = getPhaseNumber(currentMission.mission_type);
-    const progressPercent = (phaseNumber / 5) * 100;
+    const totalPhases = 4; // empathy, define, ideate, prototype (kickoff and showcase excluded)
+    const progressPercent = (phaseNumber / totalPhases) * 100;
     document.getElementById('progress-fill').style.width = progressPercent + '%';
-    document.getElementById('progress-text').textContent = `Phase ${phaseNumber} of 5`;
+    document.getElementById('progress-text').textContent = `Phase ${phaseNumber} of ${totalPhases}`;
     
     // Show the appropriate themed phase card
     showThemedPhaseCard(currentMission.mission_type);
@@ -2692,8 +2674,16 @@ function showThemedPhaseCard(missionType) {
 }
 
 function getPhaseNumber(missionType) {
-    const phases = ['kickoff', 'empathy', 'define', 'ideate', 'prototype', 'showcase'];
-    return phases.indexOf(missionType) + 1;
+    // FIXED: Exclude kickoff since students skip it - they land directly on empathy
+    // Empathy should be Phase 1, Define Phase 2, Ideate Phase 3, Prototype Phase 4
+    const phases = {
+        'empathy': 1,
+        'define': 2,
+        'ideate': 3,
+        'prototype': 4,
+        'showcase': 5
+    };
+    return phases[missionType] || 1; // Default to 1 if unknown
 }
 
 // REMOVED: Complex fallback functions - using unified simple approach
