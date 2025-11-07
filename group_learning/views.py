@@ -2503,6 +2503,8 @@ class SimplifiedStudentDashboardView(TemplateView):
                 context['error'] = 'Unable to join or create team. Please try again.'
                 return context
             
+            logger.info(f"✅ Student dashboard loaded for session {session_code}, team {team.team_name}, mission: {session.current_mission.mission_type if session.current_mission else 'None'}")
+
             context.update({
                 'session': session,
                 'team': team,
@@ -2687,9 +2689,14 @@ class SimplifiedTeacherDashboardView(TemplateView):
                     'submissions': []  # Simplified for JSON
                 }
 
+            # Get teams with safety check
+            teams = list(session.design_teams.all())
+
+            logger.info(f"✅ Teacher dashboard loaded for session {session_code}: {len(teams)} teams, {all_submissions.count()} submissions")
+
             context.update({
                 'session': session,
-                'teams': session.design_teams.all(),
+                'teams': teams,
                 'current_mission': session.current_mission,
                 'game_config': {
                     'auto_advance_enabled': session.design_game.auto_advance_enabled,

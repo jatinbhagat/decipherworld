@@ -598,13 +598,29 @@ body {
 {% endblock %}
 
 {% block content %}
+{% if error %}
+<div style="padding: 40px; text-align: center;">
+    <div style="background: #fee; border: 2px solid #c00; border-radius: 12px; padding: 20px; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #c00; margin: 0 0 10px 0;">❌ Error Loading Dashboard</h2>
+        <p style="color: #666;">{{ error }}</p>
+        <button onclick="window.location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">Reload Page</button>
+    </div>
+</div>
+{% elif not session %}
+<div style="padding: 40px; text-align: center;">
+    <div style="background: #fffbeb; border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #f59e0b; margin: 0 0 10px 0;">⚠️ Session Not Found</h2>
+        <p style="color: #666;">Unable to load session data. Please check the URL and try again.</p>
+    </div>
+</div>
+{% else %}
 <div class="whatsapp-container">
     <!-- Header -->
     <div class="dashboard-header">
         <div class="session-info">
-            <h1>💬 Teacher Dashboard - {{ session.session_code }}</h1>
+            <h1>💬 Teacher Dashboard - {{ session.session_code|default:"Unknown Session" }}</h1>
             <div class="session-meta">
-                {{ session.design_game.title }} | {{ teams|length }} Teams Active
+                {{ session.design_game.title|default:"Design Thinking" }} | {{ teams|length|default:"0" }} Teams Active
             </div>
         </div>
         
@@ -623,23 +639,31 @@ body {
             </div>
             
             <div class="teams-list">
-                {% for team in teams %}
-                <div class="team-item" data-team-id="{{ team.id }}" onclick="selectTeam({{ team.id }}, '{{ team.team_name|escapejs }}', '{{ team.team_emoji|escapejs }}')">
-                    <div class="team-avatar">{{ team.team_emoji }}</div>
-                    <div class="team-info">
-                        <div class="team-header">
-                            <div class="team-name">{{ team.team_name }}</div>
-                            <div class="team-time" id="team-time-{{ team.id }}">--:--</div>
+                {% if teams %}
+                    {% for team in teams %}
+                    <div class="team-item" data-team-id="{{ team.id }}" onclick="selectTeam({{ team.id }}, '{{ team.team_name|escapejs }}', '{{ team.team_emoji|escapejs }}')">
+                        <div class="team-avatar">{{ team.team_emoji }}</div>
+                        <div class="team-info">
+                            <div class="team-header">
+                                <div class="team-name">{{ team.team_name }}</div>
+                                <div class="team-time" id="team-time-{{ team.id }}">--:--</div>
+                            </div>
+                            <div class="team-preview" id="team-preview-{{ team.id }}">No submissions yet</div>
+                            <div class="team-badges">
+                                <span class="badge submissions" id="team-submissions-{{ team.id }}">0 submissions</span>
+                                <span class="badge pending" id="team-pending-{{ team.id }}">0 pending</span>
+                            </div>
                         </div>
-                        <div class="team-preview" id="team-preview-{{ team.id }}">No submissions yet</div>
-                        <div class="team-badges">
-                            <span class="badge submissions" id="team-submissions-{{ team.id }}">0 submissions</span>
-                            <span class="badge pending" id="team-pending-{{ team.id }}">0 pending</span>
-                        </div>
+                        <div class="status-indicator pending" id="team-status-{{ team.id }}"></div>
                     </div>
-                    <div class="status-indicator pending" id="team-status-{{ team.id }}"></div>
-                </div>
-                {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <div style="padding: 20px; text-align: center; color: #6b7280;">
+                        <div style="font-size: 48px; margin-bottom: 12px;">👥</div>
+                        <p style="margin: 0; font-weight: 500;">No teams yet</p>
+                        <p style="margin: 8px 0 0 0; font-size: 14px;">Teams will appear here when students join</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
         
@@ -1211,4 +1235,5 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 </script>
+{% endif %}
 {% endblock %}
