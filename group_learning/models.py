@@ -2080,6 +2080,12 @@ class DesignTeam(models.Model):
         verbose_name = "Design Team"
         verbose_name_plural = "Design Teams"
         ordering = ['team_name']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['session'],
+                name='unique_team_per_session'
+            )
+        ]
     
     def __str__(self):
         return f"{self.team_name} ({self.session.session_code})"
@@ -2671,6 +2677,22 @@ class TeamSubmission(models.Model):
         max_length=100,
         blank=True,
         help_text="Category for ideation submissions"
+    )
+    
+    # Simple Teacher Scoring (1-10 scale)
+    teacher_score = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Teacher score from 1-10"
+    )
+    teacher_feedback = models.TextField(
+        blank=True,
+        help_text="Optional teacher feedback"
+    )
+    scored_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When teacher scored this submission"
     )
     
     class Meta:

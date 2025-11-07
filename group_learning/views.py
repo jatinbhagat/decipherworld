@@ -2410,8 +2410,13 @@ class ValidateSessionView(View):
 
 class SimplifiedStudentDashboardView(TemplateView):
     """
-    Simplified student dashboard for auto-progression Design Thinking sessions
-    Replaces complex team interface with streamlined input forms
+    Simplified student dashboard for auto-progression Design Thinking sessions.
+    
+    Key features:
+    - Auto-starts sessions without teacher dependency
+    - Skips kickoff/intro phases to prevent students getting stuck
+    - Automatically advances from kickoff to empathy phase
+    - Provides streamlined input forms for each design thinking phase
     """
     template_name = 'group_learning/design_thinking/simplified_student_dashboard.html'
     
@@ -2446,25 +2451,41 @@ class SimplifiedStudentDashboardView(TemplateView):
                 session.status = 'in_progress'
                 session.started_at = timezone.now()
                 
-                # Set the first mission as current if not already set
+                # Set the first REAL mission (skip kickoff/intro phases)
                 if not session.current_mission:
-                    first_mission = session.design_game.missions.filter(is_active=True).order_by('order').first()
+                    first_mission = session.design_game.missions.filter(
+                        is_active=True
+                    ).exclude(mission_type='kickoff').order_by('order').first()
                     if first_mission:
                         session.current_mission = first_mission
                         session.mission_start_time = timezone.now()
-                        logger.info(f"Set first mission for session {session_code}: {first_mission.title}")
+                        logger.info(f"Set first real mission for session {session_code}: {first_mission.title} (skipped kickoff)")
                 
                 session.save()
                 logger.info(f"Auto-started simplified session {session_code}")
             
             # Handle case where session is in progress but has no current mission (repair broken sessions)
             elif session.status == 'in_progress' and not session.current_mission:
-                first_mission = session.design_game.missions.filter(is_active=True).order_by('order').first()
+                first_mission = session.design_game.missions.filter(
+                    is_active=True
+                ).exclude(mission_type='kickoff').order_by('order').first()
                 if first_mission:
                     session.current_mission = first_mission
                     session.mission_start_time = timezone.now()
                     session.save()
-                    logger.info(f"Repaired session {session_code}: Set missing current_mission to {first_mission.title}")
+                    logger.info(f"Repaired session {session_code}: Set missing current_mission to {first_mission.title} (skipped kickoff)")
+            
+            # FIXED: Auto-advance if stuck on kickoff phase
+            elif session.status == 'in_progress' and session.current_mission and session.current_mission.mission_type == 'kickoff':
+                next_mission = session.design_game.missions.filter(
+                    is_active=True,
+                    mission_type='empathy'
+                ).order_by('order').first()
+                if next_mission:
+                    session.current_mission = next_mission
+                    session.mission_start_time = timezone.now()
+                    session.save()
+                    logger.info(f"Auto-advanced session {session_code} from kickoff to: {next_mission.title}")
             
             # Get or create team for this student
             try:
@@ -2504,19 +2525,19 @@ class SimplifiedStudentDashboardView(TemplateView):
         return context
     
     def _get_or_create_student_team(self, session):
-        """Get existing team or create new one for student with enhanced error handling"""
+        """Get existing team or create new one for student - SIMPLIFIED"""
         import logging
         from django.db import transaction
         logger = logging.getLogger(__name__)
+        
+        # SIMPLE: Get the first team for this session, or create if none exists
         try:
-            # Check for existing teams first
-            team = session.design_teams.first()
-            
+            team = DesignTeam.objects.filter(session=session).first()
             if team:
-                logger.info(f"Student joined existing team: {team.team_name} (ID: {team.id})")
+                logger.info(f"Found existing team: {team.team_name} (ID: {team.id})")
                 return team
-            
-            # Create a default team if none exists
+                
+            # No team exists, create one
             with transaction.atomic():
                 team = DesignTeam.objects.create(
                     session=session,
@@ -2524,11 +2545,11 @@ class SimplifiedStudentDashboardView(TemplateView):
                     team_emoji='🚀',
                     team_members=[]
                 )
-                logger.info(f"Created new team for session {session.session_code}: {team.team_name} (ID: {team.id})")
+                logger.info(f"Created new team: {team.team_name} (ID: {team.id})")
                 return team
                 
         except Exception as e:
-            logger.error(f"Error creating/getting team for session {session.session_code}: {str(e)}")
+            logger.error(f"Error with team for session {session.session_code}: {str(e)}")
             raise
     
     def _ensure_team_progress_exists(self, team, session):
@@ -2616,11 +2637,11 @@ class SimplifiedTeacherDashboardView(TemplateView):
                 session_stats = {'error': 'Unable to calculate session statistics'}
             
             # Get submission review data
-            from .models import SimplifiedPhaseInput
+            from .models import TeamSubmission
             
             # Get all submissions for this session
-            all_submissions = SimplifiedPhaseInput.objects.filter(
-                session=session
+            all_submissions = TeamSubmission.objects.filter(
+                team__session=session
             ).select_related('team', 'mission').order_by('submitted_at')
             
             # Get unscored submissions
@@ -2655,9 +2676,8 @@ class SimplifiedTeacherDashboardView(TemplateView):
                     latest_submission_data = {
                         'id': latest_submission.id,
                         'mission_title': latest_submission.mission.title if latest_submission.mission else 'Current Phase',
-                        'submission_data': latest_submission.selected_value or 'No data',
+                        'submission_data': latest_submission.content or 'No data',
                         'submitted_at': latest_submission.submitted_at.isoformat(),
-                        'student_name': latest_submission.student_name or 'Unknown',
                         'teacher_score': latest_submission.teacher_score
                     }
                 
@@ -2780,7 +2800,7 @@ class SessionSubmissionsAPIView(View):
         
         try:
             # Import models
-            from .models import SimplifiedPhaseInput, DesignThinkingSession
+            from .models import TeamSubmission, DesignThinkingSession
             
             # Get session
             session = DesignThinkingSession.objects.select_related('design_game').get(
@@ -2788,8 +2808,8 @@ class SessionSubmissionsAPIView(View):
             )
             
             # Get all submissions for this session
-            submissions = SimplifiedPhaseInput.objects.filter(
-                session=session
+            submissions = TeamSubmission.objects.filter(
+                team__session=session
             ).select_related('team', 'mission').order_by('submitted_at')
             
             # Format submissions for API response
@@ -2803,16 +2823,15 @@ class SessionSubmissionsAPIView(View):
                         'team_emoji': submission.team.team_emoji
                     },
                     'mission': {
-                        'id': submission.mission.id,
-                        'mission_type': submission.mission.mission_type,
-                        'title': getattr(submission.mission, 'title', submission.mission.mission_type)
+                        'id': submission.mission.id if submission.mission else None,
+                        'mission_type': submission.mission.mission_type if submission.mission else 'unknown',
+                        'title': submission.mission.title if submission.mission else 'Current Phase'
                     },
-                    'student_name': submission.student_name,
-                    'input_label': submission.input_label,
-                    'selected_value': submission.selected_value,
+                    'title': submission.title,  # Submission title/label
+                    'content': submission.content,  # Submission content
                     'submitted_at': submission.submitted_at.isoformat(),
                     'teacher_score': submission.teacher_score,
-                    'teacher_feedback': getattr(submission, 'teacher_feedback', '')
+                    'teacher_feedback': submission.teacher_feedback or ''
                 })
             
             return JsonResponse({
@@ -2831,18 +2850,31 @@ class SessionSubmissionsAPIView(View):
             return JsonResponse({'error': 'Server error'}, status=500)
 
 
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
+@method_decorator(csrf_exempt, name='dispatch')
 class ScoreSubmissionView(View):
     """
     API endpoint to score student submissions (1-10 scale)
+    Simple scoring system synchronized between student and teacher sides
     """
     def post(self, request, session_code):
         logger = logging.getLogger(__name__)
         
         try:
             # Get submission data from request (handle both form data and JSON)
-            if request.content_type == 'application/json':
+            if request.content_type == 'application/json' or 'application/json' in request.META.get('CONTENT_TYPE', ''):
                 import json
-                data = json.loads(request.body)
+                try:
+                    raw_body = request.body
+                    if isinstance(raw_body, bytes):
+                        raw_body = raw_body.decode('utf-8')
+                    data = json.loads(raw_body)
+                except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                    logger.error(f"JSON parsing error in scoring API: {str(e)}")
+                    return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+                    
                 submission_id = data.get('submission_id')
                 score = data.get('score')
                 feedback = data.get('feedback', '').strip()
@@ -2866,39 +2898,40 @@ class ScoreSubmissionView(View):
                 return JsonResponse({'error': 'Score must be a valid number'}, status=400)
             
             # Get the submission
-            from .models import SimplifiedPhaseInput, DesignThinkingSession
+            from .models import TeamSubmission, DesignThinkingSession
             
             try:
-                submission = SimplifiedPhaseInput.objects.select_related(
-                    'team', 'mission', 'session'
+                submission = TeamSubmission.objects.select_related(
+                    'team', 'mission'
                 ).get(id=submission_id)
-            except SimplifiedPhaseInput.DoesNotExist:
+            except TeamSubmission.DoesNotExist:
                 return JsonResponse({'error': 'Submission not found'}, status=404)
             
             # Verify session code matches
-            if submission.session.session_code != session_code:
+            if submission.team.session.session_code != session_code:
                 return JsonResponse({'error': 'Session mismatch'}, status=400)
             
             # Update submission with score
             from django.utils import timezone
-            submission.teacher_score = str(score_int)
+            submission.teacher_score = score_int  # Store as integer, not string
+            submission.teacher_feedback = data.get('feedback', '')  # Optional feedback
             submission.scored_at = timezone.now()
             submission.save()
             
             logger.info(f"Scored submission {submission_id}: {score_int}/10 by teacher")
             
             # Get next unscored submission
-            next_submission = SimplifiedPhaseInput.objects.filter(
-                session=submission.session,
+            next_submission = TeamSubmission.objects.filter(
+                team__session=submission.team.session,
                 teacher_score__isnull=True
             ).select_related('team', 'mission').first()
             
             # Calculate updated progress
-            total_submissions = SimplifiedPhaseInput.objects.filter(
-                session=submission.session
+            total_submissions = TeamSubmission.objects.filter(
+                team__session=submission.team.session
             ).count()
-            scored_submissions = SimplifiedPhaseInput.objects.filter(
-                session=submission.session,
+            scored_submissions = TeamSubmission.objects.filter(
+                team__session=submission.team.session,
                 teacher_score__isnull=False
             ).count()
             
@@ -2916,9 +2949,8 @@ class ScoreSubmissionView(View):
                     'id': next_submission.id,
                     'team_name': next_submission.team.team_name,
                     'phase_name': next_submission.mission.get_mission_type_display() if hasattr(next_submission.mission, 'get_mission_type_display') else next_submission.mission.mission_type.title(),
-                    'student_name': next_submission.student_name,
-                    'input_label': next_submission.input_label,
-                    'content': next_submission.selected_value
+                    'title': next_submission.title,
+                    'content': next_submission.content
                 }
             
             return JsonResponse({

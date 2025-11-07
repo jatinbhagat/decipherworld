@@ -3737,10 +3737,27 @@ function updateEmpathySubmitButton() {
 function submitEmpathy() {
     console.log('✅ Submitting empathy data');
     
-    empathyData = {
+    const submissionData = {
         selectedPainPoints: Array.from(selectedPainPoints),
         customPainPoints: customPainPoints.filter(p => p.trim())
     };
+    
+    // SEND TO SERVER - This was missing!
+    const messageData = {
+        type: 'submit_phase',
+        mission_type: 'empathy',
+        submission_data: submissionData,
+        session_code: '{{ session.session_code }}',
+        team_id: '{{ team.id }}',
+        timestamp: new Date().toISOString()
+    };
+    
+    console.log('📤 Sending empathy submission to server:', messageData);
+    if (websocket && websocket.readyState === WebSocket.OPEN) {
+        websocket.send(JSON.stringify(messageData));
+    } else {
+        console.error('⚠️ WebSocket not connected, submission may be lost');
+    }
     
     // Show success animation and lock inputs
     const submitBtn = document.getElementById('empathy-submit');
@@ -4203,11 +4220,28 @@ function submitDefine() {
     // Use the problem statement as the HMW question
     const hmwQuestion = problemStatement;
     
-    defineData = {
+    const submissionData = {
         hmwQuestion: hmwQuestion,
         problemStatement: problemStatement,
         isCustomHMW: false  // Using simplified input
     };
+    
+    // SEND TO SERVER
+    const messageData = {
+        type: 'submit_phase',
+        mission_type: 'define',
+        submission_data: submissionData,
+        session_code: '{{ session.session_code }}',
+        team_id: '{{ team.id }}',
+        timestamp: new Date().toISOString()
+    };
+    
+    console.log('📤 Sending define submission to server:', messageData);
+    if (websocket && websocket.readyState === WebSocket.OPEN) {
+        websocket.send(JSON.stringify(messageData));
+    } else {
+        console.error('⚠️ WebSocket not connected, submission may be lost');
+    }
     
     // Show success animation
     const submitBtn = document.getElementById('define-submit');

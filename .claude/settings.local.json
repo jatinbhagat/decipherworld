@@ -62,7 +62,8 @@
       "Read(//var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_cfOaqE/**)",
       "WebFetch(domain:leadschool.in)",
       "Bash(open \"http://127.0.0.1:8000/\")",
-      "Read(//var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_svNYO2/**)"
+      "Read(//var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_svNYO2/**)",
+      "Read(//var/folders/6b/1sdj26_958s2n6bqgqj5zr580000gn/T/TemporaryItems/NSIRD_screencaptureui_Uu5l5J/**)"
     ],
     "deny": [],
     "ask": []

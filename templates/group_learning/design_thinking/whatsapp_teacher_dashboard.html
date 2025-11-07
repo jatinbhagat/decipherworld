@@ -827,7 +827,7 @@ function updateTeamBadges() {
         // Update latest submission preview
         if (submissions.length > 0) {
             const latest = submissions[submissions.length - 1];
-            const preview = latest.selected_value.substring(0, 30) + (latest.selected_value.length > 30 ? '...' : '');
+            const preview = latest.content.substring(0, 30) + (latest.content.length > 30 ? '...' : '');
             document.getElementById(`team-preview-${teamId}`).textContent = preview;
             
             // Update time
@@ -906,11 +906,11 @@ function createSubmissionMessage(submission, index) {
     div.className = 'message-bubble submission';
     div.innerHTML = `
         <div class="message-header">
-            <span class="message-author">${submission.student_name}</span>
+            <span class="message-author">${submission.team.team_name} ${submission.team.team_emoji}</span>
             <span class="message-time">${formatTime(submission.submitted_at)}</span>
         </div>
-        <div class="message-phase">${submission.mission.mission_type} - ${submission.input_label}</div>
-        <div class="message-content">${submission.selected_value}</div>
+        <div class="message-phase">${submission.mission.mission_type} - ${submission.title}</div>
+        <div class="message-content">${submission.content}</div>
         <div class="message-actions">
             ${submission.teacher_score ? 
                 `<div class="score-display">Scored: ${submission.teacher_score}/10</div>` :
@@ -939,10 +939,10 @@ function openScoringModal(submissionId) {
     
     // Populate submission details
     document.getElementById('submission-details').innerHTML = `
-        <div><strong>Student:</strong> ${submission.student_name}</div>
+        <div><strong>Team:</strong> ${submission.team.team_name} ${submission.team.team_emoji}</div>
         <div><strong>Phase:</strong> ${submission.mission.mission_type}</div>
-        <div><strong>Question:</strong> ${submission.input_label}</div>
-        <div><strong>Response:</strong> ${submission.selected_value}</div>
+        <div><strong>Submission:</strong> ${submission.title}</div>
+        <div><strong>Content:</strong> ${submission.content}</div>
         <div><strong>Submitted:</strong> ${formatTime(submission.submitted_at)}</div>
     `;
     
