@@ -2643,7 +2643,8 @@ class SimplifiedTeacherDashboardView(TemplateView):
             
             # Get all submissions for this session (use SimplifiedPhaseInput for simplified system)
             all_submissions = SimplifiedPhaseInput.objects.filter(
-                team__session=session
+                session=session,
+                is_active=True
             ).select_related('team', 'mission').order_by('submitted_at')
             
             # Get unscored submissions
