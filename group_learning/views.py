@@ -2638,11 +2638,11 @@ class SimplifiedTeacherDashboardView(TemplateView):
                 logger.error(f"Error calculating session stats for {session_code}: {str(e)}")
                 session_stats = {'error': 'Unable to calculate session statistics'}
             
-            # Get submission review data
-            from .models import TeamSubmission
+            # Get submission review data for simplified system
+            from .models import SimplifiedPhaseInput
             
-            # Get all submissions for this session
-            all_submissions = TeamSubmission.objects.filter(
+            # Get all submissions for this session (use SimplifiedPhaseInput for simplified system)
+            all_submissions = SimplifiedPhaseInput.objects.filter(
                 team__session=session
             ).select_related('team', 'mission').order_by('submitted_at')
             
@@ -2678,7 +2678,7 @@ class SimplifiedTeacherDashboardView(TemplateView):
                     latest_submission_data = {
                         'id': latest_submission.id,
                         'mission_title': latest_submission.mission.title if latest_submission.mission else 'Current Phase',
-                        'submission_data': latest_submission.content or 'No data',
+                        'submission_data': latest_submission.input_data or 'No data',
                         'submitted_at': latest_submission.submitted_at.isoformat(),
                         'teacher_score': latest_submission.teacher_score
                     }
