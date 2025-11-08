@@ -2679,7 +2679,7 @@ class SimplifiedTeacherDashboardView(TemplateView):
                     latest_submission_data = {
                         'id': latest_submission.id,
                         'mission_title': latest_submission.mission.title if latest_submission.mission else 'Current Phase',
-                        'submission_data': latest_submission.input_data or 'No data',
+                        'submission_data': latest_submission.selected_value or 'No data',
                         'submitted_at': latest_submission.submitted_at.isoformat(),
                         'teacher_score': latest_submission.teacher_score
                     }
