@@ -739,6 +739,12 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeWebSocket();
     loadInitialData();
 
+    // Auto-refresh data every 5 seconds to show new teams
+    setInterval(() => {
+        console.log('🔄 Auto-refreshing teacher dashboard data');
+        loadInitialData();
+    }, 5000);
+
     // Score slider interaction
     const scoreSlider = document.getElementById('score-slider');
     const scoreValue = document.getElementById('score-value');
@@ -816,6 +822,7 @@ function loadInitialData() {
         .then(data => {
             if (data.success) {
                 processSubmissions(data.submissions);
+                updateTeamsList(data.teams || []);
                 updateTeamBadges();
             } else {
                 console.error('Failed to load submissions:', data.error);
@@ -824,6 +831,67 @@ function loadInitialData() {
         .catch(error => {
             console.error('Error loading initial data:', error);
         });
+}
+
+// Update teams list dynamically
+function updateTeamsList(teams) {
+    const teamsList = document.querySelector('.teams-list');
+    if (!teamsList) return;
+
+    // Get existing team IDs
+    const existingTeamIds = new Set();
+    teamsList.querySelectorAll('.team-item').forEach(item => {
+        const teamId = item.getAttribute('data-team-id');
+        if (teamId) existingTeamIds.add(parseInt(teamId));
+    });
+
+    // Add new teams
+    teams.forEach(team => {
+        if (!existingTeamIds.has(team.id)) {
+            console.log('➕ Adding new team to dashboard:', team.team_name);
+            addTeamToList(team, teamsList);
+        }
+    });
+
+    // Update header count
+    const headerCount = document.querySelector('.sidebar-title');
+    if (headerCount) {
+        headerCount.textContent = `Teams (${teams.length})`;
+    }
+}
+
+// Add a new team to the teams list
+function addTeamToList(team, teamsList) {
+    // Remove "no teams" message if it exists
+    const noTeamsMsg = teamsList.querySelector('[style*="padding: 20px"]');
+    if (noTeamsMsg) {
+        noTeamsMsg.remove();
+    }
+
+    const teamItem = document.createElement('div');
+    teamItem.className = 'team-item';
+    teamItem.setAttribute('data-team-id', team.id);
+    teamItem.onclick = function() {
+        selectTeam(team.id, team.team_name, team.team_emoji);
+    };
+
+    teamItem.innerHTML = `
+        <div class="team-avatar">${team.team_emoji}</div>
+        <div class="team-info">
+            <div class="team-header">
+                <div class="team-name">${team.team_name}</div>
+                <div class="team-time" id="team-time-${team.id}">--:--</div>
+            </div>
+            <div class="team-preview" id="team-preview-${team.id}">No submissions yet</div>
+            <div class="team-badges">
+                <span class="badge submissions" id="team-submissions-${team.id}">0 submissions</span>
+                <span class="badge pending" id="team-pending-${team.id}">0 pending</span>
+            </div>
+        </div>
+        <div class="status-indicator pending" id="team-status-${team.id}"></div>
+    `;
+
+    teamsList.appendChild(teamItem);
 }
 
 // Process submissions data

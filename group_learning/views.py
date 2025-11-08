@@ -3208,9 +3208,21 @@ class SimplifiedSubmissionsAPIView(View):
                     'scored_at': submission.scored_at.isoformat() if submission.scored_at else None
                 })
 
+            # Get all teams for this session
+            teams = session.design_teams.all()
+            teams_data = []
+            for team in teams:
+                teams_data.append({
+                    'id': team.id,
+                    'team_name': team.team_name,
+                    'team_emoji': team.team_emoji,
+                    'created_at': team.created_at.isoformat() if hasattr(team, 'created_at') else None
+                })
+
             return JsonResponse({
                 'success': True,
                 'submissions': submissions_data,
+                'teams': teams_data,
                 'session': {
                     'session_code': session.session_code,
                     'game_title': session.design_game.title if session.design_game else 'Design Thinking'

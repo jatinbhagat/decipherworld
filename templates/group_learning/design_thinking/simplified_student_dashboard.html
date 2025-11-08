@@ -927,7 +927,85 @@ main {
     }
 }
 
-/* REMOVED: Game Introduction Styles - no longer needed since students skip intro */
+/* Game Introduction Styles */
+.intro-card {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.intro-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.intro-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1e40af;
+    margin-bottom: 12px;
+}
+
+.intro-subtitle {
+    font-size: 1.25rem;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.phases-overview {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.phases-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.phases-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.phase-item {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.phase-item:hover {
+    transform: translateY(-4px);
+    border-color: #3b82f6;
+    box-shadow: 0 8px 16px -4px rgba(59, 130, 246, 0.3);
+}
+
+.phase-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+}
+
+.phase-name {
+    font-weight: 700;
+    color: #1e40af;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.phase-desc {
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.4;
+}
 
 /* Minimal Modern Empathy Phase Styles */
 .minimal-header {
@@ -2256,7 +2334,7 @@ main {
         <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ team.team_name }} 🎯</h2>
         <div class="flex justify-between text-sm text-gray-600 mb-2">
             <span>Progress</span>
-            <span id="progress-text">Phase 1 of 4</span>
+            <span id="progress-text">Phase 1 of 5</span>
         </div>
         <div class="phase-progress">
             <div class="phase-progress-fill" id="progress-fill" style="width: 25%"></div>
@@ -2268,8 +2346,48 @@ main {
         <p id="status-text">Active session - Let's solve classroom problems!</p>
     </div>
 
-    <!-- REMOVED: Game Introduction Screen -->
-    <!-- Students now go directly to mission phases - no intro screen needed -->
+    <!-- Game Introduction Screen -->
+    <div class="phase-card intro-card" id="game-intro" style="display: none;">
+        <div class="intro-header">
+            <h1 class="intro-title">🎯 Design Thinking Challenge</h1>
+            <p class="intro-subtitle">Transform classroom problems into creative solutions!</p>
+        </div>
+
+        <div class="phases-overview">
+            <h3 class="phases-title">Your 5-Phase Journey:</h3>
+            <div class="phases-grid">
+                <div class="phase-item">
+                    <div class="phase-icon">👁️</div>
+                    <div class="phase-name">Phase 1: Empathy</div>
+                    <div class="phase-desc">Identify problems in your classroom</div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-icon">🎯</div>
+                    <div class="phase-name">Phase 2: Define</div>
+                    <div class="phase-desc">Frame the right challenge to solve</div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-icon">💡</div>
+                    <div class="phase-name">Phase 3: Ideate</div>
+                    <div class="phase-desc">Brainstorm creative solutions</div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-icon">🛠️</div>
+                    <div class="phase-name">Phase 4: Prototype</div>
+                    <div class="phase-desc">Build your solution concept</div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-icon">🎉</div>
+                    <div class="phase-name">Phase 5: Showcase</div>
+                    <div class="phase-desc">Present your final solution</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="phase-submit-btn" onclick="startFromCurrentPhase()">
+            Let's Begin! 🚀
+        </button>
+    </div>
 
     <!-- Step 1: Empathy Phase -->
     <div class="phase-card empathy-card" id="empathy-phase" style="display: none;">
@@ -2509,11 +2627,20 @@ function initializeStudentDashboard() {
             console.log('✅ Team status hidden');
         }
         
-        // FIXED: Students land directly on current mission (empathy phase) - NO intro screen
-        console.log('🎯 Loading current phase directly:', currentMission.mission_type);
-        loadCurrentPhase();
+        // Show introduction on first load for this team/session
+        const introKey = `intro_seen_${currentSession.code}_${currentTeam.id}`;
+        const hasSeenIntro = localStorage.getItem(introKey);
 
-        console.log('✅ Game initialization complete - students started on', currentMission.mission_type);
+        if (!hasSeenIntro && currentMission.type === 'empathy') {
+            console.log('📋 First visit - showing introduction');
+            showGameIntroduction();
+            localStorage.setItem(introKey, 'true');
+        } else {
+            console.log('🎯 Loading current phase directly:', currentMission.type);
+            loadCurrentPhase();
+        }
+
+        console.log('✅ Game initialization complete - students on', currentMission.type);
     } catch (error) {
         console.error('❌ Game initialization error:', error);
     }
@@ -2617,7 +2744,7 @@ function loadCurrentPhase() {
     
     // Update progress bar
     const phaseNumber = getPhaseNumber(currentMission.mission_type);
-    const totalPhases = 4; // empathy, define, ideate, prototype (kickoff and showcase excluded)
+    const totalPhases = 5; // empathy, define, ideate, prototype, showcase (kickoff excluded)
     const progressPercent = (phaseNumber / totalPhases) * 100;
     document.getElementById('progress-fill').style.width = progressPercent + '%';
     document.getElementById('progress-text').textContent = `Phase ${phaseNumber} of ${totalPhases}`;
@@ -2778,6 +2905,22 @@ function loadSimplifiedInputs(missionType, containerId = 'input-forms-container'
     
     const inputs = phaseInputs[missionType] || [];
     
+    if (inputs.length === 0) {
+        // No inputs for this phase - enable button immediately
+        console.log(`⚠️ No inputs defined for ${missionType} - enabling button`);
+        container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No additional inputs needed. Click submit to continue.</p>';
+
+        // Enable the submit button for this phase
+        setTimeout(() => {
+            const phaseButton = document.getElementById(missionType + '-submit');
+            if (phaseButton) {
+                phaseButton.disabled = false;
+                console.log(`✅ Button ${missionType}-submit enabled (no inputs required)`);
+            }
+        }, 50);
+        return;
+    }
+
     inputs.forEach((input, index) => {
         const inputElement = createInputElement(input, index);
         container.appendChild(inputElement);
@@ -2798,7 +2941,10 @@ function loadSimplifiedInputs(missionType, containerId = 'input-forms-container'
 
     // Button state is managed by updatePhaseSubmitButton() via input listeners
     // Initialize button state after a short delay to allow DOM to update
-    setTimeout(() => updatePhaseSubmitButton(), 100);
+    setTimeout(() => {
+        updatePhaseSubmitButton();
+        console.log(`✅ Loaded ${inputs.length} input(s) for ${missionType} phase`);
+    }, 100);
 }
 
 function createInputElement(input, index) {
@@ -3622,8 +3768,21 @@ function initializeGame() {
     }
 }
 
-// REMOVED: showGameIntroduction() and startGame() functions
-// Students now go directly to current mission phase - no intro needed
+// Show game introduction on first load
+function showGameIntroduction() {
+    console.log('📋 Showing game introduction');
+    hideAllPhaseCards();
+    document.getElementById('game-intro').style.display = 'block';
+    document.getElementById('progress-text').textContent = 'Welcome! 🎯';
+    document.getElementById('progress-fill').style.width = '0%';
+}
+
+// Start from current phase after introduction
+function startFromCurrentPhase() {
+    console.log('🚀 Starting from current phase');
+    document.getElementById('game-intro').style.display = 'none';
+    loadCurrentPhase();
+}
 
 // Show empathy phase
 function showEmpathyPhase() {
