@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title|default:"Quest CIQ" }} - Decipherworld{% endblock %}
+
+{% block content %}
+<!-- Quest CIQ Navigation -->
+<nav class="navbar bg-base-200 shadow-lg mb-6">
+    <div class="navbar-start">
+        <div class="dropdown">
+            <label tabindex="0" class="btn btn-ghost lg:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+                </svg>
+            </label>
+            <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                <li><a href="{% url 'quest_ciq:home' %}">Home</a></li>
+                <li><a href="{% url 'quest_ciq:teacher_dashboard' %}">Teacher Dashboard</a></li>
+            </ul>
+        </div>
+        <a href="{% url 'quest_ciq:home' %}" class="btn btn-ghost normal-case text-xl">
+            <i class="fas fa-lightbulb text-primary mr-2"></i>
+            Quest CIQ
+        </a>
+    </div>
+    <div class="navbar-center hidden lg:flex">
+        <ul class="menu menu-horizontal px-1">
+            <li><a href="{% url 'quest_ciq:home' %}">Home</a></li>
+            <li><a href="{% url 'quest_ciq:teacher_dashboard' %}">Teacher Dashboard</a></li>
+        </ul>
+    </div>
+    <div class="navbar-end">
+        <a href="/" class="btn btn-ghost btn-sm">
+            <i class="fas fa-home mr-1"></i>
+            Back to Decipherworld
+        </a>
+    </div>
+</nav>
+
+<!-- Flash Messages -->
+{% include "quest_ciq/partials/components/flash.html" %}
+
+<!-- Main Content -->
+<div class="container mx-auto px-4 py-6">
+    {% block ciq_content %}
+    <!-- Page-specific content goes here -->
+    {% endblock %}
+</div>
+
+<!-- Footer -->
+<footer class="footer footer-center p-10 bg-base-200 text-base-content rounded mt-12">
+    <div>
+        <div class="grid grid-flow-col gap-4">
+            <i class="fas fa-brain text-3xl text-primary"></i>
+            <i class="fas fa-lightbulb text-3xl text-secondary"></i>
+            <i class="fas fa-rocket text-3xl text-accent"></i>
+        </div>
+        <p class="font-bold">
+            Quest CIQ - Curiosity Intelligence Quest
+        </p>
+        <p>Empowering curious minds through interactive learning quests</p>
+        <p class="text-sm text-base-content/60">© 2024 Decipherworld. All rights reserved.</p>
+    </div>
+</footer>
+{% endblock %}

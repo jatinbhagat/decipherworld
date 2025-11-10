@@ -1,0 +1,203 @@
+{% extends "quest_ciq/_layout.html" %}
+
+{% block ciq_content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Progress Bar -->
+    <div class="mb-6">
+        {% include "quest_ciq/partials/components/progress.html" with label="Quest Progress" current=level.level_number total=total_levels type="primary" %}
+    </div>
+
+    <!-- Level Header -->
+    <div class="card bg-gradient-to-r from-primary/10 to-accent/10 shadow-xl mb-6">
+        <div class="card-body">
+            <div class="flex justify-between items-start">
+                <div>
+                    <div class="badge badge-primary badge-lg mb-2">Level {{ level.level_number }} of {{ total_levels }}</div>
+                    <h1 class="text-3xl font-bold mb-2">{{ level.title }}</h1>
+                    <p class="text-lg text-base-content/70">{{ level.description }}</p>
+                </div>
+                <div class="text-right">
+                    {% if level.time_limit_minutes %}
+                    <div class="stat bg-base-100 rounded-lg p-4">
+                        <div class="stat-figure text-warning">
+                            <i class="fas fa-clock text-3xl"></i>
+                        </div>
+                        <div class="stat-title text-xs">Time Limit</div>
+                        <div class="stat-value text-2xl">{{ level.time_limit_minutes }}</div>
+                        <div class="stat-desc">minutes</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="stats shadow mt-4">
+                <div class="stat">
+                    <div class="stat-title">Max Score</div>
+                    <div class="stat-value text-success">{{ level.max_score }}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-title">Your Current Score</div>
+                    <div class="stat-value text-primary">{{ session.total_score }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question/Challenge Card -->
+    <div class="card bg-base-100 shadow-xl mb-6">
+        <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">
+                <i class="fas fa-question-circle text-primary mr-2"></i>
+                Challenge
+            </h2>
+            <div class="prose max-w-none">
+                <p class="text-lg whitespace-pre-wrap">{{ level.question_text }}</p>
+            </div>
+        </div>
+    </div>
+
+    {% if existing_response %}
+    <!-- Already Answered -->
+    <div class="card bg-success/10 border-2 border-success shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-success">
+                <i class="fas fa-check-circle mr-2"></i>
+                You've Already Completed This Level
+            </h2>
+
+            <div class="bg-base-100 p-4 rounded-lg mt-4">
+                <h3 class="font-bold mb-2">Your Response:</h3>
+                <p class="whitespace-pre-wrap">{{ existing_response.response_text }}</p>
+            </div>
+
+            <div class="stats shadow mt-4">
+                <div class="stat">
+                    <div class="stat-title">Score Earned</div>
+                    <div class="stat-value text-success">{{ existing_response.score }}</div>
+                    <div class="stat-desc">out of {{ level.max_score }}</div>
+                </div>
+                {% if existing_response.time_taken_seconds %}
+                <div class="stat">
+                    <div class="stat-title">Time Taken</div>
+                    <div class="stat-value text-sm">{{ existing_response.time_taken_seconds|floatformat:0 }}s</div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if existing_response.feedback %}
+            <div class="alert alert-info mt-4">
+                <div>
+                    <i class="fas fa-comment-dots"></i>
+                    <div>
+                        <h3 class="font-bold">Feedback</h3>
+                        <div class="text-sm">{{ existing_response.feedback }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="card-actions justify-between mt-6">
+                {% if level.level_number > 1 %}
+                <a href="{% url 'quest_ciq:level' quest.slug level.level_number|add:'-1' %}" class="btn btn-ghost">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Previous Level
+                </a>
+                {% else %}
+                <div></div>
+                {% endif %}
+
+                {% if level.level_number < total_levels %}
+                <a href="{% url 'quest_ciq:level' quest.slug level.level_number|add:'1' %}" class="btn btn-primary">
+                    Next Level
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+                {% else %}
+                <a href="{% url 'quest_ciq:summary' quest.slug %}" class="btn btn-success">
+                    View Summary
+                    <i class="fas fa-flag-checkered ml-2"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Response Form -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">
+                <i class="fas fa-pen text-accent mr-2"></i>
+                Your Response
+            </h2>
+
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text font-semibold">Enter your answer or solution:</span>
+                        <span class="label-text-alt text-error">*Required</span>
+                    </label>
+                    {{ form.response_text }}
+                    {% if form.response_text.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ form.response_text.errors.0 }}</span>
+                    </label>
+                    {% endif %}
+                    <label class="label">
+                        <span class="label-text-alt">
+                            <i class="fas fa-lightbulb text-warning"></i>
+                            Take your time and provide a detailed, thoughtful response
+                        </span>
+                    </label>
+                </div>
+
+                <div class="alert alert-warning">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <div>
+                            <h3 class="font-bold">Note</h3>
+                            <div class="text-sm">Once submitted, you cannot change your answer for this level.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-actions justify-between items-center mt-6">
+                    {% if level.level_number > 1 %}
+                    <a href="{% url 'quest_ciq:level' quest.slug level.level_number|add:'-1' %}" class="btn btn-ghost">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Previous Level
+                    </a>
+                    {% else %}
+                    <a href="{% url 'quest_ciq:home' %}" class="btn btn-ghost">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Home
+                    </a>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Submit Response
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Navigation Helper -->
+    <div class="flex justify-center gap-2 mt-6">
+        {% for i in total_levels|make_list %}
+        {% with level_num=forloop.counter %}
+        <div class="tooltip" data-tip="Level {{ level_num }}">
+            <a href="{% url 'quest_ciq:level' quest.slug level_num %}"
+               class="btn btn-sm {% if level_num == level.level_number %}btn-primary{% elif level_num < session.current_level %}btn-success{% else %}btn-ghost{% endif %}">
+                {{ level_num }}
+            </a>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

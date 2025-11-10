@@ -1,0 +1,48 @@
+{% comment %}
+Reusable card component
+Usage: {% include "quest_ciq/partials/components/card.html" with title="Card Title" content="Card content" %}
+{% endcomment %}
+
+<div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 {{ class|default:'' }}">
+    {% if image %}
+    <figure class="px-4 pt-4">
+        <img src="{{ image }}" alt="{{ title }}" class="rounded-xl" />
+    </figure>
+    {% endif %}
+
+    <div class="card-body">
+        {% if badge %}
+        <div class="badge badge-{{ badge_type|default:'primary' }} badge-sm mb-2">{{ badge }}</div>
+        {% endif %}
+
+        {% if title %}
+        <h2 class="card-title">
+            {{ title }}
+            {% if new %}
+            <div class="badge badge-secondary">NEW</div>
+            {% endif %}
+        </h2>
+        {% endif %}
+
+        {% if content %}
+        <p class="text-base-content/70">{{ content }}</p>
+        {% endif %}
+
+        {% if slot %}
+        {{ slot|safe }}
+        {% endif %}
+
+        {% if action_url or actions %}
+        <div class="card-actions justify-end mt-4">
+            {% if action_url %}
+            <a href="{{ action_url }}" class="btn btn-{{ action_type|default:'primary' }}">
+                {{ action_text|default:'View Details' }}
+            </a>
+            {% endif %}
+            {% if actions %}
+            {{ actions|safe }}
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>

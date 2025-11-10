@@ -1,0 +1,208 @@
+{% extends "quest_ciq/_layout.html" %}
+
+{% block ciq_content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-4xl font-bold mb-2">
+                <i class="fas fa-chalkboard-teacher text-primary mr-3"></i>
+                Teacher Dashboard
+            </h1>
+            <p class="text-lg text-base-content/70">Manage and monitor your quests</p>
+        </div>
+        <div>
+            <button class="btn btn-primary btn-lg">
+                <i class="fas fa-plus mr-2"></i>
+                Create New Quest
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats stats-vertical lg:stats-horizontal shadow w-full mb-8">
+        <div class="stat">
+            <div class="stat-figure text-primary">
+                <i class="fas fa-list text-4xl"></i>
+            </div>
+            <div class="stat-title">Total Quests</div>
+            <div class="stat-value text-primary">{{ quests.count }}</div>
+            <div class="stat-desc">across all time</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-figure text-secondary">
+                <i class="fas fa-users text-4xl"></i>
+            </div>
+            <div class="stat-title">Total Participants</div>
+            <div class="stat-value text-secondary">
+                {% with total=0 %}
+                {% for quest in quests %}
+                    {% with total=total|add:quest.participant_count %}{% endwith %}
+                {% endfor %}
+                {{ total }}
+                {% endwith %}
+            </div>
+            <div class="stat-desc">unique participants</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-figure text-accent">
+                <i class="fas fa-check-circle text-4xl"></i>
+            </div>
+            <div class="stat-title">Completions</div>
+            <div class="stat-value text-accent">
+                {% with total=0 %}
+                {% for quest in quests %}
+                    {% with total=total|add:quest.completed_count %}{% endwith %}
+                {% endfor %}
+                {{ total }}
+                {% endwith %}
+            </div>
+            <div class="stat-desc">completed quests</div>
+        </div>
+    </div>
+
+    <!-- Quests List -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">
+                <i class="fas fa-folder-open text-primary mr-2"></i>
+                Your Quests
+            </h2>
+
+            {% if quests %}
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>Quest</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Participants</th>
+                            <th class="text-center">Completed</th>
+                            <th class="text-center">Levels</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for quest in quests %}
+                        <tr>
+                            <td>
+                                <div class="flex items-center space-x-3">
+                                    <div>
+                                        <div class="font-bold">{{ quest.title }}</div>
+                                        <div class="text-sm opacity-50">{{ quest.slug }}</div>
+                                        <div class="text-xs text-base-content/50">
+                                            Created {{ quest.created_at|date:"M d, Y" }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {% if quest.is_active %}
+                                <div class="badge badge-success">Active</div>
+                                {% else %}
+                                <div class="badge badge-ghost">Inactive</div>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="badge badge-lg badge-primary">
+                                    {{ quest.participant_count }}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="badge badge-lg badge-success">
+                                    {{ quest.completed_count }}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="badge badge-lg badge-secondary">
+                                    {{ quest.levels.count }}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="dropdown dropdown-end">
+                                    <label tabindex="0" class="btn btn-ghost btn-sm">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </label>
+                                    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-10">
+                                        <li>
+                                            <a href="{% url 'quest_ciq:facilitate' quest.slug %}">
+                                                <i class="fas fa-desktop"></i>
+                                                Facilitate
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'quest_ciq:leaderboard' quest.slug %}">
+                                                <i class="fas fa-trophy"></i>
+                                                Leaderboard
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="/admin/quest_ciq/quest/{{ quest.id }}/change/" target="_blank">
+                                                <i class="fas fa-edit"></i>
+                                                Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a>
+                                                <i class="fas fa-chart-bar"></i>
+                                                Analytics
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a>
+                                                <i class="fas fa-copy"></i>
+                                                Duplicate
+                                            </a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a class="text-error">
+                                                <i class="fas fa-trash"></i>
+                                                Delete
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <div class="text-6xl mb-4">
+                    <i class="fas fa-folder-open text-base-content/30"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">No Quests Yet</h3>
+                <p class="text-base-content/70 mb-4">Create your first quest to get started!</p>
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus mr-2"></i>
+                    Create Quest
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tips Card -->
+    <div class="card bg-base-200 shadow-xl mt-6">
+        <div class="card-body">
+            <h2 class="card-title">
+                <i class="fas fa-lightbulb text-warning mr-2"></i>
+                Tips for Creating Great Quests
+            </h2>
+            <ul class="list-disc list-inside space-y-2 text-base-content/70">
+                <li>Start with clear, engaging questions that spark curiosity</li>
+                <li>Provide multiple levels to scaffold learning progressively</li>
+                <li>Use varied question types to assess different thinking skills</li>
+                <li>Set realistic time limits to encourage focused responses</li>
+                <li>Review participant responses regularly to provide feedback</li>
+                <li>Use the facilitate view during live sessions for real-time monitoring</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

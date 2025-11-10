@@ -16,7 +16,8 @@ urlpatterns = [
     path('games/', include('games.urls')),
     path('cyber-city/', include('cyber_city.urls')),
     path('articles/', include('articles.urls')),
-    
+    path('ciq/', include('quest_ciq.urls', namespace='quest_ciq')),
+
     # Keep the apps but they're now accessed through games/ namespace
     # These are needed for internal template references
     path('buddy/', include('robotic_buddy.urls')),

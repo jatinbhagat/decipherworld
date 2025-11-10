@@ -1,0 +1,189 @@
+{% extends "quest_ciq/_layout.html" %}
+
+{% block ciq_content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold mb-2">
+            <i class="fas fa-trophy text-warning mr-3"></i>
+            Leaderboard
+        </h1>
+        <h2 class="text-2xl text-base-content/70">{{ quest.title }}</h2>
+    </div>
+
+    <!-- Current User's Rank (if available) -->
+    {% if current_rank %}
+    <div class="alert alert-success shadow-lg mb-6">
+        <div class="flex-1">
+            <i class="fas fa-medal text-3xl mr-4"></i>
+            <div>
+                <h3 class="font-bold text-lg">Your Rank</h3>
+                <div class="text-sm">
+                    You're ranked #{{ current_rank.rank }} with {{ current_rank.total_score }} points!
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Leaderboard Card -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            {% if leaderboard %}
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Rank</th>
+                            <th>Participant</th>
+                            <th class="text-center">Score</th>
+                            <th class="text-center">Completion Time</th>
+                            <th class="text-center">Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in leaderboard %}
+                        <tr class="{% if current_rank and entry.participant.id == current_rank.participant.id %}bg-primary/10{% endif %}">
+                            <td class="text-center">
+                                {% if entry.rank == 1 %}
+                                <div class="text-3xl">
+                                    <i class="fas fa-trophy text-warning"></i>
+                                </div>
+                                {% elif entry.rank == 2 %}
+                                <div class="text-3xl">
+                                    <i class="fas fa-medal text-base-content/50"></i>
+                                </div>
+                                {% elif entry.rank == 3 %}
+                                <div class="text-3xl">
+                                    <i class="fas fa-medal text-amber-700"></i>
+                                </div>
+                                {% else %}
+                                <div class="text-2xl font-bold text-base-content/70">
+                                    #{{ entry.rank }}
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="flex items-center space-x-3">
+                                    <div class="avatar placeholder">
+                                        <div class="bg-neutral-focus text-neutral-content rounded-full w-12">
+                                            <span class="text-xl">{{ entry.participant.display_name|first|upper }}</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold">{{ entry.participant.display_name }}</div>
+                                        <div class="text-sm opacity-50">
+                                            <i class="fas fa-user-{{ entry.participant.role }}"></i>
+                                            {{ entry.participant.get_role_display }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="badge badge-lg badge-primary">
+                                    {{ entry.total_score }} pts
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {% if entry.completion_time_seconds %}
+                                    {% with hours=entry.completion_time_seconds|floatformat:0|add:"0"|divisibleby:3600 %}
+                                    {% with minutes=entry.completion_time_seconds|floatformat:0|add:"0"|divisibleby:60 %}
+                                        {% if hours %}
+                                            {{ entry.completion_time_seconds|floatformat:0|add:"0"|div:3600 }}h
+                                            {{ entry.completion_time_seconds|floatformat:0|add:"0"|mod:3600|div:60 }}m
+                                        {% elif minutes %}
+                                            {{ entry.completion_time_seconds|floatformat:0|add:"0"|div:60 }}m
+                                        {% else %}
+                                            {{ entry.completion_time_seconds|floatformat:0 }}s
+                                        {% endif %}
+                                    {% endwith %}
+                                    {% endwith %}
+                                {% else %}
+                                <span class="text-base-content/50">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <span class="text-sm">{{ entry.updated_at|date:"M d, Y" }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if leaderboard.count >= 100 %}
+            <div class="alert alert-info mt-4">
+                <div>
+                    <i class="fas fa-info-circle"></i>
+                    <span>Showing top 100 participants. Keep playing to climb higher!</span>
+                </div>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-12">
+                <div class="text-6xl mb-4">
+                    <i class="fas fa-users-slash text-base-content/30"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">No Entries Yet</h3>
+                <p class="text-base-content/70 mb-4">Be the first to complete this quest and claim the top spot!</p>
+                <a href="{% url 'quest_ciq:join' quest.slug %}" class="btn btn-primary">
+                    <i class="fas fa-play mr-2"></i>
+                    Start Quest
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Stats Card -->
+    {% if leaderboard %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div class="stat bg-base-100 shadow-xl rounded-lg">
+            <div class="stat-figure text-primary">
+                <i class="fas fa-users text-3xl"></i>
+            </div>
+            <div class="stat-title">Total Participants</div>
+            <div class="stat-value text-primary">{{ leaderboard.count }}</div>
+        </div>
+
+        <div class="stat bg-base-100 shadow-xl rounded-lg">
+            <div class="stat-figure text-secondary">
+                <i class="fas fa-star text-3xl"></i>
+            </div>
+            <div class="stat-title">Highest Score</div>
+            <div class="stat-value text-secondary">{{ leaderboard.0.total_score }}</div>
+        </div>
+
+        <div class="stat bg-base-100 shadow-xl rounded-lg">
+            <div class="stat-figure text-accent">
+                <i class="fas fa-bolt text-3xl"></i>
+            </div>
+            <div class="stat-title">Fastest Completion</div>
+            <div class="stat-value text-accent text-2xl">
+                {% with fastest=leaderboard.0.completion_time_seconds %}
+                {% if fastest %}
+                    {{ fastest|floatformat:0|add:"0"|div:60 }}m
+                {% else %}
+                    -
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Actions -->
+    <div class="flex gap-4 justify-center mt-8">
+        <a href="{% url 'quest_ciq:home' %}" class="btn btn-ghost">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Quests
+        </a>
+        {% if not current_rank %}
+        <a href="{% url 'quest_ciq:join' quest.slug %}" class="btn btn-primary">
+            <i class="fas fa-play mr-2"></i>
+            Join Quest
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

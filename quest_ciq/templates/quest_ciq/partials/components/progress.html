@@ -1,0 +1,25 @@
+{% comment %}
+Reusable progress component
+Usage: {% include "quest_ciq/partials/components/progress.html" with current=3 total=10 %}
+{% endcomment %}
+
+<div class="w-full {{ class|default:'' }}">
+    {% if label %}
+    <div class="flex justify-between mb-2">
+        <span class="text-sm font-medium">{{ label }}</span>
+        <span class="text-sm font-medium">{{ current }}/{{ total }}</span>
+    </div>
+    {% endif %}
+
+    <progress
+        class="progress progress-{{ type|default:'primary' }} w-full"
+        value="{{ current }}"
+        max="{{ total }}">
+    </progress>
+
+    {% if show_percentage %}
+    <div class="text-right text-sm text-base-content/70 mt-1">
+        {{ percentage|default:0 }}%
+    </div>
+    {% endif %}
+</div>

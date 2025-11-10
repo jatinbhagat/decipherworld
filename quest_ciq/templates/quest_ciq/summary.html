@@ -1,0 +1,175 @@
+{% extends "quest_ciq/_layout.html" %}
+
+{% block ciq_content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Completion Header -->
+    <div class="text-center mb-8">
+        <div class="text-6xl mb-4">
+            <i class="fas fa-trophy text-warning"></i>
+        </div>
+        <h1 class="text-4xl font-bold mb-2">Quest Complete!</h1>
+        <p class="text-xl text-base-content/70">Congratulations, {{ session.participant.display_name }}!</p>
+    </div>
+
+    <!-- Overall Stats -->
+    <div class="stats stats-vertical lg:stats-horizontal shadow w-full mb-8">
+        <div class="stat">
+            <div class="stat-figure text-primary">
+                <i class="fas fa-star text-4xl"></i>
+            </div>
+            <div class="stat-title">Total Score</div>
+            <div class="stat-value text-primary">{{ session.total_score }}</div>
+            <div class="stat-desc">across all levels</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-figure text-secondary">
+                <i class="fas fa-layer-group text-4xl"></i>
+            </div>
+            <div class="stat-title">Levels Completed</div>
+            <div class="stat-value text-secondary">{{ responses.count }}</div>
+            <div class="stat-desc">out of {{ quest.levels.count }}</div>
+        </div>
+
+        {% if session.started_at and session.completed_at %}
+        <div class="stat">
+            <div class="stat-figure text-accent">
+                <i class="fas fa-clock text-4xl"></i>
+            </div>
+            <div class="stat-title">Time Taken</div>
+            {% with duration=session.completed_at|timesince:session.started_at %}
+            <div class="stat-value text-accent text-2xl">{{ duration }}</div>
+            {% endwith %}
+            <div class="stat-desc">total duration</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- CIQ Score Card -->
+    <div class="card bg-gradient-to-r from-primary/20 to-secondary/20 shadow-xl mb-8">
+        <div class="card-body">
+            <h2 class="card-title text-2xl">
+                <i class="fas fa-brain text-primary mr-2"></i>
+                Your Curiosity Intelligence Quotient (CIQ)
+            </h2>
+            <div class="text-center py-6">
+                <div class="text-6xl font-bold text-primary mb-2">
+                    {{ session.total_score }}
+                </div>
+                <div class="text-xl text-base-content/70">
+                    You demonstrated exceptional curiosity and problem-solving skills!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level-by-Level Breakdown -->
+    <div class="card bg-base-100 shadow-xl mb-8">
+        <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">
+                <i class="fas fa-list-check text-accent mr-2"></i>
+                Level Breakdown
+            </h2>
+
+            <div class="space-y-4">
+                {% for response in responses %}
+                <div class="card bg-base-200 shadow">
+                    <div class="card-body p-4">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-bold text-lg">
+                                    <span class="badge badge-primary mr-2">Level {{ response.level.level_number }}</span>
+                                    {{ response.level.title }}
+                                </h3>
+                            </div>
+                            <div class="text-right">
+                                <div class="badge badge-lg badge-success">
+                                    {{ response.score }}/{{ response.level.max_score }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="collapse collapse-arrow bg-base-100">
+                            <input type="checkbox" />
+                            <div class="collapse-title font-medium">
+                                <i class="fas fa-eye mr-2"></i>
+                                View Your Response
+                            </div>
+                            <div class="collapse-content">
+                                <div class="bg-base-200 p-4 rounded-lg mt-2">
+                                    <p class="whitespace-pre-wrap">{{ response.response_text }}</p>
+                                </div>
+                                {% if response.feedback %}
+                                <div class="alert alert-info mt-3">
+                                    <div>
+                                        <i class="fas fa-comment-dots"></i>
+                                        <div>
+                                            <h4 class="font-bold">Feedback</h4>
+                                            <div class="text-sm">{{ response.feedback }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 mt-2">
+                            <div class="badge badge-outline">
+                                <i class="fas fa-calendar mr-1"></i>
+                                {{ response.submitted_at|date:"M d, Y" }}
+                            </div>
+                            {% if response.time_taken_seconds %}
+                            <div class="badge badge-outline">
+                                <i class="fas fa-stopwatch mr-1"></i>
+                                {{ response.time_taken_seconds|floatformat:0 }}s
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card bg-base-200 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-xl mb-4">What's Next?</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="{% url 'quest_ciq:leaderboard' quest.slug %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-trophy mr-2"></i>
+                    View Leaderboard
+                </a>
+
+                <a href="{% url 'quest_ciq:home' %}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-home mr-2"></i>
+                    Browse More Quests
+                </a>
+
+                <button onclick="window.print()" class="btn btn-accent btn-lg">
+                    <i class="fas fa-print mr-2"></i>
+                    Print Results
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Section -->
+    <div class="text-center mt-8 p-6">
+        <p class="text-lg mb-4">Share your achievement!</p>
+        <div class="flex gap-4 justify-center">
+            <button class="btn btn-circle btn-lg" title="Share on Twitter">
+                <i class="fab fa-twitter text-2xl"></i>
+            </button>
+            <button class="btn btn-circle btn-lg" title="Share on Facebook">
+                <i class="fab fa-facebook text-2xl"></i>
+            </button>
+            <button class="btn btn-circle btn-lg" title="Share on LinkedIn">
+                <i class="fab fa-linkedin text-2xl"></i>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

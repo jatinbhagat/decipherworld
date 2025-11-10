@@ -1,0 +1,251 @@
+{% extends "quest_ciq/_layout.html" %}
+
+{% block ciq_content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <div class="breadcrumbs text-sm">
+                    <ul>
+                        <li><a href="{% url 'quest_ciq:teacher_dashboard' %}">Dashboard</a></li>
+                        <li>Facilitate</li>
+                    </ul>
+                </div>
+                <h1 class="text-4xl font-bold mb-2">
+                    <i class="fas fa-desktop text-primary mr-3"></i>
+                    Facilitate Quest
+                </h1>
+                <h2 class="text-2xl text-base-content/70">{{ quest.title }}</h2>
+            </div>
+            <div class="flex gap-2">
+                <button class="btn btn-outline" onclick="location.reload()">
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    Refresh
+                </button>
+                <a href="{% url 'quest_ciq:leaderboard' quest.slug %}" class="btn btn-primary">
+                    <i class="fas fa-trophy mr-2"></i>
+                    Leaderboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="stat bg-base-100 shadow-xl rounded-lg">
+            <div class="stat-figure text-primary">
+                <i class="fas fa-users text-3xl"></i>
+            </div>
+            <div class="stat-title">Total Participants</div>
+            <div class="stat-value text-primary">{{ stats.total_participants }}</div>
+        </div>
+
+        <div class="stat bg-base-100 shadow-xl rounded-lg">
+            <div class="stat-figure text-warning">
+                <i class="fas fa-hourglass-half text-3xl"></i>
+            </div>
+            <div class="stat-title">In Progress</div>
+            <div class="stat-value text-warning">{{ stats.in_progress }}</div>
+        </div>
+
+        <div class="stat bg-base-100 shadow-xl rounded-lg">
+            <div class="stat-figure text-success">
+                <i class="fas fa-check-circle text-3xl"></i>
+            </div>
+            <div class="stat-title">Completed</div>
+            <div class="stat-value text-success">{{ stats.completed }}</div>
+        </div>
+
+        <div class="stat bg-base-100 shadow-xl rounded-lg">
+            <div class="stat-figure text-accent">
+                <i class="fas fa-star text-3xl"></i>
+            </div>
+            <div class="stat-title">Avg Score</div>
+            <div class="stat-value text-accent">{{ stats.average_score|floatformat:0 }}</div>
+        </div>
+    </div>
+
+    <!-- Live Sessions -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">
+                <i class="fas fa-signal text-success mr-2"></i>
+                Live Sessions
+                <span class="loading loading-dots loading-md text-success"></span>
+            </h2>
+
+            {% if sessions %}
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>Participant</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Current Level</th>
+                            <th class="text-center">Score</th>
+                            <th class="text-center">Started</th>
+                            <th class="text-center">Progress</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                        <tr>
+                            <td>
+                                <div class="flex items-center space-x-3">
+                                    <div class="avatar placeholder">
+                                        <div class="bg-neutral-focus text-neutral-content rounded-full w-10">
+                                            <span>{{ session.participant.display_name|first|upper }}</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold">{{ session.participant.display_name }}</div>
+                                        <div class="text-sm opacity-50">{{ session.participant.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {% if session.status == 'not_started' %}
+                                <div class="badge badge-ghost">Not Started</div>
+                                {% elif session.status == 'in_progress' %}
+                                <div class="badge badge-warning">
+                                    <i class="fas fa-circle-notch fa-spin mr-1"></i>
+                                    In Progress
+                                </div>
+                                {% elif session.status == 'completed' %}
+                                <div class="badge badge-success">Completed</div>
+                                {% else %}
+                                <div class="badge badge-error">Abandoned</div>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="badge badge-lg badge-primary">
+                                    Level {{ session.current_level }}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="font-bold text-lg">{{ session.total_score }}</div>
+                            </td>
+                            <td class="text-center">
+                                {% if session.started_at %}
+                                <div class="text-sm">{{ session.started_at|date:"M d, Y" }}</div>
+                                <div class="text-xs text-base-content/50">{{ session.started_at|time:"g:i A" }}</div>
+                                {% else %}
+                                <span class="text-base-content/50">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% with total=quest.levels.count %}
+                                {% with completed=session.level_responses.count %}
+                                <div class="radial-progress text-primary" style="--value:{{ completed|floatformat:0|add:'0'|mul:100|div:total|floatformat:0 }}; --size:3rem;">
+                                    {{ completed }}/{{ total }}
+                                </div>
+                                {% endwith %}
+                                {% endwith %}
+                            </td>
+                            <td class="text-center">
+                                <div class="dropdown dropdown-end">
+                                    <label tabindex="0" class="btn btn-ghost btn-sm">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </label>
+                                    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-10">
+                                        <li>
+                                            <a>
+                                                <i class="fas fa-eye"></i>
+                                                View Details
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a>
+                                                <i class="fas fa-comment"></i>
+                                                Send Message
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="/admin/quest_ciq/questsession/{{ session.id }}/change/" target="_blank">
+                                                <i class="fas fa-edit"></i>
+                                                Edit in Admin
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <div class="text-6xl mb-4">
+                    <i class="fas fa-users-slash text-base-content/30"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">No Active Sessions</h3>
+                <p class="text-base-content/70">Waiting for participants to join...</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card bg-base-200 shadow-xl mt-6">
+        <div class="card-body">
+            <h2 class="card-title text-xl">
+                <i class="fas fa-history text-accent mr-2"></i>
+                Recent Activity
+            </h2>
+            <div class="text-sm text-base-content/70">
+                <ul class="timeline timeline-vertical">
+                    {% for session in sessions|slice:":5" %}
+                    <li>
+                        <div class="timeline-start">{{ session.started_at|timesince }} ago</div>
+                        <div class="timeline-middle">
+                            {% if session.status == 'completed' %}
+                            <i class="fas fa-check-circle text-success"></i>
+                            {% else %}
+                            <i class="fas fa-circle text-primary"></i>
+                            {% endif %}
+                        </div>
+                        <div class="timeline-end timeline-box">
+                            <strong>{{ session.participant.display_name }}</strong>
+                            {% if session.status == 'completed' %}
+                            completed the quest with {{ session.total_score }} points
+                            {% elif session.status == 'in_progress' %}
+                            is at level {{ session.current_level }}
+                            {% else %}
+                            joined the quest
+                            {% endif %}
+                        </div>
+                        <hr/>
+                    </li>
+                    {% empty %}
+                    <li>
+                        <div class="timeline-box">No recent activity</div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-4 justify-center mt-8">
+        <a href="{% url 'quest_ciq:teacher_dashboard' %}" class="btn btn-ghost">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Dashboard
+        </a>
+        <button class="btn btn-secondary" onclick="window.print()">
+            <i class="fas fa-print mr-2"></i>
+            Print Report
+        </button>
+    </div>
+</div>
+
+<script>
+// Auto-refresh every 30 seconds for live updates
+setTimeout(function() {
+    location.reload();
+}, 30000);
+</script>
+{% endblock %}

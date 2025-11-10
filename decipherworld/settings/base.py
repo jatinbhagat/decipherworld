@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'group_learning',
     'cyber_city',
     'articles',
+    'quest_ciq',
     'tinymce',
 ]
 
@@ -201,3 +202,6 @@ TINYMCE_DEFAULT_CONFIG = {
 # File upload settings for TinyMCE
 TINYMCE_SPELLCHECKER = True
 TINYMCE_COMPRESSOR = False
+
+# Quest CIQ Feature Flag
+ENABLE_CIQ = config('ENABLE_CIQ', default=False, cast=bool)
