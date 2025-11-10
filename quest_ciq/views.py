@@ -11,6 +11,7 @@ from django.utils import timezone
 from .models import Quest, QuestLevel, Participant, QuestSession, LevelResponse, Leaderboard
 from .forms import get_form_for_level
 from .services.scoring import score_and_update_session
+from .utils import require_ciq_session, SESSION_KEY
 
 
 def check_ciq_enabled():
@@ -18,7 +19,7 @@ def check_ciq_enabled():
     return getattr(settings, 'ENABLE_CIQ', False)
 
 
-@login_required
+@require_ciq_session
 def quest_home(request, slug):
     """Quest home page showing current progress and CTA to continue."""
     if not check_ciq_enabled():
@@ -26,22 +27,10 @@ def quest_home(request, slug):
 
     quest = get_object_or_404(Quest, slug=slug, is_active=True)
 
-    # Get or check participant status
-    try:
-        participant = Participant.objects.get(user=request.user, quest=quest)
-    except Participant.DoesNotExist:
-        # Redirect to join page
-        return redirect('quest_ciq:quest_join', slug=slug)
-
-    # Get active session
-    session = participant.sessions.filter(quest=quest).order_by('-started_at').first()
-
-    if not session:
-        # Create new session if none exists
-        session = QuestSession.objects.create(
-            participant=participant,
-            quest=quest
-        )
+    # Get session from session ID
+    session_id = request.session.get(SESSION_KEY)
+    session = get_object_or_404(QuestSession, id=session_id, quest=quest)
+    participant = session.participant
 
     # Get current progress
     highest_level = session.get_highest_completed_level()
@@ -63,20 +52,48 @@ def quest_home(request, slug):
     return render(request, 'quest_ciq/home.html', context)
 
 
-@login_required
 def quest_join(request, slug):
-    """Join a quest."""
+    """Join a quest (no login required - uses session-based tracking)."""
     if not check_ciq_enabled():
         raise Http404("Classroom Innovation Quest is not enabled")
 
     quest = get_object_or_404(Quest, slug=slug, is_active=True)
 
-    # Check if already a participant
-    participant, created = Participant.objects.get_or_create(
-        user=request.user,
-        quest=quest,
-        defaults={'is_active': True}
+    # Check if user already has a session for this quest
+    existing_session_id = request.session.get(SESSION_KEY)
+    if existing_session_id:
+        try:
+            session = QuestSession.objects.get(id=existing_session_id, quest=quest)
+            messages.info(request, f'Welcome back to {quest.title}!')
+            return redirect('quest_ciq:quest_home', slug=slug)
+        except QuestSession.DoesNotExist:
+            pass
+
+    # Create anonymous participant if not logged in
+    if request.user.is_authenticated:
+        # Logged in user
+        participant, created = Participant.objects.get_or_create(
+            user=request.user,
+            quest=quest,
+            defaults={'is_active': True}
+        )
+    else:
+        # Anonymous user - create participant with None user
+        participant = Participant.objects.create(
+            user=None,
+            quest=quest,
+            is_active=True
+        )
+        created = True
+
+    # Create a new session for this participant
+    session = QuestSession.objects.create(
+        participant=participant,
+        quest=quest
     )
+
+    # Save session ID to Django session
+    request.session[SESSION_KEY] = session.id
 
     if created:
         messages.success(request, f'Welcome to {quest.title}! Let\'s start your journey.')
@@ -86,7 +103,7 @@ def quest_join(request, slug):
     return redirect('quest_ciq:quest_home', slug=slug)
 
 
-@login_required
+@require_ciq_session
 def quest_level(request, slug, order):
     """
     Quest level form page.
@@ -98,17 +115,9 @@ def quest_level(request, slug, order):
     quest = get_object_or_404(Quest, slug=slug, is_active=True)
     level = get_object_or_404(QuestLevel, quest=quest, order=order)
 
-    # Get participant
-    try:
-        participant = Participant.objects.get(user=request.user, quest=quest)
-    except Participant.DoesNotExist:
-        messages.warning(request, 'Please join the quest first.')
-        return redirect('quest_ciq:quest_join', slug=slug)
-
-    # Get or create active session
-    session = participant.sessions.filter(quest=quest).order_by('-started_at').first()
-    if not session:
-        session = QuestSession.objects.create(participant=participant, quest=quest)
+    # Get session from session ID
+    session_id = request.session.get(SESSION_KEY)
+    session = get_object_or_404(QuestSession, id=session_id, quest=quest)
 
     # Check if session is frozen
     if session.is_frozen:
@@ -206,7 +215,7 @@ def quest_level(request, slug, order):
     return render(request, 'quest_ciq/level.html', context)
 
 
-@login_required
+@require_ciq_session
 def quest_summary(request, slug):
     """Summary page showing all level responses."""
     if not check_ciq_enabled():
@@ -214,18 +223,9 @@ def quest_summary(request, slug):
 
     quest = get_object_or_404(Quest, slug=slug, is_active=True)
 
-    # Get participant
-    try:
-        participant = Participant.objects.get(user=request.user, quest=quest)
-    except Participant.DoesNotExist:
-        messages.warning(request, 'Please join the quest first.')
-        return redirect('quest_ciq:quest_join', slug=slug)
-
-    # Get session
-    session = participant.sessions.filter(quest=quest).order_by('-started_at').first()
-    if not session:
-        messages.warning(request, 'No session found.')
-        return redirect('quest_ciq:quest_home', slug=slug)
+    # Get session from session ID
+    session_id = request.session.get(SESSION_KEY)
+    session = get_object_or_404(QuestSession, id=session_id, quest=quest)
 
     # Get all responses
     responses = session.responses.select_related('level').order_by('level__order')

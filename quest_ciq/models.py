@@ -56,20 +56,21 @@ class QuestLevel(models.Model):
 class Participant(models.Model):
     """
     A user participating in quests. Links user to their quest activities.
+    Can be anonymous (user=None) or authenticated.
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quest_participations')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quest_participations', null=True, blank=True)
     quest = models.ForeignKey(Quest, on_delete=models.CASCADE, related_name='participants')
     joined_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ['user', 'quest']
         ordering = ['-joined_at']
         verbose_name = 'Participant'
         verbose_name_plural = 'Participants'
 
     def __str__(self):
-        return f"{self.user.username} in {self.quest.title}"
+        username = self.user.username if self.user else f"Anonymous-{self.id}"
+        return f"{username} in {self.quest.title}"
 
 
 class QuestSession(models.Model):
@@ -92,7 +93,8 @@ class QuestSession(models.Model):
         verbose_name_plural = 'Quest Sessions'
 
     def __str__(self):
-        return f"Session #{self.pk} - {self.participant.user.username} in {self.quest.title}"
+        username = self.participant.user.username if self.participant.user else f"Anonymous-{self.participant.id}"
+        return f"Session #{self.pk} - {username} in {self.quest.title}"
 
     def get_highest_completed_level(self):
         """Get the highest level order number that has been completed."""
@@ -145,7 +147,8 @@ class LevelResponse(models.Model):
         verbose_name_plural = 'Level Responses'
 
     def __str__(self):
-        return f"{self.session.participant.user.username} - {self.level.name} (Score: {self.score})"
+        username = self.session.participant.user.username if self.session.participant.user else f"Anonymous-{self.session.participant.id}"
+        return f"{username} - {self.level.name} (Score: {self.score})"
 
     def calculate_score(self):
         """
@@ -179,7 +182,8 @@ class Leaderboard(models.Model):
         verbose_name_plural = 'Leaderboard Entries'
 
     def __str__(self):
-        return f"#{self.rank} - {self.participant.user.username} in {self.quest.title} ({self.total_score} pts)"
+        username = self.participant.user.username if self.participant.user else f"Anonymous-{self.participant.id}"
+        return f"#{self.rank} - {username} in {self.quest.title} ({self.total_score} pts)"
 
     @classmethod
     def refresh_for_quest(cls, quest):

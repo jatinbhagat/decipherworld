@@ -19,7 +19,7 @@
             <!-- Thumbnail -->
             <div class="h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
                 {% if prototype.upload %}
-                    <img src="{{ prototype.upload.url }}" alt="Prototype by {{ prototype.user.username }}" class="w-full h-full object-cover">
+                    <img src="{{ prototype.upload.url }}" alt="Prototype" class="w-full h-full object-cover">
                 {% else %}
                     <div class="text-center p-4">
                         <svg class="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,9 +35,11 @@
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center">
                         <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm mr-2">
-                            {{ prototype.user.username|slice:":1"|upper }}
+                            {% if prototype.user %}{{ prototype.user.username|slice:":1"|upper }}{% else %}?{% endif %}
                         </div>
-                        <p class="font-medium text-gray-800">{{ prototype.user.username }}</p>
+                        <p class="font-medium text-gray-800">
+                            {% if prototype.user %}{{ prototype.user.username }}{% else %}Guest{% endif %}
+                        </p>
                     </div>
                     <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-bold">
                         {{ prototype.score }} pts

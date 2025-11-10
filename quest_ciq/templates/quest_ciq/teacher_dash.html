@@ -58,11 +58,15 @@
                         <td class="px-6 py-4">
                             <div class="flex items-center">
                                 <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold mr-3">
-                                    {{ data.participant.user.username|slice:":1"|upper }}
+                                    {% if data.participant.user %}{{ data.participant.user.username|slice:":1"|upper }}{% else %}?{% endif %}
                                 </div>
                                 <div>
-                                    <p class="font-medium text-gray-800">{{ data.participant.user.username }}</p>
-                                    <p class="text-sm text-gray-600">{{ data.participant.user.email|default:"No email" }}</p>
+                                    <p class="font-medium text-gray-800">
+                                        {% if data.participant.user %}{{ data.participant.user.username }}{% else %}Guest-{{ data.participant.id }}{% endif %}
+                                    </p>
+                                    <p class="text-sm text-gray-600">
+                                        {% if data.participant.user %}{{ data.participant.user.email|default:"No email" }}{% else %}Anonymous user{% endif %}
+                                    </p>
                                 </div>
                             </div>
                         </td>

@@ -19,7 +19,7 @@
             <div class="flex justify-between items-center">
                 <h1 class="text-2xl font-bold">Classroom Innovation Quest</h1>
                 <div class="flex items-center space-x-4">
-                    <span class="text-sm">{{ user.username }}</span>
+                    <span class="text-sm">{% if user.is_authenticated %}{{ user.username }}{% else %}Guest{% endif %}</span>
                     <a href="{% url 'quest_ciq:quest_home' slug='classroom-innovation-quest' %}" class="text-sm hover:underline">Home</a>
                 </div>
             </div>

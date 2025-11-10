@@ -313,9 +313,9 @@ class FeatureFlagTests(TestCase):
     def test_quest_404_when_disabled(self):
         """Test quest returns 404 when ENABLE_CIQ is False."""
         with self.settings(ENABLE_CIQ=False):
-            self.client.login(username='testuser', password='testpass123')
+            # Try to join when feature is disabled - should return 404
             response = self.client.get(
-                reverse('quest_ciq:quest_home', kwargs={'slug': 'classroom-innovation-quest'})
+                reverse('quest_ciq:quest_join', kwargs={'slug': 'classroom-innovation-quest'})
             )
             self.assertEqual(response.status_code, 404)
 
@@ -332,33 +332,48 @@ class ViewTests(TestCase):
         self.user = User.objects.create_user(username='testuser', password='testpass123')
         self.quest = Quest.objects.get(slug='classroom-innovation-quest')
 
-    def test_join_quest(self):
-        """Test joining a quest."""
+    def test_join_quest_anonymous(self):
+        """Test joining a quest anonymously (without login)."""
+        response = self.client.get(
+            reverse('quest_ciq:quest_join', kwargs={'slug': 'classroom-innovation-quest'})
+        )
+
+        # Should create anonymous participant and redirect
+        self.assertEqual(response.status_code, 302)
+        # Check that a participant was created (user can be None for anonymous)
+        self.assertTrue(Participant.objects.filter(quest=self.quest).exists())
+        # Check that session ID was saved
+        self.assertIn('ciq_session_id', self.client.session)
+
+    def test_join_quest_authenticated(self):
+        """Test joining a quest with authenticated user."""
         self.client.login(username='testuser', password='testpass123')
         response = self.client.get(
             reverse('quest_ciq:quest_join', kwargs={'slug': 'classroom-innovation-quest'})
         )
 
-        # Should create participant and redirect
+        # Should create participant linked to user and redirect
         self.assertEqual(response.status_code, 302)
         self.assertTrue(
             Participant.objects.filter(user=self.user, quest=self.quest).exists()
         )
+        # Check that session ID was saved
+        self.assertIn('ciq_session_id', self.client.session)
 
-    def test_quest_home_requires_login(self):
-        """Test that quest home requires login."""
+    def test_quest_home_requires_session(self):
+        """Test that quest home requires CIQ session."""
         response = self.client.get(
             reverse('quest_ciq:quest_home', kwargs={'slug': 'classroom-innovation-quest'})
         )
-        # Should redirect to login
+        # Should redirect to join page
         self.assertEqual(response.status_code, 302)
-        self.assertIn('/login', response.url)
+        self.assertIn('/join', response.url)
 
-    def test_level_view_requires_participant(self):
-        """Test that level view requires user to be a participant."""
-        self.client.login(username='testuser', password='testpass123')
+    def test_level_view_requires_session(self):
+        """Test that level view requires CIQ session."""
         response = self.client.get(
             reverse('quest_ciq:quest_level', kwargs={'slug': 'classroom-innovation-quest', 'order': 1})
         )
         # Should redirect to join page
         self.assertEqual(response.status_code, 302)
+        self.assertIn('/join', response.url)

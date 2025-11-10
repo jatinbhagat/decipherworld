@@ -45,12 +45,16 @@
                     <td class="px-6 py-4">
                         <div class="flex items-center">
                             <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold mr-3">
-                                {{ entry.participant.user.username|slice:":1"|upper }}
+                                {% if entry.participant.user %}{{ entry.participant.user.username|slice:":1"|upper }}{% else %}?{% endif %}
                             </div>
                             <div>
                                 <p class="font-medium text-gray-800">
-                                    {{ entry.participant.user.username }}
-                                    {% if entry.participant.user == user %}<span class="text-blue-600">(You)</span>{% endif %}
+                                    {% if entry.participant.user %}
+                                        {{ entry.participant.user.username }}
+                                        {% if entry.participant.user == user %}<span class="text-blue-600">(You)</span>{% endif %}
+                                    {% else %}
+                                        Guest-{{ entry.participant.id }}
+                                    {% endif %}
                                 </p>
                             </div>
                         </div>
