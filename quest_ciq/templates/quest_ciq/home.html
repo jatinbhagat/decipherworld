@@ -37,7 +37,7 @@
         <!-- Call to Action -->
         {% if not is_complete %}
             <div class="text-center">
-                <a href="{% url 'quest_ciq:quest_level' slug=quest.slug order=next_level %}"
+                <a href="{% url 'quest_ciq:quest_level_slug' slug=quest.slug order=next_level %}"
                    class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200">
                     {% if highest_level == 0 %}
                         Start Quest - Level 1: Empathy
@@ -52,11 +52,11 @@
                     <h3 class="text-2xl font-bold text-green-700 mb-2">Quest Complete!</h3>
                     <p class="text-green-600">You've completed all 5 levels. Great work!</p>
                 </div>
-                <a href="{% url 'quest_ciq:quest_summary' slug=quest.slug %}"
+                <a href="{% url 'quest_ciq:quest_summary_slug' slug=quest.slug %}"
                    class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200 mr-4">
                     View Summary
                 </a>
-                <a href="{% url 'quest_ciq:quest_leaderboard' slug=quest.slug %}"
+                <a href="{% url 'quest_ciq:quest_leaderboard_slug' slug=quest.slug %}"
                    class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200">
                     View Leaderboard
                 </a>
@@ -135,11 +135,11 @@
 
     <!-- Quick Links -->
     <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <a href="{% url 'quest_ciq:quest_leaderboard' slug=quest.slug %}" class="bg-white hover:bg-gray-50 rounded-lg shadow p-6 text-center transition duration-200">
+        <a href="{% url 'quest_ciq:quest_leaderboard_slug' slug=quest.slug %}" class="bg-white hover:bg-gray-50 rounded-lg shadow p-6 text-center transition duration-200">
             <h3 class="font-bold text-lg text-gray-800">Leaderboard</h3>
             <p class="text-gray-600 text-sm">See how you rank</p>
         </a>
-        <a href="{% url 'quest_ciq:quest_summary' slug=quest.slug %}" class="bg-white hover:bg-gray-50 rounded-lg shadow p-6 text-center transition duration-200">
+        <a href="{% url 'quest_ciq:quest_summary_slug' slug=quest.slug %}" class="bg-white hover:bg-gray-50 rounded-lg shadow p-6 text-center transition duration-200">
             <h3 class="font-bold text-lg text-gray-800">My Summary</h3>
             <p class="text-gray-600 text-sm">View your journey</p>
         </a>

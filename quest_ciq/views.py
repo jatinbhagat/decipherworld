@@ -65,7 +65,7 @@ def quest_join(request, slug):
         try:
             session = QuestSession.objects.get(id=existing_session_id, quest=quest)
             messages.info(request, f'Welcome back to {quest.title}!')
-            return redirect('quest_ciq:quest_home', slug=slug)
+            return redirect('quest_ciq:quest_home_slug', slug=slug)
         except QuestSession.DoesNotExist:
             pass
 
@@ -100,7 +100,7 @@ def quest_join(request, slug):
     else:
         messages.info(request, f'Welcome back to {quest.title}!')
 
-    return redirect('quest_ciq:quest_home', slug=slug)
+    return redirect('quest_ciq:quest_home_slug', slug=slug)
 
 
 @require_ciq_session
@@ -122,7 +122,7 @@ def quest_level(request, slug, order):
     # Check if session is frozen
     if session.is_frozen:
         messages.error(request, 'This session is frozen. You cannot submit new responses.')
-        return redirect('quest_ciq:quest_home', slug=slug)
+        return redirect('quest_ciq:quest_home_slug', slug=slug)
 
     # Gating logic: Check if user can access this level
     if not session.can_access_level(order):
@@ -130,7 +130,7 @@ def quest_level(request, slug, order):
             request,
             f'You must complete Level {order - 1} before accessing Level {order}.'
         )
-        return redirect('quest_ciq:quest_home', slug=slug)
+        return redirect('quest_ciq:quest_home_slug', slug=slug)
 
     # Get existing response if any
     existing_response = LevelResponse.objects.filter(
@@ -186,10 +186,10 @@ def quest_level(request, slug, order):
             if order >= 5:
                 session.completed_at = timezone.now()
                 session.save()
-                return redirect('quest_ciq:quest_summary', slug=slug)
+                return redirect('quest_ciq:quest_summary_slug', slug=slug)
 
             # Redirect to next level
-            return redirect('quest_ciq:quest_level', slug=slug, order=order + 1)
+            return redirect('quest_ciq:quest_level_slug', slug=slug, order=order + 1)
 
     else:
         # Pre-fill form with existing answers
@@ -251,9 +251,8 @@ def quest_summary(request, slug):
     return render(request, 'quest_ciq/summary.html', context)
 
 
-@login_required
 def quest_leaderboard(request, slug):
-    """Leaderboard page for the quest."""
+    """Leaderboard page for the quest (public, no login required)."""
     if not check_ciq_enabled():
         raise Http404("Classroom Innovation Quest is not enabled")
 
@@ -264,15 +263,16 @@ def quest_leaderboard(request, slug):
         quest=quest
     ).select_related('participant__user').order_by('rank')
 
-    # Get current user's rank if participating
+    # Get current user's rank if participating and authenticated
     user_rank = None
-    try:
-        participant = Participant.objects.get(user=request.user, quest=quest)
-        user_entry = leaderboard.filter(participant=participant).first()
-        if user_entry:
-            user_rank = user_entry.rank
-    except Participant.DoesNotExist:
-        pass
+    if request.user.is_authenticated:
+        try:
+            participant = Participant.objects.get(user=request.user, quest=quest)
+            user_entry = leaderboard.filter(participant=participant).first()
+            if user_entry:
+                user_rank = user_entry.rank
+        except Participant.DoesNotExist:
+            pass
 
     context = {
         'quest': quest,
@@ -292,7 +292,7 @@ def teacher_dashboard(request, slug):
     # Only allow staff users
     if not request.user.is_staff:
         messages.error(request, 'You do not have permission to view this page.')
-        return redirect('quest_ciq:quest_home', slug=slug)
+        return redirect('quest_ciq:quest_home_slug', slug=slug)
 
     quest = get_object_or_404(Quest, slug=slug, is_active=True)
 
@@ -329,7 +329,7 @@ def facilitate(request, slug):
     # Only allow staff users
     if not request.user.is_staff:
         messages.error(request, 'You do not have permission to view this page.')
-        return redirect('quest_ciq:quest_home', slug=slug)
+        return redirect('quest_ciq:quest_home_slug', slug=slug)
 
     quest = get_object_or_404(Quest, slug=slug, is_active=True)
 

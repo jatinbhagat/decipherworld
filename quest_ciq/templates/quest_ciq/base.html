@@ -20,7 +20,7 @@
                 <h1 class="text-2xl font-bold">Classroom Innovation Quest</h1>
                 <div class="flex items-center space-x-4">
                     <span class="text-sm">{% if user.is_authenticated %}{{ user.username }}{% else %}Guest{% endif %}</span>
-                    <a href="{% url 'quest_ciq:quest_home' slug='classroom-innovation-quest' %}" class="text-sm hover:underline">Home</a>
+                    <a href="{% url 'quest_ciq:quest_home_slug' slug='classroom-innovation-quest' %}" class="text-sm hover:underline">Home</a>
                 </div>
             </div>
         </div>

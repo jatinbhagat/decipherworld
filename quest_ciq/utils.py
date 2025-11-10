@@ -18,6 +18,6 @@ def require_ciq_session(view_func):
         if not request.session.get(SESSION_KEY):
             # Redirect to join page with the slug from kwargs if available
             slug = kwargs.get('slug', 'classroom-innovation-quest')
-            return redirect(reverse('quest_ciq:quest_join', kwargs={'slug': slug}))
+            return redirect(reverse('quest_ciq:quest_join_slug', kwargs={'slug': slug}))
         return view_func(request, *args, **kwargs)
     return _wrapped

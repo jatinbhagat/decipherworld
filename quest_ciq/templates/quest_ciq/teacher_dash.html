@@ -109,11 +109,11 @@
             <h3 class="font-bold text-lg text-gray-800">View Prototypes</h3>
             <p class="text-gray-600 text-sm">See student prototypes</p>
         </a>
-        <a href="{% url 'quest_ciq:quest_leaderboard' slug=quest.slug %}" class="bg-white hover:bg-gray-50 rounded-lg shadow p-6 text-center transition duration-200">
+        <a href="{% url 'quest_ciq:quest_leaderboard_slug' slug=quest.slug %}" class="bg-white hover:bg-gray-50 rounded-lg shadow p-6 text-center transition duration-200">
             <h3 class="font-bold text-lg text-gray-800">Leaderboard</h3>
             <p class="text-gray-600 text-sm">View rankings</p>
         </a>
-        <a href="{% url 'quest_ciq:quest_home' slug=quest.slug %}" class="bg-white hover:bg-gray-50 rounded-lg shadow p-6 text-center transition duration-200">
+        <a href="{% url 'quest_ciq:quest_home_slug' slug=quest.slug %}" class="bg-white hover:bg-gray-50 rounded-lg shadow p-6 text-center transition duration-200">
             <h3 class="font-bold text-lg text-gray-800">Quest Home</h3>
             <p class="text-gray-600 text-sm">Back to quest</p>
         </a>

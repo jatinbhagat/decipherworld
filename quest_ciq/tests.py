@@ -305,7 +305,7 @@ class FeatureFlagTests(TestCase):
         with self.settings(ENABLE_CIQ=True):
             self.client.login(username='testuser', password='testpass123')
             response = self.client.get(
-                reverse('quest_ciq:quest_join', kwargs={'slug': 'classroom-innovation-quest'})
+                reverse('quest_ciq:quest_join_slug', kwargs={'slug': 'classroom-innovation-quest'})
             )
             # Should redirect to home after joining
             self.assertEqual(response.status_code, 302)
@@ -315,7 +315,7 @@ class FeatureFlagTests(TestCase):
         with self.settings(ENABLE_CIQ=False):
             # Try to join when feature is disabled - should return 404
             response = self.client.get(
-                reverse('quest_ciq:quest_join', kwargs={'slug': 'classroom-innovation-quest'})
+                reverse('quest_ciq:quest_join_slug', kwargs={'slug': 'classroom-innovation-quest'})
             )
             self.assertEqual(response.status_code, 404)
 
@@ -335,7 +335,7 @@ class ViewTests(TestCase):
     def test_join_quest_anonymous(self):
         """Test joining a quest anonymously (without login)."""
         response = self.client.get(
-            reverse('quest_ciq:quest_join', kwargs={'slug': 'classroom-innovation-quest'})
+            reverse('quest_ciq:quest_join_slug', kwargs={'slug': 'classroom-innovation-quest'})
         )
 
         # Should create anonymous participant and redirect
@@ -349,7 +349,7 @@ class ViewTests(TestCase):
         """Test joining a quest with authenticated user."""
         self.client.login(username='testuser', password='testpass123')
         response = self.client.get(
-            reverse('quest_ciq:quest_join', kwargs={'slug': 'classroom-innovation-quest'})
+            reverse('quest_ciq:quest_join_slug', kwargs={'slug': 'classroom-innovation-quest'})
         )
 
         # Should create participant linked to user and redirect
@@ -363,7 +363,7 @@ class ViewTests(TestCase):
     def test_quest_home_requires_session(self):
         """Test that quest home requires CIQ session."""
         response = self.client.get(
-            reverse('quest_ciq:quest_home', kwargs={'slug': 'classroom-innovation-quest'})
+            reverse('quest_ciq:quest_home_slug', kwargs={'slug': 'classroom-innovation-quest'})
         )
         # Should redirect to join page
         self.assertEqual(response.status_code, 302)
@@ -372,7 +372,7 @@ class ViewTests(TestCase):
     def test_level_view_requires_session(self):
         """Test that level view requires CIQ session."""
         response = self.client.get(
-            reverse('quest_ciq:quest_level', kwargs={'slug': 'classroom-innovation-quest', 'order': 1})
+            reverse('quest_ciq:quest_level_slug', kwargs={'slug': 'classroom-innovation-quest', 'order': 1})
         )
         # Should redirect to join page
         self.assertEqual(response.status_code, 302)
