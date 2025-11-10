@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Teacher Grading - {{ session.session_code }} - CIQ{% endblock %}
+
+{% block extra_head %}
+<style>
+    .grading-table {
+        border-collapse: separate;
+        border-spacing: 0 0.75rem;
+    }
+
+    .grading-table thead th {
+        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        color: white;
+        padding: 1rem;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    .grading-table thead th:first-child {
+        border-radius: 0.75rem 0 0 0.75rem;
+    }
+
+    .grading-table thead th:last-child {
+        border-radius: 0 0.75rem 0.75rem 0;
+    }
+
+    .grading-table tbody tr {
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s;
+    }
+
+    .grading-table tbody tr:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .grading-table tbody td {
+        padding: 1.25rem;
+        border-top: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .grading-table tbody td:first-child {
+        border-left: 1px solid #e5e7eb;
+        border-radius: 0.75rem 0 0 0.75rem;
+    }
+
+    .grading-table tbody td:last-child {
+        border-right: 1px solid #e5e7eb;
+        border-radius: 0 0.75rem 0.75rem 0;
+    }
+
+    .score-input {
+        width: 80px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .badge-pending {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 py-8 px-4">
+
+    {% if error %}
+        {% include 'group_learning/ciq/partials/alert.html' with type='error' message=error icon='❌' %}
+    {% else %}
+
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+                        <span class="text-4xl">📝</span>
+                        Teacher Grading
+                    </h1>
+                    <p class="text-gray-600">Session: <span class="font-semibold">{{ session.session_code }}</span></p>
+                    <p class="text-sm text-gray-500 mt-1">{{ session.design_game.title }}</p>
+                </div>
+                <div class="text-right">
+                    <a href="{% url 'group_learning:simplified_teacher_dashboard' session_code=session.session_code %}?teacher_key={{ teacher_key }}"
+                       class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-all inline-flex items-center gap-2">
+                        <span>←</span>
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">💡</span>
+                <div class="flex-1">
+                    <h3 class="font-semibold text-blue-900 mb-1">Grading Instructions</h3>
+                    <ul class="text-sm text-blue-800 space-y-1">
+                        <li>• Click "View Presentation" to see each team's full journey</li>
+                        <li>• Enter a score from 0-100 for each team</li>
+                        <li>• Add optional comments for feedback</li>
+                        <li>• Final scores are weighted: <strong>40% Student + 60% Teacher</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grading Table -->
+        <div class="overflow-x-auto">
+            <table class="grading-table w-full">
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th class="text-center">Members</th>
+                        <th class="text-center">Student Score</th>
+                        <th class="text-center">Teacher Score</th>
+                        <th class="text-center">Weighted Score</th>
+                        <th>Comment</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in teams %}
+                    <tr id="team-row-{{ team.id }}">
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <span class="text-3xl">{{ team.emoji }}</span>
+                                <div>
+                                    <div class="font-semibold text-gray-900">{{ team.name }}</div>
+                                    <a href="{{ team.presentation_url }}" target="_blank"
+                                       class="text-xs text-blue-600 hover:text-blue-800 underline">
+                                        View Presentation →
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="font-semibold text-gray-700">{{ team.member_count }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-lg font-semibold text-blue-600">{{ team.student_score }}</span>
+                        </td>
+                        <td class="text-center">
+                            <input type="number"
+                                   id="score-{{ team.id }}"
+                                   class="score-input form-input border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   min="0"
+                                   max="100"
+                                   value="{{ team.teacher_score }}"
+                                   placeholder="0">
+                        </td>
+                        <td class="text-center">
+                            <span id="weighted-{{ team.id }}" class="text-lg font-bold text-green-600">
+                                {{ team.weighted_score }}
+                            </span>
+                        </td>
+                        <td>
+                            <textarea id="comment-{{ team.id }}"
+                                      class="w-full form-textarea border border-gray-300 rounded-lg p-2 text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                      rows="2"
+                                      placeholder="Optional feedback...">{{ team.teacher_comment }}</textarea>
+                        </td>
+                        <td class="text-center">
+                            <button onclick="saveGrade({{ team.id }}, {{ team.student_score }})"
+                                    id="btn-{{ team.id }}"
+                                    class="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition-all shadow-md">
+                                💾 Save
+                            </button>
+                            {% if team.teacher_score == 0 %}
+                            <div class="badge-pending mt-2">
+                                <span>⏳</span> Pending
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if not teams %}
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 p-12 text-center">
+            <p class="text-gray-500 text-lg">No teams to grade yet.</p>
+        </div>
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+</div>
+
+{% include 'group_learning/ciq/partials/toast.html' %}
+
+<script>
+const CSRF_TOKEN = '{{ csrf_token }}';
+const SESSION_CODE = '{{ session.session_code }}';
+const TEACHER_KEY = '{{ teacher_key }}';
+
+function saveGrade(teamId, studentScore) {
+    const scoreInput = document.getElementById(`score-${teamId}`);
+    const commentInput = document.getElementById(`comment-${teamId}`);
+    const saveBtn = document.getElementById(`btn-${teamId}`);
+    const weightedSpan = document.getElementById(`weighted-${teamId}`);
+
+    const teacherScore = parseInt(scoreInput.value) || 0;
+    const comment = commentInput.value.trim();
+
+    // Validate score
+    if (teacherScore < 0 || teacherScore > 100) {
+        showToast('Score must be between 0 and 100', 'error');
+        return;
+    }
+
+    // Disable button during save
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="animate-spin">⏳</span> Saving...';
+
+    // Send AJAX request
+    fetch(`/group-learning/api/ciq/${SESSION_CODE}/save-grade/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': CSRF_TOKEN
+        },
+        body: new URLSearchParams({
+            'team_id': teamId,
+            'teacher_score': teacherScore,
+            'comment': comment,
+            'teacher_key': TEACHER_KEY
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update weighted score display
+            weightedSpan.textContent = data.weighted_score;
+
+            // Show success message
+            showToast(data.message || 'Grade saved successfully!', 'success');
+
+            // Update button
+            saveBtn.innerHTML = '✓ Saved';
+            saveBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+            saveBtn.classList.add('bg-gray-400');
+
+            setTimeout(() => {
+                saveBtn.innerHTML = '💾 Save';
+                saveBtn.classList.remove('bg-gray-400');
+                saveBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                saveBtn.disabled = false;
+            }, 2000);
+        } else {
+            showToast(data.error || 'Failed to save grade', 'error');
+            saveBtn.innerHTML = '💾 Save';
+            saveBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Network error. Please try again.', 'error');
+        saveBtn.innerHTML = '💾 Save';
+        saveBtn.disabled = false;
+    });
+}
+
+// Auto-calculate weighted score on input change
+document.querySelectorAll('.score-input').forEach(input => {
+    input.addEventListener('input', function() {
+        const teamId = this.id.replace('score-', '');
+        const teacherScore = parseFloat(this.value) || 0;
+        const studentScore = parseFloat(this.closest('tr').querySelector('td:nth-child(3) span').textContent) || 0;
+
+        const weightedScore = (0.4 * studentScore) + (0.6 * teacherScore);
+        document.getElementById(`weighted-${teamId}`).textContent = weightedScore.toFixed(1);
+    });
+});
+</script>
+{% endblock %}
