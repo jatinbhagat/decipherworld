@@ -1,0 +1,95 @@
+{% extends 'quest_ciq/base.html' %}
+
+{% block title %}{{ quest.title }} - Facilitate (Showcase){% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <h1 class="text-4xl font-bold text-blue-600 mb-2">Prototype Showcase</h1>
+        <p class="text-gray-700 text-lg">{{ quest.title }} - Level 4: Prototype</p>
+        <p class="text-gray-600 mt-2">View all student prototypes and innovations</p>
+    </div>
+
+    <!-- Prototypes Grid -->
+    {% if prototypes %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for prototype in prototypes %}
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-200">
+            <!-- Thumbnail -->
+            <div class="h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
+                {% if prototype.upload %}
+                    <img src="{{ prototype.upload.url }}" alt="Prototype by {{ prototype.user.username }}" class="w-full h-full object-cover">
+                {% else %}
+                    <div class="text-center p-4">
+                        <svg class="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p class="text-gray-500 text-sm mt-2">Link-based prototype</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Details -->
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm mr-2">
+                            {{ prototype.user.username|slice:":1"|upper }}
+                        </div>
+                        <p class="font-medium text-gray-800">{{ prototype.user.username }}</p>
+                    </div>
+                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-bold">
+                        {{ prototype.score }} pts
+                    </span>
+                </div>
+
+                {% if prototype.answers.one_line_benefit %}
+                <div class="mb-3">
+                    <p class="text-sm font-bold text-gray-700">Key Benefit:</p>
+                    <p class="text-gray-800 text-sm">{{ prototype.answers.one_line_benefit }}</p>
+                </div>
+                {% endif %}
+
+                {% if prototype.answers.materials %}
+                <div class="mb-3">
+                    <p class="text-sm font-bold text-gray-700">Materials:</p>
+                    <p class="text-gray-600 text-sm">{{ prototype.answers.materials }}</p>
+                </div>
+                {% endif %}
+
+                {% if prototype.answers.prototype_link %}
+                <div class="mt-4">
+                    <a href="{{ prototype.answers.prototype_link }}" target="_blank"
+                       class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded text-sm transition duration-200 w-full text-center">
+                        View Prototype Link →
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white rounded-lg shadow-lg p-12 text-center">
+        <svg class="w-24 h-24 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+        </svg>
+        <h3 class="text-xl font-bold text-gray-700 mb-2">No Prototypes Yet</h3>
+        <p class="text-gray-600">Students haven't submitted Level 4 (Prototype) yet.</p>
+    </div>
+    {% endif %}
+
+    <!-- Back Button -->
+    <div class="mt-8 flex justify-between">
+        <a href="{% url 'quest_ciq:teacher_dashboard' slug=quest.slug %}"
+           class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200">
+            Back to Dashboard
+        </a>
+        <a href="{% url 'quest_ciq:quest_home' slug=quest.slug %}"
+           class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200">
+            Quest Home
+        </a>
+    </div>
+</div>
+{% endblock %}

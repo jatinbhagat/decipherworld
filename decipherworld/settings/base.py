@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'cyber_city',
     'articles',
     'tinymce',
+    'quest_ciq',  # Classroom Innovation Quest
 ]
 
 MIDDLEWARE = [
@@ -201,3 +202,10 @@ TINYMCE_DEFAULT_CONFIG = {
 # File upload settings for TinyMCE
 TINYMCE_SPELLCHECKER = True
 TINYMCE_COMPRESSOR = False
+
+# Media files (user uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Feature flags
+ENABLE_CIQ = config('ENABLE_CIQ', default=True, cast=bool)

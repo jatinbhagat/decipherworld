@@ -1,0 +1,154 @@
+{% extends 'quest_ciq/base.html' %}
+
+{% block title %}{{ quest.title }} - Home{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Quest Header -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <h1 class="text-4xl font-bold text-blue-600 mb-4">{{ quest.title }}</h1>
+        <p class="text-gray-700 text-lg mb-6">{{ quest.description }}</p>
+
+        <!-- Progress Bar -->
+        <div class="mb-6">
+            <div class="flex justify-between text-sm text-gray-600 mb-2">
+                <span>Your Progress</span>
+                <span>{{ highest_level }} / 5 Levels Complete</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                <div class="progress-bar bg-blue-600 h-4 rounded-full" style="width: {{ progress_percent }}%"></div>
+            </div>
+        </div>
+
+        <!-- Current Score -->
+        <div class="bg-blue-50 rounded-lg p-4 mb-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-sm text-gray-600">Total Score</p>
+                    <p class="text-3xl font-bold text-blue-600">{{ session.total_score }} pts</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Rank</p>
+                    <p class="text-2xl font-bold text-blue-600">#{{ user_rank|default:'--' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        {% if not is_complete %}
+            <div class="text-center">
+                <a href="{% url 'quest_ciq:quest_level' slug=quest.slug order=next_level %}"
+                   class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200">
+                    {% if highest_level == 0 %}
+                        Start Quest - Level 1: Empathy
+                    {% else %}
+                        Continue to Level {{ next_level }}
+                    {% endif %}
+                </a>
+            </div>
+        {% else %}
+            <div class="text-center">
+                <div class="bg-green-100 border-2 border-green-500 rounded-lg p-6 mb-4">
+                    <h3 class="text-2xl font-bold text-green-700 mb-2">Quest Complete!</h3>
+                    <p class="text-green-600">You've completed all 5 levels. Great work!</p>
+                </div>
+                <a href="{% url 'quest_ciq:quest_summary' slug=quest.slug %}"
+                   class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200 mr-4">
+                    View Summary
+                </a>
+                <a href="{% url 'quest_ciq:quest_leaderboard' slug=quest.slug %}"
+                   class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200">
+                    View Leaderboard
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Level Overview -->
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">The 5 Levels</h2>
+        <div class="space-y-4">
+            <div class="flex items-center p-4 rounded-lg {% if highest_level >= 1 %}bg-green-50 border-green-500{% else %}bg-gray-50 border-gray-300{% endif %} border-2">
+                <div class="flex-shrink-0 w-12 h-12 rounded-full {% if highest_level >= 1 %}bg-green-500{% else %}bg-gray-400{% endif %} flex items-center justify-center text-white font-bold text-xl mr-4">
+                    1
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg">Empathy</h3>
+                    <p class="text-gray-600 text-sm">Spot a real classroom/user problem</p>
+                </div>
+                {% if highest_level >= 1 %}<span class="text-green-600 font-bold">✓ Completed</span>{% endif %}
+            </div>
+
+            <div class="flex items-center p-4 rounded-lg {% if highest_level >= 2 %}bg-green-50 border-green-500{% elif highest_level == 1 %}bg-blue-50 border-blue-500{% else %}bg-gray-50 border-gray-300{% endif %} border-2">
+                <div class="flex-shrink-0 w-12 h-12 rounded-full {% if highest_level >= 2 %}bg-green-500{% elif highest_level == 1 %}bg-blue-500{% else %}bg-gray-400{% endif %} flex items-center justify-center text-white font-bold text-xl mr-4">
+                    2
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg">Define</h3>
+                    <p class="text-gray-600 text-sm">Frame the problem clearly</p>
+                </div>
+                {% if highest_level >= 2 %}<span class="text-green-600 font-bold">✓ Completed</span>
+                {% elif highest_level == 1 %}<span class="text-blue-600 font-bold">→ Next</span>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center p-4 rounded-lg {% if highest_level >= 3 %}bg-green-50 border-green-500{% elif highest_level == 2 %}bg-blue-50 border-blue-500{% else %}bg-gray-50 border-gray-300{% endif %} border-2">
+                <div class="flex-shrink-0 w-12 h-12 rounded-full {% if highest_level >= 3 %}bg-green-500{% elif highest_level == 2 %}bg-blue-500{% else %}bg-gray-400{% endif %} flex items-center justify-center text-white font-bold text-xl mr-4">
+                    3
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg">Ideate</h3>
+                    <p class="text-gray-600 text-sm">Generate creative solutions</p>
+                </div>
+                {% if highest_level >= 3 %}<span class="text-green-600 font-bold">✓ Completed</span>
+                {% elif highest_level == 2 %}<span class="text-blue-600 font-bold">→ Next</span>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center p-4 rounded-lg {% if highest_level >= 4 %}bg-green-50 border-green-500{% elif highest_level == 3 %}bg-blue-50 border-blue-500{% else %}bg-gray-50 border-gray-300{% endif %} border-2">
+                <div class="flex-shrink-0 w-12 h-12 rounded-full {% if highest_level >= 4 %}bg-green-500{% elif highest_level == 3 %}bg-blue-500{% else %}bg-gray-400{% endif %} flex items-center justify-center text-white font-bold text-xl mr-4">
+                    4
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg">Prototype</h3>
+                    <p class="text-gray-600 text-sm">Create a quick mock/sketch/link</p>
+                </div>
+                {% if highest_level >= 4 %}<span class="text-green-600 font-bold">✓ Completed</span>
+                {% elif highest_level == 3 %}<span class="text-blue-600 font-bold">→ Next</span>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center p-4 rounded-lg {% if highest_level >= 5 %}bg-green-50 border-green-500{% elif highest_level == 4 %}bg-blue-50 border-blue-500{% else %}bg-gray-50 border-gray-300{% endif %} border-2">
+                <div class="flex-shrink-0 w-12 h-12 rounded-full {% if highest_level >= 5 %}bg-green-500{% elif highest_level == 4 %}bg-blue-500{% else %}bg-gray-400{% endif %} flex items-center justify-center text-white font-bold text-xl mr-4">
+                    5
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-lg">Test</h3>
+                    <p class="text-gray-600 text-sm">Get peer rating and comments</p>
+                </div>
+                {% if highest_level >= 5 %}<span class="text-green-600 font-bold">✓ Completed</span>
+                {% elif highest_level == 4 %}<span class="text-blue-600 font-bold">→ Next</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a href="{% url 'quest_ciq:quest_leaderboard' slug=quest.slug %}" class="bg-white hover:bg-gray-50 rounded-lg shadow p-6 text-center transition duration-200">
+            <h3 class="font-bold text-lg text-gray-800">Leaderboard</h3>
+            <p class="text-gray-600 text-sm">See how you rank</p>
+        </a>
+        <a href="{% url 'quest_ciq:quest_summary' slug=quest.slug %}" class="bg-white hover:bg-gray-50 rounded-lg shadow p-6 text-center transition duration-200">
+            <h3 class="font-bold text-lg text-gray-800">My Summary</h3>
+            <p class="text-gray-600 text-sm">View your journey</p>
+        </a>
+        {% if user.is_staff %}
+        <a href="{% url 'quest_ciq:teacher_dashboard' slug=quest.slug %}" class="bg-white hover:bg-gray-50 rounded-lg shadow p-6 text-center transition duration-200">
+            <h3 class="font-bold text-lg text-gray-800">Teacher Dashboard</h3>
+            <p class="text-gray-600 text-sm">Monitor progress</p>
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

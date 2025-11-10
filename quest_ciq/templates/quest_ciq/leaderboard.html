@@ -1,0 +1,87 @@
+{% extends 'quest_ciq/base.html' %}
+
+{% block title %}{{ quest.title }} - Leaderboard{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <h1 class="text-4xl font-bold text-blue-600 mb-2">Leaderboard</h1>
+        <p class="text-gray-700 text-lg">{{ quest.title }}</p>
+        {% if user_rank %}
+        <div class="mt-4 bg-blue-50 rounded-lg p-4">
+            <p class="text-blue-800">Your Rank: <span class="font-bold text-2xl">#{{ user_rank }}</span></p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Leaderboard Table -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <table class="w-full">
+            <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="px-6 py-4 text-left font-bold">Rank</th>
+                    <th class="px-6 py-4 text-left font-bold">Participant</th>
+                    <th class="px-6 py-4 text-center font-bold">Levels</th>
+                    <th class="px-6 py-4 text-right font-bold">Score</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for entry in leaderboard %}
+                <tr class="{% if entry.participant.user == user %}bg-blue-50{% else %}hover:bg-gray-50{% endif %} transition duration-150">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
+                            {% if entry.rank == 1 %}
+                                <span class="text-3xl mr-2">🥇</span>
+                            {% elif entry.rank == 2 %}
+                                <span class="text-3xl mr-2">🥈</span>
+                            {% elif entry.rank == 3 %}
+                                <span class="text-3xl mr-2">🥉</span>
+                            {% else %}
+                                <span class="text-2xl font-bold text-gray-600 mr-2">#{{ entry.rank }}</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold mr-3">
+                                {{ entry.participant.user.username|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">
+                                    {{ entry.participant.user.username }}
+                                    {% if entry.participant.user == user %}<span class="text-blue-600">(You)</span>{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                            {{ entry.levels_completed }} / 5
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <span class="text-2xl font-bold text-blue-600">{{ entry.total_score }}</span>
+                        <span class="text-gray-600 text-sm">pts</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                        No participants yet. Be the first!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-8">
+        <a href="{% url 'quest_ciq:quest_home' slug=quest.slug %}"
+           class="inline-block bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-lg transition duration-200">
+            Back to Home
+        </a>
+    </div>
+</div>
+{% endblock %}

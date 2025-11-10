@@ -21,8 +21,13 @@ urlpatterns = [
     # These are needed for internal template references
     path('buddy/', include('robotic_buddy.urls')),
     path('learn/', include('group_learning.urls')),
+
+    # Classroom Innovation Quest
+    path('ciq/', include('quest_ciq.urls')),
 ]
 
-# Serve static files during development
+# Serve static and media files during development
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    if hasattr(settings, 'MEDIA_URL') and hasattr(settings, 'MEDIA_ROOT'):
+        urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
