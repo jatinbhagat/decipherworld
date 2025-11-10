@@ -1,0 +1,85 @@
+{% extends "quest_ciq/base.html" %}
+
+{% block title %}Home - Classroom Innovation Quest{% endblock %}
+
+{% block content %}
+<div class="hero min-h-[60vh]">
+    <div class="hero-content text-center">
+        <div class="max-w-4xl">
+            <h1 class="text-5xl font-bold mb-6">🎯 Classroom Innovation Quest</h1>
+            <p class="text-xl mb-8">
+                Solve real classroom problems using Design Thinking!
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body items-center text-center">
+                        <div class="text-4xl mb-2">👀</div>
+                        <h3 class="card-title text-sm">Empathy</h3>
+                        <p class="text-xs">Observe needs</p>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body items-center text-center">
+                        <div class="text-4xl mb-2">🎯</div>
+                        <h3 class="card-title text-sm">Define</h3>
+                        <p class="text-xs">State the problem</p>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body items-center text-center">
+                        <div class="text-4xl mb-2">💡</div>
+                        <h3 class="card-title text-sm">Ideate</h3>
+                        <p class="text-xs">Brainstorm ideas</p>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body items-center text-center">
+                        <div class="text-4xl mb-2">🛠️</div>
+                        <h3 class="card-title text-sm">Prototype</h3>
+                        <p class="text-xs">Build it</p>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body items-center text-center">
+                        <div class="text-4xl mb-2">🧪</div>
+                        <h3 class="card-title text-sm">Test</h3>
+                        <p class="text-xs">Get feedback</p>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'quest_ciq:join' %}" class="btn btn-primary btn-lg">
+                Start Your Quest!
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">🎮 Fun & Interactive</h2>
+            <p>Learn design thinking through a quest-based game</p>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">🏆 Compete & Learn</h2>
+            <p>Earn points and climb the leaderboard</p>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">🚀 Real Solutions</h2>
+            <p>Solve actual problems in your classroom</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

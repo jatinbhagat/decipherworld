@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'cyber_city',
     'articles',
     'tinymce',
+    'quest_ciq',  # Classroom Innovation Quest
 ]
 
 MIDDLEWARE = [

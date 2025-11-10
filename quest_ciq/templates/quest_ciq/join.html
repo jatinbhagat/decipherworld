@@ -1,0 +1,45 @@
+{% extends "quest_ciq/base.html" %}
+
+{% block title %}Join Quest - Classroom Innovation Quest{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-3xl mb-4 justify-center">
+                🎯 Start Your Quest
+            </h2>
+
+            <p class="text-center mb-6">
+                Enter your name to begin the Classroom Innovation Quest!
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-control mb-4">
+                    {{ form.student_name.label_tag }}
+                    {{ form.student_name }}
+                    {% if form.student_name.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ form.student_name.errors.0 }}</span>
+                    </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mt-6">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Begin Quest! 🚀
+                    </button>
+                </div>
+            </form>
+
+            <div class="divider">OR</div>
+
+            <a href="{% url 'quest_ciq:home' %}" class="btn btn-ghost btn-block">
+                Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

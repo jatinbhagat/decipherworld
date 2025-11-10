@@ -1,0 +1,102 @@
+{% extends "quest_ciq/base.html" %}
+
+{% block title %}Leaderboard - Classroom Innovation Quest{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold mb-4">🏆 Leaderboard</h1>
+        <p class="text-lg">Top innovators who completed the quest!</p>
+    </div>
+
+    {% if top_sessions %}
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Rank</th>
+                            <th>Student</th>
+                            <th class="text-center">Score</th>
+                            <th class="text-center">Completed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in top_sessions %}
+                        <tr class="{% if forloop.counter <= 3 %}bg-warning/20{% endif %}">
+                            <td class="text-center font-bold">
+                                {% if forloop.counter == 1 %}
+                                🥇 #1
+                                {% elif forloop.counter == 2 %}
+                                🥈 #2
+                                {% elif forloop.counter == 3 %}
+                                🥉 #3
+                                {% else %}
+                                #{{ forloop.counter }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="font-semibold">{{ session.student_name }}</div>
+                                <div class="text-xs text-base-content/50">{{ session.session_code }}</div>
+                            </td>
+                            <td class="text-center">
+                                <div class="badge badge-primary badge-lg">
+                                    {{ session.total_score }} pts
+                                </div>
+                            </td>
+                            <td class="text-center text-sm">
+                                {{ session.completed_at|date:"M d, Y" }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Score Breakdown Info -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="card bg-base-200">
+            <div class="card-body">
+                <h3 class="font-semibold mb-2">📊 How scores work:</h3>
+                <ul class="list-disc list-inside text-sm space-y-1">
+                    <li>Base: +10 points per level</li>
+                    <li>Ideate: +10 for 2+ ideas, +10 for 120+ chars</li>
+                    <li>Prototype: +10 for link or upload</li>
+                    <li>Test: +10 for rating ≥4</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card bg-base-200">
+            <div class="card-body">
+                <h3 class="font-semibold mb-2">🎯 Maximum Score:</h3>
+                <p class="text-3xl font-bold text-primary">100 points</p>
+                <p class="text-sm mt-2">Complete all levels with bonuses!</p>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body text-center">
+            <div class="text-6xl mb-4">🏆</div>
+            <h3 class="text-2xl font-bold mb-2">No completions yet!</h3>
+            <p class="mb-6">Be the first to complete the quest and claim the top spot!</p>
+            <a href="{% url 'quest_ciq:join' %}" class="btn btn-primary">
+                Start Your Quest
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Back to Home -->
+    <div class="text-center mt-8">
+        <a href="{% url 'quest_ciq:home' %}" class="btn btn-ghost">
+            ← Back to Home
+        </a>
+    </div>
+</div>
+{% endblock %}

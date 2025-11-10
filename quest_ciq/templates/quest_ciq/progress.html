@@ -1,0 +1,122 @@
+{% extends "quest_ciq/base.html" %}
+
+{% block title %}Progress - {{ session.student_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold mb-2">📈 Your Progress</h1>
+        <p class="text-xl">{{ session.student_name }} ({{ session.session_code }})</p>
+    </div>
+
+    <!-- Progress Stats -->
+    <div class="stats stats-vertical lg:stats-horizontal shadow w-full mb-8">
+        <div class="stat">
+            <div class="stat-figure text-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+            </div>
+            <div class="stat-title">Levels Completed</div>
+            <div class="stat-value text-primary">{{ responses|length }}/5</div>
+            <div class="stat-desc">{{ progress_percent|floatformat:0 }}% complete</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-figure text-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            </div>
+            <div class="stat-title">Total Score</div>
+            <div class="stat-value text-secondary">{{ session.total_score }}</div>
+            <div class="stat-desc">out of 100 possible</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-figure text-accent">
+                <div class="text-4xl">
+                    {% if session.completed_at %}
+                    ✅
+                    {% else %}
+                    ⏳
+                    {% endif %}
+                </div>
+            </div>
+            <div class="stat-title">Status</div>
+            <div class="stat-value text-sm">
+                {% if session.completed_at %}
+                Completed!
+                {% else %}
+                In Progress
+                {% endif %}
+            </div>
+            <div class="stat-desc">
+                {% if session.completed_at %}
+                {{ session.completed_at|date:"M d, Y" }}
+                {% else %}
+                Keep going!
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Levels Timeline -->
+    <div class="card bg-base-100 shadow-xl mb-8">
+        <div class="card-body">
+            <h2 class="card-title mb-4">Quest Journey</h2>
+
+            <ul class="timeline timeline-vertical">
+                {% for order, config in level_config.items %}
+                {% with response=responses|selectattr:"level_order"|filter:order|first %}
+                <li>
+                    <div class="timeline-start">{{ config.emoji }}</div>
+                    <div class="timeline-middle">
+                        {% if response %}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-success"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+                        {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-base-300"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v4.59L7.3 13.24a.75.75 0 101.06 1.06l2.25-2.25a.75.75 0 00.22-.53V6.75z" clip-rule="evenodd" /></svg>
+                        {% endif %}
+                    </div>
+                    <div class="timeline-end timeline-box {% if response %}bg-success/20{% endif %}">
+                        <div class="font-bold">Level {{ order }}: {{ config.name }}</div>
+                        <div class="text-sm">
+                            {% if response %}
+                            ✅ Completed on {{ response.submitted_at|date:"M d, g:i A" }}
+                            {% else %}
+                            {% if order == session.current_level %}
+                            <span class="text-warning">← Current level</span>
+                            {% elif order < session.current_level %}
+                            <span class="text-error">Not completed</span>
+                            {% else %}
+                            <span class="text-base-content/50">Locked</span>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if not forloop.last %}<hr class="{% if response %}bg-success{% endif %}"/>{% endif %}
+                </li>
+                {% endwith %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-4 justify-center flex-wrap">
+        {% if session.completed_at %}
+        <a href="{% url 'quest_ciq:leaderboard' %}" class="btn btn-primary">
+            🏆 View Leaderboard
+        </a>
+        <a href="{% url 'quest_ciq:home' %}" class="btn btn-ghost">
+            ← Back to Home
+        </a>
+        {% else %}
+        <a href="{% url 'quest_ciq:level' session_code=session.session_code level_order=session.current_level %}"
+           class="btn btn-primary">
+            Continue Quest →
+        </a>
+        <a href="{% url 'quest_ciq:home' %}" class="btn btn-ghost">
+            ← Back to Home
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

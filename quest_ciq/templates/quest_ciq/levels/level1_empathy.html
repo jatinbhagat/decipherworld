@@ -1,0 +1,157 @@
+<!-- Level 1: Empathy - Pain Points & Prioritization -->
+
+<div class="mb-6">
+    <p class="text-lg mb-4">
+        Observe the problems in your classroom. What makes learning difficult for you or your classmates?
+    </p>
+</div>
+
+<!-- Preset Pain Points -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">Select classroom pain points (check all that apply):</span>
+    </label>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pl-4">
+        {% for value, label in form.preset_pain_points.field.choices %}
+        <label class="label cursor-pointer justify-start gap-3 hover:bg-base-200 p-2 rounded">
+            <input type="checkbox" name="preset_pain_points" value="{{ value }}"
+                   class="checkbox checkbox-primary pain-point-checkbox"
+                   {% if value in form.preset_pain_points.value %}checked{% endif %}>
+            <span class="label-text">{{ label }}</span>
+        </label>
+        {% endfor %}
+    </div>
+
+    {% if form.preset_pain_points.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.preset_pain_points.errors.0 }}</span>
+    </label>
+    {% endif %}
+</div>
+
+<!-- Custom Pain Points -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">Add your own pain points (optional, up to 3):</span>
+    </label>
+
+    <div class="space-y-3">
+        <div>
+            {{ form.custom_pain_1 }}
+            {% if form.custom_pain_1.errors %}
+            <label class="label">
+                <span class="label-text-alt text-error">{{ form.custom_pain_1.errors.0 }}</span>
+            </label>
+            {% endif %}
+        </div>
+
+        <div>
+            {{ form.custom_pain_2 }}
+            {% if form.custom_pain_2.errors %}
+            <label class="label">
+                <span class="label-text-alt text-error">{{ form.custom_pain_2.errors.0 }}</span>
+            </label>
+            {% endif %}
+        </div>
+
+        <div>
+            {{ form.custom_pain_3 }}
+            {% if form.custom_pain_3.errors %}
+            <label class="label">
+                <span class="label-text-alt text-error">{{ form.custom_pain_3.errors.0 }}</span>
+            </label>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Who is Affected -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">{{ form.who_is_affected.label }}:</span>
+    </label>
+
+    <div class="flex gap-4 pl-4">
+        {% for value, label in form.who_is_affected.field.choices %}
+        <label class="label cursor-pointer gap-2">
+            <input type="radio" name="who_is_affected" value="{{ value }}"
+                   class="radio radio-primary"
+                   {% if form.who_is_affected.value == value %}checked{% endif %}>
+            <span class="label-text">{{ label }}</span>
+        </label>
+        {% endfor %}
+    </div>
+
+    {% if form.who_is_affected.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.who_is_affected.errors.0 }}</span>
+    </label>
+    {% endif %}
+</div>
+
+<!-- Prioritization -->
+<div class="alert alert-warning mb-4">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <span>Now prioritize! Pick your most important pain point below.</span>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <!-- Top Priority -->
+    <div class="form-control">
+        <label class="label">
+            <span class="label-text font-semibold">{{ form.top_priority.label }}</span>
+            <span class="label-text-alt text-error">*Required</span>
+        </label>
+        <select name="top_priority" id="id_top_priority" class="select select-bordered w-full" required>
+            <option value="">-- Select your TOP pain point --</option>
+        </select>
+        {% if form.top_priority.errors %}
+        <label class="label">
+            <span class="label-text-alt text-error">{{ form.top_priority.errors.0 }}</span>
+        </label>
+        {% endif %}
+    </div>
+
+    <!-- Second Priority -->
+    <div class="form-control">
+        <label class="label">
+            <span class="label-text font-semibold">{{ form.second_priority.label }}</span>
+            <span class="label-text-alt">Optional</span>
+        </label>
+        <select name="second_priority" id="id_second_priority" class="select select-bordered w-full">
+            <option value="">-- Select second priority (optional) --</option>
+        </select>
+        {% if form.second_priority.errors %}
+        <label class="label">
+            <span class="label-text-alt text-error">{{ form.second_priority.errors.0 }}</span>
+        </label>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Selected Pain Points Display -->
+<div id="selected-pain-points" class="mb-4">
+    <label class="label">
+        <span class="label-text text-sm font-semibold">Your selected pain points:</span>
+    </label>
+    <div id="pain-points-chips" class="flex flex-wrap gap-2 min-h-[2rem]">
+        <span class="text-sm text-base-content/50">Select pain points above to see them here...</span>
+    </div>
+</div>
+
+<!-- Non-field errors -->
+{% if form.non_field_errors %}
+<div class="alert alert-error mb-4">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ form.non_field_errors.0 }}</span>
+    </div>
+</div>
+{% endif %}

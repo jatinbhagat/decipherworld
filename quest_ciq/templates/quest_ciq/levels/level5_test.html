@@ -1,0 +1,109 @@
+<!-- Level 5: Test - Emoji Rating & Reflection -->
+
+<div class="mb-6">
+    <p class="text-lg mb-4">
+        Get feedback on your prototype! Ask a classmate or friend to test it and share their thoughts.
+    </p>
+</div>
+
+<!-- Peer Name -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">👤 {{ form.peer_name.label }}</span>
+        <span class="label-text-alt text-error">*Required</span>
+    </label>
+    {{ form.peer_name }}
+    {% if form.peer_name.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.peer_name.errors.0 }}</span>
+    </label>
+    {% endif %}
+</div>
+
+<!-- Emoji Rating -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">⭐ {{ form.peer_rating.label }}</span>
+        <span class="label-text-alt text-error">*Required</span>
+    </label>
+
+    <div class="card bg-base-200 p-6">
+        <div class="flex justify-around items-center flex-wrap gap-4">
+            {% for value, label in form.peer_rating.field.choices %}
+            <label class="flex flex-col items-center gap-2 cursor-pointer transition-transform hover:scale-110">
+                <input type="radio" name="peer_rating" value="{{ value }}"
+                       class="hidden peer"
+                       {% if form.peer_rating.value == value %}checked{% endif %}>
+                <div class="text-6xl peer-checked:scale-125 peer-checked:drop-shadow-lg transition-all">
+                    {{ label|slice:":2" }}
+                </div>
+                <div class="text-xs text-center peer-checked:font-bold">
+                    {{ label|slice:"3:" }}
+                </div>
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if form.peer_rating.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.peer_rating.errors.0 }}</span>
+    </label>
+    {% endif %}
+</div>
+
+<!-- Peer Comment -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">💬 {{ form.peer_comment.label }}</span>
+        <span class="label-text-alt">Optional</span>
+    </label>
+    {{ form.peer_comment }}
+    {% if form.peer_comment.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.peer_comment.errors.0 }}</span>
+    </label>
+    {% endif %}
+    <label class="label">
+        <span class="label-text-alt">What specific feedback did they give?</span>
+    </label>
+</div>
+
+<!-- Feedback Surprise -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">🤔 {{ form.feedback_surprise.label }}</span>
+        <span class="label-text-alt">Optional</span>
+    </label>
+    {{ form.feedback_surprise }}
+    {% if form.feedback_surprise.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.feedback_surprise.errors.0 }}</span>
+    </label>
+    {% endif %}
+    <label class="label">
+        <span class="label-text-alt">Reflection helps you learn and improve!</span>
+    </label>
+</div>
+
+<!-- Bonus Points Info -->
+<div class="alert alert-success">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span><strong>Bonus:</strong> Get a rating of 4 or 5 to earn extra points!</span>
+    </div>
+</div>
+
+<!-- Non-field errors -->
+{% if form.non_field_errors %}
+<div class="alert alert-error mt-4">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ form.non_field_errors.0 }}</span>
+    </div>
+</div>
+{% endif %}
