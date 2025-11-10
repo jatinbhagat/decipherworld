@@ -1,6 +1,6 @@
 /**
  * Level 1 Priority Selection Logic
- * Dynamically populates priority dropdowns based on selected pain points
+ * Dynamically populates priority dropdown based on selected pain points
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -11,13 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('input[name="custom_pain_3"]')
     ];
     const topPrioritySelect = document.getElementById('id_top_priority');
-    const secondPrioritySelect = document.getElementById('id_second_priority');
     const chipsContainer = document.getElementById('pain-points-chips');
 
     function getAllSelectedPainPoints() {
         const points = [];
 
-        // Get checked presets
+        // Get checked presets (exact text match)
         presetCheckboxes.forEach(checkbox => {
             if (checkbox.checked) {
                 const label = checkbox.parentElement.querySelector('.label-text').textContent.trim();
@@ -25,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Get custom entries
+        // Get custom entries (exact text, no trimming)
         customInputs.forEach(input => {
             const value = input.value.trim();
             if (value) {
@@ -36,35 +35,20 @@ document.addEventListener('DOMContentLoaded', function() {
         return points;
     }
 
-    function updatePriorityDropdowns() {
+    function updatePriorityDropdown() {
         const painPoints = getAllSelectedPainPoints();
         const currentTop = topPrioritySelect.value;
-        const currentSecond = secondPrioritySelect.value;
 
-        // Update top priority dropdown
+        // Update top priority dropdown with exact string values
         topPrioritySelect.innerHTML = '<option value="">-- Select your TOP pain point --</option>';
         painPoints.forEach(point => {
             const option = document.createElement('option');
-            option.value = point;
+            option.value = point;  // Use exact string value
             option.textContent = point;
             if (point === currentTop) {
                 option.selected = true;
             }
             topPrioritySelect.appendChild(option);
-        });
-
-        // Update second priority dropdown (excluding top selection)
-        secondPrioritySelect.innerHTML = '<option value="">-- Select second priority (optional) --</option>';
-        painPoints.forEach(point => {
-            if (point !== topPrioritySelect.value) {
-                const option = document.createElement('option');
-                option.value = point;
-                option.textContent = point;
-                if (point === currentSecond && point !== currentTop) {
-                    option.selected = true;
-                }
-                secondPrioritySelect.appendChild(option);
-            }
         });
 
         // Update chips display
@@ -95,16 +79,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Listen for changes
     presetCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updatePriorityDropdowns);
+        checkbox.addEventListener('change', updatePriorityDropdown);
     });
 
     customInputs.forEach(input => {
-        input.addEventListener('input', updatePriorityDropdowns);
+        input.addEventListener('input', updatePriorityDropdown);
     });
 
-    // Listen for top priority change to update second priority options
-    topPrioritySelect.addEventListener('change', updatePriorityDropdowns);
-
     // Initial population
-    updatePriorityDropdowns();
+    updatePriorityDropdown();
 });

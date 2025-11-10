@@ -77,9 +77,9 @@ class Level1EmpathyForm(forms.Form):
         initial='students'
     )
 
-    # Prioritization dropdowns (populated dynamically via JS)
-    top_priority = forms.ChoiceField(
-        choices=[],
+    # Top priority - use CharField to avoid ChoiceField validation
+    top_priority = forms.CharField(
+        max_length=200,
         required=True,
         widget=forms.Select(attrs={
             'class': 'select select-bordered w-full',
@@ -87,19 +87,10 @@ class Level1EmpathyForm(forms.Form):
         label="Pick your TOP pain point"
     )
 
-    second_priority = forms.ChoiceField(
-        choices=[],
-        required=False,
-        widget=forms.Select(attrs={
-            'class': 'select select-bordered w-full',
-        }),
-        label="Pick second priority (optional)"
-    )
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Priority choices will be populated dynamically via JavaScript
-        # based on selected preset + custom entries
+        # We use CharField instead of ChoiceField to avoid server-side choice validation
 
     def clean(self):
         cleaned_data = super().clean()
@@ -112,27 +103,28 @@ class Level1EmpathyForm(forms.Form):
 
         custom_entered = [c for c in [custom_1, custom_2, custom_3] if c]
 
+        # Build combined list for validation
+        all_pain_points = list(preset_selected) + custom_entered
+
         # Validate minimum 3 total pain points
-        total_count = len(preset_selected) + len(custom_entered)
+        total_count = len(all_pain_points)
         if total_count < 3:
             raise ValidationError(
                 "Please select or enter at least 3 pain points total."
             )
 
-        # Validate top priority is selected
+        # Validate top priority is selected and in the list
         top = cleaned_data.get('top_priority')
         if not top:
             raise ValidationError("Please select your top priority pain point.")
 
-        # Validate second priority doesn't duplicate top
-        second = cleaned_data.get('second_priority')
-        if second and second == top:
+        if top not in all_pain_points:
             raise ValidationError(
-                "Second priority must be different from top priority."
+                "Top priority must be one of your selected pain points."
             )
 
         # Store structured data
-        cleaned_data['all_pain_points'] = list(preset_selected) + custom_entered
+        cleaned_data['all_pain_points'] = all_pain_points
         cleaned_data['custom_list'] = custom_entered
 
         return cleaned_data
@@ -146,7 +138,7 @@ class Level1EmpathyForm(forms.Form):
             "who_is_affected": cleaned.get('who_is_affected'),
             "prioritized": {
                 "top": cleaned.get('top_priority'),
-                "second": cleaned.get('second_priority') or None,
+                "second": None,  # Removed second priority
             }
         }
 

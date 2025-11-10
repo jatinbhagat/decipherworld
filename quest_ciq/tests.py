@@ -114,6 +114,17 @@ class Level1FormTest(TestCase):
         form = Level1EmpathyForm(data=form_data)
         self.assertFalse(form.is_valid())
 
+    def test_top_priority_must_be_in_selected_list(self):
+        """Test that top priority must be from selected pain points"""
+        form_data = {
+            'preset_pain_points': ['Classroom noise', 'Messy desks', 'Heavy backpacks'],
+            'who_is_affected': 'students',
+            'top_priority': 'Invalid pain point',  # Not in selected list
+        }
+        form = Level1EmpathyForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('Top priority must be one of your selected pain points', str(form.errors))
+
 
 class Level2FormTest(TestCase):
     """Test Level 2 Define form"""

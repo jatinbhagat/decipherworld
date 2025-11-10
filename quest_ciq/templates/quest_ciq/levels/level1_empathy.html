@@ -100,38 +100,20 @@
     </div>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-    <!-- Top Priority -->
-    <div class="form-control">
-        <label class="label">
-            <span class="label-text font-semibold">{{ form.top_priority.label }}</span>
-            <span class="label-text-alt text-error">*Required</span>
-        </label>
-        <select name="top_priority" id="id_top_priority" class="select select-bordered w-full" required>
-            <option value="">-- Select your TOP pain point --</option>
-        </select>
-        {% if form.top_priority.errors %}
-        <label class="label">
-            <span class="label-text-alt text-error">{{ form.top_priority.errors.0 }}</span>
-        </label>
-        {% endif %}
-    </div>
-
-    <!-- Second Priority -->
-    <div class="form-control">
-        <label class="label">
-            <span class="label-text font-semibold">{{ form.second_priority.label }}</span>
-            <span class="label-text-alt">Optional</span>
-        </label>
-        <select name="second_priority" id="id_second_priority" class="select select-bordered w-full">
-            <option value="">-- Select second priority (optional) --</option>
-        </select>
-        {% if form.second_priority.errors %}
-        <label class="label">
-            <span class="label-text-alt text-error">{{ form.second_priority.errors.0 }}</span>
-        </label>
-        {% endif %}
-    </div>
+<!-- Top Priority -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text font-semibold">{{ form.top_priority.label }}</span>
+        <span class="label-text-alt text-error">*Required</span>
+    </label>
+    <select name="top_priority" id="id_top_priority" class="select select-bordered w-full" required>
+        <option value="">-- Select your TOP pain point --</option>
+    </select>
+    {% if form.top_priority.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.top_priority.errors.0 }}</span>
+    </label>
+    {% endif %}
 </div>
 
 <!-- Selected Pain Points Display -->
