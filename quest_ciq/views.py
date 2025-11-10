@@ -7,7 +7,11 @@ from django.views import View
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
-from .models import QuestSession, LevelResponse, CIQSettings
+from django.contrib.auth.mixins import UserPassesTestMixin
+from .models import (
+    QuestSession, LevelResponse, CIQSettings,
+    Quest, ClassRoom, Team, TeacherTeamScore
+)
 from .forms import (
     JoinQuestForm,
     Level1EmpathyForm,
@@ -17,6 +21,7 @@ from .forms import (
     Level5TestForm,
 )
 from .constants import LEVEL_CONFIG
+from .services.scoring import get_team_aggregated_responses, get_team_scores, calculate_weighted_score
 
 
 class HomeView(View):
@@ -283,14 +288,66 @@ class LeaderboardView(View):
             messages.info(request, "Leaderboard is currently disabled.")
             return redirect('quest_ciq:home')
 
-        # Get top sessions by score
-        top_sessions = QuestSession.objects.filter(
-            completed_at__isnull=False
-        ).order_by('-total_score', 'completed_at')[:50]
+        # Get view type from query param (default: participants)
+        view_type = request.GET.get('view', 'participants')
 
-        context = {
-            'top_sessions': top_sessions,
-        }
+        if view_type == 'teams':
+            # Get all teams with at least one completed session
+            teams_data = []
+            teams = Team.objects.filter(
+                sessions__completed_at__isnull=False
+            ).distinct()
+
+            for team in teams:
+                if not team.classroom:
+                    continue
+
+                # Get team scores
+                scores = get_team_scores(team, team.classroom)
+
+                teams_data.append({
+                    'team': team,
+                    'classroom': team.classroom,
+                    'member_count': scores['members_count'],
+                    'avg_student_score': scores['avg_student_score'],
+                    'teacher_score': scores['teacher_score'],
+                    'final_score': scores['avg_final_score'],
+                    'awaiting_teacher': scores['awaiting_teacher'],
+                })
+
+            # Sort by final score descending
+            teams_data.sort(key=lambda x: x['final_score'], reverse=True)
+
+            context = {
+                'view_type': 'teams',
+                'teams_data': teams_data[:50],  # Top 50
+            }
+        else:
+            # Participants view (existing logic with weighted scores)
+            from .services.scoring import get_final_score
+
+            sessions = QuestSession.objects.filter(
+                completed_at__isnull=False
+            ).select_related('team', 'classroom').order_by('-created_at')[:100]
+
+            participants_data = []
+            for session in sessions:
+                score_data = get_final_score(session)
+                participants_data.append({
+                    'session': session,
+                    'student_score': score_data['student_score'],
+                    'teacher_score': score_data['teacher_score'],
+                    'final_score': score_data['final_score'],
+                    'awaiting_teacher': score_data['awaiting_teacher'],
+                })
+
+            # Sort by final score descending
+            participants_data.sort(key=lambda x: x['final_score'], reverse=True)
+
+            context = {
+                'view_type': 'participants',
+                'participants_data': participants_data[:50],  # Top 50
+            }
 
         return render(request, self.template_name, context)
 
@@ -316,3 +373,166 @@ class ProgressView(View):
         }
 
         return render(request, self.template_name, context)
+
+
+class PublicPresentationView(View):
+    """Public read-only team presentation page"""
+    template_name = 'quest_ciq/present_public.html'
+
+    def get(self, request, slug, class_code, team_slug):
+        # Get quest, classroom, and team
+        quest = get_object_or_404(Quest, slug=slug, is_active=True)
+        classroom = get_object_or_404(ClassRoom, class_code=class_code, quest=quest)
+        team = get_object_or_404(Team, slug=team_slug, classroom=classroom)
+
+        # Get aggregated responses from team members
+        aggregated_responses = get_team_aggregated_responses(team, classroom)
+
+        # Get team scores
+        team_scores = get_team_scores(team, classroom)
+
+        # Build presentation URL for sharing
+        presentation_url = request.build_absolute_uri()
+
+        context = {
+            'quest': quest,
+            'classroom': classroom,
+            'team': team,
+            'aggregated_responses': aggregated_responses,
+            'team_scores': team_scores,
+            'presentation_url': presentation_url,
+        }
+
+        return render(request, self.template_name, context)
+
+
+class TeacherGradeView(View):
+    """Teacher grading page for teams in a classroom"""
+    template_name = 'quest_ciq/teacher_grade.html'
+
+    def _check_teacher_access(self, request, classroom):
+        """Check if user has teacher access (staff or valid teacher_key)"""
+        # Check if user is staff
+        if request.user.is_authenticated and request.user.is_staff:
+            return True
+
+        # Check if teacher_key is provided in session or GET param
+        teacher_key = request.session.get('teacher_key') or request.GET.get('key')
+        if teacher_key and classroom.teacher_key and teacher_key == classroom.teacher_key:
+            # Save key in session for future requests
+            request.session['teacher_key'] = teacher_key
+            return True
+
+        return False
+
+    def get(self, request, class_code):
+        classroom = get_object_or_404(ClassRoom, class_code=class_code, is_active=True)
+
+        # Check access
+        if not self._check_teacher_access(request, classroom):
+            messages.error(request, "Access denied. Staff login or valid teacher key required.")
+            return redirect('quest_ciq:home')
+
+        quest = classroom.quest
+        teams = classroom.teams.all().order_by('name')
+
+        # Prepare team data with scores
+        teams_data = []
+        for team in teams:
+            # Check if team has any sessions
+            sessions = team.sessions.filter(classroom=classroom)
+            if not sessions.exists():
+                continue
+
+            # Get existing teacher score if any
+            try:
+                teacher_score_obj = TeacherTeamScore.objects.get(
+                    team=team,
+                    classroom=classroom,
+                    quest=quest
+                )
+                teacher_score = teacher_score_obj.score
+                teacher_comment = teacher_score_obj.comment or ''
+            except TeacherTeamScore.DoesNotExist:
+                teacher_score = None
+                teacher_comment = ''
+
+            # Get team scores
+            scores = get_team_scores(team, classroom)
+
+            # Build presentation URL
+            presentation_url = request.build_absolute_uri(
+                f'/quest/quest/{quest.slug}/present/{class_code}/{team.slug}/'
+            )
+
+            teams_data.append({
+                'team': team,
+                'member_count': scores['members_count'],
+                'avg_student_score': scores['avg_student_score'],
+                'teacher_score': teacher_score,
+                'teacher_comment': teacher_comment,
+                'final_score': scores['avg_final_score'],
+                'presentation_url': presentation_url,
+            })
+
+        context = {
+            'classroom': classroom,
+            'quest': quest,
+            'teams_data': teams_data,
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request, class_code):
+        classroom = get_object_or_404(ClassRoom, class_code=class_code, is_active=True)
+
+        # Check access
+        if not self._check_teacher_access(request, classroom):
+            messages.error(request, "Access denied. Staff login or valid teacher key required.")
+            return redirect('quest_ciq:home')
+
+        quest = classroom.quest
+        team_id = request.POST.get('team_id')
+        score = request.POST.get('score')
+        comment = request.POST.get('comment', '')
+
+        if not team_id or not score:
+            messages.error(request, "Team and score are required.")
+            return redirect('quest_ciq:teacher_grade', class_code=class_code)
+
+        try:
+            team = Team.objects.get(pk=team_id, classroom=classroom)
+            score_int = int(score)
+
+            if not (0 <= score_int <= 100):
+                messages.error(request, "Score must be between 0 and 100.")
+                return redirect('quest_ciq:teacher_grade', class_code=class_code)
+
+            # Create or update teacher score
+            teacher_score_obj, created = TeacherTeamScore.objects.update_or_create(
+                team=team,
+                classroom=classroom,
+                quest=quest,
+                defaults={
+                    'score': score_int,
+                    'comment': comment,
+                    'graded_by': request.user if request.user.is_authenticated else None,
+                }
+            )
+
+            # Recalculate weighted scores for all team members
+            sessions = team.sessions.filter(classroom=classroom)
+            for session in sessions:
+                from .services.scoring import calculate_student_score
+                student_score = calculate_student_score(session)
+                weighted = calculate_weighted_score(student_score, score_int)
+                session.total_score = weighted
+                session.save(update_fields=['total_score'])
+
+            action = "updated" if not created else "saved"
+            messages.success(request, f"Score {action} for {team.name}! Weighted scores recalculated for all members.")
+
+        except (Team.DoesNotExist, ValueError) as e:
+            messages.error(request, f"Error saving score: {str(e)}")
+
+        return redirect('quest_ciq:teacher_grade', class_code=class_code)

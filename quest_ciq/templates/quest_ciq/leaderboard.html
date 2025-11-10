@@ -2,94 +2,271 @@
 
 {% block title %}Leaderboard - Classroom Innovation Quest{% endblock %}
 
+{% block extra_css %}
+<style>
+    .leaderboard-header {
+        background: linear-gradient(135deg, #FFB75E 0%, #ED8F03 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .leaderboard-header::before {
+        content: '🏆';
+        position: absolute;
+        right: -20px;
+        top: -20px;
+        font-size: 180px;
+        opacity: 0.1;
+    }
+
+    .tab-custom {
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s;
+    }
+
+    .tab-custom.tab-active {
+        border-bottom-color: #FFB75E;
+        font-weight: bold;
+    }
+
+    .rank-medal {
+        font-size: 2rem;
+    }
+
+    .score-badge {
+        transition: transform 0.2s;
+    }
+
+    .score-badge:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="max-w-4xl mx-auto">
-    <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold mb-4">🏆 Leaderboard</h1>
-        <p class="text-lg">Top innovators who completed the quest!</p>
+<div class="max-w-6xl mx-auto">
+    <!-- Leaderboard Header -->
+    <div class="leaderboard-header text-center">
+        <h1 class="text-5xl font-bold mb-2">🏆 Leaderboard</h1>
+        <p class="text-xl opacity-90">Top innovators and teams!</p>
     </div>
 
-    {% if top_sessions %}
-    <div class="card bg-base-100 shadow-xl">
-        <div class="card-body">
-            <div class="overflow-x-auto">
-                <table class="table table-zebra w-full">
-                    <thead>
-                        <tr>
-                            <th class="text-center">Rank</th>
-                            <th>Student</th>
-                            <th class="text-center">Score</th>
-                            <th class="text-center">Completed</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for session in top_sessions %}
-                        <tr class="{% if forloop.counter <= 3 %}bg-warning/20{% endif %}">
-                            <td class="text-center font-bold">
-                                {% if forloop.counter == 1 %}
-                                🥇 #1
-                                {% elif forloop.counter == 2 %}
-                                🥈 #2
-                                {% elif forloop.counter == 3 %}
-                                🥉 #3
-                                {% else %}
-                                #{{ forloop.counter }}
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="font-semibold">{{ session.student_name }}</div>
-                                <div class="text-xs text-base-content/50">{{ session.session_code }}</div>
-                            </td>
-                            <td class="text-center">
-                                <div class="badge badge-primary badge-lg">
-                                    {{ session.total_score }} pts
-                                </div>
-                            </td>
-                            <td class="text-center text-sm">
-                                {{ session.completed_at|date:"M d, Y" }}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <!-- Tabs -->
+    <div class="tabs tabs-boxed bg-base-100 shadow-lg mb-6 p-2 justify-center">
+        <a href="?view=participants" class="tab tab-lg tab-custom {% if view_type == 'participants' %}tab-active{% endif %}">
+            👤 Participants
+        </a>
+        <a href="?view=teams" class="tab tab-lg tab-custom {% if view_type == 'teams' %}tab-active{% endif %}">
+            👥 Teams
+        </a>
     </div>
 
-    <!-- Score Breakdown Info -->
-    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="card bg-base-200">
+    <!-- Participants View -->
+    {% if view_type == 'participants' %}
+        {% if participants_data %}
+        <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
-                <h3 class="font-semibold mb-2">📊 How scores work:</h3>
-                <ul class="list-disc list-inside text-sm space-y-1">
-                    <li>Base: +10 points per level</li>
-                    <li>Ideate: +10 for 2+ ideas, +10 for 120+ chars</li>
-                    <li>Prototype: +10 for link or upload</li>
-                    <li>Test: +10 for rating ≥4</li>
-                </ul>
+                <h2 class="card-title text-2xl mb-4">🌟 Top Participants</h2>
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra w-full">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Rank</th>
+                                <th>Participant</th>
+                                <th class="text-center">Team</th>
+                                <th class="text-center">Student Score</th>
+                                <th class="text-center">Teacher Score</th>
+                                <th class="text-center">Final Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in participants_data %}
+                            <tr class="{% if forloop.counter <= 3 %}bg-warning/10{% endif %}">
+                                <td class="text-center">
+                                    {% if forloop.counter == 1 %}
+                                    <span class="rank-medal">🥇</span>
+                                    {% elif forloop.counter == 2 %}
+                                    <span class="rank-medal">🥈</span>
+                                    {% elif forloop.counter == 3 %}
+                                    <span class="rank-medal">🥉</span>
+                                    {% else %}
+                                    <span class="font-bold text-lg">#{{ forloop.counter }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="font-semibold text-lg">{{ data.session.student_name }}</div>
+                                    <div class="text-xs text-base-content/50">{{ data.session.session_code }}</div>
+                                </td>
+                                <td class="text-center">
+                                    {% if data.session.team %}
+                                    <span class="badge badge-ghost">{{ data.session.team.name }}</span>
+                                    {% else %}
+                                    <span class="text-base-content/30">--</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge badge-outline">{{ data.student_score }}</span>
+                                </td>
+                                <td class="text-center">
+                                    {% if data.teacher_score %}
+                                    <span class="badge badge-success">{{ data.teacher_score }}</span>
+                                    {% else %}
+                                    <span class="badge badge-warning badge-sm">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <div class="badge badge-primary badge-lg score-badge">
+                                        {{ data.final_score }} pts
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <div class="card bg-base-200">
+        <!-- Scoring Info -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="card bg-base-200">
+                <div class="card-body">
+                    <h3 class="font-semibold mb-2">📊 Scoring Formula:</h3>
+                    <ul class="list-disc list-inside text-sm space-y-1">
+                        <li>Student Score: Based on level completions + bonuses</li>
+                        <li>Teacher Score: 0-100 based on presentation quality</li>
+                        <li><strong>Final = 40% Student + 60% Teacher</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card bg-base-200">
+                <div class="card-body">
+                    <h3 class="font-semibold mb-2">⭐ Student Score Bonuses:</h3>
+                    <ul class="list-disc list-inside text-sm space-y-1">
+                        <li>Base: +10 per level</li>
+                        <li>Ideate: +10 for 2+ ideas, +10 for detail</li>
+                        <li>Prototype: +10 for upload/link</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body text-center">
+                <div class="text-6xl mb-4">🎯</div>
+                <h3 class="text-2xl font-bold mb-2">No participants yet!</h3>
+                <p class="mb-6">Be the first to complete the quest and claim the top spot!</p>
+                <a href="{% url 'quest_ciq:join' %}" class="btn btn-primary">
+                    Start Your Quest
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <!-- Teams View -->
+    {% if view_type == 'teams' %}
+        {% if teams_data %}
+        <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
-                <h3 class="font-semibold mb-2">🎯 Maximum Score:</h3>
-                <p class="text-3xl font-bold text-primary">100 points</p>
-                <p class="text-sm mt-2">Complete all levels with bonuses!</p>
+                <h2 class="card-title text-2xl mb-4">👥 Top Teams</h2>
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra w-full">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Rank</th>
+                                <th>Team Name</th>
+                                <th class="text-center">Members</th>
+                                <th class="text-center">Avg Student Score</th>
+                                <th class="text-center">Teacher Score</th>
+                                <th class="text-center">Weighted Score</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in teams_data %}
+                            <tr class="{% if forloop.counter <= 3 %}bg-warning/10{% endif %}">
+                                <td class="text-center">
+                                    {% if forloop.counter == 1 %}
+                                    <span class="rank-medal">🥇</span>
+                                    {% elif forloop.counter == 2 %}
+                                    <span class="rank-medal">🥈</span>
+                                    {% elif forloop.counter == 3 %}
+                                    <span class="rank-medal">🥉</span>
+                                    {% else %}
+                                    <span class="font-bold text-lg">#{{ forloop.counter }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="font-semibold text-lg">{{ data.team.name }}</div>
+                                    <div class="text-xs text-base-content/50">{{ data.classroom.name }}</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge badge-ghost badge-lg">{{ data.member_count }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge badge-outline badge-lg">{{ data.avg_student_score }}</span>
+                                </td>
+                                <td class="text-center">
+                                    {% if data.teacher_score %}
+                                    <span class="badge badge-success badge-lg">{{ data.teacher_score }}</span>
+                                    {% else %}
+                                    <span class="badge badge-warning">--</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <div class="badge badge-primary badge-lg score-badge">
+                                        {{ data.final_score }} pts
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    {% if data.awaiting_teacher %}
+                                    <span class="badge badge-warning badge-sm">🚧 Awaiting Teacher</span>
+                                    {% else %}
+                                    <span class="badge badge-success badge-sm">✅ Complete</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
 
-    {% else %}
-    <div class="card bg-base-100 shadow-xl">
-        <div class="card-body text-center">
-            <div class="text-6xl mb-4">🏆</div>
-            <h3 class="text-2xl font-bold mb-2">No completions yet!</h3>
-            <p class="mb-6">Be the first to complete the quest and claim the top spot!</p>
-            <a href="{% url 'quest_ciq:join' %}" class="btn btn-primary">
-                Start Your Quest
-            </a>
+        <!-- Team Scoring Info -->
+        <div class="mt-8">
+            <div class="card bg-base-200">
+                <div class="card-body">
+                    <h3 class="font-semibold mb-2">👥 Team Scoring:</h3>
+                    <ul class="list-disc list-inside text-sm space-y-1">
+                        <li><strong>Avg Student Score:</strong> Average of all team members' individual scores</li>
+                        <li><strong>Teacher Score:</strong> One score per team (0-100) based on overall presentation</li>
+                        <li><strong>Weighted Score:</strong> 40% × Avg Student + 60% × Teacher (applied per member)</li>
+                        <li><strong>Final Display:</strong> Average of all members' weighted scores</li>
+                    </ul>
+                </div>
+            </div>
         </div>
-    </div>
+
+        {% else %}
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body text-center">
+                <div class="text-6xl mb-4">👥</div>
+                <h3 class="text-2xl font-bold mb-2">No teams yet!</h3>
+                <p class="mb-6">Teams will appear here once they complete the quest.</p>
+                <a href="{% url 'quest_ciq:join' %}" class="btn btn-primary">
+                    Start Your Quest
+                </a>
+            </div>
+        </div>
+        {% endif %}
     {% endif %}
 
     <!-- Back to Home -->

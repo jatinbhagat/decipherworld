@@ -17,4 +17,12 @@ urlpatterns = [
     # Progress and leaderboard
     path('quest/<str:session_code>/progress/', views.ProgressView.as_view(), name='progress'),
     path('leaderboard/', views.LeaderboardView.as_view(), name='leaderboard'),
+
+    # Public team presentation (read-only)
+    path('quest/<slug:slug>/present/<str:class_code>/<slug:team_slug>/',
+         views.PublicPresentationView.as_view(), name='public_presentation'),
+
+    # Teacher grading
+    path('teacher/<str:class_code>/grade/',
+         views.TeacherGradeView.as_view(), name='teacher_grade'),
 ]

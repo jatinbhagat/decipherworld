@@ -1,0 +1,283 @@
+{% extends "quest_ciq/base.html" %}
+
+{% block title %}{{ team.name }} - {{ quest.name }} Presentation{% endblock %}
+
+{% block extra_css %}
+<style>
+    .presentation-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .journey-card {
+        border-left: 4px solid #667eea;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .journey-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .level-badge {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .copy-btn:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <!-- Presentation Header -->
+    <div class="presentation-header text-center">
+        <div class="mb-4">
+            <span class="badge badge-lg badge-ghost">📘 {{ classroom.name }}</span>
+        </div>
+        <h1 class="text-5xl font-bold mb-2">{{ team.name }}</h1>
+        <p class="text-xl opacity-90">{{ quest.name }} Journey</p>
+
+        <!-- Score Display -->
+        <div class="mt-6 flex justify-center gap-4 flex-wrap">
+            <div class="stats shadow bg-white/20 backdrop-blur-sm">
+                <div class="stat place-items-center">
+                    <div class="stat-title text-white/80">Team Members</div>
+                    <div class="stat-value text-white">{{ team_scores.members_count }}</div>
+                </div>
+            </div>
+            <div class="stats shadow bg-white/20 backdrop-blur-sm">
+                <div class="stat place-items-center">
+                    <div class="stat-title text-white/80">Student Score</div>
+                    <div class="stat-value text-white">{{ team_scores.avg_student_score }}</div>
+                </div>
+            </div>
+            {% if team_scores.teacher_score %}
+            <div class="stats shadow bg-white/20 backdrop-blur-sm">
+                <div class="stat place-items-center">
+                    <div class="stat-title text-white/80">Teacher Score</div>
+                    <div class="stat-value text-white">{{ team_scores.teacher_score }}</div>
+                </div>
+            </div>
+            <div class="stats shadow bg-white/20 backdrop-blur-sm">
+                <div class="stat place-items-center">
+                    <div class="stat-title text-white/80">Final Score</div>
+                    <div class="stat-value text-white">{{ team_scores.avg_final_score }}</div>
+                </div>
+            </div>
+            {% else %}
+            <div class="stats shadow bg-white/20 backdrop-blur-sm">
+                <div class="stat place-items-center">
+                    <div class="stat-title text-white/80">Status</div>
+                    <div class="stat-value text-sm text-white">🚧 Awaiting Teacher</div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Share Button -->
+        <div class="mt-6">
+            <button onclick="copyPresentationLink()" class="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-primary copy-btn">
+                📋 Copy Presentation Link
+            </button>
+        </div>
+    </div>
+
+    <!-- Journey Timeline -->
+    <div class="space-y-6">
+        <!-- Level 1: Empathy -->
+        {% if 1 in aggregated_responses %}
+        {% with response=aggregated_responses.1 %}
+        {% with answers=response.get_answers %}
+        <div class="card bg-base-100 shadow-xl journey-card">
+            <div class="card-body">
+                <div class="flex items-start gap-4">
+                    <div class="level-badge">1</div>
+                    <div class="flex-1">
+                        <h2 class="card-title text-3xl mb-4">👀 Empathy: Understanding Pain Points</h2>
+
+                        <div class="mb-4">
+                            <h3 class="font-semibold text-lg mb-2">Pain Points Identified:</h3>
+                            <div class="flex flex-wrap gap-2">
+                                {% for point in answers.all_pain_points %}
+                                <span class="chip">{{ point }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="p-4 bg-base-200 rounded-lg">
+                                <h4 class="font-semibold mb-2">🎯 Top Priority</h4>
+                                <p class="text-lg">{{ answers.prioritized.top }}</p>
+                            </div>
+                            <div class="p-4 bg-base-200 rounded-lg">
+                                <h4 class="font-semibold mb-2">👥 Who is Affected?</h4>
+                                <p class="text-lg capitalize">{{ answers.who_is_affected }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+        {% endwith %}
+        {% endif %}
+
+        <!-- Level 2: Define -->
+        {% if 2 in aggregated_responses %}
+        {% with response=aggregated_responses.2 %}
+        {% with answers=response.get_answers %}
+        <div class="card bg-base-100 shadow-xl journey-card">
+            <div class="card-body">
+                <div class="flex items-start gap-4">
+                    <div class="level-badge">2</div>
+                    <div class="flex-1">
+                        <h2 class="card-title text-3xl mb-4">🎯 Define: Problem Statement</h2>
+
+                        <div class="p-6 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border-l-4 border-primary">
+                            <h3 class="font-semibold text-sm uppercase tracking-wide mb-2 text-primary">How Might We...</h3>
+                            <p class="text-2xl font-bold">{{ answers.hmw_full }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+        {% endwith %}
+        {% endif %}
+
+        <!-- Level 3: Ideate -->
+        {% if 3 in aggregated_responses %}
+        {% with response=aggregated_responses.3 %}
+        {% with answers=response.get_answers %}
+        <div class="card bg-base-100 shadow-xl journey-card">
+            <div class="card-body">
+                <div class="flex items-start gap-4">
+                    <div class="level-badge">3</div>
+                    <div class="flex-1">
+                        <h2 class="card-title text-3xl mb-4">💡 Ideate: Brainstorming Solutions</h2>
+
+                        <div class="grid md:grid-cols-3 gap-4">
+                            {% for idea in answers.ideas %}
+                            {% if idea %}
+                            <div class="p-4 bg-base-200 rounded-lg">
+                                <div class="badge badge-primary mb-2">
+                                    {% if forloop.counter == 3 %}🌟 Wild Idea{% else %}Idea {{ forloop.counter }}{% endif %}
+                                </div>
+                                <p>{{ idea }}</p>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+        {% endwith %}
+        {% endif %}
+
+        <!-- Level 4: Prototype -->
+        {% if 4 in aggregated_responses %}
+        {% with response=aggregated_responses.4 %}
+        {% with answers=response.get_answers %}
+        <div class="card bg-base-100 shadow-xl journey-card">
+            <div class="card-body">
+                <div class="flex items-start gap-4">
+                    <div class="level-badge">4</div>
+                    <div class="flex-1">
+                        <h2 class="card-title text-3xl mb-4">🛠️ Prototype: Building the Solution</h2>
+
+                        <div class="mb-4">
+                            <div class="badge badge-secondary mb-2">Selected Idea</div>
+                            <p class="text-xl font-semibold">{{ answers.selected_idea_text }}</p>
+                        </div>
+
+                        <div class="p-4 bg-base-200 rounded-lg mb-4">
+                            <h4 class="font-semibold mb-2">📝 Prototype Explanation</h4>
+                            <p class="whitespace-pre-wrap">{{ answers.prototype_explanation }}</p>
+                        </div>
+
+                        {% if answers.one_line_benefit %}
+                        <div class="p-4 bg-success/10 rounded-lg border-l-4 border-success mb-4">
+                            <h4 class="font-semibold mb-2">✨ Key Benefit</h4>
+                            <p>{{ answers.one_line_benefit }}</p>
+                        </div>
+                        {% endif %}
+
+                        {% if answers.materials %}
+                        <div class="p-4 bg-base-200 rounded-lg mb-4">
+                            <h4 class="font-semibold mb-2">🧰 Materials Used</h4>
+                            <p>{{ answers.materials }}</p>
+                        </div>
+                        {% endif %}
+
+                        {% if answers.prototype_link %}
+                        <div class="mt-4">
+                            <a href="{{ answers.prototype_link }}" target="_blank" class="btn btn-primary btn-sm">
+                                🔗 View Prototype
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+        {% endwith %}
+        {% endif %}
+    </div>
+
+    <!-- Empty State -->
+    {% if not aggregated_responses %}
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body text-center">
+            <div class="text-6xl mb-4">📘</div>
+            <h3 class="text-2xl font-bold mb-2">No Responses Yet</h3>
+            <p class="text-base-content/70">This team hasn't submitted any responses yet.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Back Button -->
+    <div class="text-center mt-8">
+        <a href="{% url 'quest_ciq:home' %}" class="btn btn-ghost">
+            ← Back to Home
+        </a>
+    </div>
+</div>
+
+<script>
+    function copyPresentationLink() {
+        const url = "{{ presentation_url }}";
+        navigator.clipboard.writeText(url).then(() => {
+            // Show success message
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✓ Copied!';
+            btn.classList.add('btn-success');
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('btn-success');
+            }, 2000);
+        }).catch(err => {
+            alert('Failed to copy link. Please copy manually: ' + url);
+        });
+    }
+</script>
+{% endblock %}
