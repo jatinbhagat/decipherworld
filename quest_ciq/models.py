@@ -3,8 +3,10 @@ Models for Classroom Innovation Quest
 Session-based design thinking quest with 5 levels
 """
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 from django.utils import timezone
+from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 import uuid
 import json
@@ -15,6 +17,106 @@ import string
 def generate_session_code():
     """Generate a unique 6-character session code"""
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+
+def generate_class_code():
+    """Generate a unique 8-character class code"""
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
+
+class Quest(models.Model):
+    """
+    A quest/challenge (e.g., 'Classroom Innovation Quest')
+    """
+    name = models.CharField(max_length=200, help_text="Quest name")
+    slug = models.SlugField(max_length=200, unique=True, help_text="URL-friendly identifier")
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class ClassRoom(models.Model):
+    """
+    A classroom/cohort for organizing teams
+    """
+    name = models.CharField(max_length=200, help_text="Classroom name (e.g., 'Grade 8A')")
+    class_code = models.CharField(
+        max_length=8,
+        unique=True,
+        default=generate_class_code,
+        help_text="Unique code for this classroom"
+    )
+    teacher = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='ciq_classrooms',
+        help_text="Teacher (optional)"
+    )
+    teacher_key = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Alternative key for teacher access (no auth required)"
+    )
+    quest = models.ForeignKey(
+        Quest,
+        on_delete=models.CASCADE,
+        related_name='classrooms',
+        help_text="Which quest this classroom is doing"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['class_code']),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.class_code})"
+
+
+class Team(models.Model):
+    """
+    A team within a classroom
+    """
+    name = models.CharField(max_length=100, help_text="Team name")
+    slug = models.SlugField(max_length=100, help_text="URL-friendly team identifier")
+    classroom = models.ForeignKey(
+        ClassRoom,
+        on_delete=models.CASCADE,
+        related_name='teams',
+        help_text="Which classroom this team belongs to"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['name']
+        unique_together = ['classroom', 'slug']
+        indexes = [
+            models.Index(fields=['classroom', 'slug']),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.classroom.class_code})"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 
 class QuestSession(models.Model):
@@ -32,6 +134,25 @@ class QuestSession(models.Model):
         max_length=100,
         help_text="Student's name"
     )
+
+    # Optional team/classroom association
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='sessions',
+        help_text="Team this session belongs to (optional)"
+    )
+    classroom = models.ForeignKey(
+        ClassRoom,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='sessions',
+        help_text="Classroom this session belongs to (optional)"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     completed_at = models.DateTimeField(null=True, blank=True)
@@ -198,10 +319,12 @@ class LevelResponse(models.Model):
         elif self.level_order == 4:  # Prototype
             if 'selected_idea_index' not in answers:
                 raise ValidationError("Selected idea is required")
+            if not answers.get('prototype_explanation'):
+                raise ValidationError("Prototype explanation is required")
 
-        elif self.level_order == 5:  # Test
-            if not answers.get('peer_rating'):
-                raise ValidationError("Peer rating is required")
+        elif self.level_order == 5:  # Test (now presentation - no validation needed)
+            # Level 5 is now read-only presentation, no user inputs required
+            pass
 
 
 class PeerFeedback(models.Model):
@@ -225,6 +348,52 @@ class PeerFeedback(models.Model):
 
     def __str__(self):
         return f"Feedback from {self.peer_name} to {self.session.student_name}"
+
+
+class TeacherTeamScore(models.Model):
+    """
+    Teacher's grading for a team in a specific classroom/quest
+    """
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        related_name='teacher_scores'
+    )
+    classroom = models.ForeignKey(
+        ClassRoom,
+        on_delete=models.CASCADE,
+        related_name='team_scores'
+    )
+    quest = models.ForeignKey(
+        Quest,
+        on_delete=models.CASCADE,
+        related_name='team_scores'
+    )
+    score = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Teacher score (0-100)"
+    )
+    comment = models.TextField(blank=True, null=True, help_text="Optional teacher comment")
+    graded_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='ciq_grades_given'
+    )
+    graded_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['team', 'classroom', 'quest']
+        ordering = ['-graded_at']
+        indexes = [
+            models.Index(fields=['classroom', 'quest']),
+            models.Index(fields=['team']),
+        ]
+
+    def __str__(self):
+        return f"{self.team.name} - Score: {self.score}"
 
 
 # Feature flag for enabling/disabling CIQ

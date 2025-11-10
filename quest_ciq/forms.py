@@ -292,6 +292,18 @@ class Level4PrototypeForm(forms.Form):
         label="Select the idea you want to prototype"
     )
 
+    prototype_explanation = forms.CharField(
+        max_length=1000,
+        required=True,
+        widget=forms.Textarea(attrs={
+            'class': 'textarea textarea-bordered w-full',
+            'placeholder': 'Explain your prototype in 2-3 sentences...',
+            'rows': 4,
+        }),
+        label="Explain your prototype",
+        help_text="Describe what it is, how it works, and why it solves the problem (2-3 sentences)"
+    )
+
     prototype_link = forms.URLField(
         max_length=500,
         required=False,
@@ -315,12 +327,12 @@ class Level4PrototypeForm(forms.Form):
 
     one_line_benefit = forms.CharField(
         max_length=200,
-        required=True,
+        required=False,
         widget=forms.TextInput(attrs={
             'class': 'input input-bordered w-full',
             'placeholder': 'In one sentence, what problem does this solve?',
         }),
-        label="One-line benefit"
+        label="One-line benefit (optional)"
     )
 
     prototype_upload = forms.ImageField(
@@ -397,6 +409,7 @@ class Level4PrototypeForm(forms.Form):
         return {
             "selected_idea_index": cleaned.get('selected_idea_index'),
             "selected_idea_text": cleaned.get('selected_idea_text'),
+            "prototype_explanation": cleaned.get('prototype_explanation', ''),
             "prototype_link": cleaned.get('prototype_link', ''),
             "materials": cleaned.get('materials', ''),
             "one_line_benefit": cleaned.get('one_line_benefit', ''),

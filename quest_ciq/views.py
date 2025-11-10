@@ -126,7 +126,31 @@ class LevelView(View):
                 level_order=level_order - 1
             )
 
-        # Get form class for this level
+        # Level 5 is presentation-only (no form)
+        if level_order == 5:
+            # Mark as completed if not already
+            if not session.completed_at:
+                session.completed_at = timezone.now()
+                session.save(update_fields=['completed_at'])
+
+            # Recalculate final score
+            from .services.scoring import calculate_student_score
+            session.total_score = calculate_student_score(session)
+            session.save(update_fields=['total_score'])
+
+            level_config = LEVEL_CONFIG.get(level_order, {})
+
+            context = {
+                'session': session,
+                'level_order': level_order,
+                'level_config': level_config,
+                'form': None,  # No form for Level 5
+                'already_completed': True,
+            }
+
+            return render(request, self.template_name, context)
+
+        # Get form class for other levels
         form_class = self.LEVEL_FORMS.get(level_order)
         if not form_class:
             messages.error(request, "Level not found.")
@@ -165,6 +189,11 @@ class LevelView(View):
         if not (1 <= level_order <= 5):
             messages.error(request, "Invalid level.")
             return redirect('quest_ciq:home')
+
+        # Level 5 is read-only, no POST allowed
+        if level_order == 5:
+            messages.info(request, "Level 5 is presentation-only, no submission needed.")
+            return redirect('quest_ciq:level', session_code=session_code, level_order=5)
 
         # Check prerequisites
         if not self.check_prerequisites(session, level_order):

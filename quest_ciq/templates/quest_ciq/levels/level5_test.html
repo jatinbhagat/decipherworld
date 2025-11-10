@@ -1,109 +1,165 @@
-<!-- Level 5: Test - Emoji Rating & Reflection -->
+<!-- Level 5: Test/Presentation - Read-only Journey Summary -->
 
 <div class="mb-6">
     <p class="text-lg mb-4">
-        Get feedback on your prototype! Ask a classmate or friend to test it and share their thoughts.
+        🎉 Congratulations! You've completed your Design Thinking journey. Here's a summary of your work:
     </p>
 </div>
 
-<!-- Peer Name -->
-<div class="form-control mb-6">
-    <label class="label">
-        <span class="label-text text-lg font-semibold">👤 {{ form.peer_name.label }}</span>
-        <span class="label-text-alt text-error">*Required</span>
-    </label>
-    {{ form.peer_name }}
-    {% if form.peer_name.errors %}
-    <label class="label">
-        <span class="label-text-alt text-error">{{ form.peer_name.errors.0 }}</span>
-    </label>
-    {% endif %}
-</div>
+<!-- Empathy Summary -->
+<div class="card bg-base-100 shadow-lg mb-6">
+    <div class="card-body">
+        <h3 class="card-title text-2xl">👀 Level 1: Empathy</h3>
+        {% if session.responses.all|selectattr:"level_order==1"|first %}
+        {% with l1_response=session.responses.all|selectattr:"level_order==1"|first %}
+        {% with l1_answers=l1_response.get_answers %}
+        <div class="mt-4">
+            <h4 class="font-semibold mb-2">Selected Pain Points:</h4>
+            <div class="flex flex-wrap gap-2 mb-4">
+                {% for pain in l1_answers.preset_selected %}
+                <span class="chip">{{ pain }}</span>
+                {% endfor %}
+                {% for pain in l1_answers.custom_entered %}
+                <span class="chip bg-secondary text-secondary-content">{{ pain }} (Custom)</span>
+                {% endfor %}
+            </div>
 
-<!-- Emoji Rating -->
-<div class="form-control mb-6">
-    <label class="label">
-        <span class="label-text text-lg font-semibold">⭐ {{ form.peer_rating.label }}</span>
-        <span class="label-text-alt text-error">*Required</span>
-    </label>
+            <h4 class="font-semibold mb-2">Who is Affected:</h4>
+            <p class="badge badge-primary badge-lg mb-4">{{ l1_answers.who_is_affected|title }}</p>
 
-    <div class="card bg-base-200 p-6">
-        <div class="flex justify-around items-center flex-wrap gap-4">
-            {% for value, label in form.peer_rating.field.choices %}
-            <label class="flex flex-col items-center gap-2 cursor-pointer transition-transform hover:scale-110">
-                <input type="radio" name="peer_rating" value="{{ value }}"
-                       class="hidden peer"
-                       {% if form.peer_rating.value == value %}checked{% endif %}>
-                <div class="text-6xl peer-checked:scale-125 peer-checked:drop-shadow-lg transition-all">
-                    {{ label|slice:":2" }}
-                </div>
-                <div class="text-xs text-center peer-checked:font-bold">
-                    {{ label|slice:"3:" }}
-                </div>
-            </label>
-            {% endfor %}
+            <h4 class="font-semibold mb-2">Top Priority:</h4>
+            <p class="text-lg">🎯 <strong>{{ l1_answers.prioritized.top }}</strong></p>
+            {% if l1_answers.prioritized.second %}
+            <p class="text-base text-base-content/70 mt-1">2nd: {{ l1_answers.prioritized.second }}</p>
+            {% endif %}
         </div>
+        {% endwith %}
+        {% endwith %}
+        {% else %}
+        <p class="text-base-content/50">(Not submitted yet)</p>
+        {% endif %}
     </div>
-
-    {% if form.peer_rating.errors %}
-    <label class="label">
-        <span class="label-text-alt text-error">{{ form.peer_rating.errors.0 }}</span>
-    </label>
-    {% endif %}
 </div>
 
-<!-- Peer Comment -->
-<div class="form-control mb-6">
-    <label class="label">
-        <span class="label-text text-lg font-semibold">💬 {{ form.peer_comment.label }}</span>
-        <span class="label-text-alt">Optional</span>
-    </label>
-    {{ form.peer_comment }}
-    {% if form.peer_comment.errors %}
-    <label class="label">
-        <span class="label-text-alt text-error">{{ form.peer_comment.errors.0 }}</span>
-    </label>
-    {% endif %}
-    <label class="label">
-        <span class="label-text-alt">What specific feedback did they give?</span>
-    </label>
+<!-- Define Summary -->
+<div class="card bg-base-100 shadow-lg mb-6">
+    <div class="card-body">
+        <h3 class="card-title text-2xl">🎯 Level 2: Define</h3>
+        {% if session.responses.all|selectattr:"level_order==2"|first %}
+        {% with l2_response=session.responses.all|selectattr:"level_order==2"|first %}
+        {% with l2_answers=l2_response.get_answers %}
+        <div class="mt-4">
+            <div class="card bg-primary text-primary-content">
+                <div class="card-body p-4">
+                    <p class="text-lg font-semibold">{{ l2_answers.hmw_full }}</p>
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+        {% endwith %}
+        {% else %}
+        <p class="text-base-content/50">(Not submitted yet)</p>
+        {% endif %}
+    </div>
 </div>
 
-<!-- Feedback Surprise -->
-<div class="form-control mb-6">
-    <label class="label">
-        <span class="label-text text-lg font-semibold">🤔 {{ form.feedback_surprise.label }}</span>
-        <span class="label-text-alt">Optional</span>
-    </label>
-    {{ form.feedback_surprise }}
-    {% if form.feedback_surprise.errors %}
-    <label class="label">
-        <span class="label-text-alt text-error">{{ form.feedback_surprise.errors.0 }}</span>
-    </label>
-    {% endif %}
-    <label class="label">
-        <span class="label-text-alt">Reflection helps you learn and improve!</span>
-    </label>
+<!-- Ideate Summary -->
+<div class="card bg-base-100 shadow-lg mb-6">
+    <div class="card-body">
+        <h3 class="card-title text-2xl">💡 Level 3: Ideate</h3>
+        {% if session.responses.all|selectattr:"level_order==3"|first %}
+        {% with l3_response=session.responses.all|selectattr:"level_order==3"|first %}
+        {% with l3_answers=l3_response.get_answers %}
+        <div class="mt-4">
+            <div class="space-y-3">
+                {% for idea in l3_answers.ideas %}
+                {% if idea.strip %}
+                <div class="card bg-base-200">
+                    <div class="card-body p-4">
+                        <p><strong>Idea {{ forloop.counter }}:</strong> {{ idea }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+        {% endwith %}
+        {% else %}
+        <p class="text-base-content/50">(Not submitted yet)</p>
+        {% endif %}
+    </div>
 </div>
 
-<!-- Bonus Points Info -->
+<!-- Prototype Summary -->
+<div class="card bg-base-100 shadow-lg mb-6">
+    <div class="card-body">
+        <h3 class="card-title text-2xl">🛠️ Level 4: Prototype</h3>
+        {% if session.responses.all|selectattr:"level_order==4"|first %}
+        {% with l4_response=session.responses.all|selectattr:"level_order==4"|first %}
+        {% with l4_answers=l4_response.get_answers %}
+        <div class="mt-4">
+            <h4 class="font-semibold mb-2">Selected Idea:</h4>
+            <div class="card bg-accent text-accent-content mb-4">
+                <div class="card-body p-4">
+                    <p>{{ l4_answers.selected_idea_text }}</p>
+                </div>
+            </div>
+
+            {% if l4_answers.prototype_explanation %}
+            <h4 class="font-semibold mb-2">Prototype Explanation:</h4>
+            <p class="mb-4">{{ l4_answers.prototype_explanation }}</p>
+            {% endif %}
+
+            {% if l4_answers.one_line_benefit %}
+            <h4 class="font-semibold mb-2">Benefit:</h4>
+            <p class="mb-4">✨ {{ l4_answers.one_line_benefit }}</p>
+            {% endif %}
+
+            {% if l4_answers.materials %}
+            <h4 class="font-semibold mb-2">Materials:</h4>
+            <p class="mb-4">🛠️ {{ l4_answers.materials }}</p>
+            {% endif %}
+
+            {% if l4_answers.prototype_link %}
+            <h4 class="font-semibold mb-2">Prototype Link:</h4>
+            <a href="{{ l4_answers.prototype_link }}" target="_blank" class="link link-primary mb-4 block">
+                🔗 {{ l4_answers.prototype_link }}
+            </a>
+            {% endif %}
+
+            {% if l4_answers.prototype_upload %}
+            <h4 class="font-semibold mb-2">Prototype Image:</h4>
+            <img src="{{ MEDIA_URL }}{{ l4_answers.prototype_upload }}" alt="Prototype" class="max-w-md rounded-lg shadow-lg">
+            {% endif %}
+        </div>
+        {% endwith %}
+        {% endwith %}
+        {% else %}
+        <p class="text-base-content/50">(Not submitted yet)</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Completion Message -->
 <div class="alert alert-success">
     <div>
         <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <span><strong>Bonus:</strong> Get a rating of 4 or 5 to earn extra points!</span>
+        <div>
+            <h4 class="font-bold">🎉 Quest Complete!</h4>
+            <p class="text-sm">You've earned <strong>{{ session.total_score }} points</strong>. Check the leaderboard to see how you rank!</p>
+        </div>
     </div>
 </div>
 
-<!-- Non-field errors -->
-{% if form.non_field_errors %}
-<div class="alert alert-error mt-4">
-    <div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span>{{ form.non_field_errors.0 }}</span>
-    </div>
+<!-- Action Buttons -->
+<div class="flex gap-4 justify-center mt-6">
+    <a href="{% url 'quest_ciq:leaderboard' %}" class="btn btn-primary">
+        🏆 View Leaderboard
+    </a>
+    <a href="{% url 'quest_ciq:progress' session_code=session.session_code %}" class="btn btn-ghost">
+        📈 View Progress
+    </a>
 </div>
-{% endif %}
