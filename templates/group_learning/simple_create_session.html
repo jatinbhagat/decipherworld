@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Simplified Design Thinking Session</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Create Simplified Design Thinking Session</h1>
+    
+    <form id="createSessionForm">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="school_name">School Name (Optional)</label>
+            <input type="text" id="school_name" name="school_name" placeholder="Enter your school name">
+        </div>
+        
+        <div class="form-group">
+            <label for="grade_level">Grade Level (Optional)</label>
+            <input type="text" id="grade_level" name="grade_level" placeholder="e.g., 6th Grade, High School">
+        </div>
+        
+        <button type="submit" class="btn">Create Session</button>
+    </form>
+    
+    <div id="result" class="result"></div>
+    
+    <script>
+        document.getElementById('createSessionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                const response = await fetch('/learn/create/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Session Created Successfully!</h3>
+                        <p><strong>Session Code:</strong> ${data.session_code}</p>
+                        <p>Redirecting to teacher dashboard...</p>
+                    `;
+                    
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 2000);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = `
+                        <h3>❌ Error Creating Session</h3>
+                        <p>${data.error}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <h3>❌ Network Error</h3>
+                    <p>Please check your connection and try again.</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
