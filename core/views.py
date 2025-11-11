@@ -626,6 +626,55 @@ def migrate_robotic_buddy(request):
         }, status=500)
 
 
+@require_http_methods(["GET"])
+def migrate_quest_ciq(request):
+    """Run quest_ciq migrations specifically via HTTP request"""
+    try:
+        # Capture stdout and stderr
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        stdout_capture = io.StringIO()
+        stderr_capture = io.StringIO()
+        
+        sys.stdout = stdout_capture
+        sys.stderr = stderr_capture
+        
+        try:
+            # Run quest_ciq migrations specifically
+            execute_from_command_line(['manage.py', 'migrate', 'quest_ciq', '--verbosity=2'])
+            
+            stdout_output = stdout_capture.getvalue()
+            stderr_output = stderr_capture.getvalue()
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Quest CIQ migrations completed successfully',
+                'stdout': stdout_output,
+                'stderr': stderr_output
+            })
+            
+        except Exception as e:
+            stdout_output = stdout_capture.getvalue()
+            stderr_output = stderr_capture.getvalue()
+            
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Quest CIQ migration failed: {str(e)}',
+                'stdout': stdout_output,
+                'stderr': stderr_output
+            }, status=500)
+            
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
+            
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to run quest CIQ migrations: {str(e)}'
+        }, status=500)
+
+
 @csrf_exempt
 @require_http_methods(["GET"]) 
 def check_robotic_buddy(request):
@@ -1438,28 +1487,43 @@ def clean_production_test_data(request):
     try:
         from group_learning.models import DesignTeam, DesignThinkingSession
         
-        # Find and remove duplicate teams for session_id 113
-        duplicate_teams = DesignTeam.objects.filter(session_id=113)
-        duplicate_count = duplicate_teams.count()
+        # Find ALL sessions with duplicate teams  
+        from django.db.models import Count
+        sessions_with_duplicates = DesignTeam.objects.values('session_id').annotate(
+            team_count=Count('id')
+        ).filter(team_count__gt=1)
         
-        if duplicate_count > 1:
-            # Keep the first team, remove the rest
-            keep_team = duplicate_teams.first()
-            remove_teams = duplicate_teams.exclude(id=keep_team.id)
-            removed_count = remove_teams.count()
-            remove_teams.delete()
+        total_removed = 0
+        cleaned_sessions = []
+        
+        for session_data in sessions_with_duplicates:
+            session_id = session_data['session_id'] 
+            duplicate_teams = DesignTeam.objects.filter(session_id=session_id)
             
+            if duplicate_teams.count() > 1:
+                # Keep the first team, remove the rest
+                keep_team = duplicate_teams.first()
+                remove_teams = duplicate_teams.exclude(id=keep_team.id)
+                removed_count = remove_teams.count()
+                remove_teams.delete()
+                
+                cleaned_sessions.append({
+                    'session_id': session_id,
+                    'removed_count': removed_count
+                })
+                total_removed += removed_count
+        
+        if cleaned_sessions:
             return JsonResponse({
                 'status': 'success',
-                'message': f'Cleaned duplicate test data: removed {removed_count} duplicate teams for session 113',
-                'kept_team_id': keep_team.id,
-                'removed_count': removed_count,
-                'total_teams_now': DesignTeam.objects.filter(session_id=113).count()
+                'message': f'Cleaned ALL duplicate session data: removed {total_removed} duplicate teams across {len(cleaned_sessions)} sessions',
+                'cleaned_sessions': cleaned_sessions,
+                'total_removed': total_removed
             })
         else:
             return JsonResponse({
                 'status': 'info',
-                'message': f'No duplicates found for session 113. Current teams: {duplicate_count}'
+                'message': 'No duplicate teams found across all sessions'
             })
             
     except Exception as e:
