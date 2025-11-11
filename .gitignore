@@ -7,6 +7,7 @@ local_settings.py
 db.sqlite3
 media/
 
+
 # Environment variables
 .env
 .env.local
@@ -96,6 +97,33 @@ ENV/
 .LSOverride
 Icon?
 ._*
+
+# Local DB
+db.sqlite3
+
+# Keys / secrets / certs
+*.pem
+
+# Logs / temp text dump
+*.txt
+
+# Dev scripts / front-end scratch
+*.js
+clear_sessions.py
+
+# Old UI templates
+templates/phases/
+
+# Test scratch files
+test_*.py
+
+# Local exploration files in group_learning
+group_learning/*backup*
+group_learning/*original*
+
+# Docs not meant for repo
+DESIGN_THINKING_ARCHITECTURE.md
+
 
 # Celery
 celerybeat-schedule

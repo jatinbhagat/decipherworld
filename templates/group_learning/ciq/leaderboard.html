@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Leaderboard - {{ session.session_code }} - CIQ{% endblock %}
+
+{% block extra_head %}
+<style>
+    .trophy-header {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        background-image:
+            linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%),
+            url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .tab-button {
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem 0.75rem 0 0;
+        font-weight: 600;
+        transition: all 0.2s;
+        background: white;
+        color: #6b7280;
+        border: 2px solid #e5e7eb;
+        border-bottom: none;
+    }
+
+    .tab-button.active {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        border-color: #3b82f6;
+        transform: translateY(2px);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .rank-badge {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+    }
+
+    .rank-1 { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; }
+    .rank-2 { background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%); color: white; }
+    .rank-3 { background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: white; }
+    .rank-default { background: #f3f4f6; color: #6b7280; }
+
+    .leaderboard-card {
+        transition: all 0.2s;
+    }
+
+    .leaderboard-card:hover {
+        transform: translateX(8px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .score-pill {
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-blue-50">
+
+    {% if error %}
+        {% include 'group_learning/ciq/partials/alert.html' with type='error' message=error icon='❌' %}
+    {% else %}
+
+    <!-- Trophy Header -->
+    <div class="trophy-header text-white py-12 px-4 shadow-xl">
+        <div class="max-w-6xl mx-auto text-center">
+            <h1 class="text-5xl font-bold mb-3 flex items-center justify-center gap-3">
+                <span class="text-6xl">🏆</span>
+                Leaderboard
+            </h1>
+            <p class="text-xl text-yellow-100">{{ game.title }}</p>
+            <p class="text-sm text-yellow-200 mt-2">Session: {{ session.session_code }}</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto py-8 px-4">
+
+        <!-- Tabs -->
+        <div class="flex gap-2 mb-0">
+            <button onclick="switchTab('teams')" id="tab-teams" class="tab-button active">
+                👥 Teams View
+            </button>
+            <button onclick="switchTab('participants')" id="tab-participants" class="tab-button">
+                👤 Participants View
+            </button>
+        </div>
+
+        <!-- Tab Content: Teams -->
+        <div id="content-teams" class="tab-content active bg-white rounded-xl rounded-tl-none shadow-lg border-2 border-blue-500 p-6">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-gray-900">Team Rankings</h2>
+                <div class="text-sm text-gray-600">
+                    Weighted Score = <span class="font-semibold">40% Student + 60% Teacher</span>
+                </div>
+            </div>
+
+            {% if teams_leaderboard %}
+            <div class="space-y-3">
+                {% for team in teams_leaderboard %}
+                <div class="leaderboard-card bg-gradient-to-r from-white to-gray-50 rounded-xl p-5 shadow-md border border-gray-200 flex items-center gap-4">
+
+                    <!-- Rank Badge -->
+                    <div class="rank-badge {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% else %}rank-default{% endif %}">
+                        {% if forloop.counter <= 3 %}
+                            {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% else %}🥉{% endif %}
+                        {% else %}
+                            #{{ forloop.counter }}
+                        {% endif %}
+                    </div>
+
+                    <!-- Team Info -->
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-3xl">{{ team.emoji }}</span>
+                            <div>
+                                <div class="font-bold text-xl text-gray-900">{{ team.team_name }}</div>
+                                <div class="text-sm text-gray-500">{{ team.member_count }} member{{ team.member_count|pluralize }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scores -->
+                    <div class="flex gap-3">
+                        <div class="text-center">
+                            <div class="text-xs text-gray-500 mb-1">Student</div>
+                            <div class="score-pill bg-blue-100 text-blue-800">{{ team.student_score }}</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xs text-gray-500 mb-1">Teacher</div>
+                            <div class="score-pill {% if team.teacher_pending %}bg-yellow-100 text-yellow-800{% else %}bg-green-100 text-green-800{% endif %}">
+                                {% if team.teacher_pending %}
+                                    Pending
+                                {% else %}
+                                    {{ team.teacher_score }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xs text-gray-500 mb-1">Weighted</div>
+                            <div class="score-pill bg-purple-100 text-purple-800 text-lg">{{ team.weighted_score }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Badge -->
+                    {% if team.teacher_pending %}
+                    <div class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                        <span>⏳</span> Grading Pending
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12 text-gray-500">
+                <p class="text-lg">No teams to display yet.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tab Content: Participants -->
+        <div id="content-participants" class="tab-content bg-white rounded-xl rounded-tl-none shadow-lg border-2 border-blue-500 p-6">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-gray-900">Participant Rankings</h2>
+                <div class="text-sm text-gray-600">
+                    Participants inherit their team's scores
+                </div>
+            </div>
+
+            {% if participants_leaderboard %}
+            <div class="space-y-3">
+                {% for participant in participants_leaderboard %}
+                <div class="leaderboard-card bg-gradient-to-r from-white to-gray-50 rounded-xl p-5 shadow-md border border-gray-200 flex items-center gap-4">
+
+                    <!-- Rank Badge -->
+                    <div class="rank-badge {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% else %}rank-default{% endif %}">
+                        {% if forloop.counter <= 3 %}
+                            {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% else %}🥉{% endif %}
+                        {% else %}
+                            #{{ forloop.counter }}
+                        {% endif %}
+                    </div>
+
+                    <!-- Participant Info -->
+                    <div class="flex-1">
+                        <div class="font-bold text-xl text-gray-900">{{ participant.name }}</div>
+                        <div class="text-sm text-gray-500">Team: {{ participant.team_name }}</div>
+                    </div>
+
+                    <!-- Scores -->
+                    <div class="flex gap-3">
+                        <div class="text-center">
+                            <div class="text-xs text-gray-500 mb-1">Student</div>
+                            <div class="score-pill bg-blue-100 text-blue-800">{{ participant.student_score }}</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xs text-gray-500 mb-1">Teacher</div>
+                            <div class="score-pill bg-green-100 text-green-800">{{ participant.teacher_score }}</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xs text-gray-500 mb-1">Weighted</div>
+                            <div class="score-pill bg-purple-100 text-purple-800 text-lg">{{ participant.weighted_score }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12 text-gray-500">
+                <p class="text-lg">No participants to display yet.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-12 text-gray-600">
+            <p class="text-sm">
+                🏆 Keep up the great work! Scores update as teachers grade submissions.
+            </p>
+        </div>
+
+    </div>
+
+    {% endif %}
+</div>
+
+<script>
+function switchTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+
+    // Deactivate all tab buttons
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+
+    // Show selected tab content
+    document.getElementById(`content-${tabName}`).classList.add('active');
+
+    // Activate selected tab button
+    document.getElementById(`tab-${tabName}`).classList.add('active');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends "quest_ciq/base.html" %}
+
+{% block title %}Join Quest - Classroom Innovation Quest{% endblock %}
+
+{% block extra_css %}
+<style>
+    .join-card {
+        background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
+        border: 2px solid #e9ecef;
+    }
+
+    .join-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 1rem 1rem 0 0;
+        margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    }
+
+    .input-focus:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .notebook-pattern {
+        background-image:
+            linear-gradient(90deg, rgba(200,0,0,.1) 1px, transparent 1px);
+        background-size: 100% 2rem;
+        padding-left: 2rem;
+        position: relative;
+    }
+
+    .notebook-pattern::before {
+        content: '';
+        position: absolute;
+        left: 1.5rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: rgba(255,100,100,0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+    <div class="card bg-base-100 shadow-2xl join-card">
+        <div class="join-header text-center">
+            <div class="text-6xl mb-3">🎯</div>
+            <h2 class="text-4xl font-bold mb-2">Join as a Team</h2>
+            <p class="opacity-90">Team-based Design Thinking Quest</p>
+        </div>
+
+        <div class="card-body">
+            <div class="alert alert-info mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div class="text-sm">
+                    <strong>Team-based Quest:</strong>
+                    <ul class="list-disc list-inside mt-1">
+                        <li>Work together offline to discuss each level</li>
+                        <li>One representative submits team answers</li>
+                        <li>Compete as teams on the leaderboard</li>
+                    </ul>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text font-semibold">
+                            🏫 {{ form.class_code.label }}
+                        </span>
+                        <span class="label-text-alt text-error">*Required</span>
+                    </label>
+                    {{ form.class_code }}
+                    {% if form.class_code.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">
+                            ⚠️ {{ form.class_code.errors.0 }}
+                        </span>
+                    </label>
+                    {% endif %}
+                </div>
+
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text font-semibold">
+                            👥 {{ form.team_name.label }}
+                        </span>
+                        <span class="label-text-alt text-error">*Required</span>
+                    </label>
+                    {{ form.team_name }}
+                    {% if form.team_name.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">
+                            ⚠️ {{ form.team_name.errors.0 }}
+                        </span>
+                    </label>
+                    {% endif %}
+                    <label class="label">
+                        <span class="label-text-alt">This will appear on the leaderboard</span>
+                    </label>
+                </div>
+
+                <div class="form-control mb-6">
+                    <label class="label">
+                        <span class="label-text font-semibold">
+                            ✏️ {{ form.representative_name.label }}
+                        </span>
+                        <span class="label-text-alt text-error">*Required</span>
+                    </label>
+                    {{ form.representative_name }}
+                    {% if form.representative_name.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">
+                            ⚠️ {{ form.representative_name.errors.0 }}
+                        </span>
+                    </label>
+                    {% endif %}
+                    <label class="label">
+                        <span class="label-text-alt">Person entering team's responses</span>
+                    </label>
+                </div>
+
+                <div class="form-control mt-6">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Start Team Quest!
+                    </button>
+                </div>
+            </form>
+
+            <div class="divider text-sm">OR</div>
+
+            <a href="{% url 'quest_ciq:home' %}" class="btn btn-ghost btn-block">
+                ← Back to Home
+            </a>
+
+            <!-- Quest Preview -->
+            <div class="mt-6 p-4 bg-base-200 rounded-lg">
+                <h3 class="font-semibold mb-3 text-sm uppercase tracking-wide">📚 Quest Levels:</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center gap-2">
+                        <div class="badge badge-primary badge-sm">1</div>
+                        <span>👀 Empathy - Identify pain points</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="badge badge-primary badge-sm">2</div>
+                        <span>🎯 Define - Frame the problem</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="badge badge-primary badge-sm">3</div>
+                        <span>💡 Ideate - Brainstorm solutions</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="badge badge-primary badge-sm">4</div>
+                        <span>🛠️ Prototype - Build it</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="badge badge-primary badge-sm">5</div>
+                        <span>🧪 Test - Present & reflect</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fun Stats -->
+    <div class="grid grid-cols-3 gap-4 mt-6">
+        <div class="card bg-base-100 shadow">
+            <div class="card-body items-center p-4">
+                <div class="text-2xl font-bold text-primary">5</div>
+                <div class="text-xs text-center">Levels</div>
+            </div>
+        </div>
+        <div class="card bg-base-100 shadow">
+            <div class="card-body items-center p-4">
+                <div class="text-2xl font-bold text-primary">~20</div>
+                <div class="text-xs text-center">Minutes</div>
+            </div>
+        </div>
+        <div class="card bg-base-100 shadow">
+            <div class="card-body items-center p-4">
+                <div class="text-2xl font-bold text-primary">100</div>
+                <div class="text-xs text-center">Max Points</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

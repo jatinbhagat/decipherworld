@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Classroom Innovation Quest{% endblock %}</title>
+
+    <!-- Tailwind CSS + DaisyUI (assuming it's configured globally) -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* Global Classroom Theme */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        /* Chip Component */
+        .chip {
+            @apply inline-block px-3 py-1 m-1 text-sm rounded-full bg-primary text-primary-content;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Rating Emoji */
+        .rating-emoji label {
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: transform 0.2s, filter 0.2s;
+            filter: grayscale(0.5);
+        }
+
+        .rating-emoji label:hover {
+            filter: grayscale(0);
+        }
+
+        .rating-emoji input:checked + label {
+            transform: scale(1.3);
+            filter: grayscale(0);
+        }
+
+        /* Tooltip */
+        .tooltip-custom {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-custom .tooltip-text {
+            visibility: hidden;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip-custom:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Progress Milestone */
+        .progress-milestone {
+            position: relative;
+        }
+
+        /* Alert Enhancements */
+        .alert {
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Card Enhancements */
+        .card {
+            border-radius: 1rem;
+        }
+
+        /* Button Enhancements */
+        .btn {
+            border-radius: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            transition: all 0.2s;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Navbar Enhancement */
+        .navbar {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Form Input Focus */
+        .input:focus, .textarea:focus, .select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Error State */
+        .input-error, .textarea-error {
+            border-color: #ef4444;
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Success Toast */
+        .alert-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-base-200 min-h-screen">
+    <!-- Navbar -->
+    <div class="navbar bg-primary text-primary-content shadow-lg">
+        <div class="flex-1">
+            <a href="{% url 'quest_ciq:home' %}" class="btn btn-ghost normal-case text-xl">
+                🎯 Classroom Innovation Quest
+            </a>
+        </div>
+        <div class="flex-none">
+            <a href="{% url 'quest_ciq:leaderboard' %}" class="btn btn-ghost">
+                🏆 Leaderboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mx-auto mt-4 px-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} shadow-lg mb-2">
+            <div>
+                <span>{{ message }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer footer-center p-4 bg-base-300 text-base-content mt-8">
+        <div>
+            <p>Classroom Innovation Quest - Design Thinking for Students</p>
+        </div>
+    </footer>
+
+    <!-- Confetti script -->
+    <script>
+        function triggerConfetti() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        }
+
+        // Auto-trigger confetti on success messages
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        setTimeout(triggerConfetti, 300);
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

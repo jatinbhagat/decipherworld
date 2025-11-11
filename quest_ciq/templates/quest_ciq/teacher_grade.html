@@ -1,0 +1,272 @@
+{% extends "quest_ciq/base.html" %}
+
+{% block title %}Grade Teams - {{ classroom.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .teacher-header {
+        background: linear-gradient(135deg, #4CAF50 0%, #2196F3 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .grade-row {
+        transition: background-color 0.2s;
+    }
+
+    .grade-row:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+
+    .score-input {
+        width: 80px;
+    }
+
+    .graded {
+        background-color: rgba(76, 175, 80, 0.05);
+    }
+
+    .pending {
+        background-color: rgba(255, 193, 7, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Teacher Header -->
+    <div class="teacher-header">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold mb-2">🎓 Teacher Grading Portal</h1>
+                <p class="text-xl opacity-90">{{ classroom.name }} - {{ quest.name }}</p>
+                <p class="text-sm opacity-75 mt-2">Class Code: <span class="font-mono font-bold">{{ classroom.class_code }}</span></p>
+            </div>
+            <div class="text-right">
+                <div class="badge badge-lg badge-ghost">{{ teams_data|length }} Team{% if teams_data|length != 1 %}s{% endif %}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="alert alert-info shadow-lg mb-6">
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div>
+                <h3 class="font-bold">Grading Instructions</h3>
+                <div class="text-sm">
+                    • Review each team's presentation by clicking the 🔗 link<br>
+                    • Score teams from 0-100 based on creativity, effort, and presentation<br>
+                    • Final score = 40% student score + 60% teacher score<br>
+                    • Optional: Add comments for feedback
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teams Table -->
+    {% if teams_data %}
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">Teams to Grade</h2>
+
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>Team Name</th>
+                            <th class="text-center">Members</th>
+                            <th class="text-center">Avg Student Score</th>
+                            <th class="text-center">Teacher Score (0-100)</th>
+                            <th class="text-center">Final Score</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team_data in teams_data %}
+                        <tr class="grade-row {% if team_data.teacher_score %}graded{% else %}pending{% endif %}">
+                            <td>
+                                <div class="font-bold">{{ team_data.team.name }}</div>
+                                {% if team_data.teacher_score %}
+                                <span class="badge badge-success badge-sm">✓ Graded</span>
+                                {% else %}
+                                <span class="badge badge-warning badge-sm">🚧 Pending</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge badge-ghost">{{ team_data.member_count }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="font-semibold">{{ team_data.avg_student_score }}</span>
+                            </td>
+                            <td class="text-center">
+                                <form method="post" class="inline-flex items-center gap-2" id="form-{{ team_data.team.id }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="team_id" value="{{ team_data.team.id }}">
+                                    <input
+                                        type="number"
+                                        name="score"
+                                        min="0"
+                                        max="100"
+                                        value="{{ team_data.teacher_score|default:'' }}"
+                                        placeholder="0-100"
+                                        class="input input-bordered input-sm score-input"
+                                        required
+                                    >
+                                </form>
+                            </td>
+                            <td class="text-center">
+                                {% if team_data.teacher_score %}
+                                <div class="badge badge-primary badge-lg">{{ team_data.final_score }} pts</div>
+                                {% else %}
+                                <span class="text-base-content/50">--</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="flex gap-2 justify-center flex-wrap">
+                                    <a href="{{ team_data.presentation_url }}"
+                                       target="_blank"
+                                       class="btn btn-sm btn-outline btn-primary"
+                                       title="View Presentation">
+                                        🔗 View
+                                    </a>
+                                    <button
+                                        type="button"
+                                        onclick="openCommentModal({{ team_data.team.id }}, '{{ team_data.team.name }}', '{{ team_data.teacher_comment|escapejs }}')"
+                                        class="btn btn-sm btn-outline btn-secondary"
+                                        title="Add Comment">
+                                        💬
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        form="form-{{ team_data.team.id }}"
+                                        class="btn btn-sm btn-success"
+                                        title="Save Score">
+                                        💾 Save
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="grid md:grid-cols-3 gap-4 mt-6">
+        <div class="stats shadow">
+            <div class="stat">
+                <div class="stat-title">Total Teams</div>
+                <div class="stat-value text-primary">{{ teams_data|length }}</div>
+            </div>
+        </div>
+        <div class="stats shadow">
+            <div class="stat">
+                <div class="stat-title">Graded</div>
+                <div class="stat-value text-success">
+                    {# Graded teams - simplified for now #}
+                    {% regroup teams_data by teacher_score as teams_by_score %}
+                    {% for score_group in teams_by_score %}{% if score_group.grouper %}{{ score_group.list|length }}{% endif %}{% empty %}0{% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="stats shadow">
+            <div class="stat">
+                <div class="stat-title">Pending</div>
+                <div class="stat-value text-warning">
+                    {# Pending teams - simplified #}
+                    {% regroup teams_data by teacher_score as teams_by_score %}
+                    {% for score_group in teams_by_score %}{% if not score_group.grouper %}{{ score_group.list|length }}{% endif %}{% empty %}{{ teams_data|length }}{% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body text-center">
+            <div class="text-6xl mb-4">📋</div>
+            <h3 class="text-2xl font-bold mb-2">No Teams to Grade</h3>
+            <p class="text-base-content/70">No teams have submitted work in this classroom yet.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Back Button -->
+    <div class="text-center mt-8">
+        <a href="{% url 'quest_ciq:home' %}" class="btn btn-ghost">
+            ← Back to Home
+        </a>
+    </div>
+</div>
+
+<!-- Comment Modal -->
+<div id="commentModal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4" id="modalTitle">Add Comment for Team</h3>
+        <form method="post" id="commentForm">
+            {% csrf_token %}
+            <input type="hidden" name="team_id" id="modalTeamId">
+            <input type="hidden" name="score" id="modalScore" value="0">
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Teacher Comment (Optional)</span>
+                </label>
+                <textarea
+                    name="comment"
+                    id="modalComment"
+                    class="textarea textarea-bordered h-32"
+                    placeholder="Provide feedback for the team..."></textarea>
+            </div>
+
+            <div class="modal-action">
+                <button type="button" onclick="closeCommentModal()" class="btn btn-ghost">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Comment</button>
+            </div>
+        </form>
+    </div>
+    <div class="modal-backdrop" onclick="closeCommentModal()"></div>
+</div>
+
+<script>
+    function openCommentModal(teamId, teamName, existingComment) {
+        document.getElementById('modalTitle').textContent = 'Add Comment for ' + teamName;
+        document.getElementById('modalTeamId').value = teamId;
+        document.getElementById('modalComment').value = existingComment || '';
+
+        // Get score from the form
+        const scoreInput = document.querySelector(`#form-${teamId} input[name="score"]`);
+        document.getElementById('modalScore').value = scoreInput.value || '0';
+
+        document.getElementById('commentModal').classList.add('modal-open');
+    }
+
+    function closeCommentModal() {
+        document.getElementById('commentModal').classList.remove('modal-open');
+    }
+
+    // Add keyboard shortcut to close modal (Escape key)
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeCommentModal();
+        }
+    });
+</script>
+
+<style>
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0,0,0,0.3);
+        z-index: -1;
+    }
+</style>
+{% endblock %}

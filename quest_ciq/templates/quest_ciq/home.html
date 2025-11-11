@@ -1,0 +1,261 @@
+{% extends "quest_ciq/base.html" %}
+
+{% block title %}Home - Classroom Innovation Quest{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        border-radius: 1rem;
+        padding: 4rem 2rem;
+    }
+
+    .level-card {
+        transition: all 0.3s;
+        cursor: default;
+    }
+
+    .level-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .level-card:hover .level-icon {
+        transform: scale(1.2) rotate(5deg);
+    }
+
+    .level-icon {
+        transition: transform 0.3s;
+    }
+
+    .feature-card {
+        border-left: 4px solid #667eea;
+        transition: border-color 0.3s;
+    }
+
+    .feature-card:hover {
+        border-left-color: #764ba2;
+    }
+
+    .pulse-grow {
+        animation: pulse-grow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-grow {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .chalkboard-texture {
+        position: relative;
+        background-color: #2d5016;
+        background-image:
+            radial-gradient(circle at 20% 30%, rgba(255,255,255,0.03) 1%, transparent 1%),
+            radial-gradient(circle at 80% 70%, rgba(255,255,255,0.02) 1%, transparent 1%);
+        background-size: 50px 50px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Hero Section -->
+    <div class="hero-gradient text-white shadow-2xl mb-12">
+        <div class="text-center">
+            <div class="text-7xl mb-4">🎯</div>
+            <h1 class="text-6xl font-bold mb-4">Classroom Innovation Quest</h1>
+            <p class="text-2xl mb-2 opacity-90">
+                Solve Real Classroom Problems with Design Thinking
+            </p>
+            <p class="text-lg opacity-75 mb-8">
+                A hands-on journey through Empathy, Define, Ideate, Prototype & Test
+            </p>
+
+            <div class="flex gap-4 justify-center flex-wrap">
+                <a href="{% url 'quest_ciq:join' %}" class="btn btn-lg btn-warning gap-2 shadow-lg pulse-grow">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Start Your Quest!
+                </a>
+                <a href="{% url 'quest_ciq:leaderboard' %}" class="btn btn-lg btn-outline btn-ghost border-white text-white hover:bg-white hover:text-primary gap-2">
+                    🏆 View Leaderboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Design Thinking Levels -->
+    <div class="mb-12">
+        <h2 class="text-4xl font-bold text-center mb-8">
+            📚 The Five Levels of Design Thinking
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <div class="level-card card bg-base-100 shadow-xl hover:shadow-2xl">
+                <div class="card-body items-center text-center p-6">
+                    <div class="level-icon text-6xl mb-3">👀</div>
+                    <div class="badge badge-primary badge-lg mb-2">Level 1</div>
+                    <h3 class="card-title text-xl mb-2">Empathy</h3>
+                    <p class="text-sm text-base-content/70">
+                        Observe and identify pain points in your classroom
+                    </p>
+                    <div class="mt-4 text-xs text-primary font-semibold">
+                        +10 points base
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-card card bg-base-100 shadow-xl hover:shadow-2xl">
+                <div class="card-body items-center text-center p-6">
+                    <div class="level-icon text-6xl mb-3">🎯</div>
+                    <div class="badge badge-primary badge-lg mb-2">Level 2</div>
+                    <h3 class="card-title text-xl mb-2">Define</h3>
+                    <p class="text-sm text-base-content/70">
+                        Frame your problem as a "How Might We" statement
+                    </p>
+                    <div class="mt-4 text-xs text-primary font-semibold">
+                        +10 points base
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-card card bg-base-100 shadow-xl hover:shadow-2xl">
+                <div class="card-body items-center text-center p-6">
+                    <div class="level-icon text-6xl mb-3">💡</div>
+                    <div class="badge badge-primary badge-lg mb-2">Level 3</div>
+                    <h3 class="card-title text-xl mb-2">Ideate</h3>
+                    <p class="text-sm text-base-content/70">
+                        Brainstorm creative solutions and wild ideas
+                    </p>
+                    <div class="mt-4 text-xs text-primary font-semibold">
+                        +30 points max
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-card card bg-base-100 shadow-xl hover:shadow-2xl">
+                <div class="card-body items-center text-center p-6">
+                    <div class="level-icon text-6xl mb-3">🛠️</div>
+                    <div class="badge badge-primary badge-lg mb-2">Level 4</div>
+                    <h3 class="card-title text-xl mb-2">Prototype</h3>
+                    <p class="text-sm text-base-content/70">
+                        Build a simple version of your solution
+                    </p>
+                    <div class="mt-4 text-xs text-primary font-semibold">
+                        +20 points max
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-card card bg-base-100 shadow-xl hover:shadow-2xl">
+                <div class="card-body items-center text-center p-6">
+                    <div class="level-icon text-6xl mb-3">🧪</div>
+                    <div class="badge badge-primary badge-lg mb-2">Level 5</div>
+                    <h3 class="card-title text-xl mb-2">Test</h3>
+                    <p class="text-sm text-base-content/70">
+                        Present your journey and reflect on learnings
+                    </p>
+                    <div class="mt-4 text-xs text-primary font-semibold">
+                        Presentation
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="card bg-base-100 shadow-xl feature-card">
+            <div class="card-body">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="text-4xl">🎮</div>
+                    <h2 class="card-title text-2xl">Fun & Interactive</h2>
+                </div>
+                <p class="text-base-content/80">
+                    Learn design thinking through an engaging, quest-based experience with instant feedback and progress tracking.
+                </p>
+            </div>
+        </div>
+
+        <div class="card bg-base-100 shadow-xl feature-card">
+            <div class="card-body">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="text-4xl">🏆</div>
+                    <h2 class="card-title text-2xl">Compete & Learn</h2>
+                </div>
+                <p class="text-base-content/80">
+                    Earn points for creativity and completeness. Climb the leaderboard and showcase your innovative thinking!
+                </p>
+            </div>
+        </div>
+
+        <div class="card bg-base-100 shadow-xl feature-card">
+            <div class="card-body">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="text-4xl">🚀</div>
+                    <h2 class="card-title text-2xl">Real Solutions</h2>
+                </div>
+                <p class="text-base-content/80">
+                    Solve actual problems in your classroom. Your ideas can make a real difference in your learning environment!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="card bg-base-200 shadow-xl mb-12">
+        <div class="card-body">
+            <h2 class="card-title text-3xl mb-6 justify-center">📖 How It Works</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="flex gap-4">
+                    <div class="badge badge-primary badge-lg">1</div>
+                    <div>
+                        <h3 class="font-bold mb-2">Join the Quest</h3>
+                        <p class="text-sm text-base-content/70">Enter your name and start your journey through the five levels of design thinking.</p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="badge badge-primary badge-lg">2</div>
+                    <div>
+                        <h3 class="font-bold mb-2">Complete Each Level</h3>
+                        <p class="text-sm text-base-content/70">Work through Empathy, Define, Ideate, Prototype, and Test to develop your solution.</p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="badge badge-primary badge-lg">3</div>
+                    <div>
+                        <h3 class="font-bold mb-2">Earn Points</h3>
+                        <p class="text-sm text-base-content/70">Get points for completing levels and bonuses for creativity and detail.</p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="badge badge-primary badge-lg">4</div>
+                    <div>
+                        <h3 class="font-bold mb-2">Climb the Leaderboard</h3>
+                        <p class="text-sm text-base-content/70">See how you rank against other innovators and strive for the top!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center mb-12">
+        <div class="card bg-gradient-to-r from-primary to-secondary text-primary-content shadow-2xl">
+            <div class="card-body items-center">
+                <h2 class="card-title text-4xl mb-4">Ready to Innovate?</h2>
+                <p class="text-lg mb-6 opacity-90">
+                    Join hundreds of students solving real classroom problems!
+                </p>
+                <a href="{% url 'quest_ciq:join' %}" class="btn btn-lg btn-warning gap-2 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Start Your Quest Now!
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

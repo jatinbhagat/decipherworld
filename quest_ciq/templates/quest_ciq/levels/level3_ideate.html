@@ -1,0 +1,109 @@
+<!-- Level 3: Ideate - Three Idea Boxes -->
+
+<div class="mb-6">
+    <p class="text-lg mb-4">
+        Brainstorm multiple solutions! Remember: <strong>Quantity first, quality later!</strong> 💡
+    </p>
+</div>
+
+<div class="alert alert-info mb-6">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span><strong>Tip:</strong> Don't judge your ideas yet! Write down everything that comes to mind.</span>
+    </div>
+</div>
+
+<!-- Idea 1 -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">💡 {{ form.idea_1.label }}</span>
+        <span class="label-text-alt text-error">*Required</span>
+    </label>
+    {{ form.idea_1 }}
+    {% if form.idea_1.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.idea_1.errors.0 }}</span>
+    </label>
+    {% endif %}
+</div>
+
+<!-- Idea 2 -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">💡 {{ form.idea_2.label }}</span>
+        <span class="label-text-alt text-error">*Required</span>
+    </label>
+    {{ form.idea_2 }}
+    {% if form.idea_2.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.idea_2.errors.0 }}</span>
+    </label>
+    {% endif %}
+</div>
+
+<!-- Wild Idea -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">🚀 {{ form.idea_wild.label }}</span>
+        <span class="label-text-alt">Optional but encouraged!</span>
+    </label>
+    <div class="card bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-1">
+        <div class="card-body p-0">
+            {{ form.idea_wild }}
+        </div>
+    </div>
+    {% if form.idea_wild.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.idea_wild.errors.0 }}</span>
+    </label>
+    {% endif %}
+    <label class="label">
+        <span class="label-text-alt">Think outside the box! What's a crazy idea that might actually work?</span>
+    </label>
+</div>
+
+<!-- Idea Counter -->
+<div class="stats shadow mb-4">
+    <div class="stat">
+        <div class="stat-title">Ideas Generated</div>
+        <div class="stat-value" id="idea-count">0</div>
+        <div class="stat-desc">Keep going! More ideas = more options</div>
+    </div>
+</div>
+
+<!-- Non-field errors -->
+{% if form.non_field_errors %}
+<div class="alert alert-error mb-4">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ form.non_field_errors.0 }}</span>
+    </div>
+</div>
+{% endif %}
+
+<script>
+// Count non-empty ideas
+document.addEventListener('DOMContentLoaded', function() {
+    const ideaInputs = [
+        document.querySelector('textarea[name="idea_1"]'),
+        document.querySelector('textarea[name="idea_2"]'),
+        document.querySelector('textarea[name="idea_wild"]')
+    ];
+    const counter = document.getElementById('idea-count');
+
+    function updateCount() {
+        const count = ideaInputs.filter(input => input.value.trim().length > 0).length;
+        counter.textContent = count;
+    }
+
+    ideaInputs.forEach(input => {
+        input.addEventListener('input', updateCount);
+    });
+
+    updateCount();
+});
+</script>

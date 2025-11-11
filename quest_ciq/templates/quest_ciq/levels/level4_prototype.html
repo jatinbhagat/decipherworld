@@ -1,0 +1,163 @@
+<!-- Level 4: Prototype - Select Idea & Build -->
+
+<div class="mb-6">
+    <p class="text-lg mb-4">
+        Time to build! Select one of your ideas and create a simple prototype.
+    </p>
+</div>
+
+<!-- Select Idea -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">🎯 {{ form.selected_idea.label }}</span>
+        <span class="label-text-alt text-error">*Required</span>
+    </label>
+
+    <div class="space-y-3 pl-4">
+        {% for value, label in form.selected_idea.field.choices %}
+        <label class="label cursor-pointer justify-start gap-3 hover:bg-base-200 p-4 rounded-lg border-2 border-base-300 transition-all hover:border-primary">
+            <input type="radio" name="selected_idea" value="{{ value }}"
+                   class="radio radio-primary"
+                   {% if form.selected_idea.value == value %}checked{% endif %}>
+            <span class="label-text text-base">{{ label }}</span>
+        </label>
+        {% empty %}
+        <div class="alert alert-error">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>No ideas found from Level 3. Please complete Level 3 first!</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if form.selected_idea.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.selected_idea.errors.0 }}</span>
+    </label>
+    {% endif %}
+</div>
+
+<div class="divider"></div>
+
+<!-- AI Tools Tip -->
+<div class="alert alert-info mb-6">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <div>
+            <h4 class="font-bold">💡 Tip: Use AI to accelerate your prototype!</h4>
+            <p class="text-sm mt-1">
+                Use <strong>ChatGPT, Gemini, or Perplexity</strong> to quickly mock text, UI ideas, or scripts.
+                Be specific in your prompts! Example: "Generate a simple HTML form for tracking student attendance."
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Prototype Explanation -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">📝 {{ form.prototype_explanation.label }}</span>
+        <span class="label-text-alt text-error">*Required</span>
+    </label>
+    {{ form.prototype_explanation }}
+    {% if form.prototype_explanation.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.prototype_explanation.errors.0 }}</span>
+    </label>
+    {% endif %}
+    <label class="label">
+        <span class="label-text-alt">{{ form.prototype_explanation.help_text }}</span>
+    </label>
+</div>
+
+<!-- One-line Benefit -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">✨ {{ form.one_line_benefit.label }}</span>
+        <span class="label-text-alt">Optional</span>
+    </label>
+    {{ form.one_line_benefit }}
+    {% if form.one_line_benefit.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.one_line_benefit.errors.0 }}</span>
+    </label>
+    {% endif %}
+</div>
+
+<!-- Materials -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">🛠️ {{ form.materials.label }}</span>
+        <span class="label-text-alt">Optional</span>
+    </label>
+    {{ form.materials }}
+    {% if form.materials.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.materials.errors.0 }}</span>
+    </label>
+    {% endif %}
+    <label class="label">
+        <span class="label-text-alt">Example: Cardboard, markers, tape, recycled materials</span>
+    </label>
+</div>
+
+<!-- Prototype Link -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">🔗 {{ form.prototype_link.label }}</span>
+        <span class="label-text-alt">Optional</span>
+    </label>
+    {{ form.prototype_link }}
+    {% if form.prototype_link.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.prototype_link.errors.0 }}</span>
+    </label>
+    {% endif %}
+    <label class="label">
+        <span class="label-text-alt">Link to a drawing, document, or video of your prototype</span>
+    </label>
+</div>
+
+<!-- Prototype Upload -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">📸 {{ form.prototype_upload.label }}</span>
+        <span class="label-text-alt">Optional</span>
+    </label>
+    {{ form.prototype_upload }}
+    {% if form.prototype_upload.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.prototype_upload.errors.0 }}</span>
+    </label>
+    {% endif %}
+    <label class="label">
+        <span class="label-text-alt">{{ form.prototype_upload.help_text }}</span>
+    </label>
+</div>
+
+<!-- Bonus Points Info -->
+<div class="alert alert-success">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span><strong>Bonus:</strong> Upload a photo or link to earn extra points!</span>
+    </div>
+</div>
+
+<!-- Non-field errors -->
+{% if form.non_field_errors %}
+<div class="alert alert-error mt-4">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ form.non_field_errors.0 }}</span>
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,120 @@
+<!-- Level 2: Define - How Might We Statement -->
+
+<div class="mb-6">
+    <p class="text-lg mb-4">
+        Turn your observation into a clear problem statement using the "How Might We" framework.
+    </p>
+</div>
+
+<!-- Suggestion from L1 -->
+{% if form.l1_answers %}
+<div class="alert alert-info mb-6">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <div>
+            <h3 class="font-bold">💡 Suggestion based on your Level 1 answer:</h3>
+            {% if form.l1_answers.prioritized.top %}
+            <p class="text-sm mt-1">
+                How might we reduce <strong>{{ form.l1_answers.prioritized.top }}</strong>
+                for {{ form.l1_answers.who_is_affected }} so that class feels better?
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- HMW Examples -->
+<div class="card bg-base-200 mb-6">
+    <div class="card-body p-4">
+        <h4 class="font-semibold mb-2">📝 Examples of good HMW statements:</h4>
+        <ul class="list-disc list-inside text-sm space-y-1">
+            <li>How might we <strong>help students remember their materials</strong> so that <strong>they're always prepared for class</strong>?</li>
+            <li>How might we <strong>reduce classroom noise</strong> so that <strong>everyone can focus better</strong>?</li>
+        </ul>
+    </div>
+</div>
+
+<!-- HMW Goal -->
+<div class="form-control mb-4">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">How might we...</span>
+        <span class="label-text-alt text-error">*Required</span>
+    </label>
+    {{ form.hmw_goal }}
+    {% if form.hmw_goal.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.hmw_goal.errors.0 }}</span>
+    </label>
+    {% endif %}
+    <label class="label">
+        <span class="label-text-alt">What action or improvement do you want to achieve?</span>
+    </label>
+</div>
+
+<!-- HMW Outcome -->
+<div class="form-control mb-6">
+    <label class="label">
+        <span class="label-text text-lg font-semibold">so that...</span>
+        <span class="label-text-alt text-error">*Required</span>
+    </label>
+    {{ form.hmw_outcome }}
+    {% if form.hmw_outcome.errors %}
+    <label class="label">
+        <span class="label-text-alt text-error">{{ form.hmw_outcome.errors.0 }}</span>
+    </label>
+    {% endif %}
+    <label class="label">
+        <span class="label-text-alt">What positive outcome or benefit will result?</span>
+    </label>
+</div>
+
+<!-- Preview -->
+<div class="card bg-primary text-primary-content">
+    <div class="card-body">
+        <h4 class="font-semibold">Your HMW statement preview:</h4>
+        <p class="text-lg mt-2" id="hmw-preview">
+            <span class="italic">Fill in the fields above to see your statement...</span>
+        </p>
+    </div>
+</div>
+
+<!-- Non-field errors -->
+{% if form.non_field_errors %}
+<div class="alert alert-error mt-4">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ form.non_field_errors.0 }}</span>
+    </div>
+</div>
+{% endif %}
+
+<script>
+// Live preview of HMW statement
+document.addEventListener('DOMContentLoaded', function() {
+    const goalInput = document.querySelector('input[name="hmw_goal"]');
+    const outcomeInput = document.querySelector('input[name="hmw_outcome"]');
+    const preview = document.getElementById('hmw-preview');
+
+    function updatePreview() {
+        const goal = goalInput.value.trim();
+        const outcome = outcomeInput.value.trim();
+
+        if (goal && outcome) {
+            preview.innerHTML = `<strong>How might we ${goal} so that ${outcome}?</strong>`;
+        } else if (goal) {
+            preview.innerHTML = `<strong>How might we ${goal}</strong> so that <span class="italic">...</span>?`;
+        } else {
+            preview.innerHTML = '<span class="italic">Fill in the fields above to see your statement...</span>';
+        }
+    }
+
+    goalInput.addEventListener('input', updatePreview);
+    outcomeInput.addEventListener('input', updatePreview);
+    updatePreview();
+});
+</script>

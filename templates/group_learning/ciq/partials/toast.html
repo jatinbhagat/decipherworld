@@ -1,0 +1,50 @@
+{% comment %}
+Reusable toast notification (appears with JS)
+Usage: Just include this file, then trigger with showToast('message', 'success')
+{% endcomment %}
+
+<div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2">
+    <!-- Toasts will be inserted here by JavaScript -->
+</div>
+
+<script>
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast transform transition-all duration-300 ease-in-out rounded-xl shadow-lg p-4 min-w-[300px] max-w-[400px] flex items-start gap-3 border ${
+        type === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
+        type === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
+        type === 'warning' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
+        'bg-blue-50 border-blue-200 text-blue-800'
+    }`;
+
+    const icon = type === 'success' ? '✅' :
+                 type === 'error' ? '❌' :
+                 type === 'warning' ? '⚠️' : 'ℹ️';
+
+    toast.innerHTML = `
+        <span class="text-xl flex-shrink-0">${icon}</span>
+        <p class="flex-1 text-sm font-medium">${message}</p>
+        <button onclick="this.parentElement.remove()" class="text-xl hover:opacity-70 transition-opacity">×</button>
+    `;
+
+    // Slide in animation
+    toast.style.transform = 'translateX(100%)';
+    toast.style.opacity = '0';
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.transform = 'translateX(0)';
+        toast.style.opacity = '1';
+    }, 10);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        toast.style.transform = 'translateX(100%)';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
+}
+</script>
