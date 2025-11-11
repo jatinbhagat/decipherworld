@@ -3431,3 +3431,198 @@ class CreateSimplifiedSessionView(CreateView):
             logger.error(f"Error creating simplified session: {str(e)}")
             form.add_error(None, f'Error creating session: {str(e)}')
             return self.form_invalid(form)
+
+
+# ==================================================================================
+# DESIGN THINKING LEVEL/PHASE FORM SUBMISSION VIEW
+# ==================================================================================
+
+
+class LevelView(View):
+    """
+    Handles form-based submissions for Design Thinking levels/phases.
+
+    Centralizes form initialization to ensure quest_session is injected once.
+    This prevents TypeError: __init__() got multiple values for argument 'quest_session'.
+
+    Supports all mission types:
+    - Level 1: Empathy
+    - Level 2: Define (HMW/POV)
+    - Level 3: Ideate
+    - Level 4: Prototype
+    - Level 5: Showcase
+    """
+
+    # Map mission types to form classes
+    LEVEL_FORMS = {
+        'empathy': 'Level1EmpathyForm',
+        'define': 'Level2DefineForm',
+        'ideate': 'Level3IdeateForm',
+        'prototype': 'Level4PrototypeForm',
+        'showcase': 'Level5ShowcaseForm',
+    }
+
+    def _build_form_kwargs(self, request, quest_session):
+        """
+        Build form kwargs with quest_session injected exactly once.
+
+        This centralized method prevents duplicate quest_session arguments
+        by ensuring it's only added here.
+
+        Args:
+            request: HTTP request object
+            quest_session: DesignThinkingSession instance
+
+        Returns:
+            dict: Form kwargs with data, files, and quest_session
+        """
+        # Start from base kwargs
+        kw = {
+            "data": request.POST or None,
+            "files": request.FILES or None
+        }
+        # Ensure single injection of quest_session
+        kw["quest_session"] = quest_session
+        return kw
+
+    def _get_form_class(self, mission_type):
+        """Get the appropriate form class for the mission type"""
+        from . import forms
+
+        form_class_name = self.LEVEL_FORMS.get(mission_type)
+        if not form_class_name:
+            return None
+
+        return getattr(forms, form_class_name, None)
+
+    def post(self, request, session_code, mission_type):
+        """
+        Handle form submission for a specific level/phase.
+
+        Args:
+            request: HTTP POST request with form data
+            session_code: Design Thinking session code
+            mission_type: Type of mission (empathy, define, ideate, etc.)
+
+        Returns:
+            HttpResponse: 302 redirect on success, form errors on failure
+        """
+        logger = logging.getLogger(__name__)
+
+        try:
+            # Get the session (quest_session)
+            quest_session = DesignThinkingSession.objects.select_related(
+                'design_game', 'current_mission'
+            ).get(session_code=session_code)
+
+            # Get the appropriate form class
+            form_class = self._get_form_class(mission_type)
+            if not form_class:
+                return JsonResponse({
+                    'success': False,
+                    'error': f'Invalid mission type: {mission_type}'
+                }, status=400)
+
+            # Instantiate form with centralized kwargs (quest_session passed once)
+            form = form_class(**self._build_form_kwargs(request, quest_session))
+
+            if form.is_valid():
+                # Save the submission
+                success = self._save_submission(
+                    form=form,
+                    quest_session=quest_session,
+                    mission_type=mission_type,
+                    request=request
+                )
+
+                if success:
+                    logger.info(f"Successfully saved {mission_type} submission for session {session_code}")
+
+                    # Return success response
+                    return JsonResponse({
+                        'success': True,
+                        'message': f'{mission_type.capitalize()} phase completed successfully!',
+                        'next_url': f'/learn/design-thinking/{session_code}/student/'
+                    })
+                else:
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'Failed to save submission'
+                    }, status=500)
+            else:
+                # Form validation failed
+                errors = dict(form.errors)
+                logger.warning(f"Form validation failed for {mission_type}: {errors}")
+                return JsonResponse({
+                    'success': False,
+                    'errors': errors
+                }, status=400)
+
+        except DesignThinkingSession.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'error': 'Session not found'
+            }, status=404)
+        except Exception as e:
+            logger.error(f"Error processing {mission_type} submission: {str(e)}", exc_info=True)
+            return JsonResponse({
+                'success': False,
+                'error': f'Server error: {str(e)}'
+            }, status=500)
+
+    def _save_submission(self, form, quest_session, mission_type, request):
+        """
+        Save form submission to SimplifiedPhaseInput.
+
+        Args:
+            form: Validated form instance
+            quest_session: DesignThinkingSession instance
+            mission_type: Mission type string
+            request: HTTP request
+
+        Returns:
+            bool: True if save succeeded, False otherwise
+        """
+        try:
+            # Get the mission
+            mission = quest_session.design_game.missions.filter(
+                mission_type=mission_type,
+                is_active=True
+            ).first()
+
+            if not mission:
+                return False
+
+            # Get the team (assume student is in a team)
+            # This should be improved to get actual team from session
+            team = quest_session.design_teams.first()
+            if not team:
+                return False
+
+            # Get student name from session or request
+            student_name = request.session.get('student_name', 'Anonymous')
+
+            # Create SimplifiedPhaseInput record
+            phase_input = SimplifiedPhaseInput.objects.create(
+                team=team,
+                mission=mission,
+                session=quest_session,
+                student_name=student_name,
+                content=form.cleaned_data,
+                input_type='text_medium'
+            )
+
+            # Update phase completion tracker
+            from .auto_progression_service import check_and_update_phase_completion
+            check_and_update_phase_completion(
+                session=quest_session,
+                team=team,
+                mission=mission
+            )
+
+            return True
+
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error saving submission: {str(e)}", exc_info=True)
+            return False

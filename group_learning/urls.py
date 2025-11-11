@@ -86,6 +86,9 @@ urlpatterns = [
     path('api/simplified/<str:session_code>/submissions/', views.SimplifiedSubmissionsAPIView.as_view(), name='simplified_submissions_api'),
     path('api/simplified/<str:session_code>/feedback/', views.SimplifiedFeedbackAPI.as_view(), name='simplified_feedback_api'),
     path('api/sessions/<str:session_code>/submissions/', views.SessionSubmissionsAPIView.as_view(), name='session_submissions_api'),
+
+    # Level/Phase form submission endpoints (prevents quest_session duplicate argument error)
+    path('api/design-thinking/<str:session_code>/level/<str:mission_type>/', views.LevelView.as_view(), name='level_submission'),
     
     # Rating API endpoints
     path('api/<str:session_code>/ratings/', rating_api.TeamRatingAPIView.as_view(), name='team_rating_api'),
