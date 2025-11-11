@@ -1362,3 +1362,60 @@ def upload_schools_csv(request):
             'status': 'error',
             'message': 'Only GET and POST methods allowed'
         }, status=405)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def migrate_quest_ciq(request):
+    """
+    Simple, focused endpoint to migrate only quest_ciq app
+    Bypass any group_learning conflicts
+    """
+    try:
+        import sys
+        from io import StringIO
+        from django.core.management import execute_from_command_line
+        
+        # Capture output
+        old_stdout = sys.stdout
+        old_stderr = sys.stderr
+        stdout_capture = StringIO()
+        stderr_capture = StringIO()
+        sys.stdout = stdout_capture
+        sys.stderr = stderr_capture
+        
+        try:
+            # Run quest_ciq migrations only
+            execute_from_command_line(['manage.py', 'migrate', 'quest_ciq', '--verbosity=2'])
+            
+            stdout_output = stdout_capture.getvalue()
+            stderr_output = stderr_capture.getvalue()
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'quest_ciq migrations completed successfully',
+                'stdout': stdout_output,
+                'stderr': stderr_output
+            })
+            
+        except Exception as e:
+            stdout_output = stdout_capture.getvalue()
+            stderr_output = stderr_capture.getvalue()
+            
+            return JsonResponse({
+                'status': 'error',
+                'message': f'quest_ciq migration failed: {str(e)}',
+                'stdout': stdout_output,
+                'stderr': stderr_output,
+                'error_type': type(e).__name__
+            }, status=500)
+            
+        finally:
+            sys.stdout = old_stdout
+            sys.stderr = old_stderr
+            
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to run quest_ciq migrations: {str(e)}'
+        }, status=500)
