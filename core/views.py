@@ -1532,3 +1532,71 @@ def clean_production_test_data(request):
             'message': f'Failed to clean test data: {str(e)}',
             'error_type': type(e).__name__
         }, status=500)
+
+
+@csrf_exempt  
+@require_http_methods(["GET"])
+def setup_quest_ciq_data(request):
+    """Setup basic quest_ciq data structure with Grade 9 classroom"""
+    try:
+        from quest_ciq.models import Quest, ClassRoom, CIQSettings, QuestLevel
+        
+        # Create CIQ Settings (singleton)
+        settings = CIQSettings.get_settings()
+        
+        # Create Quest if it doesn't exist
+        quest, created = Quest.objects.get_or_create(
+            slug='classroom-innovation-quest',
+            defaults={
+                'name': 'Classroom Innovation Quest',
+                'description': 'A 5-level design thinking journey for student teams',
+                'is_active': True
+            }
+        )
+        
+        # Create Quest Levels
+        levels_data = [
+            {'order': 1, 'name': 'Empathy', 'description': 'Understand the problem and users'},
+            {'order': 2, 'name': 'Define', 'description': 'Define the core problem to solve'},
+            {'order': 3, 'name': 'Ideate', 'description': 'Brainstorm creative solutions'},
+            {'order': 4, 'name': 'Prototype', 'description': 'Build and test your solution'},
+            {'order': 5, 'name': 'Test', 'description': 'Present and get feedback'},
+        ]
+        
+        levels_created = 0
+        for level_data in levels_data:
+            level, created = QuestLevel.objects.get_or_create(
+                order=level_data['order'],
+                defaults=level_data
+            )
+            if created:
+                levels_created += 1
+        
+        # Create Grade 9 Classroom
+        grade9_classroom, classroom_created = ClassRoom.objects.get_or_create(
+            class_code='GRADE9CIQ',
+            defaults={
+                'name': 'Grade 9 Innovation Lab',
+                'quest': quest,
+                'teacher_key': 'grade9-teacher',
+                'is_active': True
+            }
+        )
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Quest CIQ data setup completed successfully',
+            'data': {
+                'quest': f"{quest.name} ({'new' if created else 'existing'})",
+                'levels_created': levels_created,
+                'grade9_classroom': f"{grade9_classroom.name} - {grade9_classroom.class_code} ({'new' if classroom_created else 'existing'})",
+                'settings': f"CIQ enabled: {settings.enable_ciq}"
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to setup quest CIQ data: {str(e)}',
+            'error_type': type(e).__name__
+        }, status=500)

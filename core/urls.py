@@ -33,4 +33,5 @@ urlpatterns = [
     path('api/analytics/track/', views.analytics_track_api, name='analytics_track_api'),
     path('migrate-quest-ciq/', views.migrate_quest_ciq, name='migrate_quest_ciq'),
     path('clean-test-data/', views.clean_production_test_data, name='clean_test_data'),
+    path('setup-quest-ciq-data/', views.setup_quest_ciq_data, name='setup_quest_ciq_data'),
 ]
