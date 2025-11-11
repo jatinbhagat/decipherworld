@@ -1426,3 +1426,45 @@ def migrate_quest_ciq(request):
             'status': 'error',
             'message': f'Failed to run quest_ciq migrations: {str(e)}'
         }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def clean_production_test_data(request):
+    """
+    Clean duplicate production test data to allow constraints to work
+    SAFE FOR PRODUCTION - this only removes test data, no real user data
+    """
+    try:
+        from group_learning.models import DesignTeam, DesignThinkingSession
+        
+        # Find and remove duplicate teams for session_id 113
+        duplicate_teams = DesignTeam.objects.filter(session_id=113)
+        duplicate_count = duplicate_teams.count()
+        
+        if duplicate_count > 1:
+            # Keep the first team, remove the rest
+            keep_team = duplicate_teams.first()
+            remove_teams = duplicate_teams.exclude(id=keep_team.id)
+            removed_count = remove_teams.count()
+            remove_teams.delete()
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': f'Cleaned duplicate test data: removed {removed_count} duplicate teams for session 113',
+                'kept_team_id': keep_team.id,
+                'removed_count': removed_count,
+                'total_teams_now': DesignTeam.objects.filter(session_id=113).count()
+            })
+        else:
+            return JsonResponse({
+                'status': 'info',
+                'message': f'No duplicates found for session 113. Current teams: {duplicate_count}'
+            })
+            
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to clean test data: {str(e)}',
+            'error_type': type(e).__name__
+        }, status=500)

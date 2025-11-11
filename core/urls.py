@@ -32,4 +32,5 @@ urlpatterns = [
     path('api/track-event/', views.track_event_fallback, name='track_event_fallback'),
     path('api/analytics/track/', views.analytics_track_api, name='analytics_track_api'),
     path('migrate-quest-ciq/', views.migrate_quest_ciq, name='migrate_quest_ciq'),
+    path('clean-test-data/', views.clean_production_test_data, name='clean_test_data'),
 ]
