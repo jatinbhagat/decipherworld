@@ -65,7 +65,13 @@
 
             <ul class="timeline timeline-vertical">
                 {% for order, config in level_config.items %}
-                {% with response=responses|selectattr:"level_order"|filter:order|first %}
+                {% with response=None %}
+                    {% for resp in responses %}
+                        {% if resp.level_order == order %}
+                            {% with response=resp %}
+                            {% endwith %}
+                        {% endif %}
+                    {% endfor %}
                 <li>
                     <div class="timeline-start">{{ config.emoji }}</div>
                     <div class="timeline-middle">

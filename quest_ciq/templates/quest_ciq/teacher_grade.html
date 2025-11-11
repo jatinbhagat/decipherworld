@@ -170,9 +170,9 @@
             <div class="stat">
                 <div class="stat-title">Graded</div>
                 <div class="stat-value text-success">
-                    {% with graded_count=teams_data|selectattr:"teacher_score"|list|length %}
-                    {{ graded_count }}
-                    {% endwith %}
+                    {# Graded teams - simplified for now #}
+                    {% regroup teams_data by teacher_score as teams_by_score %}
+                    {% for score_group in teams_by_score %}{% if score_group.grouper %}{{ score_group.list|length }}{% endif %}{% empty %}0{% endfor %}
                 </div>
             </div>
         </div>
@@ -180,9 +180,9 @@
             <div class="stat">
                 <div class="stat-title">Pending</div>
                 <div class="stat-value text-warning">
-                    {% with pending_count=teams_data|rejectattr:"teacher_score"|list|length %}
-                    {{ pending_count }}
-                    {% endwith %}
+                    {# Pending teams - simplified #}
+                    {% regroup teams_data by teacher_score as teams_by_score %}
+                    {% for score_group in teams_by_score %}{% if not score_group.grouper %}{{ score_group.list|length }}{% endif %}{% empty %}{{ teams_data|length }}{% endfor %}
                 </div>
             </div>
         </div>

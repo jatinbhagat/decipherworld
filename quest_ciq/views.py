@@ -12,6 +12,7 @@ from .models import (
     QuestSession, LevelResponse, CIQSettings,
     Quest, ClassRoom, Team, TeacherTeamScore
 )
+from django.utils.text import slugify
 from .forms import (
     JoinQuestForm,
     Level1EmpathyForm,
@@ -48,21 +49,56 @@ class JoinQuestView(View):
     def post(self, request):
         form = JoinQuestForm(request.POST)
         if form.is_valid():
-            # Create new session
-            session = QuestSession.objects.create(
-                student_name=form.cleaned_data['student_name']
+            class_code = form.cleaned_data['class_code'].upper()
+            team_name = form.cleaned_data['team_name']
+            representative_name = form.cleaned_data['representative_name']
+            
+            # Validate classroom exists
+            try:
+                classroom = ClassRoom.objects.get(class_code=class_code, is_active=True)
+            except ClassRoom.DoesNotExist:
+                form.add_error('class_code', 'Invalid class code. Please check with your teacher.')
+                return render(request, self.template_name, {'form': form})
+            
+            # Create or get team within this classroom
+            team, created = Team.objects.get_or_create(
+                classroom=classroom,
+                name=team_name,
+                defaults={'slug': slugify(team_name)}
             )
+            
+            # Check if this team already has a session (prevent duplicate submissions)
+            existing_session = QuestSession.objects.filter(
+                team=team,
+                classroom=classroom
+            ).first()
+            
+            if existing_session:
+                # Team already has a session, redirect to it
+                messages.info(
+                    request,
+                    f"Team {team_name} already has an active quest session. Continuing where you left off."
+                )
+                session = existing_session
+            else:
+                # Create new team session
+                session = QuestSession.objects.create(
+                    student_name=f"Team {team_name} ({representative_name})",
+                    team=team,
+                    classroom=classroom
+                )
+                messages.success(
+                    request,
+                    f"Welcome Team {team_name}! Your quest begins now. Representative: {representative_name}"
+                )
 
-            # Store session code in session for student access
+            # Store session code in session for team access
             request.session['quest_session_code'] = session.session_code
 
-            messages.success(
-                request,
-                f"Welcome {session.student_name}! Your quest begins now."
-            )
-
-            # Redirect to Level 1
-            return redirect('quest_ciq:level', session_code=session.session_code, level_order=1)
+            # Redirect to current level or Level 1
+            return redirect('quest_ciq:level', 
+                          session_code=session.session_code, 
+                          level_order=session.current_level)
 
         return render(request, self.template_name, {'form': form})
 

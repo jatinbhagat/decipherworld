@@ -10,15 +10,36 @@ from .constants import CLASSROOM_PAIN_POINTS, WHO_AFFECTED_CHOICES, EMOJI_RATING
 
 
 class JoinQuestForm(forms.Form):
-    """Form for students to join/create a quest session"""
-    student_name = forms.CharField(
+    """Form for teams to join/create a quest session"""
+    class_code = forms.CharField(
+        max_length=8,
+        widget=forms.TextInput(attrs={
+            'class': 'input input-bordered w-full',
+            'placeholder': 'Enter class code from teacher',
+            'required': True,
+            'style': 'text-transform: uppercase;',
+        }),
+        label="Class Code (from Teacher)"
+    )
+    
+    team_name = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
             'class': 'input input-bordered w-full',
-            'placeholder': 'Enter your name',
+            'placeholder': 'Enter your team name',
             'required': True,
         }),
-        label="Your Name"
+        label="Team Name"
+    )
+    
+    representative_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'input input-bordered w-full',
+            'placeholder': 'Name of team member submitting',
+            'required': True,
+        }),
+        label="Team Representative Name"
     )
 
 
