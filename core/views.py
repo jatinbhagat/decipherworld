@@ -1574,7 +1574,7 @@ def setup_quest_ciq_data(request):
         
         # Create Grade 9 Classroom
         grade9_classroom, classroom_created = ClassRoom.objects.get_or_create(
-            class_code='GRADE9CIQ',
+            class_code='GRADE9',
             defaults={
                 'name': 'Grade 9 Innovation Lab',
                 'quest': quest,
