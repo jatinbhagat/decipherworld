@@ -5,9 +5,53 @@
 
 {% block extra_head %}
 <style>
-  /* Minimal CSS for gradient background only */
+  /* Professional classroom-style background */
   main {
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #fef3c7 100%) !important;
+    position: relative;
+    overflow: hidden;
+  }
+
+  main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .join-card {
+    position: relative;
+    background: linear-gradient(180deg, #ffffff 0%, #fefefe 100%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .join-card::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #e5e7eb 0%, transparent 100%);
+    opacity: 0.5;
+  }
+
+  .emoji-option {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .emoji-option:hover {
+    transform: scale(1.1);
+  }
+
+  .form-input:focus {
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
   }
 </style>
 {% endblock %}
@@ -15,32 +59,53 @@
 {% block content %}
 <div class="max-w-2xl mx-auto py-8 px-4">
   <div class="text-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">🎯 Join Design Thinking Challenge</h1>
-    <p class="text-gray-600">Enter your session code to join an innovation session</p>
-    <div class="mt-2">
-      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-        🚀 Auto-Progression Enabled
+    <div class="inline-block p-4 bg-gradient-to-br from-blue-100 to-green-100 rounded-full mb-4">
+      <span class="text-6xl">🎯</span>
+    </div>
+    <h1 class="text-4xl font-bold text-gray-900 mb-3">Join Design Thinking Challenge</h1>
+    <p class="text-lg text-gray-600">Enter your session code to join an innovation session</p>
+    <div class="mt-3 flex items-center justify-center gap-2">
+      <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md">
+        <span class="mr-2">🚀</span> Auto-Progression Enabled
       </span>
     </div>
   </div>
 
   <!-- Instructions Card -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-    <div class="text-sm font-semibold text-blue-700 mb-2">🎯 How to Join the Innovation Challenge</div>
-    <ol class="text-xs text-blue-700 pl-4 space-y-1">
-      <li>Get the 6-digit session code from your teacher</li>
-      <li>Enter it below and choose your team name</li>
-      <li>Pick a fun emoji to represent your team</li>
-      <li>Start the simplified Design Thinking challenge with auto-progression!</li>
-    </ol>
+  <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-5 mb-6 shadow-sm">
+    <div class="flex items-start gap-3">
+      <span class="text-3xl flex-shrink-0">📘</span>
+      <div>
+        <div class="text-base font-bold text-blue-900 mb-3">🎯 How to Join the Innovation Challenge</div>
+        <ol class="text-sm text-blue-800 space-y-2">
+          <li class="flex items-start gap-2">
+            <span class="font-bold text-blue-600">1.</span>
+            <span>Get the 6-digit session code from your teacher</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="font-bold text-blue-600">2.</span>
+            <span>Enter it below and choose your team name</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="font-bold text-blue-600">3.</span>
+            <span>Pick a fun emoji to represent your team</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="font-bold text-blue-600">4.</span>
+            <span>Start the simplified Design Thinking challenge with auto-progression!</span>
+          </li>
+        </ol>
+      </div>
+    </div>
   </div>
 
-  <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+  <div class="join-card rounded-xl border border-gray-200 p-8">
     <!-- Display Messages -->
     {% if messages %}
       {% for message in messages %}
-        <div class="p-3 rounded-lg mb-4 text-sm {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}bg-red-100 border border-red-200 text-red-700{% else %}bg-green-100 border border-green-200 text-green-700{% endif %}">
-          {{ message }}
+        <div class="p-4 rounded-xl mb-4 text-sm border-2 flex items-start gap-3 {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}bg-red-50 border-red-200 text-red-800{% else %}bg-green-50 border-green-200 text-green-800{% endif %} shadow-sm">
+          <span class="text-xl">{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}⚠️{% else %}✅{% endif %}</span>
+          <p class="flex-1">{{ message }}</p>
         </div>
       {% endfor %}
     {% endif %}
@@ -50,53 +115,65 @@
       {% csrf_token %}
       
       <div class="mb-6">
-        <label for="session_code" class="block text-sm font-medium text-gray-700 mb-2">Session Code</label>
-        <input type="text" 
-               id="session_code" 
-               name="session_code" 
+        <label for="session_code" class="block text-base font-semibold text-gray-800 mb-2 flex items-center gap-2">
+          <span>🔑</span> Session Code
+        </label>
+        <input type="text"
+               id="session_code"
+               name="session_code"
                required
                maxlength="6"
                placeholder="ABC123"
-               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-center text-xl font-semibold tracking-widest uppercase transition-all duration-200">
-        <div class="text-xs text-gray-500 mt-1">Ask your teacher for the 6-digit code</div>
+               class="form-input w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-center text-2xl font-bold tracking-widest uppercase transition-all duration-200 bg-gray-50">
+        <div class="text-xs text-gray-600 mt-2 flex items-center gap-1">
+          <span>💬</span> Ask your teacher for the 6-digit code
+        </div>
       </div>
 
       <div class="mb-6">
-        <label for="team_name" class="block text-sm font-medium text-gray-700 mb-2">Team Name</label>
-        <input type="text" 
-               id="team_name" 
-               name="team_name" 
+        <label for="team_name" class="block text-base font-semibold text-gray-800 mb-2 flex items-center gap-2">
+          <span>👥</span> Team Name
+        </label>
+        <input type="text"
+               id="team_name"
+               name="team_name"
                required
                maxlength="100"
                placeholder="The Problem Solvers"
-               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200">
-        <div class="text-xs text-gray-500 mt-1">Choose a creative name for your team</div>
+               class="form-input w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 text-lg">
+        <div class="text-xs text-gray-600 mt-2 flex items-center gap-1">
+          <span>✨</span> Choose a creative name for your team
+        </div>
       </div>
 
       <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Team Emoji</label>
+        <label class="block text-base font-semibold text-gray-800 mb-2 flex items-center gap-2">
+          <span>🎨</span> Team Emoji
+        </label>
         <input type="hidden" id="team_emoji" name="team_emoji" value="💡">
-        <div class="grid grid-cols-4 gap-2 mt-2">
-          <div class="emoji-option p-3 border border-gray-300 rounded-lg bg-white hover:border-cyan-500 hover:bg-cyan-50 cursor-pointer transition-all duration-200 text-center text-xl border-cyan-500 bg-cyan-50" data-emoji="💡">💡</div>
-          <div class="emoji-option p-3 border border-gray-300 rounded-lg bg-white hover:border-cyan-500 hover:bg-cyan-50 cursor-pointer transition-all duration-200 text-center text-xl" data-emoji="🚀">🚀</div>
-          <div class="emoji-option p-3 border border-gray-300 rounded-lg bg-white hover:border-cyan-500 hover:bg-cyan-50 cursor-pointer transition-all duration-200 text-center text-xl" data-emoji="🎯">🎯</div>
-          <div class="emoji-option p-3 border border-gray-300 rounded-lg bg-white hover:border-cyan-500 hover:bg-cyan-50 cursor-pointer transition-all duration-200 text-center text-xl" data-emoji="⭐">⭐</div>
-          <div class="emoji-option p-3 border border-gray-300 rounded-lg bg-white hover:border-cyan-500 hover:bg-cyan-50 cursor-pointer transition-all duration-200 text-center text-xl" data-emoji="🔥">🔥</div>
-          <div class="emoji-option p-3 border border-gray-300 rounded-lg bg-white hover:border-cyan-500 hover:bg-cyan-50 cursor-pointer transition-all duration-200 text-center text-xl" data-emoji="🌟">🌟</div>
-          <div class="emoji-option p-3 border border-gray-300 rounded-lg bg-white hover:border-cyan-500 hover:bg-cyan-50 cursor-pointer transition-all duration-200 text-center text-xl" data-emoji="🏆">🏆</div>
-          <div class="emoji-option p-3 border border-gray-300 rounded-lg bg-white hover:border-cyan-500 hover:bg-cyan-50 cursor-pointer transition-all duration-200 text-center text-xl" data-emoji="💎">💎</div>
+        <div class="grid grid-cols-4 gap-3 mt-2">
+          <div class="emoji-option p-4 border-2 border-gray-300 rounded-xl bg-white hover:border-cyan-500 hover:bg-cyan-50 hover:shadow-md cursor-pointer transition-all duration-200 text-center text-2xl border-cyan-500 bg-cyan-50 shadow-md" data-emoji="💡">💡</div>
+          <div class="emoji-option p-4 border-2 border-gray-300 rounded-xl bg-white hover:border-cyan-500 hover:bg-cyan-50 hover:shadow-md cursor-pointer transition-all duration-200 text-center text-2xl" data-emoji="🚀">🚀</div>
+          <div class="emoji-option p-4 border-2 border-gray-300 rounded-xl bg-white hover:border-cyan-500 hover:bg-cyan-50 hover:shadow-md cursor-pointer transition-all duration-200 text-center text-2xl" data-emoji="🎯">🎯</div>
+          <div class="emoji-option p-4 border-2 border-gray-300 rounded-xl bg-white hover:border-cyan-500 hover:bg-cyan-50 hover:shadow-md cursor-pointer transition-all duration-200 text-center text-2xl" data-emoji="⭐">⭐</div>
+          <div class="emoji-option p-4 border-2 border-gray-300 rounded-xl bg-white hover:border-cyan-500 hover:bg-cyan-50 hover:shadow-md cursor-pointer transition-all duration-200 text-center text-2xl" data-emoji="🔥">🔥</div>
+          <div class="emoji-option p-4 border-2 border-gray-300 rounded-xl bg-white hover:border-cyan-500 hover:bg-cyan-50 hover:shadow-md cursor-pointer transition-all duration-200 text-center text-2xl" data-emoji="🌟">🌟</div>
+          <div class="emoji-option p-4 border-2 border-gray-300 rounded-xl bg-white hover:border-cyan-500 hover:bg-cyan-50 hover:shadow-md cursor-pointer transition-all duration-200 text-center text-2xl" data-emoji="🏆">🏆</div>
+          <div class="emoji-option p-4 border-2 border-gray-300 rounded-xl bg-white hover:border-cyan-500 hover:bg-cyan-50 hover:shadow-md cursor-pointer transition-all duration-200 text-center text-2xl" data-emoji="💎">💎</div>
         </div>
-        <div class="text-xs text-gray-500 mt-1">Pick an emoji that represents your team spirit</div>
+        <div class="text-xs text-gray-600 mt-2 flex items-center gap-1">
+          <span>🎭</span> Pick an emoji that represents your team spirit
+        </div>
       </div>
 
 
       <!-- Action Buttons -->
-      <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 text-white font-medium py-3 px-6 rounded-lg hover:from-cyan-600 hover:to-cyan-700 transition-all duration-200 mb-3" id="join-btn">
+      <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-lg py-4 px-6 rounded-xl hover:from-cyan-600 hover:to-blue-700 transition-all duration-200 mb-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02]" id="join-btn">
         🚀 Join Session & Start Challenge
       </button>
-      
-      <a href="{% url 'group_learning:create_simplified_session' %}" class="block w-full text-center bg-gray-100 text-gray-700 font-medium py-3 px-6 rounded-lg hover:bg-gray-200 transition-all duration-200">
-        ← Back to Start Page
+
+      <a href="{% url 'group_learning:create_simplified_session' %}" class="block w-full text-center bg-gray-100 text-gray-700 font-semibold py-3 px-6 rounded-xl hover:bg-gray-200 transition-all duration-200">
+        <span class="mr-2">←</span> Back to Start Page
       </a>
     </form>
   </div>

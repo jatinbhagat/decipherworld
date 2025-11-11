@@ -3431,3 +3431,324 @@ class CreateSimplifiedSessionView(CreateView):
             logger.error(f"Error creating simplified session: {str(e)}")
             form.add_error(None, f'Error creating session: {str(e)}')
             return self.form_invalid(form)
+
+
+# ==================================================================================
+# CIQ (CREATIVE INQUIRY QUEST) VIEWS
+# ==================================================================================
+
+class CIQPublicPresentationView(TemplateView):
+    """
+    Public read-only presentation page showing team's full journey
+    Empathy → Define → Ideate → Prototype
+    """
+    template_name = 'group_learning/ciq/present_public.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        game_id = self.kwargs['game_id']
+        session_code = self.kwargs['session_code']
+        team_id = self.kwargs['team_id']
+
+        try:
+            game = DesignThinkingGame.objects.get(id=game_id)
+            session = DesignThinkingSession.objects.get(session_code=session_code)
+            team = DesignTeam.objects.get(id=team_id, session=session)
+
+            # Get all missions in order
+            missions = DesignMission.objects.filter(
+                game=game,
+                is_active=True
+            ).order_by('order')
+
+            # Get all phase inputs for this team
+            phase_responses = {}
+            for mission in missions:
+                inputs = SimplifiedPhaseInput.objects.filter(
+                    session=session,
+                    phase_type=mission.mission_type
+                ).order_by('-submitted_at')
+
+                # Get latest responses (one per student/member)
+                latest_inputs = {}
+                for inp in inputs:
+                    member_name = inp.input_data.get('member_name') if isinstance(inp.input_data, dict) else None
+                    if member_name and member_name not in latest_inputs:
+                        latest_inputs[member_name] = inp
+
+                phase_responses[mission.mission_type] = list(latest_inputs.values())
+
+            context.update({
+                'game': game,
+                'session': session,
+                'team': team,
+                'missions': missions,
+                'phase_responses': phase_responses,
+                'public_url': self.request.build_absolute_uri(),
+            })
+
+        except (DesignThinkingGame.DoesNotExist, DesignThinkingSession.DoesNotExist, DesignTeam.DoesNotExist):
+            context['error'] = 'Team presentation not found'
+
+        return context
+
+
+class CIQTeacherGradingView(TemplateView):
+    """
+    Teacher grading page - table of teams with scoring interface
+    Access: Staff OR valid teacher_key
+    """
+    template_name = 'group_learning/ciq/teacher_grade.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        session_code = self.kwargs['session_code']
+
+        try:
+            session = DesignThinkingSession.objects.get(session_code=session_code)
+
+            # Check access: staff or valid teacher key
+            teacher_key = self.request.GET.get('teacher_key', '')
+            has_access = (
+                self.request.user.is_staff or
+                (teacher_key and teacher_key == session.teacher_key)
+            )
+
+            if not has_access:
+                context['error'] = 'Access denied. Please use the correct teacher key.'
+                return context
+
+            # Get all teams in this session
+            teams = DesignTeam.objects.filter(session=session).prefetch_related(
+                'phase_ratings',
+                'simplified_inputs'
+            )
+
+            # Build team data with scores
+            teams_data = []
+            for team in teams:
+                # Calculate student score (average of all phase inputs)
+                phase_inputs = SimplifiedPhaseInput.objects.filter(
+                    session=session
+                )
+
+                # Calculate student score (simple average for now)
+                student_score = 0
+                scored_inputs = phase_inputs.filter(teacher_score__isnull=False)
+                if scored_inputs.exists():
+                    scores = []
+                    for inp in scored_inputs:
+                        try:
+                            score = int(inp.teacher_score)
+                            scores.append(score)
+                        except (ValueError, TypeError):
+                            pass
+                    if scores:
+                        student_score = sum(scores) / len(scores)
+
+                # Get existing teacher team score (stored in JSON or compute from ratings)
+                teacher_team_score = team.teacher_feedback or ''  # We'll use this field temporarily
+                try:
+                    # Try to parse if it's stored as JSON with score
+                    import json
+                    feedback_data = json.loads(teacher_team_score) if teacher_team_score else {}
+                    teacher_score_val = feedback_data.get('teacher_score', 0)
+                    teacher_comment = feedback_data.get('comment', '')
+                except:
+                    teacher_score_val = 0
+                    teacher_comment = teacher_team_score
+
+                # Calculate weighted score (40% student, 60% teacher)
+                weighted_score = (0.4 * student_score) + (0.6 * teacher_score_val)
+
+                teams_data.append({
+                    'id': team.id,
+                    'name': team.team_name,
+                    'emoji': team.team_emoji,
+                    'member_count': team.member_count,
+                    'student_score': round(student_score, 1),
+                    'teacher_score': teacher_score_val,
+                    'teacher_comment': teacher_comment,
+                    'weighted_score': round(weighted_score, 1),
+                    'presentation_url': reverse('group_learning:ciq_public_presentation', kwargs={
+                        'game_id': session.design_game.id,
+                        'session_code': session_code,
+                        'team_id': team.id
+                    })
+                })
+
+            context.update({
+                'session': session,
+                'teams': teams_data,
+                'teacher_key': teacher_key,
+            })
+
+        except DesignThinkingSession.DoesNotExist:
+            context['error'] = 'Session not found'
+
+        return context
+
+
+class CIQLeaderboardView(TemplateView):
+    """
+    Leaderboard with Team and Participant tabs
+    Shows weighted scores (0.4 student + 0.6 teacher)
+    """
+    template_name = 'group_learning/ciq/leaderboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        game_id = self.kwargs['game_id']
+        session_code = self.kwargs['session_code']
+
+        try:
+            game = DesignThinkingGame.objects.get(id=game_id)
+            session = DesignThinkingSession.objects.get(session_code=session_code)
+
+            teams = DesignTeam.objects.filter(session=session)
+
+            # Build teams leaderboard data
+            teams_leaderboard = []
+            participants_leaderboard = []
+
+            for team in teams:
+                # Calculate student score (average of all phase inputs)
+                phase_inputs = SimplifiedPhaseInput.objects.filter(
+                    session=session
+                )
+
+                student_score = 0
+                scored_inputs = phase_inputs.filter(teacher_score__isnull=False)
+                if scored_inputs.exists():
+                    scores = []
+                    for inp in scored_inputs:
+                        try:
+                            score = int(inp.teacher_score)
+                            scores.append(score)
+                        except (ValueError, TypeError):
+                            pass
+                    if scores:
+                        student_score = sum(scores) / len(scores)
+
+                # Get teacher score
+                teacher_score_val = 0
+                teacher_feedback = team.teacher_feedback or ''
+                try:
+                    import json
+                    feedback_data = json.loads(teacher_feedback) if teacher_feedback else {}
+                    teacher_score_val = feedback_data.get('teacher_score', 0)
+                except:
+                    pass
+
+                # Calculate weighted score
+                weighted_score = (0.4 * student_score) + (0.6 * teacher_score_val)
+
+                teams_leaderboard.append({
+                    'team_name': team.team_name,
+                    'emoji': team.team_emoji,
+                    'member_count': team.member_count,
+                    'student_score': round(student_score, 1),
+                    'teacher_score': teacher_score_val,
+                    'weighted_score': round(weighted_score, 1),
+                    'teacher_pending': teacher_score_val == 0,
+                })
+
+                # Build participants data (each member inherits team score)
+                for member_name in team.member_names:
+                    participants_leaderboard.append({
+                        'name': member_name,
+                        'team_name': team.team_name,
+                        'student_score': round(student_score, 1),
+                        'teacher_score': teacher_score_val,
+                        'weighted_score': round(weighted_score, 1),
+                    })
+
+            # Sort leaderboards by weighted score (descending)
+            teams_leaderboard.sort(key=lambda x: x['weighted_score'], reverse=True)
+            participants_leaderboard.sort(key=lambda x: x['weighted_score'], reverse=True)
+
+            context.update({
+                'game': game,
+                'session': session,
+                'teams_leaderboard': teams_leaderboard,
+                'participants_leaderboard': participants_leaderboard,
+            })
+
+        except (DesignThinkingGame.DoesNotExist, DesignThinkingSession.DoesNotExist):
+            context['error'] = 'Game or session not found'
+
+        return context
+
+
+class CIQSaveGradeAPI(View):
+    """
+    API endpoint to save teacher grade for a team
+    """
+    def post(self, request, session_code):
+        try:
+            import json
+
+            session = DesignThinkingSession.objects.get(session_code=session_code)
+
+            # Check access
+            teacher_key = request.POST.get('teacher_key', '')
+            has_access = (
+                request.user.is_staff or
+                (teacher_key and teacher_key == session.teacher_key)
+            )
+
+            if not has_access:
+                return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+
+            team_id = request.POST.get('team_id')
+            teacher_score = request.POST.get('teacher_score', 0)
+            comment = request.POST.get('comment', '')
+
+            team = DesignTeam.objects.get(id=team_id, session=session)
+
+            # Save score and comment in teacher_feedback field as JSON
+            feedback_data = {
+                'teacher_score': int(teacher_score),
+                'comment': comment,
+                'graded_at': timezone.now().isoformat()
+            }
+            team.teacher_feedback = json.dumps(feedback_data)
+            team.feedback_given_at = timezone.now()
+            team.save()
+
+            # Calculate weighted score for response
+            phase_inputs = SimplifiedPhaseInput.objects.filter(
+                session=session
+            )
+
+            student_score = 0
+            scored_inputs = phase_inputs.filter(teacher_score__isnull=False)
+            if scored_inputs.exists():
+                scores = []
+                for inp in scored_inputs:
+                    try:
+                        score = int(inp.teacher_score)
+                        scores.append(score)
+                    except (ValueError, TypeError):
+                        pass
+                if scores:
+                    student_score = sum(scores) / len(scores)
+
+            weighted_score = (0.4 * student_score) + (0.6 * int(teacher_score))
+
+            return JsonResponse({
+                'success': True,
+                'weighted_score': round(weighted_score, 1),
+                'message': 'Grade saved successfully'
+            })
+
+        except DesignThinkingSession.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Session not found'}, status=404)
+        except DesignTeam.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Team not found'}, status=404)
+        except Exception as e:
+            logger.error(f"Error saving grade: {str(e)}")
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)

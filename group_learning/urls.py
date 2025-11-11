@@ -92,4 +92,12 @@ urlpatterns = [
     path('api/<str:session_code>/team/<int:team_id>/mission/<str:mission_type>/', rating_api.TeamSubmissionDetailView.as_view(), name='team_submission_detail'),
     path('api/<str:session_code>/export/', rating_api.SessionRatingsExportView.as_view(), name='ratings_export'),
     path('api/<str:session_code>/statistics/', rating_api.PhaseStatisticsView.as_view(), name='phase_statistics'),
+
+    # CIQ (Creative Inquiry Quest) URLs
+    path('ciq/game/<int:game_id>/present/<str:session_code>/<int:team_id>/', views.CIQPublicPresentationView.as_view(), name='ciq_public_presentation'),
+    path('ciq/teacher/<str:session_code>/grade/', views.CIQTeacherGradingView.as_view(), name='ciq_teacher_grading'),
+    path('ciq/game/<int:game_id>/leaderboard/<str:session_code>/', views.CIQLeaderboardView.as_view(), name='ciq_leaderboard'),
+
+    # CIQ API endpoints
+    path('api/ciq/<str:session_code>/save-grade/', views.CIQSaveGradeAPI.as_view(), name='ciq_save_grade'),
 ]
