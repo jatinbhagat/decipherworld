@@ -1541,12 +1541,12 @@ def setup_quest_ciq_data(request):
     try:
         from quest_ciq.models import Quest, ClassRoom, CIQSettings, QuestLevel
         
-        # Create CIQ Settings (singleton)
+        # Step 1: Create CIQ Settings (singleton) 
         settings = CIQSettings.get_settings()
         
-        # Create Quest if it doesn't exist
+        # Step 2: Create Quest with shorter slug
         quest, created = Quest.objects.get_or_create(
-            slug='classroom-innovation-quest',
+            slug='ciq-quest',  # Much shorter slug
             defaults={
                 'name': 'Classroom Innovation Quest',
                 'description': 'A 5-level design thinking journey for student teams',
@@ -1554,7 +1554,7 @@ def setup_quest_ciq_data(request):
             }
         )
         
-        # Create Quest Levels
+        # Step 3: Create Quest Levels
         levels_data = [
             {'order': 1, 'name': 'Empathy', 'description': 'Understand the problem and users'},
             {'order': 2, 'name': 'Define', 'description': 'Define the core problem to solve'},
@@ -1572,13 +1572,13 @@ def setup_quest_ciq_data(request):
             if created:
                 levels_created += 1
         
-        # Create Grade 9 Classroom
+        # Step 4: Create Grade 9 Classroom with simpler data
         grade9_classroom, classroom_created = ClassRoom.objects.get_or_create(
-            class_code='GRADE9',
+            class_code='GRADE9',  # 6 characters - well under 8 limit
             defaults={
-                'name': 'Grade 9 Innovation Lab',
+                'name': 'Grade 9 Lab',  # Shorter name
                 'quest': quest,
-                'teacher_key': 'grade9-teacher',
+                'teacher_key': 'gr9tchr',  # Much shorter teacher key
                 'is_active': True
             }
         )
@@ -1595,8 +1595,10 @@ def setup_quest_ciq_data(request):
         })
         
     except Exception as e:
+        import traceback
         return JsonResponse({
             'status': 'error',
             'message': f'Failed to setup quest CIQ data: {str(e)}',
-            'error_type': type(e).__name__
+            'error_type': type(e).__name__,
+            'traceback': traceback.format_exc()
         }, status=500)
