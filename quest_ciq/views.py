@@ -217,7 +217,7 @@ class LevelView(View):
 
         # Initialize form with POST data
         if level_order in [2, 4]:
-            form = form_class(request.POST, request.FILES, quest_session=session)
+            form = form_class(quest_session=session, data=request.POST, files=request.FILES)
         else:
             form = form_class(request.POST, request.FILES)
 
