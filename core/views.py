@@ -15,6 +15,7 @@ from .models import (
 )
 from .forms import DemoRequestForm, SchoolDemoRequestForm, SchoolReferralForm
 from .analytics import track_page_view, track_form_submission, track_error
+from django.core.management import execute_from_command_line
 
 def simple_home_test(request):
     """Simple test view for debugging"""
@@ -335,8 +336,14 @@ def run_migrations(request):
         sys.stderr = stderr_capture
         
         try:
-            # Run migrations
-            execute_from_command_line(['manage.py', 'migrate', '--verbosity=2'])
+            # Check if quest_ciq specific migration requested
+            app_param = request.GET.get('app', None)
+            if app_param == 'quest_ciq':
+                # Run quest_ciq migrations only
+                execute_from_command_line(['manage.py', 'migrate', 'quest_ciq', '--verbosity=2'])
+            else:
+                # Run all migrations
+                execute_from_command_line(['manage.py', 'migrate', '--verbosity=2'])
             
             stdout_output = stdout_capture.getvalue()
             stderr_output = stderr_capture.getvalue()
