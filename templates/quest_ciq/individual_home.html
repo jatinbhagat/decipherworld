@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Design Thinking Quest - Individual Mode | DecipherWorld{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Professional classroom-style background */
+  main {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #fef3c7 100%) !important;
+    position: relative;
+    overflow: hidden;
+  }
+
+  main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .hero-card {
+    position: relative;
+    background: linear-gradient(180deg, #ffffff 0%, #fefefe 100%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .feature-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #e5e7eb 0%, transparent 100%);
+    opacity: 0.5;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .cta-button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .cta-button:hover {
+    transform: scale(1.02);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <!-- Hero Section -->
+  <div class="text-center mb-12">
+    <div class="inline-block p-6 bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full mb-6">
+      <span class="text-7xl">💡</span>
+    </div>
+    <h1 class="text-5xl font-bold text-gray-900 mb-4">Design Thinking Quest</h1>
+    <h2 class="text-2xl font-semibold text-orange-600 mb-4">Individual Innovation Challenge</h2>
+    <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+      Embark on a solo journey through the 5 levels of design thinking. Solve real classroom problems 
+      through Empathy, Define, Ideate, Prototype, and Test at your own pace.
+    </p>
+    <div class="mt-4 flex items-center justify-center gap-3">
+      <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-md">
+        <span class="mr-2">👤</span> Individual Mode
+      </span>
+      <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md">
+        <span class="mr-2">📊</span> Self-Paced Learning
+      </span>
+    </div>
+  </div>
+
+  <!-- Instructions Card -->
+  <div class="hero-card rounded-xl border border-gray-200 p-8 mb-8">
+    <div class="flex items-start gap-4 mb-6">
+      <span class="text-4xl flex-shrink-0">🚀</span>
+      <div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">How Individual Mode Works</h3>
+        <p class="text-gray-600 text-lg leading-relaxed">
+          Complete the 5-level design thinking journey independently. Perfect for self-directed learning, 
+          homework assignments, or personal skill development.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="space-y-4">
+        <h4 class="font-semibold text-gray-800 text-lg">🎯 What You'll Do:</h4>
+        <ul class="space-y-3 text-gray-600">
+          <li class="flex items-start gap-3">
+            <span class="font-bold text-yellow-600 flex-shrink-0">1.</span>
+            <span><strong>Empathy:</strong> Identify classroom pain points and prioritize them</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="font-bold text-yellow-600 flex-shrink-0">2.</span>
+            <span><strong>Define:</strong> Create "How Might We" problem statements</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="font-bold text-yellow-600 flex-shrink-0">3.</span>
+            <span><strong>Ideate:</strong> Brainstorm creative solutions and wild ideas</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="font-bold text-yellow-600 flex-shrink-0">4.</span>
+            <span><strong>Prototype:</strong> Build and explain your solution concept</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="font-bold text-yellow-600 flex-shrink-0">5.</span>
+            <span><strong>Test:</strong> Get feedback and reflect on your innovation</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="space-y-4">
+        <h4 class="font-semibold text-gray-800 text-lg">⭐ Perfect For:</h4>
+        <ul class="space-y-2 text-gray-600">
+          <li class="flex items-center gap-3">
+            <span class="text-green-500">✓</span>
+            <span>Personal skill development</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="text-green-500">✓</span>
+            <span>Homework assignments</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="text-green-500">✓</span>
+            <span>Self-paced learning</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="text-green-500">✓</span>
+            <span>Building innovation mindset</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="text-green-500">✓</span>
+            <span>Grades 6-12 students</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features Grid -->
+  <div class="grid md:grid-cols-2 gap-6 mb-8">
+    <!-- Feature 1 -->
+    <div class="feature-card bg-white rounded-xl border border-gray-200 p-6 shadow-lg">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="bg-blue-100 text-blue-600 p-3 rounded-lg">
+          <span class="text-2xl">🧠</span>
+        </div>
+        <h4 class="font-bold text-gray-900 text-xl">Critical Thinking</h4>
+      </div>
+      <p class="text-gray-600">
+        Develop systematic problem-solving skills by working through real classroom challenges step by step.
+      </p>
+    </div>
+
+    <!-- Feature 2 -->
+    <div class="feature-card bg-white rounded-xl border border-gray-200 p-6 shadow-lg">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="bg-green-100 text-green-600 p-3 rounded-lg">
+          <span class="text-2xl">🎨</span>
+        </div>
+        <h4 class="font-bold text-gray-900 text-xl">Creative Solutions</h4>
+      </div>
+      <p class="text-gray-600">
+        Learn to think outside the box and generate innovative ideas for everyday problems.
+      </p>
+    </div>
+
+    <!-- Feature 3 -->
+    <div class="feature-card bg-white rounded-xl border border-gray-200 p-6 shadow-lg">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="bg-purple-100 text-purple-600 p-3 rounded-lg">
+          <span class="text-2xl">📈</span>
+        </div>
+        <h4 class="font-bold text-gray-900 text-xl">Self-Assessment</h4>
+      </div>
+      <p class="text-gray-600">
+        Track your progress and reflect on your learning journey with built-in self-evaluation tools.
+      </p>
+    </div>
+
+    <!-- Feature 4 -->
+    <div class="feature-card bg-white rounded-xl border border-gray-200 p-6 shadow-lg">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="bg-orange-100 text-orange-600 p-3 rounded-lg">
+          <span class="text-2xl">⏰</span>
+        </div>
+        <h4 class="font-bold text-gray-900 text-xl">Flexible Pacing</h4>
+      </div>
+      <p class="text-gray-600">
+        Complete the quest at your own speed - pause, resume, and revisit levels as needed.
+      </p>
+    </div>
+  </div>
+
+  <!-- Call to Action -->
+  <div class="text-center space-y-6">
+    <a href="{% url 'quest_ciq:individual_join' %}" 
+       class="cta-button inline-flex items-center bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold text-xl py-4 px-8 rounded-xl hover:from-yellow-600 hover:to-orange-700 shadow-lg hover:shadow-xl">
+      <span class="mr-3">🚀</span>
+      Start Your Innovation Quest
+    </a>
+    
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+      <a href="{% url 'quest_ciq:home' %}" 
+         class="text-center text-blue-600 hover:text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-blue-50 transition-all duration-200">
+        <span class="mr-2">👥</span> Try Team Mode Instead
+      </a>
+      <a href="{% url 'games:design_thinking_quest' %}" 
+         class="text-center text-gray-600 hover:text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-50 transition-all duration-200">
+        <span class="mr-2">ℹ️</span> Learn More About Design Thinking
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+// Simple animation on load
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.feature-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}

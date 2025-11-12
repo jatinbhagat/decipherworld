@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Start Individual Design Thinking Quest - DecipherWorld{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Professional classroom-style background */
+  main {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #fef3c7 100%) !important;
+    position: relative;
+    overflow: hidden;
+  }
+
+  main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .join-card {
+    position: relative;
+    background: linear-gradient(180deg, #ffffff 0%, #fefefe 100%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .join-card::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #e5e7eb 0%, transparent 100%);
+    opacity: 0.5;
+  }
+
+  .form-input:focus {
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+  }
+
+  .level-badge {
+    transition: all 0.3s ease;
+  }
+
+  .level-badge:hover {
+    transform: scale(1.05);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-8 px-4">
+  <div class="text-center mb-8">
+    <div class="inline-block p-4 bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full mb-4">
+      <span class="text-6xl">💡</span>
+    </div>
+    <h1 class="text-4xl font-bold text-gray-900 mb-3">Start Your Innovation Quest</h1>
+    <p class="text-lg text-gray-600">Begin your individual design thinking journey</p>
+    <div class="mt-3 flex items-center justify-center gap-2">
+      <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-md">
+        <span class="mr-2">👤</span> Individual Mode
+      </span>
+    </div>
+  </div>
+
+  <!-- Design Thinking Process Preview -->
+  <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-xl p-5 mb-6 shadow-sm">
+    <div class="flex items-start gap-3 mb-4">
+      <span class="text-3xl flex-shrink-0">🎯</span>
+      <div>
+        <div class="text-base font-bold text-yellow-900 mb-3">5-Level Innovation Journey</div>
+        <p class="text-sm text-yellow-800 mb-4">
+          You'll work through each level at your own pace, building real solutions to classroom challenges.
+        </p>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-5 gap-2">
+      <div class="level-badge bg-white border-2 border-yellow-300 rounded-lg p-2 text-center">
+        <div class="text-lg mb-1">🤝</div>
+        <div class="text-xs font-semibold text-gray-700">Empathy</div>
+      </div>
+      <div class="level-badge bg-white border-2 border-blue-300 rounded-lg p-2 text-center">
+        <div class="text-lg mb-1">🎯</div>
+        <div class="text-xs font-semibold text-gray-700">Define</div>
+      </div>
+      <div class="level-badge bg-white border-2 border-green-300 rounded-lg p-2 text-center">
+        <div class="text-lg mb-1">💡</div>
+        <div class="text-xs font-semibold text-gray-700">Ideate</div>
+      </div>
+      <div class="level-badge bg-white border-2 border-purple-300 rounded-lg p-2 text-center">
+        <div class="text-lg mb-1">🛠️</div>
+        <div class="text-xs font-semibold text-gray-700">Prototype</div>
+      </div>
+      <div class="level-badge bg-white border-2 border-red-300 rounded-lg p-2 text-center">
+        <div class="text-lg mb-1">🧪</div>
+        <div class="text-xs font-semibold text-gray-700">Test</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="join-card rounded-xl border border-gray-200 p-8">
+    <!-- Display Messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="p-4 rounded-xl mb-4 text-sm border-2 flex items-start gap-3 {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}bg-red-50 border-red-200 text-red-800{% else %}bg-green-50 border-green-200 text-green-800{% endif %} shadow-sm">
+          <span class="text-xl">{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}⚠️{% else %}✅{% endif %}</span>
+          <p class="flex-1">{{ message }}</p>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Individual Quest Form -->
+    <form method="post" id="join-form">
+      {% csrf_token %}
+      
+      <div class="mb-6">
+        <label for="{{ form.student_name.id_for_label }}" class="block text-base font-semibold text-gray-800 mb-2 flex items-center gap-2">
+          <span>👤</span> {{ form.student_name.label }}
+        </label>
+        {{ form.student_name }}
+        <div class="text-xs text-gray-600 mt-2 flex items-center gap-1">
+          <span>✨</span> This will be your name throughout the quest
+        </div>
+        {% if form.student_name.errors %}
+          <div class="text-red-600 text-sm mt-1">{{ form.student_name.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-6">
+        <label for="{{ form.grade.id_for_label }}" class="block text-base font-semibold text-gray-800 mb-2 flex items-center gap-2">
+          <span>🎓</span> {{ form.grade.label }}
+        </label>
+        {{ form.grade }}
+        <div class="text-xs text-gray-600 mt-2 flex items-center gap-1">
+          <span>📚</span> Helps us customize your experience
+        </div>
+        {% if form.grade.errors %}
+          <div class="text-red-600 text-sm mt-1">{{ form.grade.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-6">
+        <label for="{{ form.school_name.id_for_label }}" class="block text-base font-semibold text-gray-800 mb-2 flex items-center gap-2">
+          <span>🏫</span> {{ form.school_name.label }}
+        </label>
+        {{ form.school_name }}
+        <div class="text-xs text-gray-600 mt-2 flex items-center gap-1">
+          <span>📍</span> Optional but helps with personalization
+        </div>
+        {% if form.school_name.errors %}
+          <div class="text-red-600 text-sm mt-1">{{ form.school_name.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Key Benefits -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <h4 class="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+          <span>🌟</span> What You'll Gain:
+        </h4>
+        <ul class="space-y-2 text-sm text-blue-800">
+          <li class="flex items-center gap-2">
+            <span class="text-green-500">✓</span>
+            <span>Problem-solving skills for real classroom challenges</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-green-500">✓</span>
+            <span>Creative thinking and innovation techniques</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-green-500">✓</span>
+            <span>Design thinking methodology experience</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-green-500">✓</span>
+            <span>Self-directed learning and reflection skills</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Action Buttons -->
+      <button type="submit" class="w-full bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold text-lg py-4 px-6 rounded-xl hover:from-yellow-600 hover:to-orange-700 transition-all duration-200 mb-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02]" id="start-btn">
+        🚀 Start My Innovation Quest
+      </button>
+
+      <a href="{% url 'quest_ciq:individual_home' %}" class="block w-full text-center bg-gray-100 text-gray-700 font-semibold py-3 px-6 rounded-xl hover:bg-gray-200 transition-all duration-200">
+        <span class="mr-2">←</span> Back to Quest Info
+      </a>
+    </form>
+  </div>
+
+  <!-- Additional Info -->
+  <div class="mt-8 text-center">
+    <p class="text-gray-600 mb-4">
+      Want to work with a team instead?
+    </p>
+    <a href="{% url 'quest_ciq:home' %}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-blue-50 transition-all duration-200">
+      <span class="mr-2">👥</span> Try Team Mode
+    </a>
+  </div>
+</div>
+
+<script>
+// Auto-focus name input
+document.getElementById('{{ form.student_name.id_for_label }}').focus();
+
+// Form validation
+document.getElementById('join-form').addEventListener('submit', function(e) {
+    const studentName = document.getElementById('{{ form.student_name.id_for_label }}').value.trim();
+    const button = document.getElementById('start-btn');
+    
+    // Clear any existing error messages
+    clearErrorMessages();
+    
+    // Client-side validation
+    if (!studentName) {
+        e.preventDefault();
+        showFieldError('{{ form.student_name.id_for_label }}', 'Please enter your name to start the quest.');
+        return;
+    }
+    
+    if (studentName.length < 2) {
+        e.preventDefault();
+        showFieldError('{{ form.student_name.id_for_label }}', 'Please enter your full name (at least 2 characters).');
+        return;
+    }
+    
+    // Show loading state
+    button.disabled = true;
+    const originalText = button.textContent;
+    button.innerHTML = '<span class="inline-flex items-center"><svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Starting Quest...</span>';
+    
+    // Allow form to submit naturally
+    setTimeout(() => {
+        // Reset button if form doesn't redirect
+        button.disabled = false;
+        button.textContent = originalText;
+    }, 3000);
+});
+
+// Helper functions for error display
+function clearErrorMessages() {
+    document.querySelectorAll('.error-message').forEach(el => el.remove());
+    document.querySelectorAll('.border-red-500').forEach(el => {
+        el.classList.remove('border-red-500');
+        el.classList.add('border-gray-300');
+    });
+}
+
+function showFieldError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        // Add red border to field
+        field.classList.remove('border-gray-300');
+        field.classList.add('border-red-500');
+        
+        // Create error message element
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message text-red-600 text-sm mt-1';
+        errorDiv.textContent = message;
+        
+        // Insert after the field
+        field.parentNode.insertBefore(errorDiv, field.nextSibling);
+        
+        // Focus the field
+        field.focus();
+    }
+}
+
+// Level badge hover animation
+document.querySelectorAll('.level-badge').forEach(badge => {
+    badge.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.05) rotate(2deg)';
+    });
+    
+    badge.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1) rotate(0deg)';
+    });
+});
+</script>
+{% endblock %}

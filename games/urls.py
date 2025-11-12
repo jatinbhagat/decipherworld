@@ -28,6 +28,9 @@ urlpatterns = [
     # Entrepreneurship Games section (Grades 4-10, Team)
     path('entrepreneurship/', views.EntrepreneurshipView.as_view(), name='entrepreneurship'),
     
+    # Design Thinking Quest (Grades 6-12, Individual & Team)
+    path('design-thinking-quest/', views.DesignThinkingQuestView.as_view(), name='design_thinking_quest'),
+    
     # Legacy Group Learning redirect (for climate games like Monsoon Mayhem)
     path('group-learning/', views.GroupLearningGamesView.as_view(), name='group_learning'),
     path('group-learning/monsoon-mayhem/', views.MonsoonMayhemLandingView.as_view(), name='monsoon_mayhem_landing'),

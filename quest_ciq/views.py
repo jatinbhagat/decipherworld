@@ -4,6 +4,7 @@ Session-based design thinking quest flow
 """
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
+from django.views.generic import TemplateView
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
@@ -15,6 +16,7 @@ from .models import (
 from django.utils.text import slugify
 from .forms import (
     JoinQuestForm,
+    IndividualJoinQuestForm,
     Level1EmpathyForm,
     Level2DefineForm,
     Level3IdeateForm,
@@ -99,6 +101,63 @@ class JoinQuestView(View):
             return redirect('quest_ciq:level', 
                           session_code=session.session_code, 
                           level_order=session.current_level)
+
+        return render(request, self.template_name, {'form': form})
+
+
+class IndividualHomeView(TemplateView):
+    """Individual quest landing page"""
+    template_name = 'quest_ciq/individual_home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Individual Design Thinking Quest - Personal Innovation Challenge',
+            'page_description': 'Complete the 5-level design thinking journey on your own. Empathy → Define → Ideate → Prototype → Test',
+        })
+        return context
+
+
+class IndividualJoinQuestView(View):
+    """Individual quest join page"""
+    template_name = 'quest_ciq/individual_join.html'
+
+    def get(self, request):
+        form = IndividualJoinQuestForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = IndividualJoinQuestForm(request.POST)
+        
+        if form.is_valid():
+            student_name = form.cleaned_data['student_name']
+            grade = form.cleaned_data.get('grade', '')
+            school_name = form.cleaned_data.get('school_name', '')
+            
+            # Create individual session (no team/classroom)
+            session = QuestSession.objects.create(
+                student_name=student_name,
+                team=None,  # Individual mode
+                classroom=None  # Individual mode
+            )
+            
+            # Store additional info in session for display
+            if grade or school_name:
+                request.session['student_grade'] = grade
+                request.session['student_school'] = school_name
+            
+            messages.success(
+                request,
+                f"Welcome {student_name}! Your personal design thinking quest begins now."
+            )
+
+            # Store session code in session
+            request.session['quest_session_code'] = session.session_code
+
+            # Redirect to Level 1
+            return redirect('quest_ciq:level', 
+                          session_code=session.session_code, 
+                          level_order=1)
 
         return render(request, self.template_name, {'form': form})
 

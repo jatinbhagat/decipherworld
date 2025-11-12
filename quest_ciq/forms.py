@@ -43,6 +43,41 @@ class JoinQuestForm(forms.Form):
     )
 
 
+class IndividualJoinQuestForm(forms.Form):
+    """Form for individuals to join/create a quest session"""
+    student_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'input input-bordered w-full',
+            'placeholder': 'Enter your full name',
+            'required': True,
+        }),
+        label="Your Name"
+    )
+    
+    grade = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'class': 'input input-bordered w-full',
+            'placeholder': 'e.g., Grade 9, Class 10A',
+            'required': False,
+        }),
+        label="Grade/Class (Optional)",
+        required=False
+    )
+    
+    school_name = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'class': 'input input-bordered w-full',
+            'placeholder': 'Enter your school name',
+            'required': False,
+        }),
+        label="School Name (Optional)",
+        required=False
+    )
+
+
 class Level1EmpathyForm(forms.Form):
     """
     Level 1: Empathy - Pain points with prioritization

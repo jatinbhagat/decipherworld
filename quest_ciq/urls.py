@@ -10,6 +10,14 @@ urlpatterns = [
     # Home and join
     path('', views.HomeView.as_view(), name='home'),
     path('join/', views.JoinQuestView.as_view(), name='join'),
+    
+    # Individual mode
+    path('individual/', views.IndividualHomeView.as_view(), name='individual_home'),
+    path('individual/join/', views.IndividualJoinQuestView.as_view(), name='individual_join'),
+    
+    # Team mode (explicit)
+    path('team/', views.HomeView.as_view(), name='team_home'),
+    path('team/join/', views.JoinQuestView.as_view(), name='team_join'),
 
     # Quest levels
     path('quest/<str:session_code>/level/<int:level_order>/', views.LevelView.as_view(), name='level'),

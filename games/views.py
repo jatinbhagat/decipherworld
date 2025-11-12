@@ -221,3 +221,17 @@ class EntrepreneurshipView(TemplateView):
             'canonical_url': '/games/entrepreneurship/',
         })
         return context
+
+
+class DesignThinkingQuestView(TemplateView):
+    """Design Thinking Quest landing page"""
+    template_name = 'games/design_thinking_quest.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Design Thinking Quest - Innovation Challenge for Students | CBSE ICSE Grades 6-12',
+            'page_description': 'Complete the 5-level design thinking journey: Empathy → Define → Ideate → Prototype → Test. Available in both individual and team modes for CBSE ICSE students.',
+            'canonical_url': '/games/design-thinking-quest/',
+        })
+        return context
