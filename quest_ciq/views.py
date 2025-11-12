@@ -37,7 +37,10 @@ class HomeView(View):
         if not settings.enable_ciq:
             return render(request, 'quest_ciq/disabled.html')
 
-        return render(request, self.template_name)
+        context = {
+            'canonical_url': '/quest/'
+        }
+        return render(request, self.template_name, context)
 
 
 class JoinQuestView(View):
@@ -46,7 +49,11 @@ class JoinQuestView(View):
 
     def get(self, request):
         form = JoinQuestForm()
-        return render(request, self.template_name, {'form': form})
+        context = {
+            'form': form,
+            'canonical_url': '/quest/join/'
+        }
+        return render(request, self.template_name, context)
 
     def post(self, request):
         form = JoinQuestForm(request.POST)
@@ -114,6 +121,7 @@ class IndividualHomeView(TemplateView):
         context.update({
             'page_title': 'Individual Design Thinking Quest - Personal Innovation Challenge',
             'page_description': 'Complete the 5-level design thinking journey on your own. Empathy → Define → Ideate → Prototype → Test',
+            'canonical_url': '/quest/individual/',
         })
         return context
 
@@ -124,7 +132,11 @@ class IndividualJoinQuestView(View):
 
     def get(self, request):
         form = IndividualJoinQuestForm()
-        return render(request, self.template_name, {'form': form})
+        context = {
+            'form': form,
+            'canonical_url': '/quest/individual/join/'
+        }
+        return render(request, self.template_name, context)
 
     def post(self, request):
         form = IndividualJoinQuestForm(request.POST)

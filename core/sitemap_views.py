@@ -41,6 +41,11 @@ def simple_sitemap(request):
         ('/games/ai-learning/drag-drop-game/', '0.7', 'monthly'),
         ('/games/group-learning/monsoon-mayhem/', '0.7', 'monthly'),
         
+        # DESIGN THINKING QUEST (High Priority - 0.7-0.8)
+        ('/games/design-thinking-quest/', '0.8', 'monthly'),  # Main landing page
+        ('/quest/individual/', '0.7', 'monthly'),  # Individual mode home
+        ('/quest/individual/join/', '0.6', 'monthly'),  # Individual registration
+        
         # FUTURE CATEGORIES (Lower Priority - 0.6)
         ('/games/stem-challenges/', '0.6', 'monthly'),
         ('/games/language-adventures/', '0.6', 'monthly'),

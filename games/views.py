@@ -136,6 +136,7 @@ class StemChallengesView(TemplateView):
         context.update({
             'page_title': 'STEM Challenges - Science & Engineering Games (Coming Soon)',
             'page_description': 'Interactive STEM challenges combining science, technology, engineering, and mathematics through engaging game-based learning experiences.',
+            'canonical_url': '/games/stem-challenges/',
         })
         return context
 
@@ -149,6 +150,7 @@ class LanguageAdventuresView(TemplateView):
         context.update({
             'page_title': 'Language Adventures - Interactive Language Learning (Coming Soon)',
             'page_description': 'Immersive language learning adventures through storytelling, role-playing, and cultural exploration games.',
+            'canonical_url': '/games/language-adventures/',
         })
         return context
 
