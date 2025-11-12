@@ -1,8 +1,8 @@
-{% extends "quest_ciq/base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}Home - Classroom Innovation Quest{% endblock %}
 
-{% block extra_css %}
+{% block extra_head %}
 <style>
     .hero-gradient {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
@@ -58,7 +58,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto">
+<div class="max-w-6xl mx-auto pt-24 px-4">
     <!-- Hero Section -->
     <div class="hero-gradient text-white shadow-2xl mb-12">
         <div class="text-center">
